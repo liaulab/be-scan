@@ -56,13 +56,18 @@ Parameters: same as above
 
 ## Analysis
 
-### 
+### bigscam.analysis.count_reads()
+QC function to make sure all guides are in the library and quantify the skew present. Metrics are outputed. 
 ```
-bigscam.analysis.count_reads(fastq)
+bigscam.analysis.count_reads(fastq, sgrnas)
 ```
+Parameters: 
+- fastq: data from NGS run
+- sgrnas: dataframe of all sgRNAs
 
+### bigscam.analysis.score()
 ```
-bigscam.analysis.score(counts)
+bigscam.analysis.score()
 ```
 
 ## Plot
@@ -72,14 +77,14 @@ bigscam.analysis.score(counts)
 bigscam.plot.coverage()
 ```
 Parameters: 
-- 
+- a
 
 ### bigscam.plot.scattter()
 ```
 bigscam.plot.scatter(counts)
 ```
 Parameters: 
--
+- a
 ![scatter1](https://github.com/liaulab/bigscam/assets/68132984/e46c2d96-fea4-4a1a-a217-3739168a9f79)
 ![scatter2](https://github.com/liaulab/bigscam/assets/68132984/ca2c33f0-073c-4a1d-be64-d43b669c7305)
 
@@ -88,18 +93,23 @@ Parameters:
 ```
 ```
 Parameters: 
-- 
+- a
 ![enrichment_map](https://github.com/liaulab/bigscam/assets/68132984/32a92334-c749-476d-8dd4-d87f5e906456)
 
 ### bigscam.plot.volcano()
 ```
 ```
 Parameters: 
-- 
+- a
 
 ### bigscam.plot.pymol()
 ```
 bigscam.plot.pymol(counts)
 ```
 Parameters: 
-- 
+- a
+
+
+## Control Functions
+
+### bigscam.control.print()
