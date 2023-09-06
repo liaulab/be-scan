@@ -27,7 +27,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from GuideFunctions import (
+from ._utils import (
     processIFile, find_Indexes, generateSubsets, generateMutCom, get_aa, find_sgRNA_pos, rev_complement, convert_guideInput
 )
 

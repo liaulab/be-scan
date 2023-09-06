@@ -17,6 +17,14 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+  "numpy",
+  "matplotlib",
+  "seaborn",
+  "pandas",
+  "scikit-learn",
+  "biopython"
+]
 
 [project.urls]
 "Homepage" = "https://github.com/liaulab/bigscam"
