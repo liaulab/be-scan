@@ -7,6 +7,7 @@ name = "bigscam"
 version = "0.0.2"
 authors = [
   { name="Calvin Hu", email="xiaohu@g.harvard.edu" },
+  { name="Simon P Shen", email="simonshen@fas.harvard.edu" },
 ]
 description = "A package for CRISPR screening computational tools"
 readme = "README.md"
@@ -15,6 +16,14 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+]
+dependencies = [
+  "numpy",
+  "matplotlib",
+  "seaborn",
+  "pandas",
+  "scikit-learn",
+  "biopython"
 ]
 
 [project.urls]
