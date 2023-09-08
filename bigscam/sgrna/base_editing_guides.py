@@ -13,30 +13,46 @@ sys.path.append('../helper')
 from genomic import DNA_AA_map, base_editing_key, bases, complements, cas_key
 from genomic import rev_complement, complement, protein_to_AAseq, process_PAM # DNA_to_AA
 
-def find_gRNAs(aa_file, gene_object, mode, cas_type, target_codons=[], window=[4,8], PAM=None): 
-    # mode: can be CBE or ABE, or just a list of 2 base edits ex ["C", "T"]
-    # cas_type: Sp, SpG, SpRY
-    # target_codons: list of codons that we want to make with our base edit
-    # window: 4th to 8th bases inclusive by default, can be changed
-    # PAM: optional field to input a custom PAM
-    # Returns: a df of exon #, guides (23 bps), target (20 bps), fwd or rev, codon #, edit made
-    amino_acid_seq = protein_to_AAseq(aa_file)
+def identify_guides(gene_object, cas_type, mode, PAM=None, window=[4,8]): 
+    # Parameters
+    #    mode: can be CBE or ABE
+    #    cas_type: Sp, SpG, SpRY, etc
+    #    window: 4th to 8th bases inclusive by default, can be changed
+    #    PAM: optional field to input a custom PAM
+    #    Returns: a df of exon #, guides (23 bps), target (20 bps), fwd or rev
     
     # process mode
-    if len(mode) == 3: 
+    if mode in list(base_editing_key.keys()): 
         mode = base_editing_key[mode]
-    assert len(mode) == 2
+        assert len(mode) == 2
+    else: 
+        raise Exception('Improper mode input, the options are '+str(list(base_editing_key.keys())))
     
-    # process PAM
+    # process PAM, PAM input overrides cas_type
     if PAM is None: 
         PAM = cas_key[cas_type]
     PAM_regex = process_PAM(PAM)
-    
+
     # filter for PAM and contains editable base in window
     #    (seq, frame012 of first base, index of first base, exon number)
     fwd_results = [g.copy() for g in gene_object.fwd_guides if PAM_regex.match(g[0][-len(PAM):]) and 
                                                     mode[0] in g[0][window[0]-1:window[1]]]
-    for g in fwd_results: 
+
+    # filter for PAM and contains editable base in window 
+    #    (seq, frame012 of last base, index of last base, exon number)
+    rev_results = [g.copy() for g in gene_object.rev_guides if PAM_regex.match(g[0][-len(PAM):]) and 
+                                                    mode[0] in g[0][window[0]-1:window[1]]]
+
+    return fwd_results, rev_results, mode
+
+
+def annotate_guides(protein_filepath, fwd_guides, rev_guides, mode, window=[4,8]): 
+    # target_codons: list of codons that we want to make with our base edit
+
+    # codon indices, predicted edits made
+    amino_acid_seq = protein_to_AAseq(protein_filepath)
+
+    for g in fwd_guides: 
         # mutates all residues according to the mode
         original = g[0][:12]
         mutated = g[0][:window[0]-1] + g[0][window[0]-1:window[1]].replace(mode[0], 
@@ -68,11 +84,7 @@ def find_gRNAs(aa_file, gene_object, mode, cas_type, target_codons=[], window=[4
         g.append('fwd')
         assert(len(g)) == 9
         
-    # filter for PAM and contains editable base in window 
-    #    (seq, frame012 of last base, index of last base, exon number)
-    rev_results = [g.copy() for g in gene_object.rev_guides if PAM_regex.match(g[0][-len(PAM):]) and 
-                                                    mode[0] in g[0][window[0]-1:window[1]]]
-    for g in rev_results: 
+    for g in rev_guides: 
         # mutates all residues according to the mode
         original = g[0][:12]
         mutated = g[0][:window[0]-1] + g[0][window[0]-1:window[1]].replace(mode[0], 
@@ -103,6 +115,6 @@ def find_gRNAs(aa_file, gene_object, mode, cas_type, target_codons=[], window=[4
         g.append('rev')
         assert(len(g)) == 9
         
-    results = fwd_results + rev_results
+    results = fwd_guides + rev_guides
     return pd.DataFrame(results)
 

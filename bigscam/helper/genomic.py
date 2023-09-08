@@ -10,6 +10,11 @@ import re
 
 # variables
 
+bases = 'ACGT'
+complements = {'A':'T', 'T':'A', 'G':'C', 'C':'G', 
+                   'a':'t', 't':'a', 'g':'c', 'c':'g'}
+
+# translating DNA sequence to amino acid sequence
 DNA_AA_map = {"TTT":"F", "TTC":"F", "TTA":"L", "TTG":"L",
               "TCT":"S", "TCC":"S", "TCA":"S", "TCG":"S",
               "TAT":"Y", "TAC":"Y", "TAA":".", "TAG":".",
@@ -27,19 +32,26 @@ DNA_AA_map = {"TTT":"F", "TTC":"F", "TTA":"L", "TTG":"L",
               "GAT":"D", "GAC":"D", "GAA":"E", "GAG":"E",
               "GGT":"G", "GGC":"G", "GGA":"G", "GGG":"G", }
 
+# name of a base editor with their corresponding edit made
 base_editing_key = {"CBE": ["C", "T"], 
-                    "ABE": ["A", "G"]
+                    "ABE": ["A", "G"],
+                    "CGBE": ["C", "G"],
+                    "GCBE": ["G", "C"],
+                    "GTBE": ["G", "T"],
                     }
+### add functionality for dual base editos and for R or Y
 
-bases = 'ACGT'
-
-complements = {'A':'T', 'T':'A', 'G':'C', 'C':'G', 
-                   'a':'t', 't':'a', 'g':'c', 'c':'g'}
-
-cas_key = {'Sp': 'NGG', 'SpG': 'NGN', 'SpRY': 'NNN'}
+# name of cas protein with their associated PAM
+cas_key = {'Sp': 'NGG', 
+           'SpG': 'NGN', 
+           'SpRY': 'NNN', 
+           'SpRY_highefficiency': 'NRN', 
+           'SpRY_lowefficiency': 'NYN'
+           }
 
 # functions
 
+# translate DNA sequence to amino acid sequence
 def DNA_to_AA(seq): 
     aa_seq = ''
     for i in range(len(seq)//3): 
@@ -47,18 +59,21 @@ def DNA_to_AA(seq):
         aa_seq += DNA_AA_map[codon]
     return aa_seq
 
+# find the reverse complement of a DNA sequence
 def rev_complement(complements, seq): 
     compl = ''
     for i in range(len(seq)): 
         compl += complements[seq[i]]
     return compl[::-1]
 
+# find the complement of a DNA sequence
 def complement(complements, seq): 
     compl = ''
     for i in range(len(seq)): 
         compl += complements[seq[i]]
     return compl
 
+# take in a protein .fasta file and extract the protein sequence
 def protein_to_AAseq(filename): 
     f = open(filename, "r")
     file_content = f.read().split('\n')
@@ -72,6 +87,7 @@ def protein_to_AAseq(filename):
 
 # function to change a PAM sequence into a regex sequence
 def process_PAM(PAM): 
+    ### make sure only nucleic acid letters are allowed, and to uppercase
     PAM = PAM.replace("G", "[gG]{1}")
     PAM = PAM.replace("C", "[cC]{1}")
     PAM = PAM.replace("T", "[tT]{1}")

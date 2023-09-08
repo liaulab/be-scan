@@ -8,7 +8,7 @@ This preprocessing includes separating intron and exons, and generating all poss
 
 import sys
 
-sys.path.append('../helper')
+sys.path.append('../helper') # relative path to helper directory
 from genomic import complements
 from genomic import rev_complement, complement
 
@@ -46,8 +46,7 @@ class GeneForCRISPR():
     #         the frame (0, 1, 2) of the first bp, and the exon # of guide
     def find_all_guides(self, n=23): 
         self.fwd_guides = []
-        prev_frame = 0
-        prev_ind = 0
+        prev_frame, prev_ind = 0, 0
         # identify all n length sequences in exons
         for e, exon_extra in enumerate(self.exons_extra): 
             for i in range(len(exon_extra)-22): 
