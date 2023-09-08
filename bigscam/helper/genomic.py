@@ -53,6 +53,10 @@ cas_key = {'Sp': 'NGG',
 
 # translate DNA sequence to amino acid sequence
 def DNA_to_AA(seq): 
+    assert isinstance(seq, str)
+    assert all(c in 'acgtACGT' for c in seq)
+    assert len(seq) % 3 == 0
+    seq = seq.upper()
     aa_seq = ''
     for i in range(len(seq)//3): 
         codon = seq[(i*3):(i*3)+3] #.replace("T", "U")
@@ -61,6 +65,8 @@ def DNA_to_AA(seq):
 
 # find the reverse complement of a DNA sequence
 def rev_complement(complements, seq): 
+    assert isinstance(seq, str)
+    assert all(c in 'acgtACGT' for c in seq)
     compl = ''
     for i in range(len(seq)): 
         compl += complements[seq[i]]
@@ -68,6 +74,8 @@ def rev_complement(complements, seq):
 
 # find the complement of a DNA sequence
 def complement(complements, seq): 
+    assert isinstance(seq, str)
+    assert all(c in 'acgtACGT' for c in seq)
     compl = ''
     for i in range(len(seq)): 
         compl += complements[seq[i]]
@@ -87,7 +95,10 @@ def protein_to_AAseq(filename):
 
 # function to change a PAM sequence into a regex sequence
 def process_PAM(PAM): 
+    assert isinstance(PAM, str)
+    assert all(c in 'acgtrynACGTRYN' for c in PAM)
     ### make sure only nucleic acid letters are allowed, and to uppercase
+    PAM = PAM.upper()
     PAM = PAM.replace("G", "[gG]{1}")
     PAM = PAM.replace("C", "[cC]{1}")
     PAM = PAM.replace("T", "[tT]{1}")

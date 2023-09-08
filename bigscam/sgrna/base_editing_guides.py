@@ -9,7 +9,7 @@ Date: 230906
 import sys
 import pandas as pd
 
-sys.path.append('../helper')
+sys.path.append('../helper') # relative path to helper directory
 from genomic import DNA_AA_map, base_editing_key, bases, complements, cas_key
 from genomic import rev_complement, complement, protein_to_AAseq, process_PAM # DNA_to_AA
 
