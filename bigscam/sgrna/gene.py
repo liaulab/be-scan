@@ -12,6 +12,7 @@ sys.path.append('../helper') # relative path to helper directory
 from genomic import complements
 from genomic import rev_complement, complement
 
+# this function is conditional on +-20 bps of introns flanking exons
 class GeneForCRISPR(): 
     
     # initialize the .fasta file by reading the file into a string
@@ -22,6 +23,7 @@ class GeneForCRISPR():
     # function to read in a .fasta file as its exons, separating into just exon and exon +- 20 bps
     # outputs: none
     # effect: saves a list of exons, list of exons +- 20 bps
+    # conditional on introns being lowercase and exons being uppercase
     def parse_exons(self): 
         exons_extra = []
         i = -1
@@ -45,17 +47,19 @@ class GeneForCRISPR():
     # effect: saves guide sequences, the index of the first bp of the guide, 
     #         the frame (0, 1, 2) of the first bp, and the exon # of guide
     def find_all_guides(self, n=23): 
+        self.n = n
         self.fwd_guides = []
         prev_frame, prev_ind = 0, 0
         # identify all n length sequences in exons
         for e, exon_extra in enumerate(self.exons_extra): 
-            for i in range(len(exon_extra)-22): 
+            for i in range(len(exon_extra)-self.n-1): 
+                # the number 20 is due to 20 intron bps assumed to be present
                 frame = (i+prev_frame-20)%3
                 ind = i-20+prev_ind
-                self.fwd_guides.append([exon_extra[i:i+23], frame, ind, e])
+                self.fwd_guides.append([exon_extra[i:i+self.n], frame, ind, e])
             prev_frame = (prev_frame+len(exon_extra)-40)%3
             prev_ind += len(exon_extra)-40
         # change instance variables
         self.rev_guides = [[rev_complement(complements, 
-                                           g[0])] + [(g[1]+1)%3] + [g[2]+22] + [g[3]] for g in self.fwd_guides]
+                                           g[0])] + [(g[1]+1)%3] + [g[2]+self.n-1] + [g[3]] for g in self.fwd_guides]
         

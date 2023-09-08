@@ -1,8 +1,15 @@
+"""
+Author: Calvin XiaoYang Hu
+Date: 230907
+
+{Description: suit of unit tests for testing functions in bigscam/bigscam/helper/genomic}
+"""
+
 import sys
 import re
 import pytest
 
-sys.path.append('../../bigscam/helper') # relative path to helper directory
+sys.path.append('../bigscam/helper') # relative path to helper directory from test directory
 from genomic import DNA_AA_map, base_editing_key, bases, complements, cas_key
 from genomic import rev_complement, complement, protein_to_AAseq, process_PAM, DNA_to_AA
 
