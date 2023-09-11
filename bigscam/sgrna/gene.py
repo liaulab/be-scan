@@ -47,6 +47,7 @@ class GeneForCRISPR():
     # effect: saves guide sequences, the index of the first bp of the guide, 
     #         the frame (0, 1, 2) of the first bp, and the exon # of guide
     def find_all_guides(self, n=23): 
+        assert isinstance(n, int)
         self.n = n
         self.fwd_guides = []
         prev_frame, prev_ind = 0, 0

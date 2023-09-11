@@ -6,6 +6,7 @@ Date: 230908
 """
 
 import sys
+import pytest
 
 sys.path.append('../bigscam/sgrna') # relative path to helper directory from test directory
 from gene import GeneForCRISPR
@@ -23,48 +24,42 @@ def GeneForCRISPR_assert_guides(gene_object):
     assert len(gene_object.fwd_guides) == len(gene_object.rev_guides)
     for g in gene_object.fwd_guides: assert len(g[0]) == gene_object.n
 
+def workflow(filepath, n): 
+    gene_AR = GeneForCRISPR(filepath=filepath)
+    gene_AR.parse_exons()
+    GeneForCRISPR_assert_exons(gene_AR)
+    gene_AR.find_all_guides(n=n)
+    GeneForCRISPR_assert_guides(gene_AR)
+
 ###
 
 def test_GeneForCRISPR_class_base_pos(): # base positive control test
     # test base case
-    gene_AR1 = GeneForCRISPR(filepath='../tests/test_data/230408_AR_Input.fasta')
-    gene_AR1.parse_exons()
-    GeneForCRISPR_assert_exons(gene_AR1)
-    gene_AR1.find_all_guides(n=23)
-    GeneForCRISPR_assert_guides(gene_AR1)
+    workflow(filepath='../tests/test_data/230408_AR_Input.fasta', n=23)
 
 def test_GeneForCRISPR_class_n_pos(): # change n positive control test
     # test n != 23
-    gene_AR2 = GeneForCRISPR(filepath='../tests/test_data/230408_AR_Input.fasta')
-    gene_AR2.parse_exons()
-    GeneForCRISPR_assert_exons(gene_AR2)
-    gene_AR2.find_all_guides(n=25)
-    GeneForCRISPR_assert_guides(gene_AR2)
+    workflow(filepath='../tests/test_data/230408_AR_Input.fasta', n=25)
 
 def test_GeneForCRISPR_class_exon_pos(): # 1 exon file positive control test
     # test 1 exon file
-    gene_AR3 = GeneForCRISPR(filepath='../tests/test_data/230408_AR_exon1_Input.fasta')
-    gene_AR3.parse_exons()
-    GeneForCRISPR_assert_exons(gene_AR3)
-    gene_AR3.find_all_guides(n=23)
-    GeneForCRISPR_assert_guides(gene_AR3)
+    workflow(filepath='../tests/test_data/230408_AR_exon1_Input.fasta', n=23)
 
 def test_GeneForCRISPR_class_empty_pos(): # 1 exon file positive control test
     # test empty gene.fasta file
-    gene_AR4 = GeneForCRISPR(filepath='../tests/test_data/230408_AR_empty_Input.fasta')
-    gene_AR4.parse_exons()
-    GeneForCRISPR_assert_exons(gene_AR4)
-    gene_AR4.find_all_guides(n=23)
-    GeneForCRISPR_assert_guides(gene_AR4)
+    workflow(filepath='../tests/test_data/230408_AR_empty_Input.fasta', n=23)
 
 ###
 
-def test_GeneForCRISPR_class_neg(): # negative control test
+def test_GeneForCRISPR_class_n_neg(): # negative control test
     # test n not an integer
     with pytest.raises(AssertionError): 
+        workflow(filepath='../tests/test_data/230408_AR_empty_Input.fasta', n='abc')
 
+def test_GeneForCRISPR_class_filepath_neg(): # negative control test
     # test wrong filepath
-
+    with pytest.raises(FileNotFoundError): 
+        workflow(filepath='tests/test_data/230408_AR_empty_Input.fasta', n='abc')
 
 
 
