@@ -6,9 +6,6 @@ Date: 230906
 This preprocessing includes separating intron and exons, and generating all possible guides of length n}
 """
 
-import sys
-
-sys.path.append('../helper') # relative path to helper directory
 from _genomic_ import complements
 from _genomic_ import rev_complement, complement
 

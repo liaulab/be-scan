@@ -6,10 +6,8 @@ Date: 230906
               PAM, availability of target residue in editing window, and annotating the guides}
 """
 
-import sys
 import pandas as pd
 
-sys.path.append('../helper') # relative path to helper directory
 from _genomic_ import DNA_AA_map, base_editing_key, bases, complements, cas_key
 from _genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM # DNA_to_AA
 

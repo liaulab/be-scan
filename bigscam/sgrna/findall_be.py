@@ -34,10 +34,10 @@ parser.add_argument('--output_prefix', type=str,
                     help='output prefix for the guides output file')
 parser.add_argument('--output_type', type=str,
                     help='output file type for the guides output file (default is .csv)')
-# parser.add_argument('--window', type=str,
-#                     help='the editing window inclusive entered as , default is 4 to 8')
-# parser.add_argument('--PAM', type=str,
-#                     help='a motif which is required for recognition of a guide, entering this overrides the cas_type argument')
+parser.add_argument('--window', nargs="+", type=int, 
+                    help='the editing window inclusive entered as 2 integers, default is 4 8')
+parser.add_argument('--PAM', type=str,
+                    help='a motif which is required for recognition of a guide, entering this overrides the cas_type argument')
 
 
 # parse arguments from command line
@@ -54,7 +54,14 @@ gene.find_all_guides(n=guide_len)
 print('Preprocessing sucessful')
 
 # sort guides based on PAM/cas type and editing mode first to identify all possible guides
-fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode)
+if args.PAM is None and args.window is None:
+    fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode)
+elif args.PAM is None and args.window is not None:
+    fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode, window=args.window)
+elif args.PAM is not None and args.window is None:
+    fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode, PAM=args.PAM)
+else: 
+    fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode, PAM=args.PAM, window=args.window)
 print('Identifying guides:', len(fwd_res)+len(rev_res), 'guides found')
 # using the preprocessing data to annotate which amino acid residues are mutated
 df = annotate_guides(args.protein_filepath, fwd_res, rev_res, mode)
