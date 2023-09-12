@@ -10,8 +10,8 @@ import re
 import pytest
 
 sys.path.append('../bigscam/helper') # relative path to helper directory from test directory
-from genomic import DNA_AA_map, base_editing_key, bases, complements, cas_key
-from genomic import rev_complement, complement, protein_to_AAseq, process_PAM, DNA_to_AA
+from _genomic_ import DNA_AA_map, base_editing_key, bases, complements, cas_key
+from _genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM, DNA_to_AA
 
 # unit tests for functions in helper/genomic.py
 

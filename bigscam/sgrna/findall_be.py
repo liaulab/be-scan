@@ -2,15 +2,15 @@
 Author: Calvin XiaoYang Hu
 Date: 230906
 
-{Description: primary workflow for }
+{Description: primary workflow for generating and annotating a set of base editing guides}
 """
 
 # imports
 import argparse # for parsing arguments from command line
 
 # importing functions
-from gene import GeneForCRISPR
-from base_editing_guides import identify_guides, annotate_guides
+from _gene_ import GeneForCRISPR
+from _BE_guides_ import identify_guides, annotate_guides
 
 
 parser = argparse.ArgumentParser(description='find all guides accessible for base editing')
@@ -28,12 +28,16 @@ parser.add_argument('protein_filepath', type=str,
 ## all optional arguments
 parser.add_argument('--guide_length', type=int,
                     help='length of the guide, default is 23')
+parser.add_argument('--output_dir', type=str,
+                    help='output directory for the guides output file')
 parser.add_argument('--output_prefix', type=str,
-                    help='output directory for the guide .csv file')
+                    help='output prefix for the guides output file')
+parser.add_argument('--output_type', type=str,
+                    help='output file type for the guides output file (default is .csv)')
 # parser.add_argument('--window', type=str,
 #                     help='the editing window inclusive entered as , default is 4 to 8')
-parser.add_argument('--PAM', type=str,
-                    help='a motif which is required for recognition of a guide, entering this overrides the cas_type argument')
+# parser.add_argument('--PAM', type=str,
+#                     help='a motif which is required for recognition of a guide, entering this overrides the cas_type argument')
 
 
 # parse arguments from command line
@@ -49,13 +53,26 @@ guide_len = 23 if (args.guide_length is None) else args.guide_length
 gene.find_all_guides(n=guide_len)
 print('Preprocessing sucessful')
 
+# sort guides based on PAM/cas type and editing mode first to identify all possible guides
 fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode)
-print('Identying guides:', len(fwd_res)+len(rev_res), 'guides found')
+print('Identifying guides:', len(fwd_res)+len(rev_res), 'guides found')
+# using the preprocessing data to annotate which amino acid residues are mutated
 df = annotate_guides(args.protein_filepath, fwd_res, rev_res, mode)
 print('Annotating guides successful')
-df.to_csv(args.output_prefix+'_'+args.cas_type+args.editing_mode+'_library.csv')
+
+# correctly format the output path and filetype of the dataframe and save
+if args.output_type is None: 
+    output_type = 'csv'
+    output_type = output_type.lower()
+else: 
+    output_type = args.output_type.lower()
+assert output_type in ['csv', 'tsv', 'dat', 'xls', 'xlsx', 'json']
+if args.output_dir is None: 
+    args.output_dir = ''
+if args.output_prefix is None: 
+    args.output_prefix = ''
+out_path = args.output_dir+args.output_prefix+'_'+args.cas_type+'_'+args.editing_mode+'_library.'+output_type
+df.to_csv(out_path)
 print('Successfully saved 0wO')
 
-# split up find_gRNAs into filter and annotate functions
-# add an option to change the output directory of the final .csv, add a prefix to the output filename
-# data type with ABE vs A to T
+# think about how we can reformat this data to account for every combination of edits that can be made with a single guide

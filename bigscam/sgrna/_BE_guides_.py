@@ -10,8 +10,8 @@ import sys
 import pandas as pd
 
 sys.path.append('../helper') # relative path to helper directory
-from genomic import DNA_AA_map, base_editing_key, bases, complements, cas_key
-from genomic import rev_complement, complement, protein_to_AAseq, process_PAM # DNA_to_AA
+from _genomic_ import DNA_AA_map, base_editing_key, bases, complements, cas_key
+from _genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM # DNA_to_AA
 
 def identify_guides(gene_object, cas_type, mode, PAM=None, window=[4,8]): 
     # Parameters
@@ -20,30 +20,35 @@ def identify_guides(gene_object, cas_type, mode, PAM=None, window=[4,8]):
     #    window: 4th to 8th bases inclusive by default, can be changed
     #    PAM: optional field to input a custom PAM
     #    Returns: a df of exon #, guides (23 bps), target (20 bps), fwd or rev
+
+    # process cas_type
+    if cas_type not in list(cas_key.keys()): 
+        raise Exception('Improper cas type input, the options are '+str(list(cas_key.keys())))
     
     # process mode
-    if mode in list(base_editing_key.keys()): 
-        mode = base_editing_key[mode]
-        assert len(mode) == 2
-    else: 
+    if mode not in list(base_editing_key.keys()): 
         raise Exception('Improper mode input, the options are '+str(list(base_editing_key.keys())))
+    edit = base_editing_key[mode]    
     
     # process PAM, PAM input overrides cas_type
     if PAM is None: 
         PAM = cas_key[cas_type]
     PAM_regex = process_PAM(PAM)
 
+    # process window
+    assert window[1] >= window[0] and window[0] >= 0 and window[1] <= len(gene_object.fwd_guides[0][0])
+
     # filter for PAM and contains editable base in window
     #    (seq, frame012 of first base, index of first base, exon number)
     fwd_results = [g.copy() for g in gene_object.fwd_guides if PAM_regex.match(g[0][-len(PAM):]) and 
-                                                    mode[0] in g[0][window[0]-1:window[1]]]
+                                                    edit[0] in g[0][window[0]-1:window[1]]]
 
     # filter for PAM and contains editable base in window 
     #    (seq, frame012 of last base, index of last base, exon number)
     rev_results = [g.copy() for g in gene_object.rev_guides if PAM_regex.match(g[0][-len(PAM):]) and 
-                                                    mode[0] in g[0][window[0]-1:window[1]]]
+                                                    edit[0] in g[0][window[0]-1:window[1]]]
 
-    return fwd_results, rev_results, mode
+    return fwd_results, rev_results, edit
 
 
 def annotate_guides(protein_filepath, fwd_guides, rev_guides, mode, window=[4,8]): 

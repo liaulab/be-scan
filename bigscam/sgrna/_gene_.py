@@ -9,8 +9,8 @@ This preprocessing includes separating intron and exons, and generating all poss
 import sys
 
 sys.path.append('../helper') # relative path to helper directory
-from genomic import complements
-from genomic import rev_complement, complement
+from _genomic_ import complements
+from _genomic_ import rev_complement, complement
 
 # this function is conditional on +-20 bps of introns flanking exons
 class GeneForCRISPR(): 

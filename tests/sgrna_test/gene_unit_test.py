@@ -9,7 +9,7 @@ import sys
 import pytest
 
 sys.path.append('../bigscam/sgrna') # relative path to helper directory from test directory
-from gene import GeneForCRISPR
+from _gene_ import GeneForCRISPR
 
 def GeneForCRISPR_assert_exons(gene_object): 
     assert isinstance(gene_object.file_content, str)
