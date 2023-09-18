@@ -16,28 +16,28 @@ from _BE_guides_ import identify_guides, annotate_guides
 parser = argparse.ArgumentParser(description='find all guides accessible for base editing')
 
 ## all required arguments
-parser.add_argument('gene_filepath', type=str,
+parser.add_argument('-g', '--gene_filepath', type=str,
                     help='gene sequence relative filepath to .fasta file')
-parser.add_argument('editing_mode', type=str,
+parser.add_argument('-be', '--editing_mode', type=str,
                     help='which base editor is used')
-parser.add_argument('cas_type', type=str,
+parser.add_argument('-c', '--cas_type', type=str,
                     help='which Cas9 (and associated PAM) is used')
-parser.add_argument('protein_filepath', type=str,
+parser.add_argument('-p', '--protein_filepath', type=str,
                     help='protein sequence relative filepath to .fasta file')
 
 ## all optional arguments
 parser.add_argument('--guide_length', type=int,
-                    help='length of the guide, default is 23')
+                    help='length of the guide, default is 23', default=23)
 parser.add_argument('--output_dir', type=str,
-                    help='output directory for the guides output file')
+                    help='output directory for the guides output file', default='')
 parser.add_argument('--output_prefix', type=str,
-                    help='output prefix for the guides output file')
+                    help='output prefix for the guides output file', default='')
 parser.add_argument('--output_type', type=str,
-                    help='output file type for the guides output file (default is .csv)')
+                    help='output file type for the guides output file', default='csv')
 parser.add_argument('--window', nargs="+", type=int, 
-                    help='the editing window inclusive entered as 2 integers, default is 4 8')
+                    help='the editing window inclusive entered as 2 integers, default is 4 8', default=[4, 8])
 parser.add_argument('--PAM', type=str,
-                    help='a motif which is required for recognition of a guide, entering this overrides the cas_type argument')
+                    help='a motif which is required for recognition of a guide, entering this overrides the cas_type argument', default=None)
 
 
 # parse arguments from command line
@@ -49,35 +49,19 @@ gene = GeneForCRISPR(filepath=args.gene_filepath)
 print('Create gene object from', args.gene_filepath)
 gene.parse_exons()
 print('Parsing exons:', len(gene.exons), 'exons found')
-guide_len = 23 if (args.guide_length is None) else args.guide_length
-gene.find_all_guides(n=guide_len)
+gene.find_all_guides(n=args.guide_length)
 print('Preprocessing sucessful')
 
 # sort guides based on PAM/cas type and editing mode first to identify all possible guides
-if args.PAM is None and args.window is None:
-    fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode)
-elif args.PAM is None and args.window is not None:
-    fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode, window=args.window)
-elif args.PAM is not None and args.window is None:
-    fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode, PAM=args.PAM)
-else: 
-    fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode, PAM=args.PAM, window=args.window)
+fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode, PAM=args.PAM, window=args.window)
 print('Identifying guides:', len(fwd_res)+len(rev_res), 'guides found')
 # using the preprocessing data to annotate which amino acid residues are mutated
 df = annotate_guides(args.protein_filepath, fwd_res, rev_res, mode)
 print('Annotating guides successful')
 
 # correctly format the output path and filetype of the dataframe and save
-if args.output_type is None: 
-    output_type = 'csv'
-    output_type = output_type.lower()
-else: 
-    output_type = args.output_type.lower()
+output_type = args.output_type.lower()
 assert output_type in ['csv', 'tsv', 'dat', 'xls', 'xlsx', 'json']
-if args.output_dir is None: 
-    args.output_dir = ''
-if args.output_prefix is None: 
-    args.output_prefix = ''
 out_path = args.output_dir+args.output_prefix+'_'+args.cas_type+'_'+args.editing_mode+'_library.'+output_type
 df.to_csv(out_path)
 print('Successfully saved 0wO')
