@@ -20,7 +20,6 @@ import seaborn as sns
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-from Bio import SeqIO
 import gzip
 
 #%% count_reads() - count sgRNA reads in FASTQ (adapted from count_spacers)
@@ -76,7 +75,7 @@ def count_reads(in_fastq, in_ref, KEY_INTERVAL=(10,80),
     if in_fastq.endswith('.gz'):
         handle = gzip.open(in_fastq, 'rt')
     else:
-        handle = open(in_fastq)
+        handle = open(in_fastq, 'rt')
 
     # STEP 1B: SET UP VARIABLES FOR SCRIPT
     # make dictionary to hold sgRNA counts - sgRNA_seq, count as k,v
@@ -90,10 +89,16 @@ def count_reads(in_fastq, in_ref, KEY_INTERVAL=(10,80),
     KEY_START, KEY_END = KEY_INTERVAL[0], KEY_INTERVAL[1] # set the key interval
 
     # STEP 2: PROCESS FASTQ FILE READS AND ADD COUNTS TO DICT
-    readiter = SeqIO.parse(handle, 'fastq') # process reads in fastq file
-    for record in readiter: # contains the seq and Qscore etc.
+    while True: # contains the seq and Qscore etc.
+        read = handle.readline()
+        if not read: # end of file
+            break
+        elif read.startswith("@"): # if line is a read header
+            read = handle.readline() # next line is the actual sequence
+        else:
+            continue
         num_reads += 1
-        read_sequence = str.upper(str(record.seq))
+        read_sequence = str.upper(str(read))
         key_region = read_sequence[KEY_START:KEY_END]
         key_index = key_region.find(KEY)
         key_rev_index = key_region.find(KEY_REV)
