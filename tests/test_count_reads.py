@@ -21,7 +21,11 @@ def test_count_reads():
 
 @pytest.mark.parametrize("query,ref,match", [
     ("G" + "A" * 20, "A" * 20, True),
-    ("G" + "T" * 20, "A" * 20, False)])
+    ("G" + "T" * 20, "A" * 20, False),
+    ("A" * 20, "A" * 20, True),
+    ("G" * 20, "G" * 20, True),
+    ("G" * 21, "G" * 20, True),
+    ])
 def test_matching(query, ref, match):
     try:
         # create fake files

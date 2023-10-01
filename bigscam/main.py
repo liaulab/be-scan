@@ -14,12 +14,12 @@ def main():
     parser_count_reads.add_argument('in_fastq', type=str)
     parser_count_reads.add_argument('in_ref', type=str)
     parser_count_reads.add_argument('--KEY_INTERVAL', type=int, nargs=2, default=signature_count_reads.parameters['KEY_INTERVAL'].default)
-    parser_count_reads.add_argument('--DIR', choices=["FWD", "REV"], default=signature_count_reads.parameters['DIR'].default)
     parser_count_reads.add_argument('--KEY', type=str, default=signature_count_reads.parameters['KEY'].default)
     parser_count_reads.add_argument('--KEY_REV', type=str, default=signature_count_reads.parameters['KEY_REV'].default)
     parser_count_reads.add_argument('--out_counts', type=str, default=signature_count_reads.parameters['out_counts'].default)
     parser_count_reads.add_argument('--out_np', type=str, default=signature_count_reads.parameters['out_np'].default)
     parser_count_reads.add_argument('--out_stats', type=str, default=signature_count_reads.parameters['out_stats'].default)
+    parser_count_reads.add_argument('--dont_trim_G', action='store_true')
     parser_count_reads.set_defaults(func=count_reads)
 
     args = parser.parse_args()
