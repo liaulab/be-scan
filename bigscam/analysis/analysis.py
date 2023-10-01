@@ -21,6 +21,7 @@ import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from Bio import SeqIO
+import gzip
 
 #%% count_reads() - count sgRNA reads in FASTQ (adapted from count_spacers)
 
@@ -73,11 +74,10 @@ def count_reads(in_fastq, in_ref, KEY_INTERVAL=(10,80), DIR='FWD',
         list_miss = [col for col in list_headcols if col not in df_ref.columns.tolist()]
         warnings.warn('Warning! in_ref is missing column(s) for downstream functions: ' + str(list_miss))
     # try opening input FASTQ, raise Exception if not possible
-    try:
+    if in_fastq.endswith('.gz'):
+        handle = gzip.open(in_fastq, 'rt')
+    else:
         handle = open(in_fastq)
-    except:
-        print('Error! Could not open the FASTQ file: %s' % in_fastq)
-        return
 
     # STEP 1B: SET UP VARIABLES FOR SCRIPT
     # make dictionary to hold sgRNA counts - sgRNA_seq, count as k,v
