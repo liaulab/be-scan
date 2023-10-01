@@ -26,5 +26,10 @@ dependencies = [
   "biopython"
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest"
+]
+
 [project.urls]
 "Homepage" = "https://github.com/liaulab/bigscam"

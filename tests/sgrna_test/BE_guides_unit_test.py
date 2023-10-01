@@ -4,12 +4,10 @@ Date: 230911
 
 {Description: suit of unit tests for testing functions in bigscam/bigscam/sgrna/base_editing_guides}
 """
-import sys
 import pytest
 
-sys.path.append('../bigscam/sgrna') # relative path to helper directory from test directory
-from _gene_ import GeneForCRISPR
-from _BE_guides_ import identify_guides
+from bigscam.sgrna._gene_ import GeneForCRISPR
+from bigscam.sgrna._BE_guides_ import identify_guides
 
 # exhaustive testing of identify_guides function
 #   mode: ABE, CBE, CGBE, GCBE, GTBE
@@ -17,7 +15,7 @@ from _BE_guides_ import identify_guides
 #   window [i, i+n]: [4,8], [4,7], [3,9], [6,6]
 #   PAMs: 'NGG', 'NGN', 'NNN', 'NRN', 'NYN'
 def test_identify_guides_basic_pos(): 
-    gene_AR = GeneForCRISPR(filepath='../tests/test_data/230408_AR_Input.fasta')
+    gene_AR = GeneForCRISPR(filepath='tests/test_data/230408_AR_Input.fasta')
     gene_AR.parse_exons()
     gene_AR.find_all_guides(n=23)
 
@@ -33,7 +31,7 @@ def test_identify_guides_basic_pos():
 
 # window out of range
 def test_identify_guides_window_range_neg(): 
-    gene_AR = GeneForCRISPR(filepath='../tests/test_data/230408_AR_Input.fasta')
+    gene_AR = GeneForCRISPR(filepath='tests/test_data/230408_AR_Input.fasta')
     gene_AR.parse_exons()
     gene_AR.find_all_guides(n=23)
     with pytest.raises(AssertionError): 
@@ -42,7 +40,7 @@ def test_identify_guides_window_range_neg():
     
 # window negative numbers
 def test_identify_guides_window_negative_neg(): 
-    gene_AR = GeneForCRISPR(filepath='../tests/test_data/230408_AR_Input.fasta')
+    gene_AR = GeneForCRISPR(filepath='tests/test_data/230408_AR_Input.fasta')
     gene_AR.parse_exons()
     gene_AR.find_all_guides(n=23)
     with pytest.raises(AssertionError): 
@@ -51,7 +49,7 @@ def test_identify_guides_window_negative_neg():
 
 # cas_type invalid
 def test_identify_guides_cas_neg(): 
-    gene_AR = GeneForCRISPR(filepath='../tests/test_data/230408_AR_Input.fasta')
+    gene_AR = GeneForCRISPR(filepath='tests/test_data/230408_AR_Input.fasta')
     gene_AR.parse_exons()
     gene_AR.find_all_guides(n=23)
     with pytest.raises(Exception): 
@@ -60,7 +58,7 @@ def test_identify_guides_cas_neg():
 
 # mode invalid
 def test_identify_guides_basic_neg(): 
-    gene_AR = GeneForCRISPR(filepath='../tests/test_data/230408_AR_Input.fasta')
+    gene_AR = GeneForCRISPR(filepath='tests/test_data/230408_AR_Input.fasta')
     gene_AR.parse_exons()
     gene_AR.find_all_guides(n=23)
     with pytest.raises(Exception): 
@@ -70,7 +68,7 @@ def test_identify_guides_basic_neg():
 
 # pam invalid
 def test_identify_guides_pam_neg(): 
-    gene_AR = GeneForCRISPR(filepath='../tests/test_data/230408_AR_Input.fasta')
+    gene_AR = GeneForCRISPR(filepath='tests/test_data/230408_AR_Input.fasta')
     gene_AR.parse_exons()
     gene_AR.find_all_guides(n=23)
     with pytest.raises(AssertionError): 

@@ -5,11 +5,9 @@ Date: 230908
 {Description: suit of unit tests for testing functions in bigscam/bigscam/sgrna/gene focus is the GeneForCRISPR object}
 """
 
-import sys
 import pytest
 
-sys.path.append('../bigscam/sgrna') # relative path to helper directory from test directory
-from _gene_ import GeneForCRISPR
+from bigscam.sgrna._gene_ import GeneForCRISPR
 
 def GeneForCRISPR_assert_exons(gene_object): 
     assert isinstance(gene_object.file_content, str)
@@ -35,31 +33,31 @@ def workflow(filepath, n):
 
 def test_GeneForCRISPR_class_base_pos(): # base positive control test
     # test base case
-    workflow(filepath='../tests/test_data/230408_AR_Input.fasta', n=23)
+    workflow(filepath='tests/test_data/230408_AR_Input.fasta', n=23)
 
 def test_GeneForCRISPR_class_n_pos(): # change n positive control test
     # test n != 23
-    workflow(filepath='../tests/test_data/230408_AR_Input.fasta', n=25)
+    workflow(filepath='tests/test_data/230408_AR_Input.fasta', n=25)
 
 def test_GeneForCRISPR_class_exon_pos(): # 1 exon file positive control test
     # test 1 exon file
-    workflow(filepath='../tests/test_data/230408_AR_exon1_Input.fasta', n=23)
+    workflow(filepath='tests/test_data/230408_AR_exon1_Input.fasta', n=23)
 
 def test_GeneForCRISPR_class_empty_pos(): # 1 exon file positive control test
     # test empty gene.fasta file
-    workflow(filepath='../tests/test_data/230408_AR_empty_Input.fasta', n=23)
+    workflow(filepath='tests/test_data/230408_AR_empty_Input.fasta', n=23)
 
 ###
 
 def test_GeneForCRISPR_class_n_neg(): # negative control test
     # test n not an integer
     with pytest.raises(AssertionError): 
-        workflow(filepath='../tests/test_data/230408_AR_empty_Input.fasta', n='abc')
+        workflow(filepath='tests/test_data/230408_AR_empty_Input.fasta', n='abc')
 
 def test_GeneForCRISPR_class_filepath_neg(): # negative control test
     # test wrong filepath
     with pytest.raises(FileNotFoundError): 
-        workflow(filepath='tests/test_data/230408_AR_empty_Input.fasta', n='abc')
+        workflow(filepath='tests/test_data/nonexistent_file.fasta', n='abc')
 
 
 
