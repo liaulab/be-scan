@@ -28,3 +28,6 @@ dependencies = [
 
 [project.urls]
 "Homepage" = "https://github.com/liaulab/bigscam"
+
+[project.scripts]
+bigscam = "bigscam.main:main"
