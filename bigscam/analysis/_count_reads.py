@@ -20,13 +20,13 @@ import seaborn as sns
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-from Bio import SeqIO
+import gzip
 
 #%% count_reads() - count sgRNA reads in FASTQ (adapted from count_spacers)
 
-def count_reads(in_fastq, in_ref, KEY_INTERVAL=(10,80), DIR='FWD',
-                KEY='CGAAACACCG', KEY_REV='GTTTTAGA', out_counts='counts.csv',
-                out_np='np_counts.csv', out_stats='stats.txt'):
+def count_reads(in_fastq, in_ref, KEY_INTERVAL=(10,80),
+                KEY='CGAAACACC', KEY_REV='GTTTTAGA', out_counts='counts.csv',
+                out_np='np_counts.csv', out_stats='stats.txt', dont_trim_G=False):
     """
     Count the reads in a FASTQ file and assign them to a reference sgRNA set.
 
@@ -45,21 +45,20 @@ def count_reads(in_fastq, in_ref, KEY_INTERVAL=(10,80), DIR='FWD',
     KEY_INTERVAL : tuple, default (10,80)
         Tuple of (KEY_START, KEY_END) that defines the KEY_REGION. Denotes the
         substring within the read to search for the KEY.
-    KEY : str, default 'CGAAACACCG'
-        Upstream sequence that identifies the position of the sgRNA when used
-        with DIR='FWD'. The default is the end of the hU6 promoter.
+    KEY : str, default 'CGAAACACC'
+        Upstream sequence that identifies the position of the sgRNA. The default
+        is the end of the hU6 promoter.
     KEY_REV : str, default 'GTTTTAGA'
-        Downstream sequence that identifies the position of the sgRNA when used
-        with DIR='REV'. The default is the start of the sgRNA scaffold sequence.
-    DIR : {'FWD', 'REV'}, default 'FWD'
-        The direction to identify the position of the sgRNA relative to the
-        KEY sequence. 'FWD' is upstream of sgRNA, 'REV' is downstream of sgRNA.
+        Downstream sequence that identifies the position of the sgRNA. The
+        default is the start of the sgRNA scaffold sequence.
     out_counts : str or path, default 'counts.csv'
         String or path for the output csv file with perfect sgRNA matches.
     out_np : str or path, default 'np_counts.csv'
         String or path for the output csv file with non-perfect sgRNA matches.
     out_stats : str or path, default 'stats.txt'
         String or path for the output txt file with the read counting statistics.
+    dont_trim_G : bool, default False
+        Whether to trim the first G from the sgRNA sequence to make it 20 bp.
     """
 
     # STEP 1A: OPEN INPUT FILES FOR PROCESSING, CHECK FOR REQUIRED FORMATTING
@@ -73,11 +72,10 @@ def count_reads(in_fastq, in_ref, KEY_INTERVAL=(10,80), DIR='FWD',
         list_miss = [col for col in list_headcols if col not in df_ref.columns.tolist()]
         warnings.warn('Warning! in_ref is missing column(s) for downstream functions: ' + str(list_miss))
     # try opening input FASTQ, raise Exception if not possible
-    try:
-        handle = open(in_fastq)
-    except:
-        print('Error! Could not open the FASTQ file: %s' % in_fastq)
-        return
+    if in_fastq.endswith('.gz'):
+        handle = gzip.open(in_fastq, 'rt')
+    else:
+        handle = open(in_fastq, 'rt')
 
     # STEP 1B: SET UP VARIABLES FOR SCRIPT
     # make dictionary to hold sgRNA counts - sgRNA_seq, count as k,v
@@ -87,48 +85,41 @@ def count_reads(in_fastq, in_ref, KEY_INTERVAL=(10,80), DIR='FWD',
     num_perfect_matches = 0 # count of reads with a perfect match to library
     num_np_matches = 0 # count of reads without a perfect match to library
     num_nokey = 0 # count of reads where key was not found
+    num_badlength = 0 # count of sgRNA reads that aren't 20bp
     KEY_START, KEY_END = KEY_INTERVAL[0], KEY_INTERVAL[1] # set the key interval
 
     # STEP 2: PROCESS FASTQ FILE READS AND ADD COUNTS TO DICT
-    readiter = SeqIO.parse(handle, 'fastq') # process reads in fastq file
-    # find sgRNA using FORWARD direction (default)
-    if DIR == 'FWD':
-        for record in readiter: # contains the seq and Qscore etc.
-            num_reads += 1
-            read_sequence = str.upper(str(record.seq))
-            key_region = read_sequence[KEY_START:KEY_END]
-            key_index = key_region.find(KEY)
-            if key_index >= 0: # if key found
-                start_index = key_index + KEY_START + len(KEY)
-                guide = read_sequence[start_index:(start_index + 20)]
-                if guide in dict_perfects:
-                    dict_perfects[guide] += 1
-                    num_perfect_matches += 1
-                else:
-                    num_np_matches += 1
-                    list_np.append(guide)
-            else:
-                num_nokey += 1
-    # find sgRNA using REVERSE direction
-    elif DIR == 'REV':
-        for record in readiter: # contains the seq and Qscore etc.
-            num_reads += 1
-            read_sequence = str.upper(str(record.seq))
-            key_region = read_sequence[KEY_START:KEY_END]
-            key_index = key_region.find(KEY_REV)
-            if key_index >= 0: # if key found
-                start_index = key_index + KEY_START
-                guide = read_sequence[(start_index - 20):(start_index)]
-                if guide in dict_perfects:
-                    dict_perfects[guide] += 1
-                    num_perfect_matches += 1
-                else:
-                    num_np_matches += 1
-                    list_np.append(guide)
-            else:
-                num_nokey += 1
-    else:
-        raise Exception('ERROR! Specified direction is not valid')
+    while True: # contains the seq and Qscore etc.
+        read = handle.readline()
+        if not read: # end of file
+            break
+        elif read.startswith("@"): # if line is a read header
+            read = handle.readline() # next line is the actual sequence
+        else:
+            continue
+        num_reads += 1
+        read_sequence = str.upper(str(read))
+        key_region = read_sequence[KEY_START:KEY_END]
+        key_index = key_region.find(KEY)
+        key_rev_index = key_region.find(KEY_REV)
+        if key_index < 0 or key_rev_index <= key_index: # if keys not found
+            num_nokey += 1
+            continue
+        start_index = key_index + KEY_START + len(KEY)
+        end_index = key_rev_index + KEY_START
+        guide = read_sequence[start_index:end_index]
+        if not dont_trim_G:
+            if guide.startswith('G') and len(guide) == 21:
+                guide = guide[1:]
+        if len(guide) != 20:
+            num_badlength += 1
+            continue
+        if guide in dict_perfects:
+            dict_perfects[guide] += 1
+            num_perfect_matches += 1
+        else:
+            num_np_matches += 1
+            list_np.append(guide)
     handle.close()
 
     # STEP 3: SORT DICTIONARIES AND GENERATE OUTPUT FILES
@@ -166,6 +157,7 @@ def count_reads(in_fastq, in_ref, KEY_INTERVAL=(10,80), DIR='FWD',
     with open(out_stats, 'w') as statfile:
         statfile.write('Number of reads processed: ' + str(num_reads) + '\n')
         statfile.write('Number of reads where key was not found: ' + str(num_nokey) + '\n')
+        statfile.write('Number of reads where length was not 20bp: ' + str(num_badlength) + '\n')
         statfile.write('Number of perfect guide matches: ' + str(num_perfect_matches) + '\n')
         statfile.write('Number of nonperfect guide matches: ' + str(num_np_matches) + '\n')
         statfile.write('Number of undetected guides: ' + str(guides_no_reads) + '\n')
@@ -443,7 +435,7 @@ def batch_count(in_batch, in_ref, dir_fastq='', dir_counts='', dir_np='',
     **kwargs : key, value mappings in format x=y
         All other keyword arguments are passed to count_reads(). See the
         count_reads() documentation for more information. Other kwargs include:
-        KEY_INTERVAL, DIR, KEY, KEY_REV.
+        KEY_INTERVAL, KEY, KEY_REV, dont_trim_G.
     """
 
     batch_st = time.perf_counter()
