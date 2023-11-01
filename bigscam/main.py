@@ -22,6 +22,22 @@ def main():
     parser_count_reads.add_argument('--dont_trim_G', action='store_true')
     parser_count_reads.set_defaults(func=count_reads)
 
+    from .analysis import validate_cloning
+    signature_validate_cloning = inspect.signature(validate_cloning)
+    parser_validate_cloning = subparsers.add_parser('validate_cloning',
+                                                    help=next(line for line in validate_cloning.__doc__.splitlines() if line),
+                                                    description=validate_cloning.__doc__,
+                                                    formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser_validate_cloning.add_argument('query_dir', type=str)
+    parser_validate_cloning.add_argument('spacers', type=str)
+    parser_validate_cloning.add_argument('vector', type=str)
+    parser_validate_cloning.add_argument('out_csv', type=str, help="Output CSV file name")
+    parser_validate_cloning.add_argument('--enzyme', type=str, default="Esp3I", help="Default: %(default)s")
+    parser_validate_cloning.add_argument('--overhangs', type=str, default=('CACC', 'GTTT'), nargs=2, help="Default: %(default)s")
+    parser_validate_cloning.add_argument('--ref_name_pattern', type=str, default=signature_validate_cloning.parameters['ref_name_pattern'].default, help="Default: %(default)s")
+    parser_validate_cloning.add_argument('--flank_width', type=int, default=signature_validate_cloning.parameters['flank_width'].default, help="Default: %(default)s")
+    parser_validate_cloning.set_defaults(func=validate_cloning)
+
     args = parser.parse_args()
     function = args.func
     function_args = vars(args)
