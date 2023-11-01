@@ -15,7 +15,7 @@ parser.add_argument('-f', '--fastq', type=str, dest='in_fastq',
 parser.add_argument('-i', '--input', type=str, dest='in_lib',
                     help='input file name')
 parser.add_argument('-o', '--output_save', type=str, dest='out',
-                    help='output file name, if no parameters are given, the file will not be saved', default=None)
+                    help='output file name, if no parameters are given the file will not be saved', default=None)
                     
 args = parser.parse_args()
 results = count_spacers_fwd(args.in_fastq, args.in_lib, args.out)
