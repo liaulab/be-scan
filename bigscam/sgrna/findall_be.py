@@ -9,20 +9,20 @@ Date: 230906
 import argparse # for parsing arguments from command line
 
 # importing functions
-from ._gene_ import GeneForCRISPR
-from ._BE_guides_ import identify_guides, annotate_guides
+from _gene_ import GeneForCRISPR
+from _BE_guides_ import identify_BE_guides, annotate_BE_guides
 
 
 parser = argparse.ArgumentParser(description='find all guides accessible for base editing')
 
 ## all required arguments
-parser.add_argument('gene_filepath', type=str,
+parser.add_argument('-g', '--gene_filepath', type=str,
                     help='gene sequence relative filepath to .fasta file')
-parser.add_argument('editing_mode', type=str,
+parser.add_argument('-be', '--editing_mode', type=str,
                     help='which base editor is used')
-parser.add_argument('cas_type', type=str,
+parser.add_argument('-c', '--cas_type', type=str,
                     help='which Cas9 (and associated PAM) is used')
-parser.add_argument('protein_filepath', type=str,
+parser.add_argument('-p', '--protein_filepath', type=str,
                     help='protein sequence relative filepath to .fasta file')
 
 ## all optional arguments
@@ -49,22 +49,21 @@ gene = GeneForCRISPR(filepath=args.gene_filepath)
 print('Create gene object from', args.gene_filepath)
 gene.parse_exons()
 print('Parsing exons:', len(gene.exons), 'exons found')
-guide_len = 23 if (args.guide_length is None) else args.guide_length
-gene.find_all_guides(n=guide_len)
+gene.find_all_guides()
 print('Preprocessing sucessful')
 
 # sort guides based on PAM/cas type and editing mode first to identify all possible guides
 if args.PAM is None and args.window is None:
-    fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode)
+    fwd_res, rev_res, mode = identify_BE_guides(gene, args.cas_type, args.editing_mode)
 elif args.PAM is None and args.window is not None:
-    fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode, window=args.window)
+    fwd_res, rev_res, mode = identify_BE_guides(gene, args.cas_type, args.editing_mode, window=args.window)
 elif args.PAM is not None and args.window is None:
-    fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode, PAM=args.PAM)
+    fwd_res, rev_res, mode = identify_BE_guides(gene, args.cas_type, args.editing_mode, PAM=args.PAM)
 else: 
-    fwd_res, rev_res, mode = identify_guides(gene, args.cas_type, args.editing_mode, PAM=args.PAM, window=args.window)
+    fwd_res, rev_res, mode = identify_BE_guides(gene, args.cas_type, args.editing_mode, PAM=args.PAM, window=args.window)
 print('Identifying guides:', len(fwd_res)+len(rev_res), 'guides found')
 # using the preprocessing data to annotate which amino acid residues are mutated
-df = annotate_guides(args.protein_filepath, fwd_res, rev_res, mode)
+df = annotate_BE_guides(args.protein_filepath, fwd_res, rev_res, mode)
 print('Annotating guides successful')
 
 # correctly format the output path and filetype of the dataframe and save

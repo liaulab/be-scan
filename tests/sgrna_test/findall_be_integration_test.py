@@ -39,4 +39,3 @@ def test_findall_BE_opt_guide_length_integration_pos():
 
 
 # add negative control tests, but don't know how since os.system commands aren't caught when it errors other than with reading the results from "pytest -s"
-# guide length can't be 25 but can be 26, error only shows up when it is checking amino acid mutations so wasn't caught by unit tests

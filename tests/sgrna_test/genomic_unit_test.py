@@ -8,7 +8,7 @@ Date: 230907
 import re
 import pytest
 
-from bigscam.sgrna._genomic_ import DNA_AA_map, base_editing_key, bases, complements, cas_key
+from bigscam.sgrna._genomic_ import base_editing_key, bases, complements, cas_key
 from bigscam.sgrna._genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM, DNA_to_AA
 
 # unit tests for functions in helper/genomic.py
@@ -48,10 +48,12 @@ def test_process_PAM_neg(): # negative control test
         assert process_PAM(1) == re.compile('([acgtACGT]{1}[acgtACGT]{1}[acgtACGT]{1})')
 
 def test_protein_to_AAseq_pos(): # positive control test
-    pass
+    protein_seq = protein_to_AAseq(filename='tests/test_data/P10275.fasta')
+    assert len(protein_seq) == 921
 
 def test_protein_to_AAseq_neg(): # negative control test
-    pass
+    protein_seq = protein_to_AAseq(filename='tests/test_data/P10275_changed.fasta')
+    assert len(protein_seq) == 360
 
 def test_DNA_to_AA_pos(): # positive control test
     assert DNA_to_AA('TTTAAACCCGGG') == 'FKPG'
