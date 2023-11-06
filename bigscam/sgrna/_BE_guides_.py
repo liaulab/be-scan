@@ -8,7 +8,7 @@ Date: 230906
 
 import pandas as pd
 
-from ._genomic_ import base_editing_key, bases, complements, cas_key
+from ._genomic_ import bases, complements, cas_key
 from ._genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM, make_mutations
 from ._guides_ import filter_guide, filter_repeats
 from ._aminoacid_ import find_aa_edits_fwd, find_aa_edits_rev
@@ -16,10 +16,11 @@ from ._aminoacid_ import find_aa_edits_fwd, find_aa_edits_rev
 
 # this is the main function for taking in a gene object with all possible guides,
 # then filtering based on given criteria
-def identify_BE_guides(gene_object, cas_type, mode, PAM=None, window=[4,8]): 
+def identify_BE_guides(gene_object, cas_type, edit_from, edit_to, PAM=None, window=[4,8]): 
     # Parameters
-    #    mode: can be CBE or ABE
     #    cas_type: Sp, SpG, SpRY, etc
+    #    edit_from: the base (ACTG) to be replaced
+    #    edit_to: the base (ACTG) to replace with
     #    window: editing window, 4th to 8th bases inclusive by default
     #    PAM: optional field to input a custom PAM
     #    Returns: a df of exon #, guides (23 bps), target (20 bps), fwd or rev
@@ -29,10 +30,8 @@ def identify_BE_guides(gene_object, cas_type, mode, PAM=None, window=[4,8]):
     if cas_type not in list(cas_key.keys()): 
         raise Exception('Improper cas type input, the options are '+str(list(cas_key.keys())))
     
-    # process mode
-    if mode not in list(base_editing_key.keys()): 
-        raise Exception('Improper mode input, the options are '+str(list(base_editing_key.keys())))
-    edit = base_editing_key[mode]    
+    assert edit_from in bases and edit_to in bases
+    edit = edit_from, edit_to
     
     # process PAM, PAM input overrides cas_type
     if PAM is None: 
@@ -63,12 +62,13 @@ def identify_BE_guides(gene_object, cas_type, mode, PAM=None, window=[4,8]):
 
 # this is the main function for taking in lists of guides, 
 # then annotating all their predicted edits
-def annotate_BE_guides(protein_filepath, fwd_guides, rev_guides, mode, window=[4,8]): 
+def annotate_BE_guides(protein_filepath, fwd_guides, rev_guides, edit_from, edit_to, window=[4,8]): 
     ### ADD DOCS
     # Parameters
     #    protein_filepath: filepath to an amino acid sequence corresponding to gene file
     #    fwd_guides, rev_guides: generated from identify_guides
-    #    mode: can be CBE or ABE
+    #    edit_from: the base (ACTG) to be replaced
+    #    edit_to: the base (ACTG) to replace with
     #    window: editing window, 4th to 8th bases inclusive by default
     # outputs: a dataframe
     
@@ -82,7 +82,7 @@ def annotate_BE_guides(protein_filepath, fwd_guides, rev_guides, mode, window=[4
         # mutates all residues according to the mode, every combination of residue mutations
         original = g[0][:12] # a string
         guide_window = g[0][window[0]-1:window[1]] # a string
-        mutateds = [g[0][:window[0]-1] + m + g[0][window[1]:12] for m in make_mutations(guide_window, mode)] # list of strings 
+        mutateds = [g[0][:window[0]-1] + m + g[0][window[1]:12] for m in make_mutations(guide_window, edit_from, edit_to)] # list of strings 
 
         # compares the residues to find which amino acids were altered and catalogs them
         edits, edit_inds = [], [] # lists of lists, of all edits for all possible mutations
@@ -101,7 +101,7 @@ def annotate_BE_guides(protein_filepath, fwd_guides, rev_guides, mode, window=[4
         # mutates all residues according to the mode, every combination of residue mutations
         original = g[0][:12] # a string
         guide_window = g[0][window[0]-1:window[1]] # a string
-        mutateds = [g[0][:window[0]-1] + m + g[0][window[1]:12] for m in make_mutations(guide_window, mode)] # a list of strings
+        mutateds = [g[0][:window[0]-1] + m + g[0][window[1]:12] for m in make_mutations(guide_window, edit_from, edit_to)] # a list of strings
 
         # compares the residues to find which amino acids were altered and catalogs them
         edits, edit_inds = [], [] # lists of lists, of all edits for all possible mutations

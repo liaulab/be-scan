@@ -33,13 +33,6 @@ bases = 'ACGT'
 complements = {'A':'T', 'T':'A', 'G':'C', 'C':'G', 
                    'a':'t', 't':'a', 'g':'c', 'c':'g'}
 
-# name of a base editor with their corresponding edit made
-base_editing_key = {"CBE": ["C", "T"], 
-                    "ABE": ["A", "G"],
-                    "CGBE": ["C", "G"],
-                    "GCBE": ["G", "C"],
-                    "GTBE": ["G", "T"], 
-                    }
 ### add functionality for dual base editos and for R or Y
 
 # name of cas protein with their associated PAM
@@ -109,15 +102,15 @@ def process_PAM(PAM):
     PAM = PAM.replace("N", "[acgtACGT]{1}")
     return re.compile("({})".format(PAM))
 
-def make_mutations(guide_window, mode):
+def make_mutations(guide_window, edit_from, edit_to):
     mutated = []
     # Convert input string into a list so we can easily substitute letters
     seq = list(guide_window)
     # Find indices of key letters in seq
-    indices = [ i for i, c in enumerate(seq) if c in mode[0]]
+    indices = [ i for i, c in enumerate(seq) if c in edit_from]
 
     # Generate key letter combinations & place them into the list
-    for t in product(mode[0]+mode[1], repeat=len(indices)):
+    for t in product(edit_from+edit_to, repeat=len(indices)):
         for i, c in zip(indices, t):
             seq[i] = c
         mutated.append(''.join(seq))
