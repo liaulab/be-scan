@@ -18,8 +18,10 @@ parser = argparse.ArgumentParser(description='find all guides accessible for bas
 ## all required arguments
 parser.add_argument('-g', '--gene_filepath', type=str,
                     help='gene sequence relative filepath to .fasta file')
-parser.add_argument('-be', '--editing_mode', type=str,
-                    help='which base editor is used')
+parser.add_argument('-e1', '--edit_from', type=str,
+                    help='base to be edited')
+parser.add_argument('-e2', '--edit_to', type=str,
+                    help='base to edit to')
 parser.add_argument('-c', '--cas_type', type=str,
                     help='which Cas9 (and associated PAM) is used')
 parser.add_argument('-p', '--protein_filepath', type=str,
@@ -54,16 +56,16 @@ print('Preprocessing sucessful')
 
 # sort guides based on PAM/cas type and editing mode first to identify all possible guides
 if args.PAM is None and args.window is None:
-    fwd_res, rev_res, mode = identify_BE_guides(gene, args.cas_type, args.editing_mode)
+    fwd_res, rev_res, mode = identify_BE_guides(gene, args.cas_type, args.edit_from, args.edit_to)
 elif args.PAM is None and args.window is not None:
-    fwd_res, rev_res, mode = identify_BE_guides(gene, args.cas_type, args.editing_mode, window=args.window)
+    fwd_res, rev_res, mode = identify_BE_guides(gene, args.cas_type, args.edit_from, args.edit_to, window=args.window)
 elif args.PAM is not None and args.window is None:
-    fwd_res, rev_res, mode = identify_BE_guides(gene, args.cas_type, args.editing_mode, PAM=args.PAM)
+    fwd_res, rev_res, mode = identify_BE_guides(gene, args.cas_type, args.edit_from, args.edit_to, PAM=args.PAM)
 else: 
-    fwd_res, rev_res, mode = identify_BE_guides(gene, args.cas_type, args.editing_mode, PAM=args.PAM, window=args.window)
+    fwd_res, rev_res, mode = identify_BE_guides(gene, args.cas_type, args.edit_from, args.edit_to, PAM=args.PAM, window=args.window)
 print('Identifying guides:', len(fwd_res)+len(rev_res), 'guides found')
 # using the preprocessing data to annotate which amino acid residues are mutated
-df = annotate_BE_guides(args.protein_filepath, fwd_res, rev_res, mode)
+df = annotate_BE_guides(args.protein_filepath, fwd_res, rev_res, *mode)
 print('Annotating guides successful')
 
 # correctly format the output path and filetype of the dataframe and save
@@ -77,7 +79,7 @@ if args.output_dir is None:
     args.output_dir = ''
 if args.output_prefix is None: 
     args.output_prefix = ''
-out_path = args.output_dir+args.output_prefix+'_'+args.cas_type+'_'+args.editing_mode+'_library.'+output_type
+out_path = args.output_dir+args.output_prefix+'_'+args.cas_type+'_'+args.edit_from+'to'+args.edit_to+'_library.'+output_type
 df.to_csv(out_path)
 print('Successfully saved 0wO')
 
