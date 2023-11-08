@@ -38,8 +38,16 @@ def main():
     parser_validate_cloning.add_argument('--flank_width', type=int, default=signature_validate_cloning.parameters['flank_width'].default, help="Default: %(default)s")
     parser_validate_cloning.set_defaults(func=validate_cloning)
 
+    from .sgrna.findall_be import add_parser_args, main as findall_be_main
+    parser_findall_be = subparsers.add_parser("findall_be", description='find all guides accessible for base editing')
+    parser_findall_be = add_parser_args(parser_findall_be)
+    parser_findall_be.set_defaults(func=findall_be_main)
+
     args = parser.parse_args()
-    function = args.func
-    function_args = vars(args)
-    del function_args['func']
-    function(**function_args)
+    if args.func == findall_be_main:
+        findall_be_main(args)
+    else:
+        function = args.func
+        function_args = vars(args)
+        del function_args['func']
+        function(**function_args)

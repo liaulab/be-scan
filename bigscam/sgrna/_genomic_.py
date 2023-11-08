@@ -3,16 +3,13 @@ Author: Calvin XiaoYang Hu
 Date: 230906
 
 {Description: some genomic and transcriptomic variables and functions, 
-many of these would be included in bioconda but I'm writing these out to avoid messy dependencies}
+many of these would be included in bioconda etc but I'm writing these out to avoid messy dependencies}
 """
 
 import re
+from itertools import product
 
 # variables
-
-bases = 'ACGT'
-complements = {'A':'T', 'T':'A', 'G':'C', 'C':'G', 
-                   'a':'t', 't':'a', 'g':'c', 'c':'g'}
 
 # translating DNA sequence to amino acid sequence
 DNA_AA_map = {"TTT":"F", "TTC":"F", "TTA":"L", "TTG":"L",
@@ -32,13 +29,10 @@ DNA_AA_map = {"TTT":"F", "TTC":"F", "TTA":"L", "TTG":"L",
               "GAT":"D", "GAC":"D", "GAA":"E", "GAG":"E",
               "GGT":"G", "GGC":"G", "GGA":"G", "GGG":"G", }
 
-# name of a base editor with their corresponding edit made
-base_editing_key = {"CBE": ["C", "T"], 
-                    "ABE": ["A", "G"],
-                    "CGBE": ["C", "G"],
-                    "GCBE": ["G", "C"],
-                    "GTBE": ["G", "T"],
-                    }
+bases = 'ACGT'
+complements = {'A':'T', 'T':'A', 'G':'C', 'C':'G', 
+                   'a':'t', 't':'a', 'g':'c', 'c':'g'}
+
 ### add functionality for dual base editos and for R or Y
 
 # name of cas protein with their associated PAM
@@ -107,3 +101,17 @@ def process_PAM(PAM):
     PAM = PAM.replace("R", "[aAgG]{1}")
     PAM = PAM.replace("N", "[acgtACGT]{1}")
     return re.compile("({})".format(PAM))
+
+def make_mutations(guide_window, edit_from, edit_to):
+    mutated = []
+    # Convert input string into a list so we can easily substitute letters
+    seq = list(guide_window)
+    # Find indices of key letters in seq
+    indices = [ i for i, c in enumerate(seq) if c in edit_from]
+
+    # Generate key letter combinations & place them into the list
+    for t in product(edit_from+edit_to, repeat=len(indices)):
+        for i, c in zip(indices, t):
+            seq[i] = c
+        mutated.append(''.join(seq))
+    return mutated
