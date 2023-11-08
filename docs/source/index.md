@@ -3,14 +3,21 @@
 % You can adapt this file completely to your liking, but it should at least
 % contain the root `toctree` directive.
 
-# Welcome to be-scan's documentation!
+# Welcome to BE-SCAN's documentation!
 
-### it's ya bois Simon and Calvin
+### BE-SCAN (Base-Editing Screening Computational ANalysis)
+
+Wanna design a base editor screen? Yes we be-sCAN!
+
+For further info, check out {doc}`usage` and read installation instructions in subsection {ref}`Installation`
 
 ```{toctree}
 :caption: 'Contents:'
 :maxdepth: 2
+
+usage
 ```
+
 
 # Indices and tables
 
