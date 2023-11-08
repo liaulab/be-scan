@@ -28,7 +28,8 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-    "pytest"
+    "pytest", 
+    "sphinx", 
 ]
 
 [project.urls]
