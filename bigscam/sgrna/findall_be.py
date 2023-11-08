@@ -9,8 +9,8 @@ Date: 230906
 import argparse # for parsing arguments from command line
 
 # importing functions
-from _gene_ import GeneForCRISPR
-from _BE_guides_ import identify_guides, annotate_guides
+from ._gene_ import GeneForCRISPR
+from ._BE_guides_ import identify_guides, annotate_guides
 
 
 parser = argparse.ArgumentParser(description='find all guides accessible for base editing')

@@ -8,8 +8,8 @@ Date: 230906
 
 import pandas as pd
 
-from _genomic_ import DNA_AA_map, base_editing_key, bases, complements, cas_key
-from _genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM # DNA_to_AA
+from ._genomic_ import DNA_AA_map, base_editing_key, bases, complements, cas_key
+from ._genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM # DNA_to_AA
 
 def identify_guides(gene_object, cas_type, mode, PAM=None, window=[4,8]): 
     # Parameters

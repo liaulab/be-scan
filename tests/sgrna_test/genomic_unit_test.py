@@ -5,13 +5,11 @@ Date: 230907
 {Description: suit of unit tests for testing functions in bigscam/bigscam/helper/genomic}
 """
 
-import sys
 import re
 import pytest
 
-sys.path.append('../bigscam/sgrna') # relative path to helper directory from test directory
-from _genomic_ import DNA_AA_map, base_editing_key, bases, complements, cas_key
-from _genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM, DNA_to_AA
+from bigscam.sgrna._genomic_ import DNA_AA_map, base_editing_key, bases, complements, cas_key
+from bigscam.sgrna._genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM, DNA_to_AA
 
 # unit tests for functions in helper/genomic.py
 
