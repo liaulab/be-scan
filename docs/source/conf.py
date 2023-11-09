@@ -19,6 +19,7 @@ extensions = [
     "sphinx.ext.duration",
     "sphinx.ext.autosectionlabel",
     "nbsphinx",
+    "sphinx.ext.autodoc",
 ] 
 
 templates_path = ['_templates']
