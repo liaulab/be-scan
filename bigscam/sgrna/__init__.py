@@ -9,4 +9,5 @@
 # then annotate the remaining guides and output them
 #    (_BE_guides_.py annotate_guides)
 
-from ._genomic_ import DNA_to_AA, rev_complement
+from ._genomic_ import DNA_to_AA, rev_complement, complement, protein_to_AAseq, process_PAM, make_mutations
+from ._BE_guides_ import identify_BE_guides, annotate_BE_guides

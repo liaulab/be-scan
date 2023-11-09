@@ -26,4 +26,6 @@ This function takes the reverse complement of a DNA sequence {py:func}`bigscam.s
 .. autofunction:: bigscam.sgrna.rev_complement
 
     hi
+
+    this requires the docs under the function to be in a particular format tho
 ```
