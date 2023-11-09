@@ -8,3 +8,5 @@
 
 # then annotate the remaining guides and output them
 #    (_BE_guides_.py annotate_guides)
+
+from _genomic_ import DNA_to_AA

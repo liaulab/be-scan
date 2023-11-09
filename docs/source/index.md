@@ -5,7 +5,7 @@
 
 # Welcome to BE-SCAN's documentation!
 
-### BE-SCAN (Base-Editing Screening Computational ANalysis)
+## BE-SCAN (Base-Editing Screening Computational ANalysis)
 
 Wanna design a base editor screen? Yes we be-sCAN!
 
@@ -16,6 +16,7 @@ For further info, check out {doc}`usage` and read installation instructions in s
 :maxdepth: 2
 
 usage
+notebooks/tutorial
 ```
 
 
