@@ -28,10 +28,15 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-    "pytest", 
+    "pytest"
+]
+docs = [
     "sphinx", 
     "myst-parser",
     "furo",
+    "sphinx-autobuild",
+    "nbsphinx",
+    "pandoc",
 ]
 
 [project.urls]
