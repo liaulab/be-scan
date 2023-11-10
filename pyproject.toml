@@ -30,6 +30,14 @@ dependencies = [
 test = [
     "pytest"
 ]
+docs = [
+    "sphinx", 
+    "myst-parser",
+    "furo",
+    "sphinx-autobuild",
+    "nbsphinx",
+    "pandoc",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/liaulab/bigscam"
