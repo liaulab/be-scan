@@ -28,17 +28,17 @@ def add_parser_args(parser):
 
     ## all optional arguments
     parser.add_argument('--guide_length', type=int,
-                        help='length of the guide, default is 23')
+                        help='length of the guide, default is 23', default=23)
     parser.add_argument('--output_dir', type=str,
-                        help='output directory for the guides output file')
+                        help='output directory for the guides output file', default='')
     parser.add_argument('--output_prefix', type=str,
-                        help='output prefix for the guides output file')
+                        help='output prefix for the guides output file', default='')
     parser.add_argument('--output_type', type=str,
-                        help='output file type for the guides output file (default is .csv)')
+                        help='output file type for the guides output file', default='csv')
     parser.add_argument('--window', nargs="+", type=int, 
-                        help='the editing window inclusive entered as 2 integers, default is 4 8')
+                        help='the editing window inclusive entered as 2 integers, default is 4 8', default=[4, 8])
     parser.add_argument('--PAM', type=str,
-                        help='a motif which is required for recognition of a guide, entering this overrides the cas_type argument')
+                        help='a motif which is required for recognition of a guide, entering this overrides the cas_type argument', default=None)
 
     return parser
 
