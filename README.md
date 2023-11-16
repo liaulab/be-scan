@@ -1,9 +1,8 @@
-# be_scan (tentatively)
-Base-editing Indels and Genomic Screen with CRISPR And More \
-BioInformatics, Genomic Screening, and Computational Analysis for Mutational data \
-Authors: SPS, XYH \
+# BE_SCAN
+Base-Editing Screening Computational ANalysis (BE-SCAN) \
+Authors: SPS, XYH
 
-Description: We are building a package for all of the lab's computational needs. ^_^ This package is compatible with CRISPOR generated data. 
+Description: We are building a package for library design, quality control, analysis, and plotting for base editing and mutagenesis CRISPR screens. 
 
 # Instructions for activating documentation locally
 
