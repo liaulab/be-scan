@@ -6,6 +6,7 @@ Date: 231116
 {Description: some base pair to amino acid translation functions}
 """
 
+import numpy as np
 import seaborn as sns
 import matplotlib as mpl
 from matplotlib.backends.backend_pdf import PdfPages
@@ -13,10 +14,11 @@ import matplotlib.pyplot as plt
 
 
 def plot_boxes(df_input, plot_list, cutoff, cat_col, hue_order, palette,
-               plot_name, out_prefix, swarm=False, swarm_list=None, width=0.4,
+               plot_name, out_prefix, width=0.8, size=(5,4),
+               swarm=False, swarm_list=None,
                plot_col='comparison', list_negctrlstats=None, yax_set=True,
-               jitter=True,
-               dimensions=(5,4), sns_context='paper', sns_palette='deep'):
+               y_col='log2_fc', y_label='Log2 Fold Change', jitter=True,
+               sns_context='paper', sns_palette='deep'):
     '''
     Make box plots.
 
@@ -47,23 +49,22 @@ def plot_boxes(df_input, plot_list, cutoff, cat_col, hue_order, palette,
             df_plot = df_plot.loc[~df_plot[cat_col].isin(small_cats)]
         
         # Make plot
-        fig, ax = plt.subplots(figsize=dimensions)
-        sns.boxplot(x=cat_col, y='log2_fc', data=df_plot, order=hue_order,
-                    width=width,
-                    palette=palette, saturation=1, fliersize=4, ax=ax,
-                    flierprops={'marker':'o', 'mec':'black', 'lw':1, 'alpha':0.8})
+        fig, ax = plt.subplots(figsize=size)
+        sns.boxplot(x=cat_col, y=y_col, data=df_plot, order=hue_order,
+                    width=width, showfliers=False,
+                    palette=palette, saturation=1, ax=ax)
         plt.setp(ax.artists, edgecolor='black')
         plt.setp(ax.lines, color='black')
         if len(small_cats) > 0:
-            sns.stripplot(x=cat_col, y='log2_fc', data=df_plot_s, alpha=0.8,
+            sns.stripplot(x=cat_col, y=y_col, data=df_plot_s, alpha=0.8,
                           order=hue_order, palette=palette, edgecolor='black',
                           jitter=jitter, linewidth=1, size=4, ax=ax)
         if swarm:
             if swarm_list != None:
                 df_plot = df_plot.loc[df_plot[cat_col].isin(swarm_list)]
-            sns.swarmplot(x=cat_col, y='log2_fc', data=df_plot,
-                          order=hue_order, palette=palette, edgecolor='black',
-                          linewidth=1, alpha=0.5, size=4, ax=ax)
+            sns.stripplot(x=cat_col, y=y_col, data=df_plot,
+                          order=hue_order, color='black', jitter=jitter,
+                          alpha=0.5, size=4, ax=ax)
             
         # Overlay neg ctrl avg +/- 2 sd as black dashed line
         if list_negctrlstats != None:
@@ -73,12 +74,12 @@ def plot_boxes(df_input, plot_list, cutoff, cat_col, hue_order, palette,
         
         # Adjust x and y axis limits
         if yax_set:
-            plt.ylim(np.floor(df_input['log2_fc'].min()),
-                     np.ceil(df_input['log2_fc'].max()))
+            plt.ylim(np.floor(df_input[y_col].min()),
+                     np.ceil(df_input[y_col].max()))
         
         # Set/adjust labels
         plt.title(comp) # Set plot title
-        plt.ylabel('Log2 Fold Change') # Set x-axis label
+        plt.ylabel(y_label) # Set x-axis label
         plt.xlabel('') # Remove y-axis label
         plt.xticks(rotation=45, horizontalalignment='right')
         
@@ -90,4 +91,4 @@ def plot_boxes(df_input, plot_list, cutoff, cat_col, hue_order, palette,
         # Save to pdf
         plt.savefig(figpdf, format='pdf')
         plt.close()
-    figpdf.close()    
+    figpdf.close()
