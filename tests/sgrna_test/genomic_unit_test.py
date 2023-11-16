@@ -2,14 +2,14 @@
 Author: Calvin XiaoYang Hu
 Date: 230907
 
-{Description: suit of unit tests for testing functions in bigscam/bigscam/helper/genomic}
+{Description: suit of unit tests for testing functions in be_scan/be_scan/helper/genomic}
 """
 
 import re
 import pytest
 
-from bigscam.sgrna._genomic_ import bases, complements, cas_key
-from bigscam.sgrna._genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM, DNA_to_AA, make_mutations
+from be_scan.sgrna._genomic_ import bases, complements, cas_key
+from be_scan.sgrna._genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM, DNA_to_AA, make_mutations
 
 # unit tests for functions in helper/genomic.py
 

@@ -1,5 +1,5 @@
-from bigscam.analysis import validate_cloning
-from bigscam.analysis._sanger import _golden_gate
+from be_scan.analysis import validate_cloning
+from be_scan.analysis._sanger import _golden_gate
 import pandas as pd
 import pytest
 import subprocess
@@ -34,7 +34,7 @@ def test_validate_cloning(query_fname, vector_fname, reference_plasmid, referenc
     assert df.loc[query_fname, "spacer"] == reference_spacer
 
 def test_cli_help():
-    subprocess.run(["python", "-m", "bigscam", "validate_cloning", "--help"], check=True)
+    subprocess.run(["python", "-m", "be_scan", "validate_cloning", "--help"], check=True)
 
 @pytest.mark.parametrize(TEST_CASES_VARS, TEST_CASES, ids=[x[0] for x in TEST_CASES])
 def test_cli(query_fname, vector_fname, reference_plasmid, reference_spacer, expected_success, kwargs):
@@ -46,7 +46,7 @@ def test_cli(query_fname, vector_fname, reference_plasmid, reference_spacer, exp
         in_df.rename_axis(index="plasmid", inplace=True)
         in_df.rename("spacer", inplace=True)
         in_df.to_csv(in_fname)
-        subprocess.run(["python", "-m", "bigscam", "validate_cloning", 
+        subprocess.run(["python", "-m", "be_scan", "validate_cloning", 
                         "tests/test_data/sanger", # query_dir
                         in_fname,
                         vector_fname,

@@ -2,12 +2,12 @@
 Author: Calvin XiaoYang Hu
 Date: 230908
 
-{Description: suit of unit tests for testing functions in bigscam/bigscam/sgrna/gene focus is the GeneForCRISPR object}
+{Description: suit of unit tests for testing functions in be_scan/be_scan/sgrna/gene focus is the GeneForCRISPR object}
 """
 
 import pytest
 
-from bigscam.sgrna._gene_ import GeneForCRISPR
+from be_scan.sgrna._gene_ import GeneForCRISPR
 
 def GeneForCRISPR_assert_exons(gene_object): 
     assert isinstance(gene_object.file_content, str)

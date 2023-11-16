@@ -2,7 +2,7 @@ import argparse
 import inspect
 
 def main():
-    parser = argparse.ArgumentParser(prog="bigscam")
+    parser = argparse.ArgumentParser(prog="be_scan")
     subparsers = parser.add_subparsers(required=True)
 
     from .analysis import count_reads

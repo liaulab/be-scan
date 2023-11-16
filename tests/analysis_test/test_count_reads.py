@@ -1,4 +1,4 @@
-from bigscam.analysis import count_reads
+from be_scan.analysis import count_reads
 import pandas as pd
 import os
 import pytest

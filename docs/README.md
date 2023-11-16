@@ -7,7 +7,7 @@ first install <sphinx> and <myst_parser>, i also added this to pyproject.toml so
 ```
 
 ```
-run <sphinx-autobuild docs/source docs/build/html/> from terminal in ~/bigscam, and you'll get an automatically updating docs html file that you can view in your web browser. 
+run <sphinx-autobuild docs/source docs/build/html/> from terminal in ~/be_scan, and you'll get an automatically updating docs html file that you can view in your web browser. 
 ```
 
 
