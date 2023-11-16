@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'be-scan'
+project = 'be_scan'
 copyright = '2023, SPS, XYH, BBL'
 author = 'SPS, XYH, BBL'
 release = '1.0.0'
