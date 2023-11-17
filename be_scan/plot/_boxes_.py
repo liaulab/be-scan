@@ -8,7 +8,6 @@ Date: 231116
 
 import numpy as np
 import seaborn as sns
-import matplotlib as mpl
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 
@@ -21,20 +20,12 @@ def plot_boxes(df_input, cat_col, plot_x_list, y_val, # x y values, df, comparis
                cutoff=20, swarm_list=None, jitter=True, # small categories and stripplot params
                dimensions=(5,4), list_negctrlstats=None, yax_set=True, # adjusting plots params
                swarm=False, # swarmplot
-               sns_context='paper', sns_palette='deep', pdf_font_size=42, ps_font_size=42,  mpl_font='Arial', # sns mpl params
                sat_level=1, fliersize=4, width=0.4, # sns.boxplot params
                flierprops={'marker':'o', 'mec':'black', 'lw':1, 'alpha':0.8} # sns.boxplot params
                ):
     '''
     Make box plots.
     '''
-
-    # Plotting parameters and variables
-    sns.set_context(sns_context)
-    sns.set_palette(sns_palette)
-    mpl.rcParams['pdf.fonttype'] = pdf_font_size
-    mpl.rcParams['ps.fonttype'] = ps_font_size
-    mpl.rcParams['font.sans-serif'] = [mpl_font]
     
     figpdf = PdfPages('_'.join([out_prefix, plot_name, 'boxes.pdf']))
 

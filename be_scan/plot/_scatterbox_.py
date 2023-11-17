@@ -15,17 +15,11 @@ from matplotlib.backends.backend_pdf import PdfPages
 def plot_scatterbox(df_scatter, hue_col, hue_order_s, palette_s,
                     df_boxes, cutoff, cat_col, hue_order_b, palette_b, jitter,
                     plot_list, list_negctrlstats, plot_name, out_prefix,
-                    swarm=False, sns_context='paper', sns_palette='deep'):
+                    swarm=False):
     '''
     Make a scatterplot next to a boxplot with the y-axes aligned.
 
     '''
-    # Plotting parameters and variables
-    sns.set_context(sns_context)
-    sns.set_palette(sns_palette)
-    mpl.rcParams['pdf.fonttype'] = 42
-    mpl.rcParams['ps.fonttype'] = 42
-    mpl.rcParams['font.sans-serif'] = ['Arial']
     
     #Plot
     figpdf = PdfPages('_'.join([out_prefix, plot_name, 'scatterbox.pdf']))
