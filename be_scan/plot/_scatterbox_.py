@@ -6,6 +6,7 @@ Date: 231116
 {Description: some base pair to amino acid translation functions}
 """
 
+import numpy as np
 import seaborn as sns
 import matplotlib as mpl
 import matplotlib.pyplot as plt

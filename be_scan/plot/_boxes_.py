@@ -13,58 +13,64 @@ from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 
 
-def plot_boxes(df_input, plot_list, cutoff, cat_col, hue_order, palette,
-               plot_name, out_prefix, width=0.8, size=(5,4),
-               swarm=False, swarm_list=None,
-               plot_col='comparison', list_negctrlstats=None, yax_set=True,
-               y_col='log2_fc', y_label='Log2 Fold Change', jitter=True,
-               sns_context='paper', sns_palette='deep'):
+def plot_boxes(df_input, cat_col, plot_x_list, y_val, # x y values, df, comparisons
+               hue_order, palette, # sns.boxplot params
+               plot_name, out_prefix, output_type='pdf', # output pdf params
+               ylab='Log2 Fold Change', xlab='', # x and y label
+               plot_col='comparison', # df params
+               cutoff=20, swarm_list=None, jitter=True, # small categories and stripplot params
+               dimensions=(5,4), list_negctrlstats=None, yax_set=True, # adjusting plots params
+               swarm=False, # swarmplot
+               sns_context='paper', sns_palette='deep', pdf_font_size=42, ps_font_size=42,  mpl_font='Arial', # sns mpl params
+               sat_level=1, fliersize=4, width=0.4, # sns.boxplot params
+               flierprops={'marker':'o', 'mec':'black', 'lw':1, 'alpha':0.8} # sns.boxplot params
+               ):
     '''
     Make box plots.
-
     '''
+
     # Plotting parameters and variables
     sns.set_context(sns_context)
     sns.set_palette(sns_palette)
-    mpl.rcParams['pdf.fonttype'] = 42
-    mpl.rcParams['ps.fonttype'] = 42
-    mpl.rcParams['font.sans-serif'] = ['Arial']
+    mpl.rcParams['pdf.fonttype'] = pdf_font_size
+    mpl.rcParams['ps.fonttype'] = ps_font_size
+    mpl.rcParams['font.sans-serif'] = [mpl_font]
     
-    #Plot
     figpdf = PdfPages('_'.join([out_prefix, plot_name, 'boxes.pdf']))
 
-    for comp in plot_list:
+    for comp in plot_x_list:
         
         # Isolate data corresponding to appropriate comparison/sample
         df_plot = df_input.loc[df_input[plot_col] == comp].copy()
         
-        # If number of observations is below cutoff, stripplot instead of
-        # boxplot for those categories.
+        # Make boxplot
+        fig, ax = plt.subplots(figsize=dimensions)
+        sns.boxplot(x=cat_col, y=y_val, data=df_plot, 
+                    order=hue_order, width=width, palette=palette, ax=ax, 
+                    saturation=sat_level, fliersize=fliersize, flierprops=flierprops)
+        plt.setp(ax.artists, edgecolor='black')
+        plt.setp(ax.lines, color='black')
+
+        # Check for small categories
         small_cats = []
         for category in hue_order:
             if df_plot[cat_col].value_counts()[category] < cutoff:
                 small_cats.append(category)
+        # If # of observations is below cutoff, stripplot instead of boxplot for those categories
         if len(small_cats) > 0:
             df_plot_s = df_plot.loc[df_plot[cat_col].isin(small_cats)].copy()
             df_plot = df_plot.loc[~df_plot[cat_col].isin(small_cats)]
-        
-        # Make plot
-        fig, ax = plt.subplots(figsize=size)
-        sns.boxplot(x=cat_col, y=y_col, data=df_plot, order=hue_order,
-                    width=width, showfliers=False,
-                    palette=palette, saturation=1, ax=ax)
-        plt.setp(ax.artists, edgecolor='black')
-        plt.setp(ax.lines, color='black')
-        if len(small_cats) > 0:
-            sns.stripplot(x=cat_col, y=y_col, data=df_plot_s, alpha=0.8,
+            sns.stripplot(x=cat_col, y=y_val, data=df_plot_s, alpha=0.8,
                           order=hue_order, palette=palette, edgecolor='black',
                           jitter=jitter, linewidth=1, size=4, ax=ax)
+            
+        # make swarmplot if that is what user wants
         if swarm:
             if swarm_list != None:
                 df_plot = df_plot.loc[df_plot[cat_col].isin(swarm_list)]
-            sns.stripplot(x=cat_col, y=y_col, data=df_plot,
-                          order=hue_order, color='black', jitter=jitter,
-                          alpha=0.5, size=4, ax=ax)
+            sns.swarmplot(x=cat_col, y=y_val, data=df_plot,
+                          order=hue_order, palette=palette, edgecolor='black',
+                          linewidth=1, alpha=0.5, size=4, ax=ax)
             
         # Overlay neg ctrl avg +/- 2 sd as black dashed line
         if list_negctrlstats != None:
@@ -73,14 +79,14 @@ def plot_boxes(df_input, plot_list, cutoff, cat_col, hue_order, palette,
             plt.axhline(y=-2*tup_plot[2], color='k', ls='--', lw=1)
         
         # Adjust x and y axis limits
-        if yax_set:
-            plt.ylim(np.floor(df_input[y_col].min()),
-                     np.ceil(df_input[y_col].max()))
+        if yax_set: 
+            plt.ylim(np.floor(df_input[y_val].min()),
+                     np.ceil(df_input[y_val].max()))
         
         # Set/adjust labels
         plt.title(comp) # Set plot title
-        plt.ylabel(y_label) # Set x-axis label
-        plt.xlabel('') # Remove y-axis label
+        plt.ylabel(ylab) # Set y-axis label
+        plt.xlabel(xlab) # Remove x-axis label
         plt.xticks(rotation=45, horizontalalignment='right')
         
         # Add major gridlines
@@ -89,6 +95,7 @@ def plot_boxes(df_input, plot_list, cutoff, cat_col, hue_order, palette,
         plt.tight_layout()
         
         # Save to pdf
-        plt.savefig(figpdf, format='pdf')
+        plt.savefig(figpdf, format=output_type)
         plt.close()
-    figpdf.close()
+
+    figpdf.close()    

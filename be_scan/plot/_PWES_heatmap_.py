@@ -1,6 +1,6 @@
 """
 Author: Calvin XiaoYang Hu
-Adapted from: Nicholas Lue - NZL10196_Screen_Analysis_v9b.py Created on Fri May 29 03:00:39 2020
+Adapted from: Nicholas Lue - NZL10196-3D-Clustering-v7.py Created on Mon Jun  1 19:03:10 2020
 Date: 231116
 
 {Description: some base pair to amino acid translation functions}
