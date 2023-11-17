@@ -15,7 +15,6 @@ def plot_corr_scatter(df_input, x_col, x_name, y_col, y_name, out_prefix,
                       ):
     '''
     Make scatter plot for correlation assessment.
-
     '''
     
     # Make plot

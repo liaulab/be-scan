@@ -1,15 +1,6 @@
 
 
 
-# Define lists to use for setting plotting parameters
-list_muttypes = ['Nonsense', 'Missense', 'Silent', 
-                 'Non-exon', 'Splice', 'No_C/Exon', 
-                 'No_C/Non-exon', 'Control']
-list_subtypes = ['Nonsense', 'Missense', 'Silent',
-                 'Non-exon', 'Splice', 'No_C/Exon', 
-                 'No_C/Non-exon', 'Intergenic', 'Non-targeting', 
-                 'Essential']
-
 
 # extra subtypes for control guides
 control_subtypes = {

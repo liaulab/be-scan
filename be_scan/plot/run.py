@@ -7,6 +7,7 @@ from _boxes_ import plot_boxes
 from _correlation_heatmap_ import plot_corr_heatmap
 from _annotating_ import annotate_submuttype, annotate_in_domain, calc_negative_controls
 from _correlation_scatter_ import plot_corr_scatter
+from _scatterbox_ import plot_scatterplot
 
 ### INPUTS
 
@@ -104,6 +105,29 @@ plot_boxes(df_input=df_tidy.loc[df_tidy['Mut_type']=='Missense'],
 
 ##################################################
 
+# ColorBrewer2, 9 data classes, qualitative, 4th color scheme hex codes
+color_list = ['#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', 
+              '#d9d9d9', '#8dd3c7', '#ffffb3', '#bebada', '#bc80bd']
+# Define lists to use for setting plotting parameters
+list_muttypes = ['Nonsense', 'Missense', 'Silent', 'Non-exon', 'Splice', 
+                 'No_C/Exon', 'No_C/Non-exon', 'Control']
+list_subtypes = ['Nonsense', 'Missense', 'Silent', 'Non-exon', 'Splice', 
+                 'No_C/Exon', 'No_C/Non-exon', 'Intergenic', 'Non-targeting', 'Essential']
+
+
+df_tidy_trim = df_tidy.loc[(df_tidy['Edit_site_3A1']>=plot_window[0]) & (df_tidy['Edit_site_3A1']<=plot_window[1])].copy()
+
+plot_scatterplot(df_scatter=df_tidy_trim.loc[df_tidy_trim['Mut_type'].isin(list_muttypes[:3])],
+                plot_col='comparison', hue_col='Mut_type', 
+                xval='Edit_site_3A1', yval='log2_fc', xlab='Amino Acid Position', ylab='sgRNA Score', 
+                hue_order_s=list_muttypes[:3], palette_s=color_list[:3],
+                plot_x_list=list_compnames, list_negctrlstats=list_negctrlstats,
+                plot_name='DNMT3A', out_prefix=out_prefix
+                )
+
+##################################################
+
+
 # Keep only data (raw log2 or condition values) columns of dataframes and re-order
 #df_reps = df_reps[list_samples]
 list_compnames = ['d3-pos', 'd6-pos', 'd9-pos', 'd3-neg', 'd6-neg', 'd9-neg']
@@ -121,16 +145,6 @@ plot_corr_heatmap(df_input=df_comp, plot_type=plot_type,
 
 ##################################################
 
-# ColorBrewer2, 9 data classes, qualitative, 4th color scheme hex codes
-color_list = ['#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', 
-              '#d9d9d9', '#8dd3c7', '#ffffb3', '#bebada', '#bc80bd']
-
-# Define lists to use for setting plotting parameters
-list_muttypes = ['Nonsense', 'Missense', 'Silent', 'Non-exon', 'Splice', 
-                 'No_C/Exon', 'No_C/Non-exon', 'Control']
-list_subtypes = ['Nonsense', 'Missense', 'Silent', 'Non-exon', 'Splice', 
-                 'No_C/Exon', 'No_C/Non-exon', 'Intergenic', 'Non-targeting', 'Essential']
-
 subtypes = 'submut_type'
 xmin, xmax, ymin, ymax = -1, 1, -1.5, 2
 
@@ -141,7 +155,6 @@ cond1, cond2, name1, name2 = 'd3-neg', 'd9-pos', 'd3-neg score', 'd9-pos score'
 plot_corr_scatter(df_input=df_data.loc[df_data[subtypes].isin(list_subtypes[:7])],
                   x_col=cond1, x_name=name1,
                   y_col=cond2, y_name=name2,
-                  list_negctrlstats=list_negctrlstats,
                   xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax,
                   out_prefix=out_prefix, out_suffix='comps', hue_col=subtypes,
                   hue_order=list_subtypes[6::-1], palette=color_list[6::-1])
@@ -151,7 +164,6 @@ cond1, cond2, name1, name2 = 'd6-pos', 'd9-pos', 'd6-pos score', 'd9-pos score'
 plot_corr_scatter(df_input=df_data.loc[df_data[subtypes].isin(list_subtypes[:7])],
                   x_col=cond1, x_name=name1,
                   y_col=cond2, y_name=name2,
-                  list_negctrlstats=list_negctrlstats,
                   xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax,
                   out_prefix=out_prefix, out_suffix='comps', hue_col=subtypes,
                   hue_order=list_subtypes[6::-1], palette=color_list[6::-1])
@@ -159,8 +171,6 @@ plot_corr_scatter(df_input=df_data.loc[df_data[subtypes].isin(list_subtypes[:7])
 
 
 
-
-df_tidy_trim = df_tidy.loc[(df_tidy['Edit_site_3A1']>=plot_window[0]) & (df_tidy['Edit_site_3A1']<=plot_window[1])].copy()
 
 
 # Additional information for analysis of samples/replicates/conditions:

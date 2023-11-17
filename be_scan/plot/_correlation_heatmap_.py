@@ -16,6 +16,7 @@ def plot_corr_heatmap(df_input, plot_type,
     """
     Plots correlation heatmap and saves to pdf file.
     """
+    
     # Plotting parameters and variables
     sns.set_style('ticks')
     
