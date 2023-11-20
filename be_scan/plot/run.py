@@ -7,7 +7,9 @@ from _boxes_ import plot_boxes
 from _correlation_heatmap_ import plot_corr_heatmap
 from _annotating_ import annotate_submuttype, annotate_in_domain, calc_negative_controls
 from _correlation_scatter_ import plot_corr_scatter
-from _scatterbox_ import plot_scatterplot
+from _scatterplot_ import plot_scatterplot
+
+from _clustering_ import calc_centroids, calc_pairwise_dist
 
 ### INPUTS
 
@@ -173,6 +175,60 @@ plot_corr_scatter(df_input=df_data.loc[df_data[subtypes].isin(list_subtypes[:7])
 
 
 
+# Structures and parameters to use for PWES calculations
+struct_A = '4U7T'
+struct_B = '4U7P'
+clust_num = 8
+std, m, theta = (16,2,0.8) #(std, m, theta)
+
+in_comps = '220407_NZL10196_Analysis_v9_Full.csv'
+df_comps = pd.read_csv(in_comps)
+
+d_norm = 'd9pos_norm'
+d = 'd9-pos'
+
+df_comps[d_norm] = df_comps[d].copy()
+df_missense = df_comps.loc[df_comps['Mut_type'] == 'Missense'].copy()
+# Round edit sites to whole numbers (0.5 rounded to nearest even) and convert
+# to long isoform numbering (note: 3A2 residues <25 don't map, but these
+# will be filtered out later since no structure extends to this region).
+df_missense['Clust_site'] = df_missense['Edit_site_3A2'].round(decimals=0)
+df_missense['Clust_site'] = df_missense['Clust_site'].add(189)
+
+# Get centroids
+# 4U7T: chains A/C are both 3A. C has 1 less unresolved aa, though no guide maps to it.
+df_centroids_A = calc_centroids(pdb_id=struct_A, aa_sel='chain C and resi 476-912')
+# 4U7P: chain A is 3A
+df_centroids_B = calc_centroids(pdb_id=struct_B, aa_sel='segi A')
+
+# Calculate pairwise distances
+df_pwdist_A = calc_pairwise_dist(df_centroids_A)
+df_pwdist_B = calc_pairwise_dist(df_centroids_B)
+
+# Filter guides to only those that map to residues resolved in...
+# Structure A only
+#df_lfc_A = df_missense.loc[df_missense['Clust_site'].isin(df_pwdist_A.index)].copy()
+#df_lfc_A = df_lfc_A.sort_values(by=['Clust_site', 'sgRNA_ID']).reset_index()
+# Structure B only
+#df_lfc_B = df_missense.loc[df_missense['Clust_site'].isin(df_pwdist_B.index)].copy()
+#df_lfc_B = df_lfc_B.sort_values(by=['Clust_site', 'sgRNA_ID']).reset_index()
+# Both Structure A and Structure B
+df_lfc_AB = df_missense.loc[df_missense['Clust_site'].isin(df_pwdist_A.index)].copy()
+df_lfc_AB = df_lfc_AB.loc[df_lfc_AB['Clust_site'].isin(df_pwdist_B.index)]
+df_lfc_AB = df_lfc_AB.sort_values(by=['Clust_site', 'sgRNA_ID']).reset_index()
+
+##################################################
+##################################################
+##################################################
+##################################################
+
+
+
+
+
+
+
+
 # Additional information for analysis of samples/replicates/conditions:
 list_samples = [
     'NL0',
@@ -192,3 +248,5 @@ dict_conds = {'d0':list_samples[0],
               'd3-uns':list_samples[1:4], 'd3-pos':list_samples[4:7], 'd3-neg':list_samples[7:10],
               'd6-uns':list_samples[10:13], 'd6-pos':list_samples[13:16], 'd6-neg':list_samples[16:19],
               'd9-uns':list_samples[19:22], 'd9-pos': list_samples[22:25], 'd9-neg': list_samples[25:]}
+
+# df_data.to_csv(out_prefix+'_Full.csv', index=False)
