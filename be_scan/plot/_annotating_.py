@@ -6,33 +6,23 @@ Date: 231116
 {Description: }
 """
 
+# ColorBrewer2, 9 data classes, qualitative, 4th color scheme hex codes
+color_list = ['#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', 
+            '#d9d9d9', '#8dd3c7', '#ffffb3', '#bebada', '#bc80bd']
+# Define lists to use for setting plotting parameters
+list_muttypes = ['Nonsense', 'Missense', 'Silent', 'Non-exon', 'Splice', 
+                'No_C/Exon', 'No_C/Non-exon', 'Control']
 
-
-# extra subtypes for control guides
-control_subtypes = {
-     'NON-GENE': 'Intergenic', 
-     'NO_SITE': 'Non-targeting', 
-     'ESSENTIAL': 'Essential', 
-}
-
-
-
-# Add extra label for control guides to subtype as intergenic, non-targeting, essential. 
-def annotate_submuttype(mutType, geneID):
-    if mutType == 'Control':
-        try: 
-            return control_subtypes[geneID]
-        except KeyError: 
-            print('Invalid type for control guide')
-    else: 
-        return mutType
-
-
-# For plotting domain vs. not domain
-def annotate_in_domain(domain, domains_list):
-    return 'in domain' if domain in domains_list else 'not in domain'
-    
-### NORMALIZATION
+def norm_to_intergenic_ctrls(in_dataframe, comparisons, avg_dict, y_column): 
+    # normalize data to intergenic controls
+    # perform normalization
+    for comp in comparisons:
+        in_dataframe[comp] = in_dataframe[comp].sub(avg_dict[comp])
+    # tidy data by comparisons for each guide
+    df_logfc = in_dataframe.copy()
+    for comp in comparisons: 
+        df_logfc[comp+'_'+y_column] = in_dataframe[comp]
+    return df_logfc
 
 # calculate the negative controls (ie the mean and stdev for the non)
 def calc_negative_controls(df_data, list_compnames, neg_ctrl_category): 
@@ -54,3 +44,25 @@ def calc_negative_controls(df_data, list_compnames, neg_ctrl_category):
         
     return df_negctrl, list_negctrlstats, avg_dict
 
+
+
+# # extra subtypes for control guides
+# control_subtypes = {
+#      'NON-GENE': 'Intergenic', 
+#      'NO_SITE': 'Non-targeting', 
+#      'ESSENTIAL': 'Essential', 
+# }
+
+# # Add extra label for control guides to subtype as intergenic, non-targeting, essential. 
+# def annotate_submuttype(mutType, geneID):
+#     if mutType == 'Control':
+#         try: 
+#             return control_subtypes[geneID]
+#         except KeyError: 
+#             print('Invalid type for control guide')
+#     else: 
+#         return mutType
+
+# # For plotting domain vs. not domain
+# def annotate_in_domain(domain, domains_list):
+#     return 'in domain' if domain in domains_list else 'not in domain'
