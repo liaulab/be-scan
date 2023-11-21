@@ -1,4 +1,10 @@
+"""
+Author: Calvin XiaoYang Hu
+Adapted from: Nicholas Lue - NZL10196_Screen_Analysis_v9b.py Created on Fri May 29 03:00:39 2020
+Date: 231116
 
+{Description: }
+"""
 
 
 
