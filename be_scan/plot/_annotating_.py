@@ -46,13 +46,6 @@ def calc_negative_controls(df_data, list_compnames, neg_ctrl_category):
 
 
 
-# # extra subtypes for control guides
-# control_subtypes = {
-#      'NON-GENE': 'Intergenic', 
-#      'NO_SITE': 'Non-targeting', 
-#      'ESSENTIAL': 'Essential', 
-# }
-
 # # Add extra label for control guides to subtype as intergenic, non-targeting, essential. 
 # def annotate_submuttype(mutType, geneID):
 #     if mutType == 'Control':

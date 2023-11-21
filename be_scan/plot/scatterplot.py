@@ -15,7 +15,6 @@ from matplotlib.backends.backend_pdf import PdfPages
 from ._annotating_ import color_list, list_muttypes
 from ._annotating_ import norm_to_intergenic_ctrls, calc_negative_controls
 
-
 def plot_scatterplot(df_filepath, # dataframe
                      x_column, y_column, 
                      plot_column, hue_column, # df params
@@ -90,3 +89,7 @@ def plot_scatterplot(df_filepath, # dataframe
         plt.close()
 
     figpdf.close()
+
+# python3 -m be_scan plot_scatterplot -df '../../../Downloads/NZL10196_v9_comparisons.csv' 
+#         -x 'Edit_site_3A1' -y 'log2_fc' -c 'd3-pos' -hue 'Mut_type' -pt 'comparison' 
+#         -neg 'NON-GENE' -win 224 912 -c 'd3-pos' 'd3-neg' 'd6-pos' 'd6-neg' 'd9-pos' 'd9-neg'
