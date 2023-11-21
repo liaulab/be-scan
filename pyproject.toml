@@ -37,6 +37,7 @@ docs = [
     "sphinx-autobuild",
     "nbsphinx",
     "pandoc",
+    "sphinxcontrib-napoleon",
 ]
 
 [project.urls]

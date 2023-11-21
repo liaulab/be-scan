@@ -27,13 +27,12 @@ import gzip
 def count_reads(in_fastq, in_ref, KEY_INTERVAL=(10,80),
                 KEY='CGAAACACC', KEY_REV='GTTTTAGA', out_counts='counts.csv',
                 out_np='np_counts.csv', out_stats='stats.txt', dont_trim_G=False):
-    """
-    Count the reads in a FASTQ file and assign them to a reference sgRNA set.
+    """Count the reads in a FASTQ file and assign them to a reference sgRNA set.
 
     Given a set of sgRNA sequences and a FASTQ file, count the reads in the
-    FASTQ, assign the reads to sgRNAs, and export the counts to a csv file. All
+    FASTQ, assign the reads to sgRNAs, and export the counts to a csv file `out_counts`. All
     sgRNA sequences not found in the reference file (non-perfect matches) are
-    written to a separate csv file (npcounts).
+    written to a separate csv file `out_np`.
 
     Parameters
     ----------
@@ -46,10 +45,10 @@ def count_reads(in_fastq, in_ref, KEY_INTERVAL=(10,80),
         Tuple of (KEY_START, KEY_END) that defines the KEY_REGION. Denotes the
         substring within the read to search for the KEY.
     KEY : str, default 'CGAAACACC'
-        Upstream sequence that identifies the position of the sgRNA. The default
+        Sequence that is expected upstream of the spacer sequence. The default
         is the end of the hU6 promoter.
     KEY_REV : str, default 'GTTTTAGA'
-        Downstream sequence that identifies the position of the sgRNA. The
+        Sequence that is expected downstream of the spacer sequence. The
         default is the start of the sgRNA scaffold sequence.
     out_counts : str or path, default 'counts.csv'
         String or path for the output csv file with perfect sgRNA matches.
@@ -58,7 +57,7 @@ def count_reads(in_fastq, in_ref, KEY_INTERVAL=(10,80),
     out_stats : str or path, default 'stats.txt'
         String or path for the output txt file with the read counting statistics.
     dont_trim_G : bool, default False
-        Whether to trim the first G from the sgRNA sequence to make it 20 bp.
+        Whether to trim the first G from 21-nt sgRNA sequences to make them 20-nt.
     """
 
     # STEP 1A: OPEN INPUT FILES FOR PROCESSING, CHECK FOR REQUIRED FORMATTING
