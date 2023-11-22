@@ -17,29 +17,68 @@ from ._annotating_ import norm_to_intergenic_ctrls, calc_negative_controls
 
 def plot_scatterplot(df_filepath, # dataframe
                      x_column, y_column, 
-                     plot_column, hue_column, # df params
+                     hue_column, # df params
                      comparisons, 
-                     neg_ctrl_category,
+                     neg_ctrl_col, neg_ctrl_category,
                      window=None,
-                     plot_name='scatterplot', plot_type='pdf', out_directory='', # output params
                      xlab='Amino Acid Position', ylab='sgRNA Score', # scatterplot labels
-                     alpha=0.8, linewidth=1, edgecolor='black', s=25, # scatterplot params
-                     dimensions=(8,4)
+                     out_name='scatterplot', out_type='pdf', out_directory='', # output params
+                     alpha=0.8, linewidth=1.0, edgecolor='black', s=25, # scatterplot params
+                     figsize=(8,4)
                      ):
     
     """[Summary]
-    :param [df_filepath]: [ParamDescription], defaults to [DefaultParamVal]
-    :type [ParamName]: [ParamType](, optional)
+    This function takes in a dataframe from count_reads, performs normalization, 
+    and then plots the data for each condition to reveal which guides are enriched
     ...
-    :raises [ErrorType]: [ErrorDescription]
+
+    :param df_filepath: filepath to .csv data generated from count_reads
+    :type df_filepath: str, required
+    :param x_column: column of .csv for x axis, typically amino acid position
+    :type x_column: str, required
+    :param y_column: column of .csv for y axis, typically the normalized log_fc change score
+    :type y_column: str, required
+    :param hue_column: column of .csv which correspond to coloring of scatterplot points
+    :type hue_column: str, required
+    :param comparisons: list of comparisons that correspond to columns of .csv data
+    :type comparisons: list of str, required
+    :param neg_ctrl_col: column of .csv which correspond to normalization control
+    :type neg_ctrl_col: str, required
+    :param neg_ctrl_category: categorical variable of neg_ctrl_col .csv which correspond to normalization control
+    :type neg_ctrl_category: str, required
+
+    :param window: inclusive window of which amino acid positions are shown in the plot
+    :type window: tuple of ints, optional, defaults to None
+    :param xlab: name of x-axis label
+    :type xlab: str, optional, defaults to 'Amino Acid Position'
+    :param ylab: name of y-axis label
+    :type ylab: str, optional, defaults to 'sgRNA Score'
+    :param out_name: name of figure output
+    :type out_name: str, optional, defaults to 'scatterplot'
+    :param out_type: file type of figure output
+    :type out_type: str, optional, defaults to 'pdf'
+    :param out_directory: path to output directory
+    :type out_directory: str, optional, defaults to ''
+    
+    :param alpha: transparency of scatterplot points
+    :type alpha: float, optional, defaults to 0.8
+    :param linewidth: linewidth of plot
+    :type linewidth: float, optional, defaults to 1.0
+    :param edgecolor: color of scatterplot edge lines
+    :type edgecolor: str, optional, defaults to 'black'
+    :param s: size of scatterplot points
+    :type s: int, optional, defaults to 25
+    :param figsize: the figsize (length, width)
+    :type figsize: tuple of ints, optional, defaults to (8,4)
     ...
-    :return: [ReturnDescription]
-    :rtype: [ReturnType]
+
+    :return: None
+    :rtype: NoneType
     """
 
     in_dataframe = pd.read_csv(df_filepath)
     # calculate negative control stats
-    _, list_negctrlstats, avg_dict = calc_negative_controls(in_dataframe, comparisons, neg_ctrl_category)
+    _, list_negctrlstats, avg_dict = calc_negative_controls(in_dataframe, comparisons, neg_ctrl_col, neg_ctrl_category)
     # calculate normalized log_fc scores for each comp condition
     df_logfc = norm_to_intergenic_ctrls(in_dataframe, comparisons, avg_dict, y_column)
 
@@ -50,12 +89,12 @@ def plot_scatterplot(df_filepath, # dataframe
     df_filtered = df_filtered.loc[df_filtered[hue_column].isin(list_muttypes[:3])]
 
     # output pdf information
-    output_path = out_directory + plot_name + '.' + plot_type
+    output_path = out_directory + out_name + '.' + out_type
     figpdf = PdfPages(output_path)
     
     for comp in comparisons:
         # Make plots
-        fig, ax = plt.subplots(figsize=dimensions)
+        fig, ax = plt.subplots(figsize=figsize)
 
         # name of y values is comp + y_column
         y = comp+'_'+y_column 
@@ -82,7 +121,7 @@ def plot_scatterplot(df_filepath, # dataframe
         ax.set_xlabel(xlab)
         ax.set_ylabel(ylab)
 
-        # Adjust dimensions
+        # Adjust figsize
         plt.tight_layout()
         # Save to pdf
         plt.savefig(figpdf, format='pdf')
@@ -92,4 +131,4 @@ def plot_scatterplot(df_filepath, # dataframe
 
 # python3 -m be_scan plot_scatterplot -df '../../../Downloads/NZL10196_v9_comparisons.csv' 
 #         -x 'Edit_site_3A1' -y 'log2_fc' -c 'd3-pos' -hue 'Mut_type' -pt 'comparison' 
-#         -neg 'NON-GENE' -win 224 912 -c 'd3-pos' 'd3-neg' 'd6-pos' 'd6-neg' 'd9-pos' 'd9-neg'
+#         -ncol 'Gene' -ncat 'NON-GENE' -win 224 912 -c 'd3-pos' 'd3-neg' 'd6-pos' 'd6-neg' 'd9-pos' 'd9-neg'

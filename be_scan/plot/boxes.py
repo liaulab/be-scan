@@ -89,4 +89,6 @@ def plot_boxes(df_input, cat_col, plot_x_list, y_val, # x y values, df, comparis
         plt.savefig(figpdf, format=output_type)
         plt.close()
 
-    figpdf.close()    
+    figpdf.close()
+
+

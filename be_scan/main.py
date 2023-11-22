@@ -5,6 +5,9 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 def main():
+
+### analysis ###
+
     parser = argparse.ArgumentParser(prog="be_scan")
     subparsers = parser.add_subparsers(required=True)
 
@@ -45,25 +48,34 @@ def main():
 
     ##################################################
 
+### plot ###
+
     from .plot.scatterplot import plot_scatterplot
     # signature_plot_scatterplot = inspect.signature(plot_scatterplot)
     parser_plot_scatterplot = subparsers.add_parser('plot_scatterplot', 
-                                                    description='generate a scatterplot for counted reads')
-    parser_plot_scatterplot.add_argument('-df', '--df_filepath', type=str, help='protein sequence relative filepath to .fasta file')
-    parser_plot_scatterplot.add_argument('-x', '--x_column', type=str, help='')
-    parser_plot_scatterplot.add_argument('-y', '--y_column', type=str, help='')
-    parser_plot_scatterplot.add_argument('-neg', '--neg_ctrl_category', type=str, help='')
-    parser_plot_scatterplot.add_argument('-hue', '--hue_column', type=str, help='')
-    parser_plot_scatterplot.add_argument('-pt', '--plot_column', type=str, help='')
-    parser_plot_scatterplot.add_argument('-c','--comparisons', nargs='+', type=str, help='<Required> Set flag', required=True)
+                                                    description='This function takes in a dataframe from count_reads, performs normalization, and then plots the data for each condition to reveal which guides are enriched')
+    parser_plot_scatterplot.add_argument('-df', '--df_filepath', type=str, help='filepath to .csv data generated from count_reads')
+    parser_plot_scatterplot.add_argument('-x', '--x_column', type=str, help='column of .csv for x axis, typically amino acid position')
+    parser_plot_scatterplot.add_argument('-y', '--y_column', type=str, help='column of .csv for y axis, typically the normalized log_fc change score')
+    parser_plot_scatterplot.add_argument('-hue', '--hue_column', type=str, help='column of .csv which correspond to coloring of scatterplot points')
+    parser_plot_scatterplot.add_argument('-ncat', '--neg_ctrl_col', type=str, help='column of .csv which correspond to normalization control')
+    parser_plot_scatterplot.add_argument('-ncol', '--neg_ctrl_category', type=str, help='categorical variable of neg_ctrl_col .csv which correspond to normalization control')
+    parser_plot_scatterplot.add_argument('-c','--comparisons', nargs='+', type=str, help='list of comparisons that correspond to columns of .csv data', required=True)
     
     # optional variables
-    parser_plot_scatterplot.add_argument('-win','--window', nargs='+', type=int, help='<Required> Set flag', default=None)
+    parser_plot_scatterplot.add_argument('-win','--window', nargs='+', type=int, help='inclusive window of which amino acid positions are shown in the plot', default=None)
     
     # output variables (all optional: default is './scatterplot.png')
-    parser_plot_scatterplot.add_argument('--plot_name', type=str, default='scatterplot', help="name of figure output")
-    parser_plot_scatterplot.add_argument('--plot_type', type=str, default='pdf', help='file type of figure output')
+    parser_plot_scatterplot.add_argument('--x_label', type=str, default='Amino Acid Position', help="name of the x-axis label")
+    parser_plot_scatterplot.add_argument('--y_label', type=str, default='sgRNA Score', help="name of y-axis label")
+    parser_plot_scatterplot.add_argument('--out_name', type=str, default='scatterplot', help="name of figure output")
+    parser_plot_scatterplot.add_argument('--out_type', type=str, default='pdf', help='file type of figure output')
     parser_plot_scatterplot.add_argument('--out_directory', type=str, default='', help="path to output directory")
+    parser_plot_scatterplot.add_argument('--alpha', type=float, default=0.8, help="transparency of scatterplot points")
+    parser_plot_scatterplot.add_argument('--linewidth', type=float, default=1.0, help="linewidth of plot")
+    parser_plot_scatterplot.add_argument('--edgecolor', type=str, default='black', help="color of scatterplot edge lines")
+    parser_plot_scatterplot.add_argument('--s', type=float, default=25, help="size of scatterplot points")
+    parser_plot_scatterplot.add_argument('--figsize', nargs='+', type=int, help='the figsize (length, width)', default=[8, 4])
     parser_plot_scatterplot.set_defaults(func=plot_scatterplot)
 
     ##################################################
@@ -71,15 +83,22 @@ def main():
     from .plot.correlation_heatmap import plot_corr_heatmap
     # signature_plot_corr_heatmap = inspect.signature(plot_corr_heatmap)
     parser_plot_corr_heatmap = subparsers.add_parser('plot_corr_heatmap', 
-                                                    description='generate a heatmap for correlation between comparisons')
-    parser_plot_corr_heatmap.add_argument('-df', '--df_filepath', type=str, help='protein sequence relative filepath to .fasta file')
-    parser_plot_corr_heatmap.add_argument('-p', '--plot_type', type=str, help='')
-    parser_plot_corr_heatmap.add_argument('-c','--comparisons', nargs='+', type=str, help='<Required> Set flag', required=True)
+                                                     description='his function takes in a dataframe from count_reads, and plots a scatterplot showing correlation between two given conditions')
+    parser_plot_corr_heatmap.add_argument('-df', '--df_filepath', type=str, help='filepath to .csv data generated from count_reads')
+    parser_plot_corr_heatmap.add_argument('-c','--comparisons', nargs='+', type=str, help='list of comparisons that correspond to columns of .csv data', required=True)
     
     # output variables (all optional: default is './correlation_heatmap.png')
+    parser_plot_corr_heatmap.add_argument('-ct', '--corr_type', type=str, default='spearman', help='type of correlation calculation')
+    parser_plot_corr_heatmap.add_argument('--xlab', type=str, default='', help="name of the x-axis label")
+    parser_plot_corr_heatmap.add_argument('--ylab', type=str, default='', help="name of y-axis label")
+    parser_plot_corr_heatmap.add_argument('--title', type=str, default='', help="name of title label")
     parser_plot_corr_heatmap.add_argument('--out_name', type=str, default='correlation_heatmap', help="name of figure output")
     parser_plot_corr_heatmap.add_argument('--out_type', type=str, default='pdf', help='file type of figure output')
     parser_plot_corr_heatmap.add_argument('--out_directory', type=str, default='', help="path to output directory")
+    parser_plot_corr_heatmap.add_argument('--center', type=float, default=0, help="value for centering the colormap")
+    parser_plot_corr_heatmap.add_argument('--linewidth', type=float, default=0.5, help="linewidth of lines dividing cells")
+    parser_plot_corr_heatmap.add_argument('--cmap', type=str, default='coolwarm', help="positions to put larger lines for dividing the cells")
+    parser_plot_corr_heatmap.add_argument('--line_pos', nargs='+', type=int, help='positions to put larger lines for dividing the cells')
     parser_plot_corr_heatmap.set_defaults(func=plot_corr_heatmap)
 
     ##################################################
@@ -87,21 +106,38 @@ def main():
     from .plot.correlation_scatter import plot_corr_scatterplot
     # signature_plot_corr_scatterplot = inspect.signature(plot_corr_scatterplot)
     parser_plot_corr_scatterplot = subparsers.add_parser('plot_corr_scatterplot', 
-                                                    description='generate a scatterplot for correlation between two comparisons')
-    parser_plot_corr_scatterplot.add_argument('-df', '--df_filepath', type=str, help='protein sequence relative filepath to .fasta file')
-    parser_plot_corr_scatterplot.add_argument('-c1', '--condition1', type=str, help='')
-    parser_plot_corr_scatterplot.add_argument('-c2', '--condition2', type=str, help='')
-    parser_plot_corr_scatterplot.add_argument('-hue', '--hue_column', type=str, help='')
+                                                    description='This function takes in a dataframe from count_reads, and plots a heatmap showing correlation between all given comparison conditions')
+    parser_plot_corr_scatterplot.add_argument('-df', '--df_filepath', type=str, help='filepath to .csv data generated from count_reads')
+    parser_plot_corr_scatterplot.add_argument('-c1', '--condition1', type=str, help='comparison condition 1, name of a column in .csv data')
+    parser_plot_corr_scatterplot.add_argument('-c2', '--condition2', type=str, help='comparison condition 2, name of a column in .csv data')
+    parser_plot_corr_scatterplot.add_argument('-hue', '--hue_column', type=str, help='the categorial data for each of the points, name of a column in .csv data')
+    parser_plot_corr_scatterplot.add_argument('--hue_order', nargs='+', type=str, help='a list of categorial variables in hue_column')
+    parser_plot_corr_scatterplot.add_argument('--palette', nargs='+', type=str, help='a list of colors which correspond to hue_order')
     
+    parser_plot_corr_scatterplot.add_argument('--xmin', type=float, default=None, help="x-axis left bound")
+    parser_plot_corr_scatterplot.add_argument('--xmax', type=float, default=None, help="x-axis right bound")
+    parser_plot_corr_scatterplot.add_argument('--ymin', type=float, default=None, help="y-axis lower bound")
+    parser_plot_corr_scatterplot.add_argument('--ymax', type=float, default=None, help="y-axis upper bound")
+    parser_plot_corr_scatterplot.add_argument('--xlab', type=str, default='cond1 score', help="name of the x-axis label")
+    parser_plot_corr_scatterplot.add_argument('--ylab', type=str, default='cond2 score', help="name of y-axis label")
     # output variables (all optional: default is './correlation_scatterplot.png')
     parser_plot_corr_scatterplot.add_argument('--out_name', type=str, default='correlation_scatterplot', help="name of figure output")
     parser_plot_corr_scatterplot.add_argument('--out_type', type=str, default='pdf', help='file type of figure output')
     parser_plot_corr_scatterplot.add_argument('--out_directory', type=str, default='', help="path to output directory")
+    parser_plot_corr_scatterplot.add_argument('--alpha', type=float, default=0.8, help="transparency of scatterplot points")
+    parser_plot_corr_scatterplot.add_argument('--linewidth', type=float, default=1.0, help="linewidth of plot")
+    parser_plot_corr_scatterplot.add_argument('--edgecolor', type=str, default='black', help="color of scatterplot edge lines")
+    parser_plot_corr_scatterplot.add_argument('--s', type=float, default=25, help="size of scatterplot points")
+    parser_plot_corr_scatterplot.add_argument('--figsize', nargs='+', type=int, help='the figsize (length, width)', default=[4.5, 4])
     parser_plot_corr_scatterplot.set_defaults(func=plot_corr_scatterplot)
 
     ##################################################
+
+
+
     ##################################################
-    ##################################################
+
+### sgrna ###
 
     from .sgrna.findall_be import add_parser_args, main as findall_be_main
     parser_findall_be = subparsers.add_parser("findall_be", 

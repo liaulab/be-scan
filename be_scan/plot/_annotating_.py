@@ -25,10 +25,10 @@ def norm_to_intergenic_ctrls(in_dataframe, comparisons, avg_dict, y_column):
     return df_logfc
 
 # calculate the negative controls (ie the mean and stdev for the non)
-def calc_negative_controls(df_data, list_compnames, neg_ctrl_category): 
+def calc_negative_controls(df_data, list_compnames, neg_ctrl_col, neg_ctrl_category): 
 
     # Use negative controls to set cutoffs
-    df_negctrl = df_data.loc[df_data['Gene'] == neg_ctrl_category].copy()
+    df_negctrl = df_data.loc[df_data[neg_ctrl_col] == neg_ctrl_category].copy()
     list_negctrlstats = [] # list of tups of (comp, avg, sd, avg+2sd, avg-2sd)
     # cutoff_dict = {} # dictionary of comp: (avg+2sd, avg-2sd)
     avg_dict = {} # dictionary of comp: avg
