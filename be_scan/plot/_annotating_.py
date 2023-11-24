@@ -43,19 +43,3 @@ def calc_negative_controls(df_data, list_compnames, neg_ctrl_col, neg_ctrl_categ
         avg_dict[comp] = temp[0]
         
     return df_negctrl, list_negctrlstats, avg_dict
-
-
-
-# # Add extra label for control guides to subtype as intergenic, non-targeting, essential. 
-# def annotate_submuttype(mutType, geneID):
-#     if mutType == 'Control':
-#         try: 
-#             return control_subtypes[geneID]
-#         except KeyError: 
-#             print('Invalid type for control guide')
-#     else: 
-#         return mutType
-
-# # For plotting domain vs. not domain
-# def annotate_in_domain(domain, domains_list):
-#     return 'in domain' if domain in domains_list else 'not in domain'

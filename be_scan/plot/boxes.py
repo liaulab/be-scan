@@ -3,7 +3,7 @@ Author: Calvin XiaoYang Hu
 Adapted from: Nicholas Lue - NZL10196_Screen_Analysis_v9b.py Created on Fri May 29 03:00:39 2020
 Date: 231116
 
-{Description: some base pair to amino acid translation functions}
+{Description: }
 """
 
 import numpy as np
@@ -11,58 +11,93 @@ import seaborn as sns
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 
+import pandas as pd
+from _annotating_ import norm_to_intergenic_ctrls, calc_negative_controls
 
-def plot_boxes(df_input, cat_col, plot_x_list, y_val, # x y values, df, comparisons
-               hue_order, palette, # sns.boxplot params
-               plot_name, out_prefix, output_type='pdf', # output pdf params
-               ylab='Log2 Fold Change', xlab='', # x and y label
-               plot_col='comparison', # df params
-               cutoff=20, swarm_list=None, jitter=True, # small categories and stripplot params
-               dimensions=(5,4), list_negctrlstats=None, yax_set=True, # adjusting plots params
-               swarm=False, # swarmplot
+def plot_boxes(df_filepath, 
+               plot_column, plot_conditions, 
+               y_column, 
+               comparisons, 
+               neg_ctrl_col, neg_ctrl_category,
+
+               filter_column='Mut_type', filter_category='Missense',
+               xlab='', ylab='Log2 Fold Change', # x and y label
+               out_name='scatterplot', out_type='pdf', out_directory='', # output params
+               dimensions=(5,4), 
+               yax_set=True, # adjusting plots params
                sat_level=1, fliersize=4, width=0.4, # sns.boxplot params
                flierprops={'marker':'o', 'mec':'black', 'lw':1, 'alpha':0.8} # sns.boxplot params
                ):
-    '''
-    Make box plots.
-    '''
     
-    figpdf = PdfPages('_'.join([out_prefix, plot_name, 'boxes.pdf']))
+    """[Summary]
+    This function takes in a dataframe from count_reads, performs normalization, 
+    and then plots each guide by plot_column conditions, to show the distribution of guide enrichment
+    ...
 
-    for comp in plot_x_list:
-        
-        # Isolate data corresponding to appropriate comparison/sample
-        df_plot = df_input.loc[df_input[plot_col] == comp].copy()
-        
+    :param df_filepath: filepath to .csv data generated from count_reads
+    :type df_filepath: str, required
+    :param plot_column: column of .csv for x axis categories, typically domain or mutation type column
+    :type plot_column: str, required
+    :param plot_conditions: category names of plot_column
+    :type plot_conditions: list of str, required
+    :param y_column: column of .csv for y axis, typically the normalized log_fc change score
+    :type y_column: str, required
+    :param comparisons: list of comparisons that correspond to columns of .csv data
+    :type comparisons: list of str, required
+    :param neg_ctrl_col: column of .csv which correspond to normalization control
+    :type neg_ctrl_col: str, required
+    :param neg_ctrl_category: categorical variable of neg_ctrl_col .csv which correspond to normalization control
+    :type neg_ctrl_category: str, required
+
+    :param filter_column: name of column to filter dataframe for plotting
+    :type filter_column: str, optional, defaults to 'Mut_type'
+    :param filter_category: name of categories of filter_column to filter dataframe
+    :type filter_category: str, optional, defaults to 'Missense'
+    :param xlab: name of x-axis label
+    :type xlab: str, optional, defaults to ''
+    :param ylab: name of y-axis label
+    :type ylab: str, optional, defaults to 'Log2 Fold Change'
+    :param out_name: name of figure output
+    :type out_name: str, optional, defaults to 'scatterplot'
+    :param out_type: file type of figure output
+    :type out_type: str, optional, defaults to 'pdf'
+    :param out_directory: path to output directory
+    :type out_directory: str, optional, defaults to ''
+    ...
+
+    :return: None
+    :rtype: NoneType
+    """
+
+    df_input = pd.read_csv(df_filepath)
+    print(df_input)
+
+    # Normalize data to intergenic controls
+    # calculate negative control stats
+    _, list_negctrlstats, avg_dict = calc_negative_controls(df_input, comparisons, neg_ctrl_col, neg_ctrl_category)
+    # calculate normalized log_fc scores for each comp condition
+    df_logfc = norm_to_intergenic_ctrls(df_input, comparisons, avg_dict, y_column)
+    
+    df_filtered = df_logfc.loc[df_logfc[filter_column]==filter_category]
+    df_filtered = df_filtered.loc[df_filtered[plot_column].isin(plot_conditions)].copy()
+    print(df_filtered)
+
+    # output pdf information
+    output_path = out_directory + out_name + '.' + out_type
+    figpdf = PdfPages(output_path)
+    
+    for comp in comparisons:
+                
         # Make boxplot
         fig, ax = plt.subplots(figsize=dimensions)
-        sns.boxplot(x=cat_col, y=y_val, data=df_plot, 
-                    order=hue_order, width=width, palette=palette, ax=ax, 
-                    saturation=sat_level, fliersize=fliersize, flierprops=flierprops)
+        sns.boxplot(data=df_filtered, 
+                    ax=ax, 
+                    x=plot_column, y=comp+'_'+y_column, 
+                    # order=hue_order, palette=palette, 
+                    width=width, saturation=sat_level, fliersize=fliersize, flierprops=flierprops)
         plt.setp(ax.artists, edgecolor='black')
         plt.setp(ax.lines, color='black')
 
-        # Check for small categories
-        small_cats = []
-        for category in hue_order:
-            if df_plot[cat_col].value_counts()[category] < cutoff:
-                small_cats.append(category)
-        # If # of observations is below cutoff, stripplot instead of boxplot for those categories
-        if len(small_cats) > 0:
-            df_plot_s = df_plot.loc[df_plot[cat_col].isin(small_cats)].copy()
-            df_plot = df_plot.loc[~df_plot[cat_col].isin(small_cats)]
-            sns.stripplot(x=cat_col, y=y_val, data=df_plot_s, alpha=0.8,
-                          order=hue_order, palette=palette, edgecolor='black',
-                          jitter=jitter, linewidth=1, size=4, ax=ax)
-            
-        # make swarmplot if that is what user wants
-        if swarm:
-            if swarm_list != None:
-                df_plot = df_plot.loc[df_plot[cat_col].isin(swarm_list)]
-            sns.swarmplot(x=cat_col, y=y_val, data=df_plot,
-                          order=hue_order, palette=palette, edgecolor='black',
-                          linewidth=1, alpha=0.5, size=4, ax=ax)
-            
         # Overlay neg ctrl avg +/- 2 sd as black dashed line
         if list_negctrlstats != None:
             tup_plot = [tup for tup in list_negctrlstats if tup[0] == comp][0]
@@ -71,8 +106,8 @@ def plot_boxes(df_input, cat_col, plot_x_list, y_val, # x y values, df, comparis
         
         # Adjust x and y axis limits
         if yax_set: 
-            plt.ylim(np.floor(df_input[y_val].min()),
-                     np.ceil(df_input[y_val].max()))
+            plt.ylim(np.floor(df_filtered[comp+'_'+y_column].min()),
+                     np.ceil(df_filtered[comp+'_'+y_column].max()))
         
         # Set/adjust labels
         plt.title(comp) # Set plot title
@@ -80,15 +115,12 @@ def plot_boxes(df_input, cat_col, plot_x_list, y_val, # x y values, df, comparis
         plt.xlabel(xlab) # Remove x-axis label
         plt.xticks(rotation=45, horizontalalignment='right')
         
-        # Add major gridlines
-        #plt.grid(b=True, which='major', axis='y', lw=0.5, c='k', alpha=0.2)
         # Adjust dimensions
         plt.tight_layout()
-        
         # Save to pdf
-        plt.savefig(figpdf, format=output_type)
+        plt.savefig(figpdf, format=out_type)
         plt.close()
 
     figpdf.close()
 
-
+# python3 -m be_scan plot_boxes -df '../../../Downloads/NZL10196_v9_comparisons.csv' -p 'Domain' -pc 'PWWP' 'ADD' 'MTase' -y 'log2_fc' -c 'd3-pos' 'd3-neg' 'd6-pos' 'd6-neg' 'd9-pos' 'd9-neg' -ncol 'Gene' -ncat "NON-GENE"
