@@ -58,8 +58,8 @@ def main():
     parser_plot_scatterplot.add_argument('-x', '--x_column', type=str, help='column of .csv for x axis, typically amino acid position')
     parser_plot_scatterplot.add_argument('-y', '--y_column', type=str, help='column of .csv for y axis, typically the normalized log_fc change score')
     parser_plot_scatterplot.add_argument('-hue', '--hue_column', type=str, help='column of .csv which correspond to coloring of scatterplot points')
-    parser_plot_scatterplot.add_argument('-ncat', '--neg_ctrl_col', type=str, help='column of .csv which correspond to normalization control')
-    parser_plot_scatterplot.add_argument('-ncol', '--neg_ctrl_category', type=str, help='categorical variable of neg_ctrl_col .csv which correspond to normalization control')
+    parser_plot_scatterplot.add_argument('-ncol', '--neg_ctrl_col', type=str, help='column of .csv which correspond to normalization control')
+    parser_plot_scatterplot.add_argument('-ncat', '--neg_ctrl_category', type=str, help='categorical variable of neg_ctrl_col .csv which correspond to normalization control')
     parser_plot_scatterplot.add_argument('-c','--comparisons', nargs='+', type=str, help='list of comparisons that correspond to columns of .csv data', required=True)
     
     # optional variables
@@ -133,7 +133,25 @@ def main():
 
     ##################################################
 
-
+    from .plot.boxes import plot_boxes
+    parser_plot_boxes = subparsers.add_parser('plot_boxes', 
+                                              description='This function takes in a dataframe from count_reads, performs normalization, and then plots each guide by plot_column conditions, to show the distribution of guide enrichment')
+    parser_plot_boxes.add_argument('-df', '--df_filepath', type=str, help='filepath to .csv data generated from count_reads')
+    parser_plot_boxes.add_argument('-p', '--plot_column', type=str, help='column of .csv for x axis categories, typically domain or mutation type column')
+    parser_plot_boxes.add_argument('-pc', '--plot_conditions', nargs='+', type=str, help='category names of plot_column')
+    parser_plot_boxes.add_argument('-y', '--y_column', type=str, help='column of .csv for y axis, typically the normalized log_fc change score')
+    parser_plot_boxes.add_argument('-c', '--comparisons', nargs='+', type=str, help='list of comparisons that correspond to columns of .csv data')
+    parser_plot_boxes.add_argument('-ncol', '--neg_ctrl_col', type=str, help='column of .csv which correspond to normalization control')
+    parser_plot_boxes.add_argument('-ncat', '--neg_ctrl_category', type=str, help='categorical variable of neg_ctrl_col .csv which correspond to normalization control')
+    
+    parser_plot_boxes.add_argument('--filter_column', type=str, default='Mut_type', help="name of column to filter dataframe for plotting")
+    parser_plot_boxes.add_argument('--filter_category', type=str, default='Missense', help="name of categories of filter_column to filter dataframe")
+    parser_plot_boxes.add_argument('--xlab', type=str, default='', help="name of x-axis label")
+    parser_plot_boxes.add_argument('--ylab', type=str, default='Log2 Fold Change', help="name of y-axis label")
+    parser_plot_boxes.add_argument('--out_name', type=str, default='scatterplot', help="name of figure output")
+    parser_plot_boxes.add_argument('--out_type', type=str, default='pdf', help="file type of figure output")
+    parser_plot_boxes.add_argument('--out_directory', type=str, default='', help="path to output directory")
+    parser_plot_boxes.set_defaults(func=plot_boxes)
 
     ##################################################
 
