@@ -16,6 +16,9 @@ For further info, check out {doc}`usage` and read installation instructions in s
 :maxdepth: 2
 
 usage
+sgrna
+analysis
+plot
 notebooks/tutorial
 ```
 
