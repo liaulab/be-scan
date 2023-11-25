@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 
 import pandas as pd
 from matplotlib.backends.backend_pdf import PdfPages
-from ._annotating_ import color_list, list_muttypes
-from ._annotating_ import norm_to_intergenic_ctrls, calc_negative_controls
+from be_scan.plot._annotating_ import color_list, list_muttypes
+from be_scan.plot._annotating_ import norm_to_intergenic_ctrls, calc_negative_controls
 
 def plot_scatterplot(df_filepath, # dataframe
                      x_column, y_column, 
@@ -126,6 +126,7 @@ def plot_scatterplot(df_filepath, # dataframe
         plt.tight_layout()
         # Save to pdf
         plt.savefig(figpdf, format='pdf')
+        plt.show()
         plt.close()
 
     figpdf.close()

@@ -11,7 +11,7 @@ def main():
     parser = argparse.ArgumentParser(prog="be_scan")
     subparsers = parser.add_subparsers(required=True)
 
-    from .analysis import count_reads
+    from be_scan.analysis import count_reads
     signature_count_reads = inspect.signature(count_reads)
     parser_count_reads = subparsers.add_parser('count_reads',
                                                help=next(line for line in count_reads.__doc__.splitlines() if line),
@@ -30,7 +30,7 @@ def main():
 
     ##################################################
 
-    from .analysis import validate_cloning
+    from be_scan.analysis import validate_cloning
     signature_validate_cloning = inspect.signature(validate_cloning)
     parser_validate_cloning = subparsers.add_parser('validate_cloning',
                                                     help=next(line for line in validate_cloning.__doc__.splitlines() if line),
@@ -50,7 +50,7 @@ def main():
 
 ### plot ###
 
-    from .plot.scatterplot import plot_scatterplot
+    from be_scan.plot.scatterplot import plot_scatterplot
     # signature_plot_scatterplot = inspect.signature(plot_scatterplot)
     parser_plot_scatterplot = subparsers.add_parser('plot_scatterplot', 
                                                     description='This function takes in a dataframe from count_reads, performs normalization, and then plots the data for each condition to reveal which guides are enriched')
@@ -80,7 +80,7 @@ def main():
 
     ##################################################
 
-    from .plot.correlation_heatmap import plot_corr_heatmap
+    from be_scan.plot.correlation_heatmap import plot_corr_heatmap
     # signature_plot_corr_heatmap = inspect.signature(plot_corr_heatmap)
     parser_plot_corr_heatmap = subparsers.add_parser('plot_corr_heatmap', 
                                                      description='his function takes in a dataframe from count_reads, and plots a scatterplot showing correlation between two given conditions')
@@ -103,7 +103,7 @@ def main():
 
     ##################################################
 
-    from .plot.correlation_scatter import plot_corr_scatterplot
+    from be_scan.plot.correlation_scatter import plot_corr_scatterplot
     # signature_plot_corr_scatterplot = inspect.signature(plot_corr_scatterplot)
     parser_plot_corr_scatterplot = subparsers.add_parser('plot_corr_scatterplot', 
                                                     description='This function takes in a dataframe from count_reads, and plots a heatmap showing correlation between all given comparison conditions')
@@ -133,7 +133,7 @@ def main():
 
     ##################################################
 
-    from .plot.boxes import plot_boxes
+    from be_scan.plot.boxes import plot_boxes
     parser_plot_boxes = subparsers.add_parser('plot_boxes', 
                                               description='This function takes in a dataframe from count_reads, performs normalization, and then plots each guide by plot_column conditions, to show the distribution of guide enrichment')
     parser_plot_boxes.add_argument('-df', '--df_filepath', type=str, help='filepath to .csv data generated from count_reads')
@@ -157,7 +157,7 @@ def main():
 
 ### sgrna ###
 
-    from .sgrna.findall_be import add_parser_args, main as findall_be_main
+    from be_scan.sgrna.findall_be import add_parser_args, main as findall_be_main
     parser_findall_be = subparsers.add_parser("findall_be", 
                                               description='find all guides accessible for base editing')
     parser_findall_be = add_parser_args(parser_findall_be)

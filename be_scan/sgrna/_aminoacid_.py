@@ -5,7 +5,7 @@ Date: 231103
 {Description: some base pair to amino acid translation functions}
 """
 
-from ._genomic_ import rev_complement, complements
+from be_scan.sgrna._genomic_ import rev_complement, complements
 
 # translating DNA sequence to amino acid sequence
 DNA_AA_map = {"TTT":"F", "TTC":"F", "TTA":"L", "TTG":"L",

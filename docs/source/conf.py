@@ -20,7 +20,7 @@ extensions = [
     "sphinx.ext.autosectionlabel",
     "nbsphinx", # or MyST-NB
     "sphinx.ext.autodoc",
-] 
+]
 
 templates_path = ['_templates']
 exclude_patterns = []

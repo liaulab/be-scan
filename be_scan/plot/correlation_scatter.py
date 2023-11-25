@@ -10,7 +10,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from ._annotating_ import list_muttypes, color_list
+from be_scan.plot._annotating_ import list_muttypes, color_list
 
 def plot_corr_scatterplot(df_filepath, 
                           condition1, condition2, 

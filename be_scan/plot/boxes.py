@@ -10,9 +10,9 @@ import numpy as np
 import seaborn as sns
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
-
 import pandas as pd
-from _annotating_ import norm_to_intergenic_ctrls, calc_negative_controls
+
+from be_scan.plot._annotating_ import norm_to_intergenic_ctrls, calc_negative_controls
 
 def plot_boxes(df_filepath, 
                plot_column, plot_conditions, 

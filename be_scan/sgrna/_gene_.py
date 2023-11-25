@@ -6,8 +6,8 @@ Date: 230906
 This preprocessing includes separating intron and exons, and generating all possible guides of length n}
 """
 
-from ._genomic_ import complements
-from ._genomic_ import rev_complement, complement
+from be_scan.sgrna._genomic_ import complements
+from be_scan.sgrna._genomic_ import rev_complement, complement
 
 # this function is conditional on +-20 bps of introns flanking exons
 class GeneForCRISPR(): 
