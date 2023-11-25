@@ -85,7 +85,8 @@ def plot_scatterplot(df_filepath, # dataframe
     hue_order_s = list_muttypes[:3]
     palette_s = color_list[:3]
 
-    df_filtered = df_logfc.loc[(df_logfc[x_column]>=window[0]) & (df_logfc[x_column]<=window[1])]
+    if window is not None: 
+        df_filtered = df_logfc.loc[(df_logfc[x_column]>=window[0]) & (df_logfc[x_column]<=window[1])]
     df_filtered = df_filtered.loc[df_filtered[hue_column].isin(list_muttypes[:3])]
 
     # output pdf information
