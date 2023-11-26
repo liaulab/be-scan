@@ -17,8 +17,8 @@ For further info, check out {doc}`usage` and read installation instructions in s
 
 usage
 notebooks/tutorial
+reference/index
 ```
-
 
 # Indices and tables
 
