@@ -79,9 +79,10 @@ def plot_corr_heatmap(df_filepath,
     # Rotate axis labels
     plt.xticks(rotation=45, horizontalalignment='right')
     plt.yticks(rotation=0, horizontalalignment='right')
-    for pos in line_pos:
-        plt.hlines(pos, *ax.get_xlim())
-        plt.vlines(pos, *ax.get_ylim())
+    if line_pos: 
+        for pos in line_pos:
+            plt.hlines(pos, *ax.get_xlim())
+            plt.vlines(pos, *ax.get_ylim())
     
     # Show frame
     for _, spine in ax.spines.items():
@@ -94,10 +95,10 @@ def plot_corr_heatmap(df_filepath,
 
     plt.tight_layout()
     # Save pdf and close everything
-    plt.show()
-    output_path = out_directory + out_name + '.' + out_type
     if savefig: 
-        plt.savefig(output_path, format='pdf')
+        output_path = out_directory + out_name + '.' + out_type
+        plt.savefig(output_path, format=out_type)
+    plt.show()
     plt.close()
 
 # python3 -m be_scan plot_corr_heatmap -df '../../../Downloads/NZL10196_v9_comparisons.csv' -c 'd3-pos' 'd3-neg' 'd6-pos' 'd6-neg' 'd9-pos' 'd9-neg'

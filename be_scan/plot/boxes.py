@@ -113,11 +113,11 @@ def plot_boxes(df_filepath,
         
         # Adjust dimensions
         plt.tight_layout()
-        plt.show()
         # Save to pdf
         if savefig: 
             output_path = out_directory + out_name + comp + '.' + out_type
             plt.savefig(output_path, format=out_type)
+        plt.show()
         plt.close()
 
 # python3 -m be_scan plot_boxes -df '../../../Downloads/NZL10196_v9_comparisons.csv' -p 'Domain' -pc 'PWWP' 'ADD' 'MTase' -y 'log2_fc' -c 'd3-pos' 'd3-neg' 'd6-pos' 'd6-neg' 'd9-pos' 'd9-neg' -ncol 'Gene' -ncat "NON-GENE"

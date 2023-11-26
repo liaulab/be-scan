@@ -102,12 +102,12 @@ def plot_corr_scatterplot(df_filepath,
     plt.ylabel(ylab) # set y-axis label
     # Adjust dimensions
     plt.tight_layout()
-    plt.show()
 
     # Save to pdf
-    out = out_directory + condition1 + condition2 + '_' + out_name + '.' + out_type
     if savefig: 
-        plt.savefig(out, format='pdf')
+        output_path = out_directory + condition1 + condition2 + '_' + out_name + '.' + out_type
+        plt.savefig(output_path, format=out_type)
+    plt.show()
     plt.close()
 
 # python3 -m be_scan plot_corr_scatterplot -df '../../../Downloads/NZL10196_v9_comparisons.csv' -c1 'd3-neg' -c2 'd9-pos' -hue 'Mut_type'
