@@ -8,7 +8,6 @@ Date: 231116
 
 import numpy as np
 import seaborn as sns
-from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -22,11 +21,12 @@ def plot_boxes(df_filepath,
 
                filter_column='Mut_type', filter_category='Missense',
                xlab='', ylab='Log2 Fold Change', # x and y label
-               out_name='scatterplot', out_type='pdf', out_directory='', # output params
+               out_name='boxes', out_type='pdf', out_directory='', # output params
                dimensions=(5,4), 
                yax_set=True, # adjusting plots params
                sat_level=1, fliersize=4, width=0.4, # sns.boxplot params
-               flierprops={'marker':'o', 'mec':'black', 'lw':1, 'alpha':0.8} # sns.boxplot params
+               flierprops={'marker':'o', 'mec':'black', 'lw':1, 'alpha':0.8}, # sns.boxplot params
+               savefig=True,
                ):
     
     """[Summary]
@@ -63,6 +63,8 @@ def plot_boxes(df_filepath,
     :type out_type: str, optional, defaults to 'pdf'
     :param out_directory: path to output directory
     :type out_directory: str, optional, defaults to ''
+    :param savefig: option of saving figure to output or not
+    :type figsize: boolean, optional, defaults to True
     ...
 
     :return: None
@@ -70,7 +72,6 @@ def plot_boxes(df_filepath,
     """
 
     df_input = pd.read_csv(df_filepath)
-    print(df_input)
 
     # Normalize data to intergenic controls
     # calculate negative control stats
@@ -80,11 +81,6 @@ def plot_boxes(df_filepath,
     
     df_filtered = df_logfc.loc[df_logfc[filter_column]==filter_category]
     df_filtered = df_filtered.loc[df_filtered[plot_column].isin(plot_conditions)].copy()
-    print(df_filtered)
-
-    # output pdf information
-    output_path = out_directory + out_name + '.' + out_type
-    figpdf = PdfPages(output_path)
     
     for comp in comparisons:
                 
@@ -117,10 +113,11 @@ def plot_boxes(df_filepath,
         
         # Adjust dimensions
         plt.tight_layout()
+        plt.show()
         # Save to pdf
-        plt.savefig(figpdf, format=out_type)
+        if savefig: 
+            output_path = out_directory + out_name + comp + '.' + out_type
+            plt.savefig(output_path, format=out_type)
         plt.close()
-
-    figpdf.close()
 
 # python3 -m be_scan plot_boxes -df '../../../Downloads/NZL10196_v9_comparisons.csv' -p 'Domain' -pc 'PWWP' 'ADD' 'MTase' -y 'log2_fc' -c 'd3-pos' 'd3-neg' 'd6-pos' 'd6-neg' 'd9-pos' 'd9-neg' -ncol 'Gene' -ncat "NON-GENE"

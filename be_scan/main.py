@@ -63,14 +63,15 @@ def main():
     parser_plot_scatterplot.add_argument('-c','--comparisons', nargs='+', type=str, help='list of comparisons that correspond to columns of .csv data', required=True)
     
     # optional variables
-    parser_plot_scatterplot.add_argument('-win','--window', nargs='+', type=int, help='inclusive window of which amino acid positions are shown in the plot', default=None)
-    
+    parser_plot_scatterplot.add_argument('--xmin', type=float, default=None, help="x-axis left bound")
+    parser_plot_scatterplot.add_argument('--xmax', type=float, default=None, help="x-axis right bound")    
     # output variables (all optional: default is './scatterplot.png')
-    parser_plot_scatterplot.add_argument('--x_label', type=str, default='Amino Acid Position', help="name of the x-axis label")
-    parser_plot_scatterplot.add_argument('--y_label', type=str, default='sgRNA Score', help="name of y-axis label")
+    parser_plot_scatterplot.add_argument('--xlab', type=str, default='Amino Acid Position', help="name of the x-axis label")
+    parser_plot_scatterplot.add_argument('--ylab', type=str, default='sgRNA Score', help="name of y-axis label")
     parser_plot_scatterplot.add_argument('--out_name', type=str, default='scatterplot', help="name of figure output")
     parser_plot_scatterplot.add_argument('--out_type', type=str, default='pdf', help='file type of figure output')
     parser_plot_scatterplot.add_argument('--out_directory', type=str, default='', help="path to output directory")
+    parser_plot_scatterplot.add_argument('--savefig', type=bool, default=True, help="option of saving figure to output or not")
     parser_plot_scatterplot.add_argument('--alpha', type=float, default=0.8, help="transparency of scatterplot points")
     parser_plot_scatterplot.add_argument('--linewidth', type=float, default=1.0, help="linewidth of plot")
     parser_plot_scatterplot.add_argument('--edgecolor', type=str, default='black', help="color of scatterplot edge lines")
@@ -95,6 +96,7 @@ def main():
     parser_plot_corr_heatmap.add_argument('--out_name', type=str, default='correlation_heatmap', help="name of figure output")
     parser_plot_corr_heatmap.add_argument('--out_type', type=str, default='pdf', help='file type of figure output')
     parser_plot_corr_heatmap.add_argument('--out_directory', type=str, default='', help="path to output directory")
+    parser_plot_corr_heatmap.add_argument('--savefig', type=bool, default=True, help="option of saving figure to output or not")
     parser_plot_corr_heatmap.add_argument('--center', type=float, default=0, help="value for centering the colormap")
     parser_plot_corr_heatmap.add_argument('--linewidth', type=float, default=0.5, help="linewidth of lines dividing cells")
     parser_plot_corr_heatmap.add_argument('--cmap', type=str, default='coolwarm', help="positions to put larger lines for dividing the cells")
@@ -124,6 +126,7 @@ def main():
     parser_plot_corr_scatterplot.add_argument('--out_name', type=str, default='correlation_scatterplot', help="name of figure output")
     parser_plot_corr_scatterplot.add_argument('--out_type', type=str, default='pdf', help='file type of figure output')
     parser_plot_corr_scatterplot.add_argument('--out_directory', type=str, default='', help="path to output directory")
+    parser_plot_corr_scatterplot.add_argument('--savefig', type=bool, default=True, help="option of saving figure to output or not")
     parser_plot_corr_scatterplot.add_argument('--alpha', type=float, default=0.8, help="transparency of scatterplot points")
     parser_plot_corr_scatterplot.add_argument('--linewidth', type=float, default=1.0, help="linewidth of plot")
     parser_plot_corr_scatterplot.add_argument('--edgecolor', type=str, default='black', help="color of scatterplot edge lines")
@@ -151,6 +154,7 @@ def main():
     parser_plot_boxes.add_argument('--out_name', type=str, default='scatterplot', help="name of figure output")
     parser_plot_boxes.add_argument('--out_type', type=str, default='pdf', help="file type of figure output")
     parser_plot_boxes.add_argument('--out_directory', type=str, default='', help="path to output directory")
+    parser_plot_boxes.add_argument('--savefig', type=bool, default=True, help="option of saving figure to output or not")
     parser_plot_boxes.set_defaults(func=plot_boxes)
 
     ##################################################

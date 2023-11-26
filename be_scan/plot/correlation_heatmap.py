@@ -15,7 +15,8 @@ def plot_corr_heatmap(df_filepath,
                       corr_type='spearman', 
                       xlab='', ylab='', title='Spearman Correlation Heatmap', # output related params
                       out_directory='', out_name='correlation_heatmap', out_type='pdf', 
-                      center=0, linewidth=0.5, line_pos=[], cmap='coolwarm' # plot related params
+                      center=0, linewidth=0.5, line_pos=[], cmap='coolwarm', # plot related params
+                      savefig=True,
                      ): 
     
     """[Summary]
@@ -52,6 +53,8 @@ def plot_corr_heatmap(df_filepath,
     :type cmap: str, optional, defaults to 'coolwarm'
     :param line_pos: positions to put larger lines for dividing the cells
     :type line_pos: list of int, optional, defaults to []
+    :param savefig: option of saving figure to output or not
+    :type figsize: boolean, optional, defaults to True
     ...
     
     :return: None
@@ -91,8 +94,10 @@ def plot_corr_heatmap(df_filepath,
 
     plt.tight_layout()
     # Save pdf and close everything
+    plt.show()
     output_path = out_directory + out_name + '.' + out_type
-    plt.savefig(output_path, format='pdf')
+    if savefig: 
+        plt.savefig(output_path, format='pdf')
     plt.close()
 
 # python3 -m be_scan plot_corr_heatmap -df '../../../Downloads/NZL10196_v9_comparisons.csv' -c 'd3-pos' 'd3-neg' 'd6-pos' 'd6-neg' 'd9-pos' 'd9-neg'

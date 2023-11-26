@@ -11,7 +11,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 import pandas as pd
-from matplotlib.backends.backend_pdf import PdfPages
 from be_scan.plot._annotating_ import color_list, list_muttypes
 from be_scan.plot._annotating_ import norm_to_intergenic_ctrls, calc_negative_controls
 
@@ -20,11 +19,12 @@ def plot_scatterplot(df_filepath, # dataframe
                      hue_column, # df params
                      comparisons, 
                      neg_ctrl_col, neg_ctrl_category,
-                     window=None,
+                     xmin=None, xmax=None,
                      xlab='Amino Acid Position', ylab='sgRNA Score', # scatterplot labels
                      out_name='scatterplot', out_type='pdf', out_directory='', # output params
                      alpha=0.8, linewidth=1.0, edgecolor='black', s=25, # scatterplot params
-                     figsize=(8,4)
+                     figsize=(8,4), 
+                     savefig=True,
                      ):
     
     """[Summary]
@@ -70,6 +70,8 @@ def plot_scatterplot(df_filepath, # dataframe
     :type s: int, optional, defaults to 25
     :param figsize: the figsize (length, width)
     :type figsize: tuple of ints, optional, defaults to (8,4)
+    :param savefig: option of saving figure to output or not
+    :type figsize: boolean, optional, defaults to True
     ...
 
     :return: None
@@ -85,13 +87,7 @@ def plot_scatterplot(df_filepath, # dataframe
     hue_order_s = list_muttypes[:3]
     palette_s = color_list[:3]
 
-    if window is not None: 
-        df_filtered = df_logfc.loc[(df_logfc[x_column]>=window[0]) & (df_logfc[x_column]<=window[1])]
-    df_filtered = df_filtered.loc[df_filtered[hue_column].isin(list_muttypes[:3])]
-
-    # output pdf information
-    output_path = out_directory + out_name + '.' + out_type
-    figpdf = PdfPages(output_path)
+    df_filtered = df_logfc.loc[df_logfc[hue_column].isin(list_muttypes[:3])]
     
     for comp in comparisons:
         # Make plots
@@ -119,17 +115,18 @@ def plot_scatterplot(df_filepath, # dataframe
         ax.set_ylim(-1*bound, bound)
         # Set title and axes labels
         ax.set_title(comp)
+        ax.set_xlim(xmin,xmax)
         ax.set_xlabel(xlab)
         ax.set_ylabel(ylab)
 
         # Adjust figsize
         plt.tight_layout()
         # Save to pdf
-        plt.savefig(figpdf, format='pdf')
+        if savefig:
+            output_path = out_directory + out_name + comp + '.' + out_type
+            plt.savefig(output_path, format=out_type)
         plt.show()
         plt.close()
-
-    figpdf.close()
 
 # python3 -m be_scan plot_scatterplot -df '../../../Downloads/NZL10196_v9_comparisons.csv' 
 #         -x 'Edit_site_3A1' -y 'log2_fc' -c 'd3-pos' -hue 'Mut_type' -pt 'comparison' 

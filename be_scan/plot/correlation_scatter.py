@@ -21,6 +21,7 @@ def plot_corr_scatterplot(df_filepath,
                           out_directory='', out_name='correlation_scatterplot', out_type='pdf', 
                           alpha=0.8, linewidth=1, edgecolor='black', s=25,
                           figsize=(4.5, 4), 
+                          savefig=True,
                           ):
     
     """[Summary]
@@ -72,6 +73,8 @@ def plot_corr_scatterplot(df_filepath,
     :type s: int, optional, defaults to 25
     :param dimensions: the figsize (length, width)
     :type dimensions: tuple of ints, optional, defaults to (8,4)
+    :param savefig: option of saving figure to output or not
+    :type figsize: boolean, optional, defaults to True
     ...
     
     :return: None
@@ -99,11 +102,12 @@ def plot_corr_scatterplot(df_filepath,
     plt.ylabel(ylab) # set y-axis label
     # Adjust dimensions
     plt.tight_layout()
-    
+    plt.show()
+
     # Save to pdf
     out = out_directory + condition1 + condition2 + '_' + out_name + '.' + out_type
-    print(out)
-    plt.savefig(out, format='pdf')
+    if savefig: 
+        plt.savefig(out, format='pdf')
     plt.close()
 
 # python3 -m be_scan plot_corr_scatterplot -df '../../../Downloads/NZL10196_v9_comparisons.csv' -c1 'd3-neg' -c2 'd9-pos' -hue 'Mut_type'

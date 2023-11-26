@@ -7,9 +7,7 @@
 
 ## be_scan (Base-Editing Screening Computational ANalysis)
 
-Wanna design a base editor screen? Yes we be_scan!
-
-For further info, check out {doc}`usage` and read installation instructions in subsection {ref}`Installation`
+For further info on how to start, check out {doc}`usage` and read installation instructions in subsection {ref}`Installation`
 
 ```{toctree}
 :caption: 'Contents:'
