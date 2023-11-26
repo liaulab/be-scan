@@ -21,7 +21,7 @@ extensions = [
     "nbsphinx", # or MyST-NB
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
-]
+] 
 
 templates_path = ['_templates']
 exclude_patterns = []

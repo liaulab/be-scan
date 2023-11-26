@@ -18,8 +18,8 @@ sgrna
 analysis
 plot
 notebooks/tutorial
+reference/index
 ```
-
 
 # Indices and tables
 
