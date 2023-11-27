@@ -188,7 +188,7 @@ def merge_and_norm(dict_counts, in_ref, t0='t0', dir_counts='', save='all',
     dict_counts : dict in format {'sample name': 'file name'}
         Dictionary to map sample names (key) to read count file names (value),
         as key,value (e.g. {'KN-0': 'KN-0_counts.csv'}). Must include the t0
-        sample in the dict.
+        sample in the dict. 
     in_ref : str or path
         String or path to the reference file. in_ref must have column headers,
         with 'sgRNA_seq' as the header for the column with the sgRNA sequences.
