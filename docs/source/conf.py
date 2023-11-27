@@ -18,7 +18,7 @@ extensions = [
     "myst_parser",
     "sphinx.ext.duration",
     "sphinx.ext.autosectionlabel",
-    "nbsphinx",
+    "nbsphinx", # or MyST-NB
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
 ] 

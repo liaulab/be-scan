@@ -9,8 +9,8 @@ Date: 230906
 import argparse # for parsing arguments from command line
 
 # importing functions
-from ._gene_ import GeneForCRISPR
-from ._BE_guides_ import identify_BE_guides, annotate_BE_guides
+from be_scan.sgrna._gene_ import GeneForCRISPR
+from be_scan.sgrna._BE_guides_ import identify_BE_guides, annotate_BE_guides
 
 def add_parser_args(parser):
 

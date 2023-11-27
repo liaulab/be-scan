@@ -8,10 +8,10 @@ Date: 230906
 
 import pandas as pd
 
-from ._genomic_ import bases, complements, cas_key
-from ._genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM, make_mutations
-from ._guides_ import filter_guide, filter_repeats
-from ._aminoacid_ import find_aa_edits_fwd, find_aa_edits_rev
+from be_scan.sgrna._genomic_ import bases, complements, cas_key
+from be_scan.sgrna._genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM, make_mutations
+from be_scan.sgrna._guides_ import filter_guide, filter_repeats
+from be_scan.sgrna._aminoacid_ import find_aa_edits_fwd, find_aa_edits_rev
 
 
 # this is the main function for taking in a gene object with all possible guides,
