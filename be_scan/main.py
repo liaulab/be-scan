@@ -48,6 +48,27 @@ def main():
 
     ##################################################
 
+    from be_scan.analysis.count_reads import count_reads
+    parser_count_reads = subparsers.add_parser('count_reads', 
+                                               description='')
+    parser_count_reads.set_defaults(func=count_reads)
+
+    ##################################################
+    
+    from be_scan.analysis.merge_and_norm import merge_and_norm
+    parser_merge_and_norm = subparsers.add_parser('merge_and_norm', 
+                                                  description='')
+    parser_merge_and_norm.set_defaults(func=merge_and_norm)
+    
+    ##################################################
+    
+    from be_scan.analysis.average_reps import average_reps
+    parser_average_reps = subparsers.add_parser('average_reps', 
+                                                description='')
+    parser_average_reps.set_defaults(func=average_reps)
+    
+    ##################################################
+
 ### plot ###
 
     from be_scan.plot.scatterplot import plot_scatterplot
