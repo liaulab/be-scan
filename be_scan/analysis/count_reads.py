@@ -54,8 +54,6 @@ def count_reads(sample_sheet, in_ref, KEY_INTERVAL=(10,80),
     samples = [list(a) for a in zip(df_samples.fastq_file, df_samples.counts_file, df_samples.noncounts_file, df_samples.stats_file)]
 
     for sample in samples: 
-
-        print(sample)
         in_fastq =    file_dir + sample[0]
         out_counts =  file_dir + sample[1]
         out_np =      file_dir + sample[2]

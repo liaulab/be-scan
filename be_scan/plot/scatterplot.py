@@ -3,7 +3,7 @@ Author: Calvin XiaoYang Hu
 Adapted from: Nicholas Lue - NZL10196_Screen_Analysis_v9b.py Created on Fri May 29 03:00:39 2020
 Date: 231116
 
-{Description: some base pair to amino acid translation functions}
+{Description: This function performs normalization and then plots the data for each condition to reveal enriched guides}
 """
 
 import numpy as np
@@ -22,9 +22,9 @@ def plot_scatterplot(df_filepath, # dataframe
                      xmin=None, xmax=None,
                      xlab='Amino Acid Position', ylab='sgRNA Score', # scatterplot labels
                      out_name='scatterplot', out_type='pdf', out_directory='', # output params
+                     savefig=True,
                      alpha=0.8, linewidth=1.0, edgecolor='black', s=25, # scatterplot params
                      figsize=(8,4), 
-                     savefig=True,
                      ):
     
     """[Summary]
@@ -34,21 +34,19 @@ def plot_scatterplot(df_filepath, # dataframe
 
     :param df_filepath: filepath to .csv data generated from count_reads
     :type df_filepath: str, required
-    :param x_column: column of .csv for x axis, typically amino acid position
+    :param x_column: column of .csv, typically amino acid position
     :type x_column: str, required
-    :param y_column: column of .csv for y axis, typically the normalized log_fc change score
+    :param y_column: column of .csv, typically the normalized log_fc score
     :type y_column: str, required
-    :param hue_column: column of .csv which correspond to coloring of scatterplot points
+    :param hue_column: column of .csv which correspond to coloring of points
     :type hue_column: str, required
-    :param comparisons: list of comparisons that correspond to columns of .csv data
+    :param comparisons: list of comparisons that correspond to columns of data
     :type comparisons: list of str, required
     :param neg_ctrl_col: column of .csv which correspond to normalization control
     :type neg_ctrl_col: str, required
-    :param neg_ctrl_category: categorical variable of neg_ctrl_col .csv which correspond to normalization control
+    :param neg_ctrl_category: categorical variable of neg_ctrl_col
     :type neg_ctrl_category: str, required
 
-    :param window: inclusive window of which amino acid positions are shown in the plot
-    :type window: tuple of ints, optional, defaults to None
     :param xlab: name of x-axis label
     :type xlab: str, optional, defaults to 'Amino Acid Position'
     :param ylab: name of y-axis label
@@ -127,7 +125,3 @@ def plot_scatterplot(df_filepath, # dataframe
             plt.savefig(output_path, format=out_type)
         plt.show()
         plt.close()
-
-# python3 -m be_scan plot_scatterplot -df '../../../Downloads/NZL10196_v9_comparisons.csv' 
-#         -x 'Edit_site_3A1' -y 'log2_fc' -c 'd3-pos' -hue 'Mut_type' -pt 'comparison' 
-#         -ncol 'Gene' -ncat 'NON-GENE' -win 224 912 -c 'd3-pos' 'd3-neg' 'd6-pos' 'd6-neg' 'd9-pos' 'd9-neg'

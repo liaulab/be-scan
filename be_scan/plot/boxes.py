@@ -3,7 +3,7 @@ Author: Calvin XiaoYang Hu
 Adapted from: Nicholas Lue - NZL10196_Screen_Analysis_v9b.py Created on Fri May 29 03:00:39 2020
 Date: 231116
 
-{Description: }
+{Description: This function plots chosen guides by plot_column categories to show the distribution of guides}
 """
 
 import numpy as np
@@ -31,22 +31,23 @@ def plot_boxes(df_filepath,
     
     """[Summary]
     This function takes in a dataframe from count_reads, performs normalization, 
-    and then plots each guide by plot_column conditions, to show the distribution of guide enrichment
+    and then plots chosen (ex control) guides by plot_column categories, 
+    to show the distribution of categories of guides
     ...
 
     :param df_filepath: filepath to .csv data generated from count_reads
     :type df_filepath: str, required
-    :param plot_column: column of .csv for x axis categories, typically domain or mutation type column
+    :param plot_column: column of .csv, typically domain or mutation type
     :type plot_column: str, required
     :param plot_conditions: category names of plot_column
     :type plot_conditions: list of str, required
-    :param y_column: column of .csv for y axis, typically the normalized log_fc change score
+    :param y_column: column of .csv, typically the normalized log_fc score
     :type y_column: str, required
-    :param comparisons: list of comparisons that correspond to columns of .csv data
+    :param comparisons: list of comparisons that correspond to columns of data
     :type comparisons: list of str, required
     :param neg_ctrl_col: column of .csv which correspond to normalization control
     :type neg_ctrl_col: str, required
-    :param neg_ctrl_category: categorical variable of neg_ctrl_col .csv which correspond to normalization control
+    :param neg_ctrl_category: categorical variable of neg_ctrl_col
     :type neg_ctrl_category: str, required
 
     :param filter_column: name of column to filter dataframe for plotting

@@ -3,7 +3,7 @@ Author: Calvin XiaoYang Hu
 Adapted from: Nicholas Lue - NZL10196_Screen_Analysis_v9b.py Created on Fri May 29 03:00:39 2020
 Date: 231116
 
-{Description: some base pair to amino acid translation functions}
+{Description: This function plots a scatterplot showing correlation between two given conditions}
 """
 
 import seaborn as sns
@@ -31,11 +31,11 @@ def plot_corr_scatterplot(df_filepath,
     
     :param df_filepath: filepath to .csv data generated from count_reads
     :type df_filepath: str, required
-    :param condition1: comparison condition 1, name of a column in .csv data
+    :param condition1: comparison condition 1, name of .csv data column
     :type condition1: str, required
-    :param condition2: comparison condition 2, name of a column in .csv data
+    :param condition2: comparison condition 2, name of .csv data column
     :type condition2: str, required
-    :param hue_column: the categorial data for each of the points, name of a column in .csv data
+    :param hue_column: the categorial dimension of the data, name of .csv data column
     :type hue_column: str, required
 
     :param hue_order: a list of categorial variables in hue_column
@@ -84,8 +84,8 @@ def plot_corr_scatterplot(df_filepath,
     df_data = pd.read_csv(df_filepath)
     df_filtered = df_data.loc[df_data[hue_column].isin(hue_order)]
     
-    # Make plot
-    fig, ax = plt.subplots(figsize=figsize)
+    # make plot
+    _, ax = plt.subplots(figsize=figsize)
     sns.scatterplot(data=df_filtered, 
                     ax=ax, 
                     x=condition1, y=condition2, 
@@ -93,17 +93,15 @@ def plot_corr_scatterplot(df_filepath,
                     alpha=alpha, linewidth=linewidth, edgecolor=edgecolor, s=s
                     )
     
-    # Adjust x and y axis limits
+    # adjust x and y axis limits
     ax.set_xlim(xmin,xmax)
     ax.set_ylim(ymin,ymax)
-
-    # Set labels
+    # set labels
     plt.xlabel(xlab) # set x-axis label
     plt.ylabel(ylab) # set y-axis label
-    # Adjust dimensions
     plt.tight_layout()
 
-    # Save to pdf
+    # save to pdf and close
     if savefig: 
         output_path = out_directory + condition1 + condition2 + '_' + out_name + '.' + out_type
         plt.savefig(output_path, format=out_type)
