@@ -15,8 +15,9 @@ import json
 import re
 
 # Aggregate raw counts and perform log2-transform and t0 normalization.
-def merge_and_norm(dict_counts_str, in_ref, 
+def merge_and_norm(sample_sheet, in_ref, 
                    t0='t0', dir_counts='', 
+                   file_dir='',
                    save='all',
                    out_folder='', out_reads='agg_reads.csv', out_log2='agg_log2.csv', out_t0='agg_t0_reps.csv', 
                    return_df=None):
@@ -28,7 +29,8 @@ def merge_and_norm(dict_counts_str, in_ref,
 
     Parameters
     ----------
-    dict_counts_str : a string of dict in format "{'sample name': 'file name'}"
+    sample_sheet : 
+    sample_sheet : a string of dict in format "{'sample name': 'file name'}"
         Dictionary to map sample names (key) to read count file names (value),
         as key,value (e.g. "{'KN-0': 'KN-0_counts.csv'}"). Must include the t0
         sample in the dict. 
@@ -68,8 +70,9 @@ def merge_and_norm(dict_counts_str, in_ref,
     path = Path.cwd()
     inpath = path / dir_counts
     df_ref = pd.read_csv(in_ref)
-    dict_counts_str = re.sub('\s+',' ',dict_counts_str)
-    dict_counts = json.loads(dict_counts_str)
+
+    df_samples = pd.read_csv(sample_sheet)
+    dict_counts = dict(zip(df_samples.condition, df_samples.counts_file))
 
     if 'sgRNA_seq' not in df_ref.columns.tolist():
         raise Exception('in_ref is missing column: sgRNA_seq')
@@ -81,7 +84,8 @@ def merge_and_norm(dict_counts_str, in_ref,
     # also perform log2 norm (brian/broad method; log2(rpm + 1 / total reads))
     df_reads, df_log2, df_t0 = df_ref.copy(), df_ref.copy(), df_ref.copy()
     for sample in list_samples:
-        df_temp = pd.read_csv(inpath / dict_counts[sample], names=['sgRNA_seq', sample])
+        filepath = file_dir + dict_counts[sample]
+        df_temp = pd.read_csv(inpath / filepath, names=['sgRNA_seq', sample])
         # aggregating raw reads
         df_reads = pd.merge(df_reads, df_temp, on='sgRNA_seq')
         # log2 normalization

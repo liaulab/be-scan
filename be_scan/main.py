@@ -17,14 +17,12 @@ def main():
                                                help=next(line for line in count_reads.__doc__.splitlines() if line),
                                                description=count_reads.__doc__,
                                                formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser_count_reads.add_argument('in_fastq', type=str)
+    parser_count_reads.add_argument('sample_sheet', type=str)
     parser_count_reads.add_argument('in_ref', type=str)
+    parser_count_reads.add_argument('--file_dir', type=str, default="", help="")
     parser_count_reads.add_argument('--KEY_INTERVAL', type=int, nargs=2, default=signature_count_reads.parameters['KEY_INTERVAL'].default)
     parser_count_reads.add_argument('--KEY', type=str, default=signature_count_reads.parameters['KEY'].default)
     parser_count_reads.add_argument('--KEY_REV', type=str, default=signature_count_reads.parameters['KEY_REV'].default)
-    parser_count_reads.add_argument('--out_counts', type=str, default=signature_count_reads.parameters['out_counts'].default)
-    parser_count_reads.add_argument('--out_np', type=str, default=signature_count_reads.parameters['out_np'].default)
-    parser_count_reads.add_argument('--out_stats', type=str, default=signature_count_reads.parameters['out_stats'].default)
     parser_count_reads.add_argument('--dont_trim_G', action='store_true')
     parser_count_reads.set_defaults(func=count_reads)
 
@@ -40,24 +38,28 @@ def main():
     parser_validate_cloning.add_argument('spacers', type=str)
     parser_validate_cloning.add_argument('vector', type=str)
     parser_validate_cloning.add_argument('out_csv', type=str, help="Output CSV file name")
-    parser_validate_cloning.add_argument('--enzyme', type=str, default="Esp3I", help="Default: %(default)s")
-    parser_validate_cloning.add_argument('--overhangs', type=str, default=('CACC', 'GTTT'), nargs=2, help="Default: %(default)s")
-    parser_validate_cloning.add_argument('--ref_name_pattern', type=str, default=signature_validate_cloning.parameters['ref_name_pattern'].default, help="Default: %(default)s")
-    parser_validate_cloning.add_argument('--flank_width', type=int, default=signature_validate_cloning.parameters['flank_width'].default, help="Default: %(default)s")
+    parser_validate_cloning.add_argument('--enzyme', type=str, default="Esp3I", help="")
+    parser_validate_cloning.add_argument('--overhangs', type=str, default=('CACC', 'GTTT'), nargs=2, help="")
+    parser_validate_cloning.add_argument('--ref_name_pattern', type=str, default=signature_validate_cloning.parameters['ref_name_pattern'].default, help="")
+    parser_validate_cloning.add_argument('--flank_width', type=int, default=signature_validate_cloning.parameters['flank_width'].default, help="")
     parser_validate_cloning.set_defaults(func=validate_cloning)
-
-    ##################################################
-
-    from be_scan.analysis.count_reads import count_reads
-    parser_count_reads = subparsers.add_parser('count_reads', 
-                                               description='')
-    parser_count_reads.set_defaults(func=count_reads)
 
     ##################################################
     
     from be_scan.analysis.merge_and_norm import merge_and_norm
     parser_merge_and_norm = subparsers.add_parser('merge_and_norm', 
                                                   description='')
+    parser_merge_and_norm.add_argument('sample_sheet', type=str, help="a string of dict in format \"{'sample name': 'file name'}\"")
+    parser_merge_and_norm.add_argument('in_ref', type=str, help="str or path")
+    parser_merge_and_norm.add_argument('--t0', type=str, default="t0", help="str, default 't0'")
+    parser_merge_and_norm.add_argument('--file_dir', type=str, default="", help="")
+    parser_merge_and_norm.add_argument('--dir_counts', type=str, default="", help="str, default ''")
+    parser_merge_and_norm.add_argument('--save', type=str, default="all", help="{'all', None, ['reads', 'log2', 't0']}, default 'all'")
+    parser_merge_and_norm.add_argument('--out_folder', type=str, default="", help="str, default ''")
+    parser_merge_and_norm.add_argument('--out_reads', type=str, default="agg_reads.csv", help="str, default 'agg_reads.csv'")
+    parser_merge_and_norm.add_argument('--out_log2', type=str, default="agg_log2.csv", help="str, default 'agg_log2.csv'")
+    parser_merge_and_norm.add_argument('--out_t0', type=str, default="agg_t0_reps.csv", help="str, default 'agg_t0_reps.csv'")
+    parser_merge_and_norm.add_argument('--return_df', type=bool, default=None, help="{None, 'reads', 'log2', 't0'}, default None")
     parser_merge_and_norm.set_defaults(func=merge_and_norm)
     
     ##################################################
@@ -65,6 +67,12 @@ def main():
     from be_scan.analysis.average_reps import average_reps
     parser_average_reps = subparsers.add_parser('average_reps', 
                                                 description='')
+    parser_average_reps.add_argument('sample_sheet', type=str, help="a string of dict in format \"{'replicate': 'condition'}\"")
+    parser_average_reps.add_argument('in_lfc', type=str, help="str or path")
+    parser_average_reps.add_argument('--save', type=bool, default=True, help="bool, default True")
+    parser_average_reps.add_argument('--out_folder', type=str, default="", help="str, default ''")
+    parser_average_reps.add_argument('--out_conds', type=str, default="agg_reads.csv", help="str, default 'agg_reads.csv'")
+    parser_average_reps.add_argument('--return_df', type=bool, default=False, help="bool, default False")
     parser_average_reps.set_defaults(func=average_reps)
     
     ##################################################

@@ -14,7 +14,7 @@ import pandas as pd
 import re
 
 # For a set of conditions, average the replicates and export it to csv.
-def average_reps(in_lfc, dict_conds_str, 
+def average_reps(sample_sheet, in_lfc, 
                  save=True, out_folder='', out_conds='agg_t0_conds.csv', 
                  return_df=False):
     """
@@ -26,7 +26,8 @@ def average_reps(in_lfc, dict_conds_str,
 
     Parameters
     ----------
-    dict_conds_str : a string of dict in format "{'replicate': 'condition'}"
+    sample_sheet : 
+    sample_sheet : a string of dict in format "{'replicate': 'condition'}"
         Dictionary to map replicates (key) to conditions (value). Replicates
         must match the column headers in the in_lfc file (i.e. sample names),
         otherwise they will be discarded before performing the averaging.
@@ -48,8 +49,9 @@ def average_reps(in_lfc, dict_conds_str,
     # import files, define variables, check for requirements, etc.
     path = Path.cwd()
     df_lfc = pd.read_csv(in_lfc)
-    dict_conds_str = re.sub('\s+',' ',dict_conds_str)
-    dict_conds = json.loads(dict_conds_str)
+    df_samples = pd.read_csv(sample_sheet)
+    dict_conds = dict(zip(df_samples.condition, df_samples.agg_conditions))
+
     # make df to map replicates to condition
     df_map = pd.DataFrame(data=dict_conds.items(), columns=['rep','condition'])
     # check to make sure replicates are in the input file
