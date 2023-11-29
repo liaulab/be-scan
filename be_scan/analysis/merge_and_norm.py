@@ -3,7 +3,7 @@ Author: Calvin XiaoYang Hu, Simon Shen, Kevin Ngan
 Adapted from: Kevin Ngan from KCN_masterfunctions_v6_200406.py
 Date: 231128
 
-{Description: }
+{Description: Aggregate raw counts and perform log2-transform and t0 normalization}
 """
 
 from pathlib import Path
@@ -11,15 +11,12 @@ import warnings
 
 import numpy as np
 import pandas as pd
-import json
-import re
 
-# Aggregate raw counts and perform log2-transform and t0 normalization.
 def merge_and_norm(sample_sheet, in_ref, 
-                   t0='t0', dir_counts='', 
                    file_dir='',
+                   t0='t0', dir_counts='', 
                    save='all',
-                   out_folder='', out_reads='agg_reads.csv', out_log2='agg_log2.csv', out_t0='agg_t0_reps.csv', 
+                   out_reads='agg_reads.csv', out_log2='agg_log2.csv', out_t0='agg_t0_reps.csv', 
                    return_df=None):
     """
     For a given set of samples and their raw read count files from count_reads,
@@ -29,14 +26,19 @@ def merge_and_norm(sample_sheet, in_ref,
 
     Parameters
     ----------
-    sample_sheet : 
-    sample_sheet : a string of dict in format "{'sample name': 'file name'}"
-        Dictionary to map sample names (key) to read count file names (value),
-        as key,value (e.g. "{'KN-0': 'KN-0_counts.csv'}"). Must include the t0
-        sample in the dict. 
+    sample_sheet : str or path
+        REQUIRED COLS: 'condition', 'counts_file'
+        a sheet with information on sequence id, 
+        in_fastq (string or path to the FASTQ file to be processed), 
+        out_counts (string or path for the output csv file with perfect sgRNA matches ex: 'counts.csv'),
+        out_np (string or path for the output csv file with non-perfect sgRNA matches ex: 'noncounts.csv'), 
+        out_stats (string or path for the output txt file with the read counting statistics ex: 'stats.txt'), 
+        condition names, and condition categories
     in_ref : str or path
         String or path to the reference file. in_ref must have column headers,
         with 'sgRNA_seq' as the header for the column with the sgRNA sequences.
+    file_dir : str or path, defaults to ''
+        String or path to the directory where all files are found and saved. 
     t0 : str, default 't0'
         Name of the t0 sample in dict_counts. If you have multiple t0 samples
         (e.g. paired t0s for specific samples), then you will need to run this
@@ -51,9 +53,6 @@ def merge_and_norm(sample_sheet, in_ref,
         'reads', 'log2', 't0') as a list of strings to choose which ones to
         save ('all' is equivalent to a list of all three). None will not export
         any files to csv.
-    out_folder : str, default ''
-        Name of the subfolder to save output files. The default is the current
-        working directory.
     out_reads : str, default 'agg_reads.csv'
         Name of the aggregated raw reads csv output file.
     out_log2 : str, default 'agg_log2.csv'
@@ -97,7 +96,7 @@ def merge_and_norm(sample_sheet, in_ref,
     df_t0.drop(columns=t0, inplace=True)
 
     # export files and return dataframes if necessary
-    outpath = path / out_folder
+    outpath = path / file_dir
     Path.mkdir(outpath, exist_ok=True)
     # dictionary to map kws to dfs and output file names
     dict_df = {'reads': (df_reads, out_reads), 'log2': (df_log2, out_log2), 't0': (df_t0, out_t0)}

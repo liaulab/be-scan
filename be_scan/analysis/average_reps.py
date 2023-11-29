@@ -3,20 +3,20 @@ Author: Calvin XiaoYang Hu, Simon Shen, Kevin Ngan
 Adapted from: Kevin Ngan from KCN_masterfunctions_v6_200406.py
 Date: 231128
 
-{Description: }
+{Description: For a set of conditions, average the replicates and export it to csv}
 """
 
 from pathlib import Path
 import warnings
-import json
 
 import pandas as pd
 import re
 
-# For a set of conditions, average the replicates and export it to csv.
 def average_reps(sample_sheet, in_lfc, 
-                 save=True, out_folder='', out_conds='agg_t0_conds.csv', 
-                 return_df=False):
+                 file_dir='',
+                 save=True, out_conds='agg_t0_conds.csv', 
+                 return_df=False
+                 ):
     """
     Averages the replicates for each condition (e.g. treatment, control) and
     exports the csv file with averaged replicate values for each condition.
@@ -26,20 +26,22 @@ def average_reps(sample_sheet, in_lfc,
 
     Parameters
     ----------
-    sample_sheet : 
-    sample_sheet : a string of dict in format "{'replicate': 'condition'}"
-        Dictionary to map replicates (key) to conditions (value). Replicates
-        must match the column headers in the in_lfc file (i.e. sample names),
-        otherwise they will be discarded before performing the averaging.
-        Example: "{'KN-1': 'unsorted', 'KN-2': 'unsorted', 'KN-3': 'sorted'}"
+    sample_sheet : str or path
+        REQUIRED COLS: 'condition', 'agg_conditions'
+        a sheet with information on sequence id, 
+        in_fastq (string or path to the FASTQ file to be processed), 
+        out_counts (string or path for the output csv file with perfect sgRNA matches ex: 'counts.csv'),
+        out_np (string or path for the output csv file with non-perfect sgRNA matches ex: 'noncounts.csv'), 
+        out_stats (string or path for the output txt file with the read counting statistics ex: 'stats.txt'), 
+        condition names, and condition categories
     in_lfc : str or path
         String or path to the individual replicate values csv file. The column
         headers for the replicate values must match the keys in dict_conds
+
+    file_dir : str or path, defaults to ''
+        String or path to the directory where all files are found and saved. 
     save : bool, default True
         Whether to save the averaged replicate values as a csv file.
-    out_folder : str, default ''
-        Name of the subfolder to save output files. The default is the current
-        working directory.
     out_conds : str, default 'agg_t0_conds.csv'
         Name of the averaged replicate values csv output file.
     return_df : bool, default False
@@ -76,7 +78,7 @@ def average_reps(sample_sheet, in_lfc,
 
     # export files and return dataframes if necessary
     if save:
-        outpath = path / out_folder
+        outpath = path / file_dir
         Path.mkdir(outpath, exist_ok=True)
         df_lfc.to_csv(outpath / out_conds, index=False)
     print('Average reps completed')

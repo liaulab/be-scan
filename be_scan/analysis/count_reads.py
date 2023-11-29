@@ -3,7 +3,7 @@ Author: Calvin XiaoYang Hu, Simon Shen, Kevin Ngan
 Adapted from: Kevin Ngan from KCN_masterfunctions_v6_200406.py
 Date: 231128
 
-{Description: }
+{Description: Count the reads in a FASTQ file and assign them to a reference sgRNA set}
 """
 
 from collections import Counter
@@ -13,10 +13,11 @@ import warnings
 import numpy as np
 import pandas as pd
 
-# Count the reads in a FASTQ file and assign them to a reference sgRNA set.
-def count_reads(sample_sheet, in_ref, KEY_INTERVAL=(10,80),
-                KEY='CGAAACACC', KEY_REV='GTTTTAGA', dont_trim_G=False, 
-                file_dir=''):
+def count_reads(sample_sheet, in_ref, 
+                file_dir='', 
+                KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTTAGA', 
+                dont_trim_G=False
+                ):
     """
     Given a set of sgRNA sequences and a FASTQ file, count the reads in the
     FASTQ, assign the reads to sgRNAs, and export the counts to a csv file `out_counts`. All
@@ -25,12 +26,20 @@ def count_reads(sample_sheet, in_ref, KEY_INTERVAL=(10,80),
 
     Parameters
     ----------
-    sample_sheet : 
-    in_fastq : str or path
-        String or path to the FASTQ file to be processed.
+    sample_sheet : str or path
+        REQUIRED COLS: 'fastq_file', 'counts_file', 'noncounts_file', 'stats_file'
+        a sheet with information on sequence id, 
+        in_fastq (string or path to the FASTQ file to be processed), 
+        out_counts (string or path for the output csv file with perfect sgRNA matches ex: 'counts.csv'),
+        out_np (string or path for the output csv file with non-perfect sgRNA matches ex: 'noncounts.csv'), 
+        out_stats (string or path for the output txt file with the read counting statistics ex: 'stats.txt'), 
+        condition names, and condition categories
     in_ref : str or path
         String or path to the reference file. in_ref must have column headers,
         with 'sgRNA_seq' as the header for the column with the sgRNA sequences.
+
+    file_dir : str or path, defaults to ''
+        String or path to the directory where all files are found and saved. 
     KEY_INTERVAL : tuple, default (10,80)
         Tuple of (KEY_START, KEY_END) that defines the KEY_REGION. Denotes the
         substring within the read to search for the KEY.
@@ -40,12 +49,6 @@ def count_reads(sample_sheet, in_ref, KEY_INTERVAL=(10,80),
     KEY_REV : str, default 'GTTTTAGA'
         Sequence that is expected downstream of the spacer sequence. The
         default is the start of the sgRNA scaffold sequence.
-    out_counts : str or path, default 'counts.csv'
-        String or path for the output csv file with perfect sgRNA matches.
-    out_np : str or path, default 'np_counts.csv'
-        String or path for the output csv file with non-perfect sgRNA matches.
-    out_stats : str or path, default 'stats.txt'
-        String or path for the output txt file with the read counting statistics.
     dont_trim_G : bool, default False
         Whether to trim the first G from 21-nt sgRNA sequences to make them 20-nt.
     """
