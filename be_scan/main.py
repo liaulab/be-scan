@@ -193,7 +193,7 @@ def main():
 
     from be_scan.sgrna.findall_be import add_parser_args, main as findall_be_main
     parser_findall_be = subparsers.add_parser("findall_be", 
-                                              description='find all guides accessible for base editing')
+                                              help='find all guides accessible for base editing')
     parser_findall_be = add_parser_args(parser_findall_be)
     parser_findall_be.set_defaults(func=findall_be_main)
 

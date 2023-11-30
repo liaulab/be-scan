@@ -1,4 +1,11 @@
-# Library and Screen Analysis Functions
+# Library and Screen Analysis Functions: `analysis`
+
+```{eval-rst}
+.. automodule:: be_scan.analysis
+    :members:
+    :undoc-members:
+    :imported-members:
+```
 
 ## count_reads()
 
@@ -22,4 +29,3 @@ This function for a set of conditions, average the replicates and export it to c
 
 ```{eval-rst}
 .. autofunction:: be_scan.analysis.average_reps
-```

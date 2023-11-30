@@ -1,4 +1,4 @@
-# Default Plot Functions
+# Default Plot Functions: `plot`
 
 ## plot_scatterplot()
 
