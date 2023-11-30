@@ -1,4 +1,4 @@
-# Default Plot Functions
+# Default Plot Functions: `plot`
 
 This function takes in a dataframe from count_reads, performs normalization, and then plots the data for each condition to reveal which guides are enriched {py:func}`be_scan.plot.plot_scatterplot`
 
