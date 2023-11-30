@@ -53,7 +53,7 @@ def main():
     from be_scan.plot.scatterplot import plot_scatterplot
     # signature_plot_scatterplot = inspect.signature(plot_scatterplot)
     parser_plot_scatterplot = subparsers.add_parser('plot_scatterplot', 
-                                                    description='This function takes in a dataframe from count_reads, performs normalization, and then plots the data for each condition to reveal which guides are enriched')
+                                                    help='This function takes in a dataframe from count_reads, performs normalization, and then plots the data for each condition to reveal which guides are enriched')
     parser_plot_scatterplot.add_argument('-df', '--df_filepath', type=str, help='filepath to .csv data generated from count_reads')
     parser_plot_scatterplot.add_argument('-x', '--x_column', type=str, help='column of .csv for x axis, typically amino acid position')
     parser_plot_scatterplot.add_argument('-y', '--y_column', type=str, help='column of .csv for y axis, typically the normalized log_fc change score')
@@ -84,7 +84,7 @@ def main():
     from be_scan.plot.correlation_heatmap import plot_corr_heatmap
     # signature_plot_corr_heatmap = inspect.signature(plot_corr_heatmap)
     parser_plot_corr_heatmap = subparsers.add_parser('plot_corr_heatmap', 
-                                                     description='his function takes in a dataframe from count_reads, and plots a scatterplot showing correlation between two given conditions')
+                                                     help='This function takes in a dataframe from count_reads, and plots a scatterplot showing correlation between two given conditions')
     parser_plot_corr_heatmap.add_argument('-df', '--df_filepath', type=str, help='filepath to .csv data generated from count_reads')
     parser_plot_corr_heatmap.add_argument('-c','--comparisons', nargs='+', type=str, help='list of comparisons that correspond to columns of .csv data', required=True)
     
@@ -108,7 +108,7 @@ def main():
     from be_scan.plot.correlation_scatter import plot_corr_scatterplot
     # signature_plot_corr_scatterplot = inspect.signature(plot_corr_scatterplot)
     parser_plot_corr_scatterplot = subparsers.add_parser('plot_corr_scatterplot', 
-                                                    description='This function takes in a dataframe from count_reads, and plots a heatmap showing correlation between all given comparison conditions')
+                                                    help='This function takes in a dataframe from count_reads, and plots a heatmap showing correlation between all given comparison conditions')
     parser_plot_corr_scatterplot.add_argument('-df', '--df_filepath', type=str, help='filepath to .csv data generated from count_reads')
     parser_plot_corr_scatterplot.add_argument('-c1', '--condition1', type=str, help='comparison condition 1, name of a column in .csv data')
     parser_plot_corr_scatterplot.add_argument('-c2', '--condition2', type=str, help='comparison condition 2, name of a column in .csv data')
@@ -138,7 +138,7 @@ def main():
 
     from be_scan.plot.boxes import plot_boxes
     parser_plot_boxes = subparsers.add_parser('plot_boxes', 
-                                              description='This function takes in a dataframe from count_reads, performs normalization, and then plots each guide by plot_column conditions, to show the distribution of guide enrichment')
+                                              help='This function takes in a dataframe from count_reads, performs normalization, and then plots each guide by plot_column conditions, to show the distribution of guide enrichment')
     parser_plot_boxes.add_argument('-df', '--df_filepath', type=str, help='filepath to .csv data generated from count_reads')
     parser_plot_boxes.add_argument('-p', '--plot_column', type=str, help='column of .csv for x axis categories, typically domain or mutation type column')
     parser_plot_boxes.add_argument('-pc', '--plot_conditions', nargs='+', type=str, help='category names of plot_column')
@@ -163,7 +163,7 @@ def main():
 
     from be_scan.sgrna.findall_be import add_parser_args, main as findall_be_main
     parser_findall_be = subparsers.add_parser("findall_be", 
-                                              description='find all guides accessible for base editing')
+                                              help='find all guides accessible for base editing')
     parser_findall_be = add_parser_args(parser_findall_be)
     parser_findall_be.set_defaults(func=findall_be_main)
 
