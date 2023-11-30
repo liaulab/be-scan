@@ -1,3 +1,3 @@
-import be_scan.sgrna
-import be_scan.analysis
-import be_scan.plot
+from be_scan import sgrna
+from be_scan import analysis
+from be_scan import plot
