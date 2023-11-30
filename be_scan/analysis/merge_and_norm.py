@@ -69,7 +69,7 @@ def merge_and_norm(sample_sheet, in_ref,
     path = Path.cwd()
     inpath = path / dir_counts
     df_ref = pd.read_csv(in_ref)
-
+    # import sample_sheet and derive relevant information for conditions and associated files
     df_samples = pd.read_csv(sample_sheet)
     dict_counts = dict(zip(df_samples.condition, df_samples.counts_file))
 

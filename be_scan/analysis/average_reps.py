@@ -51,6 +51,7 @@ def average_reps(sample_sheet, in_lfc,
     # import files, define variables, check for requirements, etc.
     path = Path.cwd()
     df_lfc = pd.read_csv(in_lfc)
+    # import sample_sheet and derive relevant information for conditions and aggregation
     df_samples = pd.read_csv(sample_sheet)
     dict_conds = dict(zip(df_samples.condition, df_samples.agg_conditions))
 

@@ -1,0 +1,8 @@
+sample_id,fastq_file,counts_file,condition,agg_conditions,noncounts_file,stats_file
+MY0,MY381-1_S30_L001_R1_001.fastq,output1/counts-1.csv,t0,t0,output1/noncounts-1.csv,output1/stats-1.txt
+MY1,MY381-5_S34_L001_R1_001.fastq,output1/counts-5.csv,unsorted-1,24h_unsorted,output1/noncounts-5.csv,output1/stats-5.txt
+MY2,MY381-6_S35_L001_R1_001.fastq,output1/counts-6.csv,unsorted-2,24h_unsorted,output1/noncounts-6.csv,output1/stats-6.txt
+MY3,MY381-7_S36_L001_R1_001.fastq,output1/counts-7.csv,unsorted-3,24h_unsorted,output1/noncounts-7.csv,output1/stats-7.txt
+MY4,MY381-8_S37_L001_R1_001.fastq,output1/counts-8.csv,sorted-1,24h_sorted,output1/noncounts-8.csv,output1/stats-8.txt
+MY5,MY381-9_S38_L001_R1_001.fastq,output1/counts-9.csv,sorted-2,24h_sorted,output1/noncounts-9.csv,output1/stats-9.txt
+MY6,MY381-10_S39_L001_R1_001.fastq,output1/counts-10.csv,sorted-3,24h_sorted,output1/noncounts-10.csv,output1/stats-10.txt

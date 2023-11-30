@@ -53,10 +53,12 @@ def count_reads(sample_sheet, in_ref,
         Whether to trim the first G from 21-nt sgRNA sequences to make them 20-nt.
     """
 
-    df_samples = pd.read_csv(sample_sheet)
-    samples = [list(a) for a in zip(df_samples.fastq_file, df_samples.counts_file, df_samples.noncounts_file, df_samples.stats_file)]
+    df = pd.read_csv(sample_sheet)
+    samples = [list(a) for a in zip(df.fastq_file, df.counts_file, df.noncounts_file, df.stats_file)]
 
     for sample in samples: 
+
+        # fastq file of reads and paths to all output files, imported from sample_sheet
         in_fastq =    file_dir + sample[0]
         out_counts =  file_dir + sample[1]
         out_np =      file_dir + sample[2]
@@ -133,7 +135,19 @@ def count_reads(sample_sheet, in_ref,
         df_npmatches = pd.DataFrame(data=dict_np.items(), columns=['sgRNA_seq', 'reads'])
         df_npmatches.sort_values(by='reads', ascending=False, inplace=True)
         df_npmatches.to_csv(out_np, index=False)
+        # calculate the read coverage (reads processed / sgRNAs in library)
+        num_guides = df_ref['sgRNA_seq'].shape[0]
 
+        calculate_save_stats(out_stats, dict_perfects, 
+                             num_reads, num_nokey, num_badlength, num_perfect_matches, num_np_matches, num_guides
+                            )
+        print(str(in_fastq) + ' processed')
+    return
+
+def calculate_save_stats(out_stats, dict_perfects, 
+                    num_reads, num_nokey, num_badlength, num_perfect_matches, num_np_matches, num_guides
+                    ): 
+    
         # STEP 4: CALCULATE STATS AND GENERATE STAT OUTPUT FILE
         # percentage of guides that matched perfectly
         pct_perfmatch = round(num_perfect_matches/float(num_perfect_matches + num_np_matches) * 100, 1)
@@ -149,7 +163,6 @@ def count_reads(sample_sheet, in_ref,
         else:
             skew_ratio = 'Not enough perfect matches to determine skew ratio'
         # calculate the read coverage (reads processed / sgRNAs in library)
-        num_guides = df_ref['sgRNA_seq'].shape[0]
         coverage = round(num_reads / num_guides, 1)
         # calculate the number of unmapped reads (num_nokey / total_reads)
         pct_unmapped = round((num_nokey / num_reads) * 100, 2)
@@ -162,12 +175,9 @@ def count_reads(sample_sheet, in_ref,
             statfile.write('Number of perfect guide matches: ' + str(num_perfect_matches) + '\n')
             statfile.write('Number of nonperfect guide matches: ' + str(num_np_matches) + '\n')
             statfile.write('Number of undetected guides: ' + str(guides_no_reads) + '\n')
-            statfile.write('Percentage of unmapped reads (key not found): ' + str(pct_unmapped) + '\n')
-            statfile.write('Percentage of guides that matched perfectly: ' + str(pct_perfmatch) + '\n')
-            statfile.write('Percentage of undetected guides: ' + str(pct_no_reads) + '\n')
-            statfile.write('Skew ratio of top 10% to bottom 10%: ' + str(skew_ratio) + '\n')
+            statfile.write('Percentage of unmapped reads (key not found): ' + str(pct_unmapped) + '\n') #
+            statfile.write('Percentage of guides that matched perfectly: ' + str(pct_perfmatch) + '\n') #
+            statfile.write('Percentage of undetected guides: ' + str(pct_no_reads) + '\n') #
+            statfile.write('Skew ratio of top 10% to bottom 10%: ' + str(skew_ratio) + '\n') #
             statfile.write('Read coverage: ' + str(coverage))
             statfile.close()
-
-        print(str(in_fastq) + ' processed')
-    return
