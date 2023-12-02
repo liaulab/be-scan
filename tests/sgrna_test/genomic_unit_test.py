@@ -48,11 +48,11 @@ def test_process_PAM_neg(): # negative control test
         assert process_PAM(1) == re.compile('([acgtACGT]{1}[acgtACGT]{1}[acgtACGT]{1})')
 
 def test_protein_to_AAseq_pos(): # positive control test
-    protein_seq = protein_to_AAseq(filename='tests/test_data/P10275.fasta')
+    protein_seq = protein_to_AAseq(filename='tests/test_data/sgrna_data/P10275.fasta')
     assert len(protein_seq) == 921
 
 def test_protein_to_AAseq_neg(): # negative control test
-    protein_seq = protein_to_AAseq(filename='tests/test_data/P10275_changed.fasta')
+    protein_seq = protein_to_AAseq(filename='tests/test_data/sgrna_data/P10275_changed.fasta')
     assert len(protein_seq) == 360
 
 def test_DNA_to_AA_pos(): # positive control test

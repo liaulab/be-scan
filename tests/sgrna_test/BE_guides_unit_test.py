@@ -9,7 +9,7 @@ import pytest
 from be_scan.sgrna._gene_ import GeneForCRISPR
 from be_scan.sgrna._BE_guides_ import identify_BE_guides
 
-gene_AR = GeneForCRISPR(filepath='tests/test_data/230408_AR_Input.fasta')
+gene_AR = GeneForCRISPR(filepath='tests/test_data/sgrna_data/230408_AR_Input.fasta')
 gene_AR.parse_exons()
 gene_AR.find_all_guides()
 
