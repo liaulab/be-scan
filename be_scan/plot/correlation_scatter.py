@@ -27,58 +27,59 @@ def plot_corr_scatterplot(df_filepath,
     """[Summary]
     This function takes in a dataframe from count_reads, and plots
     a heatmap showing correlation between all given comparison conditions
-    ...
     
-    :param df_filepath: filepath to .csv data generated from count_reads
-    :type df_filepath: str, required
-    :param condition1: comparison condition 1, name of .csv data column
-    :type condition1: str, required
-    :param condition2: comparison condition 2, name of .csv data column
-    :type condition2: str, required
-    :param hue_column: the categorial dimension of the data, name of .csv data column
-    :type hue_column: str, required
+    Parameters
+    ----------
+    df_filepath: str, required
+        filepath to .csv data generated from count_reads
+    condition1: str, required
+        comparison condition 1, name of .csv data column
+    condition2: str, required
+        comparison condition 2, name of .csv data column
+    hue_column: str, required
+        the categorial dimension of the data, name of .csv data column
 
-    :param hue_order: a list of categorial variables in hue_column
-    :type hue_order: list of str, optional, defaults to list_muttypes in _annotating_.py a preset list of column names
-    :param palette: a list of colors which correspond to hue_order
-    :type palette: list of str, optional, defaults to color_list in _annotating_.py a preset list of colors from ColorBrewer2
+    hue_order: list of str, optional, defaults to list_muttypes in _annotating_.py a preset list of column names
+        a list of categorial variables in hue_column
+    palette: list of str, optional, defaults to color_list in _annotating_.py a preset list of colors from ColorBrewer2
+        a list of colors which correspond to hue_order
 
-    :param xmin: x-axis left bound
-    :type xmin: float, optional, defaults to None
-    :param xmax: x-axis right bound
-    :type xmax: float, optional, defaults to None
-    :param ymin: y-axis lower bound
-    :type ymin: float, optional, defaults to None
-    :param ymax: y-axis upper bound
-    :type ymax: float, optional, defaults to None
-    :param xlab: x-axis label
-    :type xlab: str, optional, defaults to 'cond1 score'
-    :param ylab: y-axis label
-    :type ylab: str, optional, defaults to 'cond2 score'
+    xmin: float, optional, defaults to None
+        x-axis left bound
+    xmax: float, optional, defaults to None
+        x-axis right bound
+    ymin: float, optional, defaults to None
+        y-axis lower bound
+    ymax: float, optional, defaults to None
+        y-axis upper bound
+    xlab: str, optional, defaults to 'cond1 score'
+        x-axis label
+    ylab: str, optional, defaults to 'cond2 score'
+        y-axis label
 
-    :param out_name: name of the output plot
-    :type out_name: str, optional, defaults to 'scatterplot'
-    :param out_type: type of the output plot
-    :type out_type: str, optional, defaults to 'pdf'
-    :param out_directory: directory path of the output plot
-    :type out_directory: str, optional, defaults to ''
+    out_name: str, optional, defaults to 'scatterplot'
+        name of the output plot
+    out_type: str, optional, defaults to 'pdf'
+        type of the output plot
+    out_directory: str, optional, defaults to ''
+        directory path of the output plot
 
-    :param alpha: transparency of scatterplot points
-    :type alpha: float, optional, defaults to 0.8
-    :param linewidth: linewidth of plot
-    :type linewidth: float, optional, defaults to 1.0
-    :param edgecolor: color of scatterplot edge lines
-    :type edgecolor: str, optional, defaults to 'black'
-    :param s: size of scatterplot points
-    :type s: int, optional, defaults to 25
-    :param dimensions: the figsize (length, width)
-    :type dimensions: tuple of ints, optional, defaults to (8,4)
-    :param savefig: option of saving figure to output or not
-    :type figsize: boolean, optional, defaults to True
-    ...
+    alpha: float, optional, defaults to 0.8
+        transparency of scatterplot points
+    linewidth: float, optional, defaults to 1.0
+        linewidth of plot
+    edgecolor: str, optional, defaults to 'black'
+        color of scatterplot edge lines
+    s: int, optional, defaults to 25
+        size of scatterplot points
+    dimensions: tuple of ints, optional, defaults to (8,4)
+        the figsize (length, width)
+    figsize: boolean, optional, defaults to True
+        option of saving figure to output or not
     
-    :return: None
-    :rtype: NoneType
+    Returns
+    ----------
+    None
     """
 
     df_data = pd.read_csv(df_filepath)

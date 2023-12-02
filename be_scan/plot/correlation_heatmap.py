@@ -22,43 +22,45 @@ def plot_corr_heatmap(df_filepath,
     """[Summary]
     This function takes in a dataframe from count_reads, and plots
     a scatterplot showing correlation between two given conditions
+    
+    Parameters
+    ----------
+    df_filepath: str, required
+        filepath to .csv data generated from count_reads
+    comparisons: list of str, required
+        list of comparisons that correspond to columns of .csv data
+
+    corr_type : str, optional, defaults to 'spearman'
+        type of correlation calculation
+    xlab : str, optional, defaults to ''
+        name of the x-axis label
+    ylab : str, optional, defaults to ''
+        name of the y-axis label
+    title : str, optional, defaults to 'Spearman Correlation Heatmap'
+        name of title label
+
+    out_directory : str, optional, defaults to ''
+        path to output directory
+    out_name : str, optional, defaults to 'scatterplot'
+        name of figure output
+    out_type : str, optional, defaults to 'pdf'
+        file type of figure output
+
+    center : float, optional, defaults to 0
+        value for centering the colormap
+    linewidth : float, optional, defaults to 0.5
+        linewidth of lines dividing cells
+    line_pos : list of int, optional, defaults to []
+        positions to put larger lines for dividing the cells
+    cmap : str, optional, defaults to 'coolwarm'
+        matplotlib colormap
+    figsize : boolean, optional, defaults to True
+        option of saving figure to output or not
     ...
     
-    :param df_filepath: filepath to .csv data generated from count_reads
-    :type df_filepath: str, required
-    :param comparisons: list of comparisons that correspond to columns of .csv data
-    :type comparisons: list of str, required
-
-    :param corr_type: type of correlation calculation
-    :type corr_type: str, optional, defaults to 'spearman'
-    :param xlab: name of the x-axis label
-    :type xlab: str, optional, defaults to ''
-    :param ylab: name of the y-axis label
-    :type ylab: str, optional, defaults to ''
-    :param title: name of title label
-    :type title: str, optional, defaults to 'Spearman Correlation Heatmap'
-
-    :param out_directory: path to output directory
-    :type out_directory: str, optional, defaults to ''
-    :param out_name: name of figure output
-    :type out_name: str, optional, defaults to 'scatterplot'
-    :param out_type: file type of figure output
-    :type out_type: str, optional, defaults to 'pdf'
-
-    :param center: value for centering the colormap
-    :type center: float, optional, defaults to 0
-    :param linewidth: linewidth of lines dividing cells
-    :type linewidth: float, optional, defaults to 0.5
-    :param line_pos: positions to put larger lines for dividing the cells
-    :type line_pos: list of int, optional, defaults to []
-    :param cmap: matplotlib colormap
-    :type cmap: str, optional, defaults to 'coolwarm'
-    :param savefig: option of saving figure to output or not
-    :type figsize: boolean, optional, defaults to True
-    ...
-    
-    :return: None
-    :rtype: NoneType
+    Returns
+    ----------
+    None
     """
 
     # Plotting parameters and variables
