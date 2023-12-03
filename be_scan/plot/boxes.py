@@ -33,43 +33,44 @@ def plot_boxes(df_filepath,
     This function takes in a dataframe from count_reads, performs normalization, 
     and then plots chosen (ex control) guides by plot_column categories, 
     to show the distribution of categories of guides
-    ...
+    
+    Parameters
+    ----------
+    df_filepath : str, required
+        filepath to .csv data generated from count_reads
+    plot_columnstr, required
+        column of .csv, typically domain or mutation type
+    plot_conditions : list of str, required
+        category names of plot_column
+    y_column : str, required
+        column of .csv, typically the normalized log_fc score
+    comparisons : list of str, required
+        list of comparisons that correspond to columns of data
+    neg_ctrl_col : str, required
+        column of .csv which correspond to normalization control
+    neg_ctrl_category : str, required
+        categorical variable of neg_ctrl_col
 
-    :param df_filepath: filepath to .csv data generated from count_reads
-    :type df_filepath: str, required
-    :param plot_column: column of .csv, typically domain or mutation type
-    :type plot_column: str, required
-    :param plot_conditions: category names of plot_column
-    :type plot_conditions: list of str, required
-    :param y_column: column of .csv, typically the normalized log_fc score
-    :type y_column: str, required
-    :param comparisons: list of comparisons that correspond to columns of data
-    :type comparisons: list of str, required
-    :param neg_ctrl_col: column of .csv which correspond to normalization control
-    :type neg_ctrl_col: str, required
-    :param neg_ctrl_category: categorical variable of neg_ctrl_col
-    :type neg_ctrl_category: str, required
+    filter_column : str, optional, defaults to 'Mut_type'
+        name of column to filter dataframe for plotting
+    filter_category : str, optional, defaults to 'Missense'
+        name of categories of filter_column to filter dataframe
+    xlab : str, optional, defaults to ''
+        name of x-axis label
+    ylab : str, optional, defaults to 'Log2 Fold Change'
+        name of y-axis label
+    out_name : str, optional, defaults to 'scatterplot'
+        name of figure output
+    out_type : str, optional, defaults to 'pdf'
+        file type of figure output
+    out_directory : str, optional, defaults to ''
+        path to output directory
+    savefig : boolean, optional, defaults to True
+        option of saving figure to output or not
 
-    :param filter_column: name of column to filter dataframe for plotting
-    :type filter_column: str, optional, defaults to 'Mut_type'
-    :param filter_category: name of categories of filter_column to filter dataframe
-    :type filter_category: str, optional, defaults to 'Missense'
-    :param xlab: name of x-axis label
-    :type xlab: str, optional, defaults to ''
-    :param ylab: name of y-axis label
-    :type ylab: str, optional, defaults to 'Log2 Fold Change'
-    :param out_name: name of figure output
-    :type out_name: str, optional, defaults to 'scatterplot'
-    :param out_type: file type of figure output
-    :type out_type: str, optional, defaults to 'pdf'
-    :param out_directory: path to output directory
-    :type out_directory: str, optional, defaults to ''
-    :param savefig: option of saving figure to output or not
-    :type figsize: boolean, optional, defaults to True
-    ...
-
-    :return: None
-    :rtype: NoneType
+    Returns
+    ----------
+    None
     """
 
     df_input = pd.read_csv(df_filepath)

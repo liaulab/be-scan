@@ -7,29 +7,32 @@ import pandas as pd
 import warnings
 
 def validate_cloning(query_dir, spacers, vector, enzyme, overhangs, ref_name_pattern=r"^(.*)[-_]", flank_width=50, out_csv=None):
-    """Check whether Sanger traces of plasmids contain the expected spacer sequence
+    """
+    Check whether Sanger traces of plasmids contain the expected spacer sequence
     
     Parameters
     ----------
-        query_dir : str
-            directory containing .ab1 files
-        spacers : pd.Series or str
-            Index of plasmid names and values of spacer sequences. Or if string, path to .csv file with columns "plasmid" and "spacer"
-        vector : str
-            Filename of vector backbone in GenBank format
-        enzyme : str
-            Name of enzyme used to cut the vector. Must be one of "Esp3I", "BpiI", "BbsI", or "BsmBI"
-        overhangs : (str, str)
-            Overhangs used to ligate the spacer into the vector. e.g. ("CACC", "GTTT") for Esp3I
-        ref_name_pattern : str
-            Regular expression to extract plasmid name from filename
-        flank_width : int
-            Number of bases from the backbone to include on either side of the spacer in the reference sequence
+    query_dir : str
+        directory containing .ab1 files
+    spacers : pd.Series or str
+        Index of plasmid names and values of spacer sequences. Or if string, path to .csv file with columns "plasmid" and "spacer"
+    vector : str
+        Filename of vector backbone in GenBank format
+    enzyme : str
+        Name of enzyme used to cut the vector. Must be one of "Esp3I", "BpiI", "BbsI", or "BsmBI"
+    overhangs : (str, str)
+        Overhangs used to ligate the spacer into the vector. e.g. ("CACC", "GTTT") for Esp3I
+    ref_name_pattern : str
+        Regular expression to extract plasmid name from filename
+    flank_width : int
+        Number of bases from the backbone to include on either side of the spacer in the reference sequence
+
     Returns
     -------
     pd.DataFrame
         Dataframe with columns "spacer", "reference plasmid", and "success" and index of sanger trace filenames
     """
+
     flank_left, flank_right = _golden_gate(vector, enzyme, overhangs)
     if isinstance(spacers, str):
         spacers = pd.read_csv(spacers, index_col="plasmid")["spacer"]
@@ -55,6 +58,15 @@ def validate_cloning(query_dir, spacers, vector, enzyme, overhangs, ref_name_pat
     return out
 
 def _golden_gate(vector, enzyme, overhangs):
+    """
+
+    Parameters
+    -------
+
+    Returns
+    -------
+    """
+
     if enzyme in ("BpiI", "BbsI"):
         cut_seq = Bio.Seq.Seq("GAAGAC")
         cut_site = 2

@@ -145,39 +145,51 @@ def count_reads(sample_sheet, in_ref,
     return
 
 def calculate_save_stats(out_stats, dict_perfects, 
-                    num_reads, num_nokey, num_badlength, num_perfect_matches, num_np_matches, num_guides
-                    ): 
-    
-        # STEP 4: CALCULATE STATS AND GENERATE STAT OUTPUT FILE
-        # percentage of guides that matched perfectly
-        pct_perfmatch = round(num_perfect_matches/float(num_perfect_matches + num_np_matches) * 100, 1)
-        # percentage of undetected guides (no read counts)
-        guides_with_reads = np.count_nonzero(list(dict_perfects.values()))
-        guides_no_reads = len(dict_perfects) - guides_with_reads
-        pct_no_reads = round(guides_no_reads/float(len(dict_perfects.values())) * 100, 1)
-        # skew ratio of top 10% to bottom 10% of guide counts
-        top_10 = np.percentile(list(dict_perfects.values()), 90)
-        bottom_10 = np.percentile(list(dict_perfects.values()), 10)
-        if top_10 != 0 and bottom_10 != 0:
-            skew_ratio = top_10/bottom_10
-        else:
-            skew_ratio = 'Not enough perfect matches to determine skew ratio'
-        # calculate the read coverage (reads processed / sgRNAs in library)
-        coverage = round(num_reads / num_guides, 1)
-        # calculate the number of unmapped reads (num_nokey / total_reads)
-        pct_unmapped = round((num_nokey / num_reads) * 100, 2)
+                         num_reads, num_nokey, num_badlength, num_perfect_matches, num_np_matches, num_guides
+                        ): 
+    """
+    Takes in parameters and objects from count_reads
+    and calculates statistics of the library, outputs them, 
+    and saves them.
 
-        # write analysis statistics to statfile
-        with open(out_stats, 'w') as statfile:
-            statfile.write('Number of reads processed: ' + str(num_reads) + '\n')
-            statfile.write('Number of reads where key was not found: ' + str(num_nokey) + '\n')
-            statfile.write('Number of reads where length was not 20bp: ' + str(num_badlength) + '\n')
-            statfile.write('Number of perfect guide matches: ' + str(num_perfect_matches) + '\n')
-            statfile.write('Number of nonperfect guide matches: ' + str(num_np_matches) + '\n')
-            statfile.write('Number of undetected guides: ' + str(guides_no_reads) + '\n')
-            statfile.write('Percentage of unmapped reads (key not found): ' + str(pct_unmapped) + '\n') #
-            statfile.write('Percentage of guides that matched perfectly: ' + str(pct_perfmatch) + '\n') #
-            statfile.write('Percentage of undetected guides: ' + str(pct_no_reads) + '\n') #
-            statfile.write('Skew ratio of top 10% to bottom 10%: ' + str(skew_ratio) + '\n') #
-            statfile.write('Read coverage: ' + str(coverage))
-            statfile.close()
+    Parameters
+    ----------
+
+    Returns
+    ----------
+    None
+    """
+
+    # STEP 4: CALCULATE STATS AND GENERATE STAT OUTPUT FILE
+    # percentage of guides that matched perfectly
+    pct_perfmatch = round(num_perfect_matches/float(num_perfect_matches + num_np_matches) * 100, 1)
+    # percentage of undetected guides (no read counts)
+    guides_with_reads = np.count_nonzero(list(dict_perfects.values()))
+    guides_no_reads = len(dict_perfects) - guides_with_reads
+    pct_no_reads = round(guides_no_reads/float(len(dict_perfects.values())) * 100, 1)
+    # skew ratio of top 10% to bottom 10% of guide counts
+    top_10 = np.percentile(list(dict_perfects.values()), 90)
+    bottom_10 = np.percentile(list(dict_perfects.values()), 10)
+    if top_10 != 0 and bottom_10 != 0:
+        skew_ratio = top_10/bottom_10
+    else:
+        skew_ratio = 'Not enough perfect matches to determine skew ratio'
+    # calculate the read coverage (reads processed / sgRNAs in library)
+    coverage = round(num_reads / num_guides, 1)
+    # calculate the number of unmapped reads (num_nokey / total_reads)
+    pct_unmapped = round((num_nokey / num_reads) * 100, 2)
+
+    # write analysis statistics to statfile
+    with open(out_stats, 'w') as statfile:
+        statfile.write('Number of reads processed: ' + str(num_reads) + '\n')
+        statfile.write('Number of reads where key was not found: ' + str(num_nokey) + '\n')
+        statfile.write('Number of reads where length was not 20bp: ' + str(num_badlength) + '\n')
+        statfile.write('Number of perfect guide matches: ' + str(num_perfect_matches) + '\n')
+        statfile.write('Number of nonperfect guide matches: ' + str(num_np_matches) + '\n')
+        statfile.write('Number of undetected guides: ' + str(guides_no_reads) + '\n')
+        statfile.write('Percentage of unmapped reads (key not found): ' + str(pct_unmapped) + '\n') #
+        statfile.write('Percentage of guides that matched perfectly: ' + str(pct_perfmatch) + '\n') #
+        statfile.write('Percentage of undetected guides: ' + str(pct_no_reads) + '\n') #
+        statfile.write('Skew ratio of top 10% to bottom 10%: ' + str(skew_ratio) + '\n') #
+        statfile.write('Read coverage: ' + str(coverage))
+        statfile.close()

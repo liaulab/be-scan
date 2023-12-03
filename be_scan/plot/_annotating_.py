@@ -15,14 +15,16 @@ list_muttypes = ['Nonsense', 'Missense', 'Silent', 'Non-exon', 'Splice',
 
 def norm_to_intergenic_ctrls(in_dataframe, comparisons, avg_dict, y_column): 
     """[Summary]
-
     This function normalizes data in in_dataframe to a 
     set of controls calculated from calc_negative_control, 
     typically the intergenic controls (control guides that do not target the gene)
-    ...
 
-    :return: df_logfc
-    :rtype: pandas dataframe
+    Parameters
+    ----------
+
+    Returns
+    ----------
+    df_logfc : pandas dataframe
     """
     # perform normalization
     for comp in comparisons:
@@ -40,10 +42,18 @@ def calc_negative_controls(df_data, list_compnames, neg_ctrl_col, neg_ctrl_categ
     """[Summary]
 
     This function calculates the negative control mean, stdev, upper, and lower. 
-    ...
+    
+    Parameters
+    ----------
 
-    :return: df_negctrl, list_negctrlstats, avg_dict
-    :rtype: pandas dataframe of n rows and x conditions, list of x tuples of stats, dictionary of length x comparisons
+    Returns
+    ----------
+    df_negctrl : pandas dataframe
+        pandas dataframe of n rows and x conditions
+    list_negctrlstats : list
+        list of x tuples of stats
+    avg_dict : dictionary
+        dictionary of length x comparisons
     """
 
     # use negative controls to set cutoffs
