@@ -3,7 +3,7 @@ Author: Calvin XiaoYang Hu
 Adapted from: Nicholas Lue - NZL10196_Screen_Analysis_v9b.py Created on Fri May 29 03:00:39 2020
 Date: 231116
 
-{Description: some base pair to amino acid translation functions}
+{Description: This function performs normalization and then plots the data for each condition to reveal enriched guides}
 """
 
 import numpy as np
@@ -22,60 +22,59 @@ def plot_scatterplot(df_filepath, # dataframe
                      xmin=None, xmax=None,
                      xlab='Amino Acid Position', ylab='sgRNA Score', # scatterplot labels
                      out_name='scatterplot', out_type='pdf', out_directory='', # output params
+                     savefig=True,
                      alpha=0.8, linewidth=1.0, edgecolor='black', s=25, # scatterplot params
                      figsize=(8,4), 
-                     savefig=True,
                      ):
     
     """[Summary]
     This function takes in a dataframe from count_reads, performs normalization, 
     and then plots the data for each condition to reveal which guides are enriched
-    ...
 
-    :param df_filepath: filepath to .csv data generated from count_reads
-    :type df_filepath: str, required
-    :param x_column: column of .csv for x axis, typically amino acid position
-    :type x_column: str, required
-    :param y_column: column of .csv for y axis, typically the normalized log_fc change score
-    :type y_column: str, required
-    :param hue_column: column of .csv which correspond to coloring of scatterplot points
-    :type hue_column: str, required
-    :param comparisons: list of comparisons that correspond to columns of .csv data
-    :type comparisons: list of str, required
-    :param neg_ctrl_col: column of .csv which correspond to normalization control
-    :type neg_ctrl_col: str, required
-    :param neg_ctrl_category: categorical variable of neg_ctrl_col .csv which correspond to normalization control
-    :type neg_ctrl_category: str, required
+    Parameters
+    ----------
+    df_filepath : str, required
+        filepath to .csv data generated from count_reads
+    x_column : str, required
+        column of .csv, typically amino acid position
+    y_column : str, required
+        column of .csv, typically the normalized log_fc score
+    hue_column : str, required
+        column of .csv which correspond to coloring of points
+    comparisons : list of str, required
+        list of comparisons that correspond to columns of data
+    neg_ctrl_col : str, required
+        column of .csv which correspond to normalization control
+    neg_ctrl_category : str, required
+        categorical variable of neg_ctrl_col
 
-    :param window: inclusive window of which amino acid positions are shown in the plot
-    :type window: tuple of ints, optional, defaults to None
-    :param xlab: name of x-axis label
-    :type xlab: str, optional, defaults to 'Amino Acid Position'
-    :param ylab: name of y-axis label
-    :type ylab: str, optional, defaults to 'sgRNA Score'
-    :param out_name: name of figure output
-    :type out_name: str, optional, defaults to 'scatterplot'
-    :param out_type: file type of figure output
-    :type out_type: str, optional, defaults to 'pdf'
-    :param out_directory: path to output directory
-    :type out_directory: str, optional, defaults to ''
+    xlab : str, optional, defaults to 'Amino Acid Position'
+        name of x-axis label
+    ylab : str, optional, defaults to 'sgRNA Score'
+        name of y-axis label
+    out_name : str, optional, defaults to 'scatterplot'
+        name of figure output
+    out_type : str, optional, defaults to 'pdf'
+        file type of figure output
+    out_directory : str, optional, defaults to ''
+        ath to output directory
     
-    :param alpha: transparency of scatterplot points
-    :type alpha: float, optional, defaults to 0.8
-    :param linewidth: linewidth of plot
-    :type linewidth: float, optional, defaults to 1.0
-    :param edgecolor: color of scatterplot edge lines
-    :type edgecolor: str, optional, defaults to 'black'
-    :param s: size of scatterplot points
-    :type s: int, optional, defaults to 25
-    :param figsize: the figsize (length, width)
-    :type figsize: tuple of ints, optional, defaults to (8,4)
-    :param savefig: option of saving figure to output or not
-    :type figsize: boolean, optional, defaults to True
-    ...
+    alpha: float, optional, defaults to 0.8
+        transparency of scatterplot points
+    linewidth: float, optional, defaults to 1.0
+        linewidth of plot
+    edgecolor: str, optional, defaults to 'black'
+        color of scatterplot edge lines
+    s: int, optional, defaults to 25
+        size of scatterplot points
+    figsize: tuple of ints, optional, defaults to (8,4)
+        the figsize (length, width)
+    figsize: boolean, optional, defaults to True
+        option of saving figure to output or not
 
-    :return: None
-    :rtype: NoneType
+    Returns
+    ----------
+    None
     """
 
     in_dataframe = pd.read_csv(df_filepath)
@@ -127,7 +126,3 @@ def plot_scatterplot(df_filepath, # dataframe
             plt.savefig(output_path, format=out_type)
         plt.show()
         plt.close()
-
-# python3 -m be_scan plot_scatterplot -df '../../../Downloads/NZL10196_v9_comparisons.csv' 
-#         -x 'Edit_site_3A1' -y 'log2_fc' -c 'd3-pos' -hue 'Mut_type' -pt 'comparison' 
-#         -ncol 'Gene' -ncat 'NON-GENE' -win 224 912 -c 'd3-pos' 'd3-neg' 'd6-pos' 'd6-neg' 'd9-pos' 'd9-neg'
