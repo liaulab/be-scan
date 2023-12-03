@@ -1,45 +1,56 @@
 import be_scan.plot
+import os
+
+file_dir = "tests/test_data/plot_data/"
 
 def test_plot_scatterplot(monkeypatch):
-    be_scan.plot.plot_scatterplot(df_filepath     ='tests/test_data/plot_data/NZL10196_v9_comparisons.csv', 
-                                x_column          ='Edit_site_3A1', 
-                                y_column          ='log2_fc', 
-                                hue_column        ='Mut_type', 
-                                comparisons       =['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg'], 
-                                neg_ctrl_col      ='Gene', 
-                                neg_ctrl_category ='NON-GENE',
-                                xmin              =200, 
-                                savefig           =False,
-                                )
-    assert True
+    comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg']
+    be_scan.plot.plot_scatterplot(df_filepath       =file_dir+'NZL10196_v9_comparisons.csv', 
+                                  x_column          ='Edit_site_3A1', 
+                                  y_column          ='log2_fc', 
+                                  hue_column        ='Mut_type', 
+                                  comparisons       =comparisons, 
+                                  neg_ctrl_col      ='Gene', 
+                                  neg_ctrl_category ='NON-GENE',
+                                  xmin              =200, 
+    )
+    for suffix in comparisons: 
+        path = f"scatterplot{suffix}.pdf"
+        assert os.path.exists(path)
+        os.remove(path)
 
-def test_plot_corr_heatma(monkeypatch):
-    be_scan.plot.plot_corr_heatmap(df_filepath    ='tests/test_data/plot_data/NZL10196_v9_comparisons.csv', 
-                                comparisons       =['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg'], 
-                                
-                                savefig           =False,
-                                )
-    assert True
+def test_plot_corr_heatmap(monkeypatch):
+    comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg']
+    be_scan.plot.plot_corr_heatmap(df_filepath    =file_dir+'NZL10196_v9_comparisons.csv', 
+                                   comparisons       =comparisons, 
+    )
+    path = "correlation_heatmap.pdf"
+    assert os.path.exists(path)
+    os.remove(path)
 
 def test_plot_corr_scatterplot(monkeypatch):
-    be_scan.plot.plot_corr_scatterplot(df_filepath ='tests/test_data/plot_data/NZL10196_v9_comparisons.csv', 
-                                   condition1  ='d3-neg', 
-                                   condition2  ='d9-pos', 
-                                   hue_column  ='Mut_type',
-                                   
-                                   savefig     =False,
-                                   )
-    assert True
+    c1 = 'd3-neg'
+    c2 = 'd9-pos'
+    be_scan.plot.plot_corr_scatterplot(df_filepath =file_dir+'NZL10196_v9_comparisons.csv', 
+                                       condition1  =c1, 
+                                       condition2  =c2, 
+                                       hue_column  ='Mut_type',
+    )
+    path = f"{c1}{c2}_correlation_scatterplot.pdf"
+    assert os.path.exists(path)
+    os.remove(path)
 
 def test_plot_boxes(monkeypatch):
-    be_scan.plot.plot_boxes(df_filepath       ='tests/test_data/plot_data/NZL10196_v9_comparisons.csv', 
+    comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg']
+    be_scan.plot.plot_boxes(df_filepath       =file_dir+'NZL10196_v9_comparisons.csv', 
                             plot_column       ='Domain', 
                             plot_conditions   =['PWWP', 'ADD', 'MTase'], 
                             y_column          ='log2_fc', 
-                            comparisons       =['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg'], 
+                            comparisons       =comparisons, 
                             neg_ctrl_col      ='Gene', 
                             neg_ctrl_category ='NON-GENE',
-
-                            savefig           =False,
     )
-    assert True
+    for suffix in comparisons: 
+        path = f"boxes{suffix}.pdf"
+        assert os.path.exists(path)
+        os.remove(path)
