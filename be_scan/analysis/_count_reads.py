@@ -7,9 +7,7 @@ batch processing. See function docstrings for exhaustive documentation.
 """
 #%% import packages
 
-from collections import Counter
 from pathlib import Path
-import time
 import warnings
 
 import numpy as np
@@ -20,110 +18,7 @@ import seaborn as sns
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-import gzip
 
-
-
-#%% compare_conds() - compare treatment vs. control to calculate enrichments
-
-def compare_conds(list_comparisons, in_lfc, in_ref, save=True, out_folder='',
-                  out_comps='comparisons.csv', return_df=False):
-    """
-    Perform pairwise comparisons given a list and export the output to a csv.
-
-    Given a list of comparisons (e.g. treatment vs. control), perform pairwise
-    comparisons, generate a dataframe, and export to csv. The list of comparisons
-    must be in the format (comparison name, condition 1, condition 2).
-    The comparison is performed as (condition 1 - condition 2). Note that this
-    can be applied to any format of values, not just averaged condition reps.
-
-    Parameters
-    ----------
-    list_comparisons : list of tuples in format (name, sample 1, sample 2)
-        A list of tuples denoting the comparisons to make, with the comparison
-        being sample 1 - sample 2 (e.g. treatment - control). The output column
-        headers will be labeled by the comparison name in the tuple.
-    in_lfc : str or path
-        String or path to the csv file containing the values for comparison.
-        The column headers must match the sample names in list_comparisons
-    in_ref : str or path
-        String or path to the reference file. in_ref must have column headers,
-        with 'sgRNA_seq' as the header for the column with the sgRNA sequences.
-    save : bool, default True
-        Whether to save the comparisons dataframe as a csv file.
-    out_folder : str, default ''
-        Name of the subfolder to save output files. The default is the current
-        working directory.
-    out_comps : str, default 'comparisons.csv'
-        Name of the comparisons csv output file.
-    return_df : bool, default False
-        Whether to return the comparisons dataframe. The default is False.
-    """
-
-    # import files, define variables, check for requirements
-    path = Path.cwd()
-    df_lfc = pd.read_csv(in_lfc)
-    df_comps = pd.read_csv(in_ref)
-    # perform treatment vs. control comparison
-    for name, treatment, control in list_comparisons:
-        df_comps[name] = df_lfc[treatment].sub(df_lfc[control])
-    # export files and return dataframes if necessary
-    if save:
-        outpath = path / out_folder
-        Path.mkdir(outpath, exist_ok=True)
-        df_comps.to_csv(outpath / out_comps, index=False)
-    print('Compare conditions completed')
-    if return_df:
-        return df_comps
-    else:
-        return
-
-#%% merge_stats() - merge sample read count statistics files
-
-def merge_stats(dict_stats, in_ref, dir_stats='', save=True, out_folder='',
-                out_stats='agg_stats.csv', return_df=False):
-    """
-    Aggregates the stats files from count_reads() and outputs as a csv file.
-
-    Parameters
-    ----------
-    dict_stats : dict in format {'sample name': 'file name'}
-        Dictionary to map sample names (key) to stats files (value).
-        For example, {'KN-0': 'KN-0_stats.txt'}
-    dir_stats : str, default ''
-        Name of the subfolder to find the stats text files. The default is the
-        current working directory.
-    save : bool, default True
-        Whether to save the aggregated read count statistics as a csv file.
-    out_folder : str, default ''
-        Name of the subfolder to save output files. The default is the current
-        working directory.
-    out_stats : str, default 'agg_stats.csv'
-        Name of the aggregated read count statistics csv output file.
-    return_df : bool, default False
-        Whether to return the aggregated stats dataframe. The default is False.
-    """
-
-    # import reference file, define variables, check for requirements
-    path = Path.cwd()
-    inpath = path / dir_stats
-    # generate df for merging files
-    df_stats = pd.DataFrame(columns=['parameters'])
-    for sample, file in dict_stats.items():
-        df_temp = pd.read_csv(inpath / file, sep=': ', engine='python', names=['parameters', sample])
-        df_stats = pd.merge(df_stats, df_temp, on='parameters', how='outer')
-    # transpose df_stats with samples as rows, params as columns
-    df_stats = df_stats.transpose(copy=True)
-    # export files and return dataframes if necessary
-    if save:
-        outpath = path / out_folder
-        Path.mkdir(outpath, exist_ok=True)
-        df_stats.to_csv(outpath / out_stats, index=True)
-    print('Merge stats completed')
-    if return_df:
-        return df_stats
-    else:
-        return
 
 #%% qc_stats() - rough QC of read count stats to see if they pass metrics
 
