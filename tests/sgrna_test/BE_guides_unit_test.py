@@ -4,6 +4,7 @@ Date: 230911
 
 {Description: suit of unit tests for testing functions in be_scan/be_scan/sgrna/base_editing_guides}
 """
+
 import pytest
 
 from be_scan.sgrna._gene_ import GeneForCRISPR

@@ -1,3 +1,10 @@
+"""
+Author: Simon P Shen, Calvin XiaoYang Hu
+Date: 231202
+
+{Description: suit of unit tests for testing functions in be_scan/be_scan/analysis/count_reads}
+"""
+
 from be_scan.analysis import count_reads
 import pandas as pd
 import os
