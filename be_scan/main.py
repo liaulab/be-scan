@@ -79,6 +79,21 @@ def main():
     parser_average_reps.add_argument('--out_conds', type=str, default=signat_ar.parameters['out_conds'].default)
     parser_average_reps.add_argument('--return_df', type=bool, default=signat_ar.parameters['return_df'].default)
     parser_average_reps.set_defaults(func=average_reps)
+
+    ##################################################
+    
+    from be_scan.analysis.compare_conds import compare_conds
+    signat_cc = inspect.signature(compare_conds)
+    parser_compare_conds = subparsers.add_parser('compare_conds', 
+                                                help=next(line for line in compare_conds.__doc__.splitlines() if line),
+                                                description=compare_conds.__doc__,
+                                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser_compare_conds.add_argument('in_comparisons', type=str)
+    parser_compare_conds.add_argument('in_conds', type=str)
+    parser_compare_conds.add_argument('--file_dir', type=str, default=signat_cc.parameters['file_dir'].default)
+    parser_compare_conds.add_argument('--out_comps', type=str, default=signat_cc.parameters['out_comps'].default)
+    parser_compare_conds.add_argument('--return_df', type=bool, default=signat_cc.parameters['return_df'].default)
+    parser_compare_conds.set_defaults(func=compare_conds)
     
     ##################################################
 

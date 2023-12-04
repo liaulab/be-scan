@@ -9,8 +9,11 @@ Date: 231128
 from pathlib import Path
 import pandas as pd
 
-def compare_conds(list_comparisons, in_lfc, in_ref, save=True, out_folder='',
-                  out_comps='comparisons.csv', return_df=False):
+def compare_conds(in_comparisons, 
+                  in_conds, 
+                  file_dir='',
+                  out_comps='agg_comps.csv', 
+                  return_df=False):
     """
     Perform pairwise comparisons given a list and export the output to a csv.
 
@@ -29,15 +32,11 @@ def compare_conds(list_comparisons, in_lfc, in_ref, save=True, out_folder='',
     in_lfc : str or path
         String or path to the csv file containing the values for comparison.
         The column headers must match the sample names in list_comparisons
-    in_ref : str or path
-        String or path to the reference file. in_ref must have column headers,
-        with 'sgRNA_seq' as the header for the column with the sgRNA sequences.
-    save : bool, default True
-        Whether to save the comparisons dataframe as a csv file.
-    out_folder : str, default ''
+
+    file_dir : str, default ''
         Name of the subfolder to save output files. The default is the current
         working directory.
-    out_comps : str, default 'comparisons.csv'
+    out_comps : str, default 'agg_comps.csv'
         Name of the comparisons csv output file.
     return_df : bool, default False
         Whether to return the comparisons dataframe. The default is False.
@@ -45,18 +44,20 @@ def compare_conds(list_comparisons, in_lfc, in_ref, save=True, out_folder='',
 
     # import files, define variables, check for requirements
     path = Path.cwd()
-    df_lfc = pd.read_csv(in_lfc)
-    df_comps = pd.read_csv(in_ref)
+    df_conds = pd.read_csv(in_conds)
+
+    comparisons_df = pd.read_csv(in_comparisons)
+    comparisons_list = list(comparisons_df.itertuples(index=False, name=None))
     # perform treatment vs. control comparison
-    for name, treatment, control in list_comparisons:
-        df_comps[name] = df_lfc[treatment].sub(df_lfc[control])
+    for name, treatment, control in comparisons_list:
+        df_conds[name] = df_conds[treatment].sub(df_conds[control])
+
     # export files and return dataframes if necessary
-    if save:
-        outpath = path / out_folder
-        Path.mkdir(outpath, exist_ok=True)
-        df_comps.to_csv(outpath / out_comps, index=False)
+    outpath = path / file_dir
+    Path.mkdir(outpath, exist_ok=True)
+    df_conds.to_csv(outpath / out_comps, index=False)
     print('Compare conditions completed')
     if return_df:
-        return df_comps
+        return df_conds
     else:
         return
