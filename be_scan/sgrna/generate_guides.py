@@ -11,30 +11,53 @@ import pandas as pd
 from be_scan.sgrna._genomic_ import bases, cas_key
 from be_scan.sgrna._guides_ import filter_guide, filter_repeats
 from be_scan.sgrna._gene_ import GeneForCRISPR
-from be_scan.sgrna._genomic_ import process_PAM
+from be_scan.sgrna._genomic_ import process_PAM, rev_complement
 
 # from be_scan.sgrna._genomic_ import complements
-# from be_scan.sgrna._genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM, make_mutations
+# from be_scan.sgrna._genomic_ import , complement, protein_to_AAseq, process_PAM, make_mutations
 # from be_scan.sgrna._aminoacid_ import find_aa_edits_fwd, find_aa_edits_rev
 
 
-# this is the main function for taking in a gene object with all possible guides,
-# then filtering based on given criteria
-def generate_BE_guides(gene_filepath, cas_type, edit_from, edit_to, gene_name, 
+def generate_BE_guides(gene_filepath, gene_name, 
+                       cas_type, edit_from, edit_to, 
                        PAM=None, window=[4,8], 
-                       output_name='guides.csv', output_dir=''): 
+                       output_name='guides.csv', output_dir=''
+                       ): 
     """
+    Generates a list of guides based on a gene .fasta file,
+    and filtering these guides based on PAM and edit available
+    in a given window. 
 
     Parameters
     ------------
-       cas_type: Sp, SpG, SpRY, etc
-       edit_from: the base (ACTG) to be replaced
-       edit_to: the base (ACTG) to replace with
-       window: editing window, 4th to 8th bases inclusive by default
-       PAM: optional field to input a custom PAM
-       Returns: a df of exon #, guides (23 bps), target (20 bps), fwd or rev
-    outputs: a list of fwd_guides and a list of rev_guides and the edit ie ['C', 'G']
+    gene_filepath: str or path
+        The file with the gene .fasta sequence
+    gene_name: str
+        The name of the gene, can be any string
+    cas_type: str
+        A type of predetermined Cas (ie Sp, SpG, SpRY, etc)
+        This variable is superceded by PAM
+    edit_from: char
+        The base (ACTG) to be replaced
+    edit_to: char
+        The base (ACTG) to replace with
+    PAM: str, default None
+        Optional field to input a custom PAM or a known PAM
+        This field supercedes cas_type
+    window: tuple or list, default = (4,8)
+        Editing window, 4th to 8th bases inclusive by default
 
+    output_name : str or path, default 'guides.csv'
+        Name of the output .csv guides file
+    output_dir : str or path, defailt ''
+        Directory path of the output .cs guides file
+
+    Returns: 
+    ------------
+    df_no_duplicates : pandas dataframe
+        Contains fwd and rev guides in 'sgRNA_seq', and columns 
+        'starting_frame', 'sgRNA_pos', 'exon', 'sgRNA_strand', 
+        'gene_strand', 'editing_window', 'gene', 'coding_seq'
     """
 
     # create gene object and parses all guides as preprocessing
@@ -50,6 +73,7 @@ def generate_BE_guides(gene_filepath, cas_type, edit_from, edit_to, gene_name,
     if cas_type not in list(cas_key.keys()): 
         raise Exception('Improper cas type input, the options are '+str(list(cas_key.keys())))
     
+    # checks editing information is correct
     assert edit_from in bases and edit_to in bases
     edit = edit_from, edit_to
     
@@ -75,23 +99,35 @@ def generate_BE_guides(gene_filepath, cas_type, edit_from, edit_to, gene_name,
     # filter out repeating guides in rev_results list
     rev_results = filter_repeats(rev_results)
 
-    # adding extra annotations
+    # adding extra annotations for fwd and rev
     for x in fwd_results: 
         x.append('sense')
         x.append(gene.strand)
         x.append((x[2]+window[0], x[2]+window[1]))
         x.append(gene_name)
+        x.append(x[0])
     for x in rev_results: 
         x.append('antisense')
         x.append(gene.strand)
         x.append((x[2]+window[0], x[2]+window[1]))
         x.append(gene_name)
+        x.append(rev_complement(x[0]))
 
-    ### filter out guides with off target editing in the genome
+    # set column names for outputing dataframe
+    column_names = ['sgRNA_seq', 'starting_frame', 
+                    'sgRNA_pos', 'exon', 
+                    'sgRNA_strand', 'gene_strand', 
+                    'editing_window', 'gene', 
+                    'coding_seq']
 
-    df = pd.DataFrame(fwd_results + rev_results, columns=['sgRNA_seq', 'starting_frame', 'sgRNA_pos', 'exon', 'sgRNA_strand', 'gene_strand', 'editing_window', 'gene'])
-    df.to_csv(output_dir + output_name)
-    return df
+    # delete entries with duplicates between fwd and rev guides
+    df = pd.DataFrame(fwd_results + rev_results, columns=column_names)
+    duplicate_rows = df.duplicated(subset='coding_seq', keep=False)
+    df_no_duplicates = df[~duplicate_rows]
+
+    # output df
+    df_no_duplicates.to_csv(output_dir + output_name)
+    return df_no_duplicates
 
 
 # # this is the main function for taking in lists of guides, 
