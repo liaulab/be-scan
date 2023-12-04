@@ -3,7 +3,7 @@ Author: Calvin XiaoYang Hu, Simon Shen, Kevin Ngan
 Adapted from: Kevin Ngan from KCN_masterfunctions_v6_200406.py
 Date: 231128
 
-{Description: Aggregate raw counts and perform log2-transform and t0 normalization}
+{Description: Compare a conditions across logfc data given a set of comparisons}
 """
 
 from pathlib import Path
@@ -25,13 +25,13 @@ def compare_conds(in_comparisons,
 
     Parameters
     ----------
-    list_comparisons : list of tuples in format (name, sample 1, sample 2)
-        A list of tuples denoting the comparisons to make, with the comparison
-        being sample 1 - sample 2 (e.g. treatment - control). The output column
-        headers will be labeled by the comparison name in the tuple.
-    in_lfc : str or path
+    in_comparisons : in_comparisons .csv in format (name, treatment, control)
+        A dataframe denoting the comparisons to make, with the comparison
+        being treatment - control. The output column
+        headers will be labeled by the name in the dataframe.
+    in_conds : str or path
         String or path to the csv file containing the values for comparison.
-        The column headers must match the sample names in list_comparisons
+        The column headers must match the sample names in in_comparisons
 
     file_dir : str, default ''
         Name of the subfolder to save output files. The default is the current

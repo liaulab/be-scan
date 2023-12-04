@@ -96,6 +96,37 @@ def main():
     parser_compare_conds.set_defaults(func=compare_conds)
     
     ##################################################
+    
+    from be_scan.analysis.batch_process import batch_process
+    signat_bp = inspect.signature(batch_process)
+    parser_batch_process = subparsers.add_parser('batch_process', 
+                                                 help=next(line for line in batch_process.__doc__.splitlines() if line),
+                                                 description=batch_process.__doc__,
+                                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser_batch_process.add_argument('sample_sheet', type=str)
+    parser_batch_process.add_argument('in_ref', type=str)
+    parser_batch_process.add_argument('in_comparisons', type=str)
+    parser_batch_process.add_argument('--file_dir', type=str, default=signat_cr.parameters['file_dir'].default)
+    parser_batch_process.add_argument('--save', type=bool, default=signat_ar.parameters['save'].default)
+    parser_batch_process.add_argument('--return_df', type=bool, default=signat_man.parameters['return_df'].default)
+    # count_reads
+    parser_batch_process.add_argument('--KEY_INTERVAL', type=int, nargs=2, default=signat_cr.parameters['KEY_INTERVAL'].default)
+    parser_batch_process.add_argument('--KEY', type=str, default=signat_cr.parameters['KEY'].default)
+    parser_batch_process.add_argument('--KEY_REV', type=str, default=signat_cr.parameters['KEY_REV'].default)
+    parser_batch_process.add_argument('--dont_trim_G', action='store_true')
+    # merge_and_norm
+    parser_batch_process.add_argument('--t0', type=str, default=signat_man.parameters['t0'].default)
+    parser_batch_process.add_argument('--dir_counts', type=str, default=signat_man.parameters['dir_counts'].default)
+    parser_batch_process.add_argument('--out_reads', type=str, default=signat_man.parameters['out_reads'].default)
+    parser_batch_process.add_argument('--out_log2', type=str, default=signat_man.parameters['out_log2'].default)
+    parser_batch_process.add_argument('--out_t0', type=str, default=signat_man.parameters['out_t0'].default)
+    # average_reps
+    parser_batch_process.add_argument('--out_conds', type=str, default=signat_ar.parameters['out_conds'].default)
+    # compare_conds
+    parser_batch_process.add_argument('--out_comps', type=str, default=signat_bp.parameters['out_comps'].default)
+    parser_batch_process.set_defaults(func=batch_process)
+    
+    ##################################################
 
 ### plot ###
 
