@@ -2,7 +2,7 @@
 Author: Calvin XiaoYang Hu
 Date: 231204
 
-{Description: filtering }
+{Description: Annotate how often a guide appears in the genome reference file}
 """
 
 import pandas as pd
@@ -18,9 +18,10 @@ def check_guides(guides_file,
                  output_dir='',
                 ): 
     """
-    Generates a list of guides based on a gene .fasta file,
-    and filtering these guides based on PAM and edit available
-    in a given window. 
+    Annotates a list of guides with a count of how many times,
+    a guide and it's rev_complement appears in the reference genome file.
+
+    Requirement: guides_file must have a column named 'sgRNA_seq' and a column named 'sgRNA_strand'
 
     Parameters
     ------------

@@ -11,7 +11,7 @@ import pandas as pd
 from be_scan.sgrna._genomic_ import bases, cas_key
 from be_scan.sgrna._guides_ import filter_guide, filter_repeats
 from be_scan.sgrna._gene_ import GeneForCRISPR
-from be_scan.sgrna._genomic_ import process_PAM, rev_complement
+from be_scan.sgrna._genomic_ import process_PAM, rev_complement, complements
 
 # from be_scan.sgrna._genomic_ import complements
 # from be_scan.sgrna._genomic_ import , complement, protein_to_AAseq, process_PAM, make_mutations
@@ -27,6 +27,19 @@ def generate_BE_guides(gene_filepath, gene_name,
     Generates a list of guides based on a gene .fasta file,
     and filtering these guides based on PAM and edit available
     in a given window. 
+
+    Dataframe contains: 
+       'sgRNA_seq'      : str,    the sequence of the guide fwd if on sense strand and rev if on antisense
+       'starting_frame' : int,    (0, 1, 2) coding position of the first bp in fwd sgRNA or last bp in rev sgRNA
+       'chr_pos'        : int,    the genome position of the first bp in a fwd sgRNA or last bp of a rev sgRNA
+       'gene_pos'       : int,    the gene position of the first bp in a fwd sgRNA or last bp of a rev sgRNA
+       'coding_seq'     : str,    the sense strand sequence of the guide, always fwd
+       'exon'           : int,    the exon number according to the input gene_file
+       'sgRNA_strand'   : str,    (ie sense or antisense)
+       'gene_strand'    : str,    (ie plus or minus)
+       'editing_window' : tuple,  the gene positions of the editing windows bounds inclusive
+       'gene'           : str,    name of the gene
+       'win_overlap'    : str,    where the window sits (Exon, Exon/Intron, Intron)
 
     Parameters
     ------------
@@ -101,24 +114,29 @@ def generate_BE_guides(gene_filepath, gene_name,
 
     # adding extra annotations for fwd and rev
     for x in fwd_results: 
+        x.append(x[0])
         x.append('sense')
         x.append(gene.strand)
         x.append((x[2]+window[0], x[2]+window[1]))
         x.append(gene_name)
-        x.append(x[0])
+        x.append("Exon" if (x[5][window[0]:window[1]+1].isupper()) else "Exon/Intron")
     for x in rev_results: 
+        x.append(rev_complement(complements, x[0]))
         x.append('antisense')
         x.append(gene.strand)
-        x.append((x[2]+window[0], x[2]+window[1]))
+        x.append((x[2]-window[0], x[2]-window[1]))
         x.append(gene_name)
-        x.append(rev_complement(x[0]))
+        x.append("Exon" if (x[5][window[0]:window[1]+1].isupper()) else "Exon/Intron")
+
 
     # set column names for outputing dataframe
     column_names = ['sgRNA_seq', 'starting_frame', 
-                    'sgRNA_pos', 'exon', 
+                    'chr_pos', 'gene_pos', 
+                    'coding_seq', 'exon', 
                     'sgRNA_strand', 'gene_strand', 
                     'editing_window', 'gene', 
-                    'coding_seq']
+                    'win_overlap'
+                    ]
 
     # delete entries with duplicates between fwd and rev guides
     df = pd.DataFrame(fwd_results + rev_results, columns=column_names)

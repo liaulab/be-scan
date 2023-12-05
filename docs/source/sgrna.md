@@ -1,7 +1,25 @@
 # Genomic sgRNA Library Functions: `sgrna`
 
-This function converts a DNA sequence to and amino acid sequence {py:func}`be_scan.sgrna.DNA_to_AA`
+## generate_guides()
+
+{py:func}`be_scan.sgrna.generate_guides`
 
 ```{eval-rst}
-.. function:: be_scan.sgrna.DNA_to_AA(seq)
+.. function:: be_scan.sgrna.generate_guides()
+```
+
+## check_guides()
+
+{py:func}`be_scan.sgrna.check_guides`
+
+```{eval-rst}
+.. function:: be_scan.sgrna.check_guides()
+```
+
+## annotate_guides()
+
+{py:func}`be_scan.sgrna.annotate_guides`
+
+```{eval-rst}
+.. function:: be_scan.sgrna.annotate_guides()
 ```

@@ -63,12 +63,16 @@ class GeneForCRISPR():
             for i in range(len(exon_extra)-self.n-1): 
                 # the number 20 is due to 20 intron bps assumed to be present
                 frame = (i+prev_frame-20)%3
-                ind = i+prev_ind+self.starts[e]
+                ind_gene = i-20+prev_ind
+                ind_chr = i+prev_ind+self.starts[e]
                 # add to instance variable
-                self.fwd_guides.append([exon_extra[i:i+self.n], frame, ind, e])
+                self.fwd_guides.append([exon_extra[i:i+self.n], frame, ind_gene, ind_chr, e])
             prev_frame = (prev_frame+len(exon_extra)-40)%3
+            prev_ind += len(exon_extra)-40
         # change instance variables
-        self.rev_guides = [[rev_complement(complements, g[0])] + [(g[1]+1)%3] + [g[2]+self.n-1] + [g[3]] for g in self.fwd_guides]
+        self.rev_guides = [[rev_complement(complements, g[0])] + [(g[1]+1)%3] + [g[2]+self.n-1] + [g[3]+self.n-1] + [g[4]] for g in self.fwd_guides]
+        print(self.fwd_guides)
+        print(self.rev_guides)
         
     def extract_metadata(self): 
         with open(self.filepath) as f:
