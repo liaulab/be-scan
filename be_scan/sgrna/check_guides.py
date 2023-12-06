@@ -71,6 +71,7 @@ def check_guides(guides_file,
     while True: 
         # get next line
         line = genome.readline().rstrip()
+        count += 1
         if line == 'N'*80: 
             continue
 
@@ -84,8 +85,6 @@ def check_guides(guides_file,
         for _, (_, guide) in it: 
             guides_dict[guide] += 1
 
-        count += 1
-    
     # convert dict to df
     counts_df = pd.DataFrame(list(guides_dict.items()), 
                              columns=['coding_seq', 'genome_occurrences']) 
@@ -93,5 +92,5 @@ def check_guides(guides_file,
     merged_df = pd.merge(guides_df, counts_df, on='coding_seq', how='inner')
 
     # output merged_df
-    merged_df.to_csv(output_dir+output_name)
+    merged_df.to_csv(output_dir+output_name, index=False)
     return merged_df

@@ -8,8 +8,7 @@ This preprocessing includes separating intron and exons, and generating all poss
 
 import re
 
-from be_scan.sgrna._genomic_ import complements
-from be_scan.sgrna._genomic_ import rev_complement, complement
+from be_scan.sgrna._genomic_ import complements, rev_complement
 
 # this function is conditional on +-20 bps of introns flanking exons
 class GeneForCRISPR(): 
@@ -57,23 +56,22 @@ class GeneForCRISPR():
         self.n = n
         self.fwd_guides = []
         prev_frame = 0
+        prev_ind = 0
         # identify all n length sequences in exons
         for e, exon_extra in enumerate(self.exons_extra): 
-            prev_ind = 0
+            prev_exon_ind = 0
             for i in range(len(exon_extra)-self.n-1): 
                 # the number 20 is due to 20 intron bps assumed to be present
                 frame = (i+prev_frame-20)%3
                 ind_gene = i-20+prev_ind
-                ind_chr = i+prev_ind+self.starts[e]
+                ind_chr = i+prev_exon_ind+self.starts[e]
                 # add to instance variable
                 self.fwd_guides.append([exon_extra[i:i+self.n], frame, ind_gene, ind_chr, e])
             prev_frame = (prev_frame+len(exon_extra)-40)%3
             prev_ind += len(exon_extra)-40
         # change instance variables
         self.rev_guides = [[rev_complement(complements, g[0])] + [(g[1]+1)%3] + [g[2]+self.n-1] + [g[3]+self.n-1] + [g[4]] for g in self.fwd_guides]
-        print(self.fwd_guides)
-        print(self.rev_guides)
-        
+
     def extract_metadata(self): 
         with open(self.filepath) as f:
             first_line = f.readline()
