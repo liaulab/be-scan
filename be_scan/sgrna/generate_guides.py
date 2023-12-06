@@ -9,19 +9,15 @@ Date: 230906
 import pandas as pd
 
 from be_scan.sgrna._genomic_ import bases, cas_key
-from be_scan.sgrna._guides_ import filter_guide, filter_repeats
+from be_scan.sgrna._guideRNA_ import filter_guide, filter_repeats
 from be_scan.sgrna._gene_ import GeneForCRISPR
 from be_scan.sgrna._genomic_ import process_PAM, rev_complement, complements
-
-# from be_scan.sgrna._genomic_ import complements
-# from be_scan.sgrna._genomic_ import , complement, protein_to_AAseq, process_PAM, make_mutations
-# from be_scan.sgrna._aminoacid_ import find_aa_edits_fwd, find_aa_edits_rev
-
 
 def generate_BE_guides(gene_filepath, gene_name, 
                        cas_type, edit_from, edit_to, 
                        PAM=None, window=(4,8), 
-                       output_name='guides.csv', output_dir=''
+                       output_name='guides.csv', output_dir='',
+                       return_df=True, save_df=True,
                        ): 
     """
     Generates a list of guides based on a gene .fasta file,
@@ -49,8 +45,12 @@ def generate_BE_guides(gene_filepath, gene_name,
 
     output_name : str or path, default 'guides.csv'
         Name of the output .csv guides file
-    output_dir : str or path, defailt ''
+    output_dir : str or path, default ''
         Directory path of the output .cs guides file
+    return_df : bool, default True
+        Whether or not to return the resulting dataframe
+    save_df : bool, default True
+        Whether or not to save the resulting dataframe
 
     Returns
     ------------
@@ -126,5 +126,7 @@ def generate_BE_guides(gene_filepath, gene_name,
     df_no_duplicates = df[~duplicate_rows]
 
     # output df
-    df_no_duplicates.to_csv(output_dir + output_name, index=False)
-    return df_no_duplicates
+    if save_df: 
+        df_no_duplicates.to_csv(output_dir + output_name, index=False)
+    if return_df: 
+        return df_no_duplicates

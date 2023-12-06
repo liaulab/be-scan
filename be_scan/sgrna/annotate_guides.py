@@ -2,7 +2,7 @@
 Author: Calvin XiaoYang Hu
 Date: 231204
 
-{Description: Annotate how often a guide appears in the genome reference file}
+{Description: Annotate window and mutation information about the guide}
 """
 
 import pandas as pd
@@ -10,22 +10,17 @@ import numpy as np
 
 from be_scan.sgrna._genomic_ import rev_complement, protein_to_AAseq
 from be_scan.sgrna._genomic_ import complements
-from be_scan.sgrna._guides_ import calc_target, calc_coding_window, calc_editing_window
-from be_scan.sgrna._guides_ import annotate_mutations, categorize_mutations
+from be_scan.sgrna._guideRNA_ import calc_target, calc_coding_window, calc_editing_window
+from be_scan.sgrna._guideRNA_ import annotate_mutations, categorize_mutations
 from be_scan.sgrna._gene_ import GeneForCRISPR
 
-def annotate_guides(guides_file,
-                    gene_filepath,
-                    edit_from,
-                    edit_to,
-                    protein_filepath,
-
-                    sgRNA_seq_col = 'sgRNA_seq',
-                    starting_frame_col = 'starting_frame',
-                    sgRNA_strand_col = 'sgRNA_strand',
+def annotate_guides(guides_file, gene_filepath, protein_filepath,
+                    edit_from, edit_to,
                     window=(4,8), 
-                    output_name="annotated.csv",
-                    output_dir='',
+
+                    seq_col = 'sgRNA_seq', frame_col = 'starting_frame', strand_col = 'sgRNA_strand',
+                    output_name="annotated.csv", output_dir='',
+                    return_df=True, save_df=True,
                    ): 
     """
     Annotates a list of guides in a dataframe with mutational information. 
@@ -40,7 +35,26 @@ def annotate_guides(guides_file,
         The base (ACTG) to be replaced
     edit_to: char
         The base (ACTG) to replace with
+    protein_filepath: str or path
+        The file with the protein .fasta sequence
+    window: tuple or list, default = (4,8)
+        Editing window, 4th to 8th bases inclusive by default
 
+    seq_col : str, default 'sgRNA_seq'
+        column name of the dataframe with the guide sequence
+    frame_col : str, default 'starting_frame'
+        column name of the dataframe with the frame of the 
+        first nucleotide of the guide (0, 1, 2)
+    strand_col : str, default 'sgRNA_strand'
+        column name of the dataframe with the strand direction (sense, antisense)
+    output_name : str or path, default 'annotated.csv'
+        Name of the output .csv guides file
+    output_dir : str or path, default ''
+        Directory path of the output .cs guides file
+    return_df : bool, default True
+        Whether or not to return the resulting dataframe
+    save_df : bool, default True
+        Whether or not to save the resulting dataframe
 
     Returns
     ------------
@@ -50,26 +64,24 @@ def annotate_guides(guides_file,
        'editing_window' : tuple,  the gene positions of the editing windows bounds inclusive
        'win_overlap'    : str,    where the window sits (Exon, Exon/Intron, Intron)
        'X_count'        : int,    number of nucleotides in window of A/C/G/T in guide
-
        'target_CDS'     : str,    the coding nucleotides that are in the editing window
        'codon_window'   : str,    the amino acids that are correspond to the editing window
        'residue_window' : str,    the amino acids that are correspond to the editing window
        'edit_site'      : int,    the amino acid index corresponding to middle nucleotide in editing window
        'mutations'      : str,    a list of mutation (ie F877L, F877P, F877L/F877P)
-       'muttypes'       : list,   Missense Nonsense Silent No_C/Exon EssentialSpliceSite Control
-       'muttype'        : str,    muttypes condensed down to unique types
+       'muttypes'       : list,   Missense Nonsense Silent No_C/Exon EssentialSpliceSite Control unique list
        'muttype'        : str,    muttypes condensed down to one type
     """
 
     # read in guides file
     guides_df = pd.read_csv(guides_file)
-    if sgRNA_seq_col not in guides_df.columns: 
-        print('Error', sgRNA_seq_col, 'not found')
+    if seq_col not in guides_df.columns: 
+        print('Error', seq_col, 'not found')
         return
-    if starting_frame_col not in guides_df.columns: 
-        print('Warning', starting_frame_col, 'not found')
-        if sgRNA_strand_col not in guides_df.columns: 
-            print('Error', sgRNA_strand_col, 'not found. No information about direction (sense, antisense).')
+    if frame_col not in guides_df.columns: 
+        print('Warning', frame_col, 'not found')
+        if strand_col not in guides_df.columns: 
+            print('Error', strand_col, 'not found. No information about direction (sense, antisense).')
             return
         else: 
             guides_df = parse_frames(guides_df, gene_filepath)
@@ -111,8 +123,10 @@ def annotate_guides(guides_file,
     guides_df['muttype'] = guides_df['muttypes'].apply(lambda x: x[0] if len(x) == 1 else 'Mixed')
 
     # save df
-    guides_df.to_csv(output_dir+output_name)
-    return guides_df
+    if save_df: 
+        guides_df.to_csv(output_dir+output_name, index=False)
+    if return_df: 
+        return guides_df
 
 def parse_frames(guides_df, gene_filepath): 
 
@@ -123,61 +137,3 @@ def parse_frames(guides_df, gene_filepath):
 
     return guides_df
 
-# this is the main function for taking in lists of guides, 
-# then annotating all their predicted edits
-# def annotate_BE_guides(protein_filepath, fwd_guides, rev_guides, edit_from, edit_to, window=[4,8]): 
-#     ### ADD DOCS
-#     # Parameters
-#     #    protein_filepath: filepath to an amino acid sequence corresponding to gene file
-#     #    fwd_guides, rev_guides: generated from identify_guides
-#     #    edit_from: the base (ACTG) to be replaced
-#     #    edit_to: the base (ACTG) to replace with
-#     #    window: editing window, 4th to 8th bases inclusive by default
-#     # outputs: a dataframe
-    
-#     ### target_codons: list of codons that we want to make with our base edit
-
-#     # codon indices, predicted edits made
-#     amino_acid_seq = protein_to_AAseq(protein_filepath)
-#     num_aa = 3 # this is the num of amino acids we look ahead in our frame
-
-#     for g in fwd_guides: 
-#         # mutates all residues according to the mode, every combination of residue mutations
-#         original = g[0][:12] # a string
-#         guide_window = g[0][window[0]-1:window[1]] # a string
-#         mutateds = [g[0][:window[0]-1] + m + g[0][window[1]:12] for m in make_mutations(guide_window, edit_from, edit_to)] # list of strings 
-
-#         # compares the residues to find which amino acids were altered and catalogs them
-#         edits, edit_inds = [], [] # lists of lists, of all edits for all possible mutations
-#         start = (-1*g[1])+3
-#         orig = original[start:start+(num_aa*3)]
-#         for m in mutateds: 
-#             # for each possible mutation, come up with the list of amino acid changes
-#             edit, edit_ind = find_aa_edits_fwd(m, g, start, orig, num_aa, amino_acid_seq)
-#             edits.append(edit)
-#             edit_inds.append(edit_ind)
-#         # append all information to dataframe
-#         g.extend([edits, edit_inds, 'fwd'])
-#         assert(len(g)) == 7
-        
-#     for g in rev_guides: 
-#         # mutates all residues according to the mode, every combination of residue mutations
-#         original = g[0][:12] # a string
-#         guide_window = g[0][window[0]-1:window[1]] # a string
-#         mutateds = [g[0][:window[0]-1] + m + g[0][window[1]:12] for m in make_mutations(guide_window, edit_from, edit_to)] # a list of strings
-
-#         # compares the residues to find which amino acids were altered and catalogs them
-#         edits, edit_inds = [], [] # lists of lists, of all edits for all possible mutations
-#         start = g[1]+1
-#         orig = rev_complement(complements, original[start:start+(num_aa*3)])
-#         for m in mutateds: 
-#             # for each possible mutation, come up with the list of amino acid changes
-#             edit, edit_ind = find_aa_edits_rev(m, g, start, orig, num_aa, amino_acid_seq)
-#             edits.append(edit)
-#             edit_inds.append(edit_ind)
-#         # append all information to dataframe
-#         g.extend([edits, edit_inds, 'rev'])
-#         assert(len(g)) == 7
-        
-# #     print(pd.DataFrame(fwd_guides + rev_guides))
-#     return pd.DataFrame(fwd_guides + rev_guides)

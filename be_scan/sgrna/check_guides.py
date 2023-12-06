@@ -11,11 +11,10 @@ import numpy as np
 from be_scan.sgrna._genomic_ import rev_complement, complements
 import ahocorasick # https://github.com/WojciechMula/pyahocorasick
 
-def check_guides(guides_file,
-                 genome_file, 
+def check_guides(guides_file, genome_file, 
 
-                 output_name="output.csv",
-                 output_dir='',
+                 output_name="output.csv", output_dir='', 
+                 return_df=True, save_df=True,
                 ): 
     """
     Annotates a list of guides with a count of how many times,
@@ -32,8 +31,12 @@ def check_guides(guides_file,
 
     output_name : str or path, default 'guides.csv'
         Name of the output .csv guides file
-    output_dir : str or path, defailt ''
+    output_dir : str or path, default ''
         Directory path of the output .cs guides file
+    return_df : bool, default True
+        Whether or not to return the resulting dataframe
+    save_df : bool, default True
+        Whether or not to save the resulting dataframe
 
     Returns: 
     ------------
@@ -92,5 +95,7 @@ def check_guides(guides_file,
     merged_df = pd.merge(guides_df, counts_df, on='coding_seq', how='inner')
 
     # output merged_df
-    merged_df.to_csv(output_dir+output_name, index=False)
-    return merged_df
+    if save_df: 
+        merged_df.to_csv(output_dir+output_name, index=False)
+    if return_df: 
+        return merged_df
