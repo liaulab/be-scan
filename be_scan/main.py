@@ -207,7 +207,6 @@ def main():
     ##################################################
 
     from be_scan.plot.correlation_scatter import plot_corr_scatterplot
-    from be_scan.plot._annotating_ import color_list, list_muttypes
     signat_pcs = inspect.signature(plot_corr_scatterplot)
     # required args
     parser_plot_corr_scatterplot = subparsers.add_parser('plot_corr_scatterplot',
@@ -236,18 +235,85 @@ def main():
     ##################################################
 
 ### sgrna ###
+    
+    from be_scan.sgrna.generate_guides import generate_BE_guides
+    signat_gBEg = inspect.signature(generate_BE_guides)
+    parser_generate_BE_guides = subparsers.add_parser('generate_BE_guides', 
+                                                  help=next(line for line in generate_BE_guides.__doc__.splitlines() if line),
+                                                  description=generate_BE_guides.__doc__,
+                                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser_generate_BE_guides.add_argument('gene_filepath', type=str)
+    parser_generate_BE_guides.add_argument('gene_name', type=str)
+    parser_generate_BE_guides.add_argument('cas_type', type=str)
+    parser_generate_BE_guides.add_argument('edit_from', type=str)
+    parser_generate_BE_guides.add_argument('edit_to', type=str)
+    parser_generate_BE_guides.add_argument('--PAM', type=str, default=signat_gBEg.parameters['PAM'].default)
+    parser_generate_BE_guides.add_argument('--window', type=list, default=signat_gBEg.parameters['window'].default)
+    parser_generate_BE_guides.add_argument('--output_name', type=str, default=signat_gBEg.parameters['output_name'].default)
+    parser_generate_BE_guides.add_argument('--output_dir', type=str, default=signat_gBEg.parameters['output_dir'].default)
+    parser_generate_BE_guides.add_argument('--return_df', type=bool, default=signat_gBEg.parameters['return_df'].default)
+    parser_generate_BE_guides.add_argument('--save_df', type=bool, default=signat_gBEg.parameters['save_df'].default)
+    parser_generate_BE_guides.set_defaults(func=generate_BE_guides)
 
-    from be_scan.sgrna.findall_be import add_parser_args, main as findall_be_main
-    parser_findall_be = subparsers.add_parser("findall_be", 
-                                              help='find all guides accessible for base editing')
-    parser_findall_be = add_parser_args(parser_findall_be)
-    parser_findall_be.set_defaults(func=findall_be_main)
+    ##################################################
+    
+    from be_scan.sgrna.check_guides import check_guides
+    signat_cg = inspect.signature(check_guides)
+    parser_check_guides = subparsers.add_parser('check_guides', 
+                                                  help=next(line for line in check_guides.__doc__.splitlines() if line),
+                                                  description=check_guides.__doc__,
+                                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser_check_guides.add_argument('guides_file', type=str)
+    parser_check_guides.add_argument('genome_file', type=str)
+    parser_check_guides.add_argument('--output_name', type=str, default=signat_cg.parameters['output_name'].default)
+    parser_check_guides.add_argument('--output_dir', type=str, default=signat_cg.parameters['output_dir'].default)
+    parser_check_guides.add_argument('--return_df', type=bool, default=signat_cg.parameters['return_df'].default)
+    parser_check_guides.add_argument('--save_df', type=bool, default=signat_cg.parameters['save_df'].default)
+    parser_check_guides.set_defaults(func=check_guides)
 
-    args = parser.parse_args()
-    if args.func == findall_be_main:
-        findall_be_main(args)
-    else:
-        function = args.func
-        function_args = vars(args)
-        del function_args['func']
-        function(**function_args)
+    ##################################################
+    
+    from be_scan.sgrna.annotate_guides import annotate_guides
+    signat_ag = inspect.signature(annotate_guides)
+    parser_annotate_guides = subparsers.add_parser('annotate_guides', 
+                                                  help=next(line for line in annotate_guides.__doc__.splitlines() if line),
+                                                  description=annotate_guides.__doc__,
+                                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser_annotate_guides.add_argument('gene_filepath', type=str)
+    parser_annotate_guides.add_argument('gene_filepath', type=str)
+    parser_annotate_guides.add_argument('protein_filepath', type=str)
+    parser_annotate_guides.add_argument('edit_from', type=str)
+    parser_annotate_guides.add_argument('edit_to', type=str)
+    parser_annotate_guides.add_argument('--window', type=list, default=signat_ag.parameters['window'].default)
+    parser_annotate_guides.add_argument('--seq_col', type=str, default=signat_ag.parameters['seq_col'].default)
+    parser_annotate_guides.add_argument('--gene_pos_col', type=str, default=signat_ag.parameters['gene_pos_col'].default)
+    parser_annotate_guides.add_argument('--frame_col', type=str, default=signat_ag.parameters['frame_col'].default)
+    parser_annotate_guides.add_argument('--strand_col', type=str, default=signat_ag.parameters['strand_col'].default)
+    parser_annotate_guides.add_argument('--output_name', type=str, default=signat_ag.parameters['output_name'].default)
+    parser_annotate_guides.add_argument('--output_dir', type=str, default=signat_ag.parameters['output_dir'].default)
+    parser_annotate_guides.add_argument('--return_df', type=bool, default=signat_ag.parameters['return_df'].default)
+    parser_annotate_guides.add_argument('--save_df', type=bool, default=signat_ag.parameters['save_df'].default)
+    parser_annotate_guides.set_defaults(func=annotate_guides)
+
+    ##################################################
+    
+    from be_scan.sgrna.guides import guides
+    signat_g = inspect.signature(guides)
+    parser_guides = subparsers.add_parser('guides', 
+                                          help=next(line for line in guides.__doc__.splitlines() if line),
+                                          description=guides.__doc__,
+                                          formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser_guides.add_argument('gene_filepath', type=str)
+    parser_guides.add_argument('gene_name', type=str)
+    parser_guides.add_argument('gene_filepath', type=str)
+    parser_guides.add_argument('protein_filepath', type=str)
+    parser_guides.add_argument('cas_type', type=str)
+    parser_guides.add_argument('edit_from', type=str)
+    parser_guides.add_argument('edit_to', type=str)
+    parser_guides.add_argument('--PAM', type=str, default=signat_g.parameters['PAM'].default)
+    parser_guides.add_argument('--window', type=list, default=signat_g.parameters['window'].default)
+    parser_guides.add_argument('--output_name', type=str, default=signat_g.parameters['output_name'].default)
+    parser_guides.add_argument('--output_dir', type=str, default=signat_g.parameters['output_dir'].default)
+    parser_guides.add_argument('--return_df', type=bool, default=signat_g.parameters['return_df'].default)
+    parser_guides.add_argument('--save_df', type=bool, default=signat_g.parameters['save_df'].default)
+    parser_guides.set_defaults(func=guides)
