@@ -80,6 +80,8 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
 
     # read in guides file
     guides_df = pd.read_csv(guides_file)
+    assert all(col in guides_df for col in (seq_col, gene_pos_col, strand_col))
+
     if seq_col not in guides_df.columns: 
         print('Error', seq_col, 'not found')
         return
