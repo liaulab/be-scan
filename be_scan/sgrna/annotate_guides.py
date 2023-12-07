@@ -18,7 +18,8 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
                     edit_from, edit_to,
                     window=(4,8), 
 
-                    seq_col = 'sgRNA_seq', frame_col = 'starting_frame', strand_col = 'sgRNA_strand',
+                    seq_col = 'sgRNA_seq', gene_pos_col='gene_pos',
+                    frame_col = 'starting_frame', strand_col = 'sgRNA_strand',
                     output_name="annotated.csv", output_dir='',
                     return_df=True, save_df=True,
                    ): 
@@ -89,6 +90,9 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
     # read in protein_file
     amino_acid_seq = protein_to_AAseq(protein_filepath)
 
+
+    col_names = frame_col, strand_col, gene_pos_col, seq_col
+    edit = edit_from, edit_to
     # coding_seq
     guides_df['coding_seq'] = np.where(guides_df['sgRNA_strand']=='sense', 
                                        guides_df['sgRNA_seq'],
@@ -96,7 +100,7 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
                                        )
 
     # calculate editing_window
-    guides_df['editing_window'] = guides_df.apply(lambda x: calc_editing_window(x, window), axis=1)
+    guides_df['editing_window'] = guides_df.apply(lambda x: calc_editing_window(x, window, col_names), axis=1)
     # win_overlap
     guides_df['win_overlap'] = np.where(guides_df['coding_seq'].apply(lambda x: x[window[0]-1:window[1]].isupper()), 
                                         "Exon", "Exon/Intron"
@@ -105,18 +109,18 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
     # edit_from+'_count'
     guides_df[str(edit_from)+'_count'] = guides_df['sgRNA_seq'].apply(lambda x: x[window[0]-1:window[1]].count(edit_from))
     # calculate target_CDS
-    guides_df['target_CDS'] = guides_df.apply(lambda x: calc_coding_window(x, window), axis=1) 
+    guides_df['target_CDS'] = guides_df.apply(lambda x: calc_coding_window(x, window, col_names), axis=1) 
 
     # calculate target_residue
-    guides_df['codon_window'] = guides_df.apply(lambda x: calc_target(x, window, 'DNA'), axis=1)
+    guides_df['codon_window'] = guides_df.apply(lambda x: calc_target(x, window, 'DNA', col_names), axis=1)
     # calculate target_residue
-    guides_df['residue_window'] = guides_df.apply(lambda x: calc_target(x, window, 'AA'), axis=1)
+    guides_df['residue_window'] = guides_df.apply(lambda x: calc_target(x, window, 'AA', col_names), axis=1)
 
     # calculate edit_site
     guides_df['edit_site'] = guides_df['editing_window'].apply(lambda x: ((x[0]+x[1])/2)//3)
 
     # calculate mutations
-    guides_df['mutations'] = guides_df.apply(lambda x : annotate_mutations(x, edit_from, edit_to, amino_acid_seq), axis=1)
+    guides_df['mutations'] = guides_df.apply(lambda x : annotate_mutations(x, edit, amino_acid_seq, col_names), axis=1)
     # calculate muttype
     guides_df['muttypes'] = guides_df['mutations'].apply(categorize_mutations)
     # calculate muttype
