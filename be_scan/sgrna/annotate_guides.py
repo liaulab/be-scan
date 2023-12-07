@@ -8,7 +8,7 @@ Date: 231204
 import pandas as pd
 import numpy as np
 
-from be_scan.sgrna._genomic_ import rev_complement, protein_to_AAseq
+from be_scan.sgrna._genomic_ import rev_complement, protein_to_AAseq, bases
 from be_scan.sgrna._genomic_ import complements
 from be_scan.sgrna._guideRNA_ import calc_target, calc_coding_window, calc_editing_window
 from be_scan.sgrna._guideRNA_ import annotate_mutations, categorize_mutations
@@ -74,6 +74,10 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
        'muttype'        : str,    muttypes condensed down to one type
     """
 
+    # checks editing information is correct
+    assert edit_from in bases and edit_to in bases
+    edit = edit_from, edit_to
+
     # read in guides file
     guides_df = pd.read_csv(guides_file)
     if seq_col not in guides_df.columns: 
@@ -90,8 +94,9 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
     # read in protein_file
     amino_acid_seq = protein_to_AAseq(protein_filepath)
 
-
     col_names = frame_col, strand_col, gene_pos_col, seq_col
+    for name in col_names: 
+        assert name in guides_df.columns 
     edit = edit_from, edit_to
     # coding_seq
     guides_df['coding_seq'] = np.where(guides_df['sgRNA_strand']=='sense', 

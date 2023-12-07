@@ -14,7 +14,7 @@ from be_scan.sgrna._genomic_ import process_PAM, rev_complement, complements
 
 def generate_BE_guides(gene_filepath, gene_name, 
                        cas_type, edit_from, edit_to, 
-                       PAM=None, window=(4,8), 
+                       PAM=None, window=[4,8], 
                        output_name='guides.csv', output_dir='',
                        return_df=True, save_df=True,
                        ): 
@@ -64,7 +64,7 @@ def generate_BE_guides(gene_filepath, gene_name,
        'gene_strand'    : str,    (ie plus or minus)
        'gene'           : str,    name of the gene
     """
-
+    
     # create gene object and parses all guides as preprocessing
     gene = GeneForCRISPR(filepath=gene_filepath)
     print('Create gene object from', gene_filepath)

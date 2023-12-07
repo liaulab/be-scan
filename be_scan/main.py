@@ -46,7 +46,7 @@ def main():
 
     ##################################################
     
-    from be_scan.analysis.merge_and_norm import merge_and_norm
+    from be_scan.analysis import merge_and_norm
     signat_man = inspect.signature(merge_and_norm)
     parser_merge_and_norm = subparsers.add_parser('merge_and_norm', 
                                                   help=next(line for line in merge_and_norm.__doc__.splitlines() if line),
@@ -66,7 +66,7 @@ def main():
     
     ##################################################
     
-    from be_scan.analysis.average_reps import average_reps
+    from be_scan.analysis import average_reps
     signat_ar = inspect.signature(average_reps)
     parser_average_reps = subparsers.add_parser('average_reps', 
                                                 help=next(line for line in average_reps.__doc__.splitlines() if line),
@@ -82,7 +82,7 @@ def main():
 
     ##################################################
     
-    from be_scan.analysis.compare_conds import compare_conds
+    from be_scan.analysis import compare_conds
     signat_cc = inspect.signature(compare_conds)
     parser_compare_conds = subparsers.add_parser('compare_conds', 
                                                 help=next(line for line in compare_conds.__doc__.splitlines() if line),
@@ -97,7 +97,7 @@ def main():
     
     ##################################################
     
-    from be_scan.analysis.batch_process import batch_process
+    from be_scan.analysis import batch_process
     signat_bp = inspect.signature(batch_process)
     parser_batch_process = subparsers.add_parser('batch_process', 
                                                  help=next(line for line in batch_process.__doc__.splitlines() if line),
@@ -130,7 +130,7 @@ def main():
 
 ### plot ###
 
-    from be_scan.plot.scatterplot import plot_scatterplot
+    from be_scan.plot import plot_scatterplot
     signat_ps = inspect.signature(plot_scatterplot)
     parser_plot_scatterplot = subparsers.add_parser('plot_scatterplot', 
                                                     help=next(line for line in plot_scatterplot.__doc__.splitlines() if line),
@@ -156,7 +156,7 @@ def main():
 
     ##################################################
 
-    from be_scan.plot.boxes import plot_boxes
+    from be_scan.plot import plot_boxes
     signat_pb = inspect.signature(plot_boxes)
     parser_plot_boxes = subparsers.add_parser('plot_boxes',
                                               help=next(line for line in plot_boxes.__doc__.splitlines() if line),
@@ -184,7 +184,7 @@ def main():
 
     ##################################################
 
-    from be_scan.plot.correlation_heatmap import plot_corr_heatmap
+    from be_scan.plot import plot_corr_heatmap
     signat_pch = inspect.signature(plot_corr_heatmap)
     parser_plot_corr_heatmap = subparsers.add_parser('plot_corr_heatmap',
                                                      help=next(line for line in plot_corr_heatmap.__doc__.splitlines() if line),
@@ -206,7 +206,7 @@ def main():
 
     ##################################################
 
-    from be_scan.plot.correlation_scatter import plot_corr_scatterplot
+    from be_scan.plot import plot_corr_scatterplot
     signat_pcs = inspect.signature(plot_corr_scatterplot)
     # required args
     parser_plot_corr_scatterplot = subparsers.add_parser('plot_corr_scatterplot',
@@ -236,12 +236,12 @@ def main():
 
 ### sgrna ###
     
-    from be_scan.sgrna.generate_guides import generate_BE_guides
+    from be_scan.sgrna import generate_BE_guides
     signat_gBEg = inspect.signature(generate_BE_guides)
     parser_generate_BE_guides = subparsers.add_parser('generate_BE_guides', 
-                                                  help=next(line for line in generate_BE_guides.__doc__.splitlines() if line),
-                                                  description=generate_BE_guides.__doc__,
-                                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+                                                      help=next(line for line in generate_BE_guides.__doc__.splitlines() if line),
+                                                      description=generate_BE_guides.__doc__,
+                                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_generate_BE_guides.add_argument('gene_filepath', type=str)
     parser_generate_BE_guides.add_argument('gene_name', type=str)
     parser_generate_BE_guides.add_argument('cas_type', type=str)
@@ -257,12 +257,12 @@ def main():
 
     ##################################################
     
-    from be_scan.sgrna.check_guides import check_guides
+    from be_scan.sgrna import check_guides
     signat_cg = inspect.signature(check_guides)
     parser_check_guides = subparsers.add_parser('check_guides', 
-                                                  help=next(line for line in check_guides.__doc__.splitlines() if line),
-                                                  description=check_guides.__doc__,
-                                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+                                                help=next(line for line in check_guides.__doc__.splitlines() if line),
+                                                description=check_guides.__doc__,
+                                                formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_check_guides.add_argument('guides_file', type=str)
     parser_check_guides.add_argument('genome_file', type=str)
     parser_check_guides.add_argument('--output_name', type=str, default=signat_cg.parameters['output_name'].default)
@@ -273,13 +273,13 @@ def main():
 
     ##################################################
     
-    from be_scan.sgrna.annotate_guides import annotate_guides
+    from be_scan.sgrna import annotate_guides
     signat_ag = inspect.signature(annotate_guides)
     parser_annotate_guides = subparsers.add_parser('annotate_guides', 
-                                                  help=next(line for line in annotate_guides.__doc__.splitlines() if line),
-                                                  description=annotate_guides.__doc__,
-                                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser_annotate_guides.add_argument('gene_filepath', type=str)
+                                                   help=next(line for line in annotate_guides.__doc__.splitlines() if line),
+                                                   description=annotate_guides.__doc__,
+                                                   formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser_annotate_guides.add_argument('guides_file', type=str)
     parser_annotate_guides.add_argument('gene_filepath', type=str)
     parser_annotate_guides.add_argument('protein_filepath', type=str)
     parser_annotate_guides.add_argument('edit_from', type=str)
@@ -297,7 +297,7 @@ def main():
 
     ##################################################
     
-    from be_scan.sgrna.guides import guides
+    from be_scan.sgrna import guides
     signat_g = inspect.signature(guides)
     parser_guides = subparsers.add_parser('guides', 
                                           help=next(line for line in guides.__doc__.splitlines() if line),
@@ -305,7 +305,7 @@ def main():
                                           formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_guides.add_argument('gene_filepath', type=str)
     parser_guides.add_argument('gene_name', type=str)
-    parser_guides.add_argument('gene_filepath', type=str)
+    parser_guides.add_argument('genome_file', type=str)
     parser_guides.add_argument('protein_filepath', type=str)
     parser_guides.add_argument('cas_type', type=str)
     parser_guides.add_argument('edit_from', type=str)
@@ -317,3 +317,9 @@ def main():
     parser_guides.add_argument('--return_df', type=bool, default=signat_g.parameters['return_df'].default)
     parser_guides.add_argument('--save_df', type=bool, default=signat_g.parameters['save_df'].default)
     parser_guides.set_defaults(func=guides)
+
+    args = parser.parse_args()
+    function = args.func
+    function_args = vars(args)
+    del function_args['func']
+    function(**function_args)

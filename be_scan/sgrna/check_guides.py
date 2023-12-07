@@ -13,7 +13,7 @@ import ahocorasick # https://github.com/WojciechMula/pyahocorasick
 
 def check_guides(guides_file, genome_file, 
 
-                 output_name="output.csv", output_dir='', 
+                 output_name="filtered.csv", output_dir='', 
                  return_df=True, save_df=True,
                 ): 
     """
