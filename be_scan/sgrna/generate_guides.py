@@ -2,8 +2,7 @@
 Author: Calvin XiaoYang Hu
 Date: 230906
 
-{Description: taking in a gene file, generating guides, and filtering potential guides based on 
-              PAM, availability of target residue in editing window, etc}
+{Description: Generates a dataframe of guides based on taking a gene file and filtering conditions}
 """
 
 import pandas as pd
