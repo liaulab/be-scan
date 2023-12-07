@@ -9,7 +9,7 @@ import re
 import pytest
 
 from be_scan.sgrna._genomic_ import bases, complements, cas_key
-from be_scan.sgrna._genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM, DNA_to_AA, make_mutations
+from be_scan.sgrna._genomic_ import rev_complement, complement, protein_to_AAseq, process_PAM, DNA_to_AA
 
 # unit tests for functions in helper/genomic.py
 
@@ -66,11 +66,3 @@ def test_DNA_to_AA_neg(): # negative control test
         assert DNA_to_AA(1) == 'FKPG'
     with pytest.raises(AssertionError): # sequence is not right length
         assert DNA_to_AA('cgttt') == 'FKPG'
-
-def test_make_mutations():
-    mutated = make_mutations("ATCG", edit_from="C", edit_to="T")
-    assert set(mutated) == {'ATCG', 'ATTG'}
-
-def test_make_mutations_processive():
-    mutated = make_mutations("ATCCG", edit_from="C", edit_to="T")
-    assert set(mutated) == {'ATCCG', 'ATTCG', 'ATCTG', 'ATTTG'}
