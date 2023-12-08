@@ -7,12 +7,12 @@ Date: 231204
 
 import pandas as pd
 import numpy as np
+import re
 
 from be_scan.sgrna._genomic_ import rev_complement, protein_to_AAseq, bases
 from be_scan.sgrna._genomic_ import complements
 from be_scan.sgrna._guideRNA_ import calc_target, calc_coding_window, calc_editing_window
-from be_scan.sgrna._guideRNA_ import annotate_mutations, categorize_mutations
-from be_scan.sgrna._gene_ import GeneForCRISPR
+from be_scan.sgrna._guideRNA_ import annotate_mutations, categorize_mutations, parse_position_frames
 
 def annotate_guides(guides_file, gene_filepath, protein_filepath,
                     edit_from, edit_to,
@@ -42,7 +42,8 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
         Editing window, 4th to 8th bases inclusive by default
 
     seq_col : str, default 'sgRNA_seq'
-        column name of the dataframe with the guide sequence
+        column name of the dataframe with the guide sequence, 
+        this column must exist
     frame_col : str, default 'starting_frame'
         column name of the dataframe with the frame of the 
         first nucleotide of the guide (0, 1, 2)
@@ -74,29 +75,29 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
        'muttype'        : str,    muttypes condensed down to one type
     """
 
+    col_names = frame_col, strand_col, gene_pos_col, seq_col
+
     # checks editing information is correct
     assert edit_from in bases and edit_to in bases
     edit = edit_from, edit_to
 
     # read in guides file
     guides_df = pd.read_csv(guides_file)
-    assert all(col in guides_df for col in (seq_col, gene_pos_col, strand_col))
 
-    if seq_col not in guides_df.columns: 
-        print('Error', seq_col, 'not found')
-        return
+    # assertions and warnings
+    assert seq_col in guides_df.columns, f"Error {seq_col} not found"
     if frame_col not in guides_df.columns: 
         print('Warning', frame_col, 'not found')
-        if strand_col not in guides_df.columns: 
-            print('Error', strand_col, 'not found. No information about direction (sense, antisense).')
-            return
-        else: 
-            guides_df = parse_frames(guides_df, gene_filepath)
+    if strand_col not in guides_df.columns: 
+        print('Warning', strand_col, 'not found. No information about direction (sense, antisense).')
+
+    if not all(name in guides_df.columns for name in col_names):
+        guides_df = parse_position_frames(guides_df, seq_col, gene_filepath, 
+                                              frame_col, strand_col, gene_pos_col)
     # after this point we should have sgRNA_seq, starting frame, sgRNA_strand, and window
     # read in protein_file
     amino_acid_seq = protein_to_AAseq(protein_filepath)
 
-    col_names = frame_col, strand_col, gene_pos_col, seq_col
     for name in col_names: 
         assert name in guides_df.columns 
     edit = edit_from, edit_to
@@ -124,27 +125,18 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
     guides_df['residue_window'] = guides_df.apply(lambda x: calc_target(x, window, 'AA', col_names), axis=1)
 
     # calculate edit_site
-    guides_df['edit_site'] = guides_df['editing_window'].apply(lambda x: ((x[0]+x[1])/2)//3)
+    guides_df['edit_site'] = guides_df['editing_window'].apply(lambda x: None if x is None else ((x[0]+x[1])/2)//3)
 
     # calculate mutations
     guides_df['mutations'] = guides_df.apply(lambda x : annotate_mutations(x, edit, amino_acid_seq, col_names), axis=1)
     # calculate muttype
-    guides_df['muttypes'] = guides_df['mutations'].apply(categorize_mutations)
+    guides_df['muttypes'] = guides_df.apply(lambda x: categorize_mutations(x, col_names), axis=1)
     # calculate muttype
-    guides_df['muttype'] = guides_df['muttypes'].apply(lambda x: x[0] if len(x) == 1 else 'Mixed')
+    guides_df['muttype'] = guides_df['muttypes'].apply(lambda x: None if x is None else x[0] if len(x) == 1 else 'Mixed')
 
     # save df
     if save_df: 
         guides_df.to_csv(output_dir+output_name, index=False)
     if return_df: 
         return guides_df
-
-def parse_frames(guides_df, gene_filepath): 
-
-    # alternate route for finding guide frame since PAM/edit/window info not provided for this function
-    gene = GeneForCRISPR(filepath=gene_filepath)
-    gene.parse_exons()
-    gene_seq = ''.join(gene.exons)
-
-    return guides_df
-
+        

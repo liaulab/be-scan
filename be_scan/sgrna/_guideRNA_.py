@@ -5,8 +5,10 @@ Date: 231102
 {Description: helper functions for processing guides and library data}
 """
 
+import re
 from itertools import product
 from be_scan.sgrna._genomic_ import complements, rev_complement, DNA_to_AA
+from be_scan.sgrna._gene_ import GeneForCRISPR
 
 # evaluates if guide has PAM and has a residue in window
 # returns TRUE or FALSE
@@ -63,6 +65,9 @@ def annotate_mutations(row, edit, amino_acid_seq, col_names):
     ------------
     mutation_details : list, a list of mutations
     """
+    if row[col_names[2]] == -1: 
+        return None
+    
     # extract relevant data from dataframe
     frame, dir, pos = row[col_names[0]], row[col_names[1]], row[col_names[2]]
     dna_window, dna, aa = row['target_CDS'], row['codon_window'], row['residue_window']
@@ -82,7 +87,7 @@ def annotate_mutations(row, edit, amino_acid_seq, col_names):
         new_dna = dna.replace(dna_window, m)
         new_aa = DNA_to_AA(new_dna, upper=False)
         # write out which mutations are changed
-        mutations = format_mutation(aa, new_aa, start, amino_acid_seq)
+        mutations = format_mutation(aa, new_aa, start, amino_acid_seq, row[col_names[3]])
         mutation_details.append(mutations)
     return mutation_details
 
@@ -115,7 +120,7 @@ def mutation_combos(guide_window, edit, dir):
         mutated.append(''.join(seq))
     return mutated
 
-def format_mutation(aa, new_aa, start, amino_acid_seq): 
+def format_mutation(aa, new_aa, start, amino_acid_seq, x): 
     """
     Translates and formats the mutation with unedited-position-edited
     
@@ -136,14 +141,14 @@ def format_mutation(aa, new_aa, start, amino_acid_seq):
         if aa[i] != new_aa[i]: 
             mut = aa[i] + str(start+i) + new_aa[i]
             # checks mutation against the protein sequence
-            assert amino_acid_seq[start+i] == aa[i]
+            assert amino_acid_seq[start+i] == aa[i], f"{x}"
             # add edit to a list
             if mut not in result: 
                 result.append(mut)
     mutation = '/'.join(result)
     return mutation
 
-def categorize_mutations(mut_list): 
+def categorize_mutations(row, col_names): 
     """
     Categorizes mutations by Missense, Nonsense, Silent, etc
     
@@ -155,14 +160,16 @@ def categorize_mutations(mut_list):
     ------------
     types : a list of unique mutations, sorted
     """
+    if row[col_names[2]] == -1: 
+        return None
+    
     types = []
-    for mut in mut_list: 
-        if len(mut) == 0 and 'Silent' not in types: 
-            types.append('Silent')
-        elif '.' in mut and 'Nonsense' not in types: 
-            types.append('Nonsense')
-        elif 'Missense' not in types: 
-            types.append('Missense')
+    if len(row['mutations']) == 0 and 'Silent' not in types: 
+        types.append('Silent')
+    elif '.' in row['mutations'] and 'Nonsense' not in types: 
+        types.append('Nonsense')
+    elif 'Missense' not in types: 
+        types.append('Missense')
     return sorted(types)
 
 def calc_target(row, window, mode, col_names): 
@@ -181,6 +188,9 @@ def calc_target(row, window, mode, col_names):
     ------------
     DNA or AA : str, DNA sequence of AA sequence that may be edited
     """
+    if row[col_names[2]] == -1: 
+        return None
+    
     frame = row[col_names[0]]
     guide = row[col_names[3]]
     num_aa = int(2+((window[1]-window[0]-1)//3))
@@ -210,6 +220,9 @@ def calc_coding_window(row, window, col_names):
     ------------
     seq : str, bps in codons that may be edited
     """
+    if row[col_names[2]] == -1: 
+        return None
+
     if row[col_names[1]] == 'sense': 
         seq = row[col_names[3]][window[0]-1:window[1]]
     else: 
@@ -230,9 +243,98 @@ def calc_editing_window(row, window, col_names):
     ------------
     gene_pos_window : tuple, gene position of window
     """
+    if row[col_names[2]] == -1: 
+        return None
+    
     if row[col_names[1]] == 'sense': 
         gene_pos_window = (row[col_names[2]]+window[0]-1, row[col_names[2]]+window[1]-1)
     else: 
         gene_pos_window = (row[col_names[2]]-window[0]+1, row[col_names[2]]-window[1]+1)
     return gene_pos_window
     
+def parse_position_frames(guides_df, seq_col, gene_filepath, 
+                          frame_col, strand_col, gene_pos_col): 
+    """
+    Populates input df with the start position of the guide, the 
+    codon frame of the starting guide, and the strand direction. 
+    This information is necessary for downstream annotation. 
+    
+    Parameters
+    ------------
+    guides_df : pandas df, only needs to contain a column seq_col
+    seq_col : str, name of column with sgRNA sequence
+    gene_filepath : str or path, filepath to the gene
+    frame_col : str, name of column with codon frame
+    strand_col : str, name of column with direction
+    gene_pos_col : str, name of column with position on the gene
+    
+    Returns
+    ------------
+    guides_df : populated with seq_col, frame_col, strand_col, gene_pos_col
+    """
+    # extract guides, this is the only required column
+    guides = guides_df[seq_col]
+
+    # make gene object to string match against
+    gene = GeneForCRISPR(filepath=gene_filepath)
+    gene.parse_exons()
+    gene_seq = ''.join(gene.exons)
+
+    frames, positions, strands = [], [], []
+    for guide in guides: 
+        # find if coding region fwd or rev matches any part of the gene
+        coding_guide_fwd = extract_uppercase_letters(guide)
+        coding_guide_rev = rev_complement(complements, coding_guide_fwd)
+        pos_fwd = list(re.finditer(coding_guide_fwd, gene_seq))
+        pos_rev = list(re.finditer(coding_guide_rev, gene_seq))
+        fwd_ind = find_first_uppercase_index(guide) # only need fwd bc rev_complement was taken
+
+        # guide only matches one position in sense OR antisense (ideal)
+        if len(pos_fwd) == 1 and len(pos_rev) == 0: 
+            pos = pos_fwd[0].start()-fwd_ind
+            stran = 'sense'
+            frame = pos%3
+        elif len(pos_fwd) == 0 and len(pos_rev) == 1: 
+            pos = pos_rev[0].end()+fwd_ind-1
+            stran = 'antisense'
+            frame = (pos)%3
+        else: 
+            # guide matches sequences sense AND antisense, use first sense match
+            if len(pos_fwd) > 0 and len(pos_rev) > 0: 
+                print('The guide', guide, 'match sense and antisense strands.')
+            # guide matches multiple positions in sense OR antisense, use first match from either
+            elif len(pos_fwd) > 1 or len(pos_rev) > 1: 
+                print('The guide', guide, 'has many occurrences.')
+            else: 
+                print('The guide', guide, 'couldn\'t be matched.')
+            pos = -1
+            stran = 'unknown'
+            frame = -1
+
+        # add information to lists
+        positions.append(pos)
+        strands.append(stran)
+        frames.append(frame)
+
+    # set new columns and return df
+    if gene_pos_col not in guides_df.columns: 
+        guides_df[gene_pos_col] = positions
+    if frame_col not in guides_df.columns: 
+        guides_df[frame_col] = frames
+    if strand_col not in guides_df.columns: 
+        guides_df[strand_col] = strands
+    return guides_df
+
+def extract_uppercase_letters(input):
+    """
+    Returns uppercase letters of input string.
+    """
+    return ''.join(char for char in input if char.isupper())
+
+def find_first_uppercase_index(input_string):
+    """
+    Finds index of the first uppercase letter. 
+    """
+    for index, char in enumerate(input_string):
+        if char.isupper():
+            return index

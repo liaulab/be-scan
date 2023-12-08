@@ -7,3 +7,4 @@ from be_scan.sgrna.check_guides import check_guides
 from be_scan.sgrna.annotate_guides import annotate_guides
 from be_scan.sgrna._guideRNA_ import filter_guide, filter_repeats, annotate_mutations, mutation_combos, format_mutation, categorize_mutations, calc_target, calc_coding_window, calc_editing_window
 from be_scan.sgrna.guides import guides
+from be_scan.sgrna.dataframes import merge_guide_df, add_guide_df
