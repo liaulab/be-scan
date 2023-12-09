@@ -15,9 +15,9 @@ import pandas as pd
 def merge_and_norm(sample_sheet, in_ref, 
                    file_dir='',
                    t0='t0', dir_counts='', 
-                   save='all',
-                   out_reads='agg_reads.csv', out_log2='agg_log2.csv', out_t0='agg_t0_reps.csv', 
-                   return_df=None):
+                   out='agg_log2_t0.csv', 
+                   save=True, return_df=True,
+                   ):
     """
     For a given set of samples and their raw read count files from count_reads,
     aggregate them into a single dataframe, normalize counts to reads per million,
@@ -69,19 +69,19 @@ def merge_and_norm(sample_sheet, in_ref,
     path = Path.cwd()
     inpath = path / dir_counts
     df_ref = pd.read_csv(in_ref)
-    # import sample_sheet and derive relevant information for conditions and associated files
+    # import sample_sheet and extract information for conditions and associated files
     df_samples = pd.read_csv(sample_sheet)
     dict_counts = dict(zip(df_samples.condition, df_samples.counts_file))
 
     if 'sgRNA_seq' not in df_ref.columns.tolist():
         raise Exception('in_ref is missing column: sgRNA_seq')
     if t0 not in dict_counts.keys():
-        raise Exception ('dict_counts is missing the t0 sample')
+        raise Exception ('sample sheet is missing the t0 sample')
     # rearrange the dict samples to place t0 first (for order purposes later)
     list_samples = [t0] + [samp for samp in dict_counts.keys() if samp != t0]
     # aggregate read counts from all samples into df_rawreads
     # also perform log2 norm (brian/broad method; log2(rpm + 1 / total reads))
-    df_reads, df_log2, df_t0 = df_ref.copy(), df_ref.copy(), df_ref.copy()
+    df_reads = df_ref.copy()
     for sample in list_samples:
         filepath = file_dir + dict_counts[sample]
         df_temp = pd.read_csv(inpath / filepath, names=['sgRNA_seq', sample])
@@ -89,34 +89,20 @@ def merge_and_norm(sample_sheet, in_ref,
         df_reads = pd.merge(df_reads, df_temp, on='sgRNA_seq')
         # log2 normalization
         total_reads = df_reads[sample].sum()
-        df_log2[sample] = df_reads[sample].apply(lambda x: np.log2((x * 1000000 / total_reads) + 1))
+        df_reads[sample+'_log2'] = df_reads[sample].apply(lambda x: np.log2((x * 1e6 / total_reads) + 1))
         # t0 normalization
-        df_t0[sample] = df_log2[sample].sub(df_log2[t0])
+        df_reads[sample+'_t0'] = df_reads[sample+'_log2'].sub(df_reads[t0+'_log2'])
     # drop the t0 column since it will be 0
-    df_t0.drop(columns=t0, inplace=True)
+    df_reads.drop(columns=t0+'_log2', inplace=True)
 
     # export files and return dataframes if necessary
     outpath = path / file_dir
     Path.mkdir(outpath, exist_ok=True)
-    # dictionary to map kws to dfs and output file names
-    dict_df = {'reads': (df_reads, out_reads), 'log2': (df_log2, out_log2), 't0': (df_t0, out_t0)}
     # determine which files to export
-    if save == 'all':
-        save = ['reads','log2','t0']
-    if isinstance(save, list):
-        for key in save:
-            dict_df[key][0].to_csv(outpath / dict_df[key][1], index=False)
-    elif save is None:
-        pass
-    else:
-        warnings.warn('Invalid value for save. No files exported')
+    if save == True:
+        df_reads.to_csv(outpath / out, index=False)
     # determine df to return
     print('Merge and normalize completed')
-    if return_df in dict_df.keys():
-        return dict_df[return_df][0]
-    elif return_df is None:
-        return
-    else:
-        print('Invalid value for return_df. No dataframe returned')
-        return
+    if return_df: 
+        return df_reads
     

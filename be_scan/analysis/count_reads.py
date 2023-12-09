@@ -9,6 +9,7 @@ Date: 231128
 from collections import Counter
 import gzip
 import warnings
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -16,7 +17,9 @@ import pandas as pd
 def count_reads(sample_sheet, in_ref, 
                 file_dir='', 
                 KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTTAGA', 
-                dont_trim_G=False
+                dont_trim_G=False,
+                out='counts_library.csv',
+                save=True, return_df=True,
                 ):
     """
     Given a set of sgRNA sequences and a FASTQ file, count the reads in the
@@ -56,24 +59,22 @@ def count_reads(sample_sheet, in_ref,
     df = pd.read_csv(sample_sheet)
     samples = [list(a) for a in zip(df.fastq_file, df.counts_file, df.noncounts_file, df.stats_file)]
 
-    for sample in samples: 
+    # STEP 1A: OPEN INPUT FILES FOR PROCESSING, CHECK FOR REQUIRED FORMATTING
+    # look for 'sgRNA_seq' column, raise Exception if missing
+    df_ref = pd.read_csv(in_ref, header=0) # explicit header = first row
+    if 'sgRNA_seq' not in df_ref.columns.tolist():
+        raise Exception('in_ref is missing column: sgRNA_seq')
+    
+    # look for other cols, raise Warning if suggested cols are missing
+    list_headcols = ['sgRNA_ID', 'sgRNA_seq', 'gene', 'edit_site', 'domain']
+    if not all(col in df_ref.columns.tolist() for col in list_headcols):
+        list_miss = [col for col in list_headcols if col not in df_ref.columns.tolist()]
+        warnings.warn('in_ref is missing column(s) for downstream functions: ' + str(list_miss))
 
+    for fastq, counts, nonp, stats in samples: 
         # fastq file of reads and paths to all output files, imported from sample_sheet
-        in_fastq =    file_dir + sample[0]
-        out_counts =  file_dir + sample[1]
-        out_np =      file_dir + sample[2]
-        out_stats =   file_dir + sample[3]
-
-        # STEP 1A: OPEN INPUT FILES FOR PROCESSING, CHECK FOR REQUIRED FORMATTING
-        # look for 'sgRNA_seq' column, raise Exception if missing
-        df_ref = pd.read_csv(in_ref, header=0) # explicit header = first row
-        if 'sgRNA_seq' not in df_ref.columns.tolist():
-            raise Exception('in_ref is missing column: sgRNA_seq')
-        # look for other cols, raise Warning if suggested cols are missing
-        list_headcols = ['sgRNA_ID', 'sgRNA_seq', 'Gene', 'cut_site_AA', 'Domain']
-        if not all(col in df_ref.columns.tolist() for col in list_headcols):
-            list_miss = [col for col in list_headcols if col not in df_ref.columns.tolist()]
-            warnings.warn('Warning! in_ref is missing column(s) for downstream functions: ' + str(list_miss))
+        in_fastq = file_dir + fastq
+        out_counts, out_np, out_stats = file_dir+counts, file_dir+nonp, file_dir+stats        
         # try opening input FASTQ, raise Exception if not possible
         if in_fastq.endswith('.gz'):
             handle = gzip.open(in_fastq, 'rt')
@@ -82,13 +83,10 @@ def count_reads(sample_sheet, in_ref,
 
         # STEP 1B: SET UP VARIABLES FOR SCRIPT
         # make dictionary to hold sgRNA counts - sgRNA_seq, count as k,v
-        dict_perfects = {sgRNA:0 for sgRNA in df_ref['sgRNA_seq']}
+        dict_p = {sgRNA:0 for sgRNA in df_ref['sgRNA_seq']}
         list_np = [] # placeholder list for non-perfect matches
-        num_reads = 0 # total number of reads processed
-        num_perfect_matches = 0 # count of reads with a perfect match to library
-        num_np_matches = 0 # count of reads without a perfect match to library
-        num_nokey = 0 # count of reads where key was not found
-        num_badlength = 0 # count of sgRNA reads that aren't 20bp
+        # reads count of: total, perfect match, non perfect match, no key found, not 20bps
+        num_reads, num_p_matches, num_np_matches, num_nokey, num_badlength = 0, 0, 0, 0, 0
         KEY_START, KEY_END = KEY_INTERVAL[0], KEY_INTERVAL[1] # set the key interval
 
         # STEP 2: PROCESS FASTQ FILE READS AND ADD COUNTS TO DICT
@@ -117,19 +115,22 @@ def count_reads(sample_sheet, in_ref,
             if len(guide) != 20:
                 num_badlength += 1
                 continue
-            if guide in dict_perfects:
-                dict_perfects[guide] += 1
-                num_perfect_matches += 1
+            if guide in dict_p:
+                dict_p[guide] += 1
+                num_p_matches += 1
             else:
                 num_np_matches += 1
                 list_np.append(guide)
         handle.close()
 
         # STEP 3: SORT DICTIONARIES AND GENERATE OUTPUT FILES
-        # sort perf matches (A-Z) with guides,counts as k,v and output to csv
-        df_perfects = pd.DataFrame(data=dict_perfects.items(), columns=['sgRNA_seq', 'reads'])
+        # sort perf matches (A-Z) with guides, counts as k,v and output to csv
+        df_perfects = pd.DataFrame(data=dict_p.items(), columns=['sgRNA_seq', counts])
         df_perfects.sort_values(by='sgRNA_seq', inplace=True)
         df_perfects.to_csv(out_counts, index=False, header=False)
+        # add matching counts to dataframe
+        df_ref = pd.merge(df_ref, df_perfects, on='sgRNA_seq', how='outer')
+        df_ref[counts] = df_ref[counts].fillna(0)
         # now sort non-perfect matches by frequency and output to csv
         dict_np = Counter(list_np) # use Counter to tally up np matches
         df_npmatches = pd.DataFrame(data=dict_np.items(), columns=['sgRNA_seq', 'reads'])
@@ -137,59 +138,47 @@ def count_reads(sample_sheet, in_ref,
         df_npmatches.to_csv(out_np, index=False)
         # calculate the read coverage (reads processed / sgRNAs in library)
         num_guides = df_ref['sgRNA_seq'].shape[0]
+    
+        # STEP 4: CALCULATE STATS AND GENERATE STAT OUTPUT FILE
+        # percentage of guides that matched perfectly
+        pct_p_match = round(num_p_matches/float(num_p_matches + num_np_matches) * 100, 1)
+        # percentage of undetected guides (no read counts)
+        guides_with_reads = np.count_nonzero(dict_p.values())
+        guides_no_reads = len(dict_p) - guides_with_reads
+        pct_no_reads = round(guides_no_reads/float(len(dict_p.values())) * 100, 1)
+        # skew ratio of top 10% to bottom 10% of guide counts
+        top_10 = np.percentile(list(dict_p.values()), 90)
+        bottom_10 = np.percentile(list(dict_p.values()), 10)
+        if top_10 != 0 and bottom_10 != 0:
+            skew_ratio = top_10/bottom_10
+        else:
+            skew_ratio = 'Not enough perfect matches to determine skew ratio'
+        # calculate the read coverage (reads processed / sgRNAs in library)
+        coverage = round(num_reads / num_guides, 1)
+        # calculate the number of unmapped reads (num_nokey / total_reads)
+        pct_unmapped = round((num_nokey / num_reads) * 100, 2)
+        # write analysis statistics to statfile
+        with open(out_stats, 'w') as statfile:
+            statfile.write('Number of reads processed: ' + str(num_reads) + '\n')
+            statfile.write('Number of reads where key was not found: ' + str(num_nokey) + '\n')
+            statfile.write('Number of reads where length was not 20bp: ' + str(num_badlength) + '\n')
+            statfile.write('Number of perfect guide matches: ' + str(num_p_matches) + '\n')
+            statfile.write('Number of nonperfect guide matches: ' + str(num_np_matches) + '\n')
+            statfile.write('Number of undetected guides: ' + str(guides_no_reads) + '\n')
+            statfile.write('Percentage of unmapped reads (key not found): ' + str(pct_unmapped) + '\n') #
+            statfile.write('Percentage of guides that matched perfectly: ' + str(pct_p_match) + '\n') #
+            statfile.write('Percentage of undetected guides: ' + str(pct_no_reads) + '\n') #
+            statfile.write('Skew ratio of top 10% to bottom 10%: ' + str(skew_ratio) + '\n') #
+            statfile.write('Read coverage: ' + str(coverage))
+            statfile.close()
+            print(str(in_fastq), 'processed')
 
-        calculate_save_stats(out_stats, dict_perfects, 
-                             num_reads, num_nokey, num_badlength, num_perfect_matches, num_np_matches, num_guides
-                            )
-        print(str(in_fastq) + ' processed')
-    return
-
-def calculate_save_stats(out_stats, dict_perfects, 
-                         num_reads, num_nokey, num_badlength, num_perfect_matches, num_np_matches, num_guides
-                        ): 
-    """
-    Takes in parameters and objects from count_reads
-    and calculates statistics of the library, outputs them, 
-    and saves them.
-
-    Parameters
-    ----------
-
-    Returns
-    ----------
-    None
-    """
-
-    # STEP 4: CALCULATE STATS AND GENERATE STAT OUTPUT FILE
-    # percentage of guides that matched perfectly
-    pct_perfmatch = round(num_perfect_matches/float(num_perfect_matches + num_np_matches) * 100, 1)
-    # percentage of undetected guides (no read counts)
-    guides_with_reads = np.count_nonzero(list(dict_perfects.values()))
-    guides_no_reads = len(dict_perfects) - guides_with_reads
-    pct_no_reads = round(guides_no_reads/float(len(dict_perfects.values())) * 100, 1)
-    # skew ratio of top 10% to bottom 10% of guide counts
-    top_10 = np.percentile(list(dict_perfects.values()), 90)
-    bottom_10 = np.percentile(list(dict_perfects.values()), 10)
-    if top_10 != 0 and bottom_10 != 0:
-        skew_ratio = top_10/bottom_10
-    else:
-        skew_ratio = 'Not enough perfect matches to determine skew ratio'
-    # calculate the read coverage (reads processed / sgRNAs in library)
-    coverage = round(num_reads / num_guides, 1)
-    # calculate the number of unmapped reads (num_nokey / total_reads)
-    pct_unmapped = round((num_nokey / num_reads) * 100, 2)
-
-    # write analysis statistics to statfile
-    with open(out_stats, 'w') as statfile:
-        statfile.write('Number of reads processed: ' + str(num_reads) + '\n')
-        statfile.write('Number of reads where key was not found: ' + str(num_nokey) + '\n')
-        statfile.write('Number of reads where length was not 20bp: ' + str(num_badlength) + '\n')
-        statfile.write('Number of perfect guide matches: ' + str(num_perfect_matches) + '\n')
-        statfile.write('Number of nonperfect guide matches: ' + str(num_np_matches) + '\n')
-        statfile.write('Number of undetected guides: ' + str(guides_no_reads) + '\n')
-        statfile.write('Percentage of unmapped reads (key not found): ' + str(pct_unmapped) + '\n') #
-        statfile.write('Percentage of guides that matched perfectly: ' + str(pct_perfmatch) + '\n') #
-        statfile.write('Percentage of undetected guides: ' + str(pct_no_reads) + '\n') #
-        statfile.write('Skew ratio of top 10% to bottom 10%: ' + str(skew_ratio) + '\n') #
-        statfile.write('Read coverage: ' + str(coverage))
-        statfile.close()
+    # export files and return dataframes if necessary
+    path = Path.cwd()
+    outpath = path / file_dir
+    Path.mkdir(outpath, exist_ok=True)
+    if save: 
+        df_ref.to_csv(outpath / out, index=False)
+    print('Count reads completed')
+    if return_df:
+        return df_ref

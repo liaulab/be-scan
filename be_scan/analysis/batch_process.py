@@ -13,13 +13,12 @@ from be_scan.analysis.compare_conds import compare_conds
 
 def batch_process(sample_sheet, in_ref, in_comparisons, 
                   
-                  file_dir='', save='all', return_df=None,
+                  file_dir='', save=True, return_df=False,
 
                   KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTTAGA', dont_trim_G=False,
 
                   t0='t0', dir_counts='', 
-                  out_reads='agg_reads.csv', out_log2='agg_log2.csv', out_t0='agg_t0_reps.csv', 
-
+                  out_reads='agg_log2_t0.csv', 
                   out_conds='agg_t0_conds.csv', 
 
                   out_comps='agg_comps.csv', 
@@ -49,7 +48,7 @@ def batch_process(sample_sheet, in_ref, in_comparisons,
 
     file_dir : str or path, defaults to ''
         String or path to the directory where all files are found and saved. 
-    save : {'all', None, ['reads', 'log2', 't0']}, default 'all'
+    save : bool, default True
         Choose files for export to csv. The default is 'all', which is the
         aggregated read counts ('reads'), log2 normalized values ('log2'), and
         t0 normalized values ('t0'). You may also enter any combination of
@@ -101,27 +100,25 @@ def batch_process(sample_sheet, in_ref, in_comparisons,
                 KEY_INTERVAL=KEY_INTERVAL, 
                 KEY=KEY, 
                 KEY_REV=KEY_REV, 
-                dont_trim_G=dont_trim_G
+                dont_trim_G=dont_trim_G,
                 )
     
     merge_and_norm(sample_sheet=sample_sheet, 
-                   in_ref=in_ref, 
+                   in_ref=file_dir+'counts_library.csv', 
                    file_dir=file_dir,
 
                    save=save, 
-                   out_reads=out_reads, 
-                   out_log2=out_log2, 
-                   out_t0=out_t0,
+                   out=out_reads, 
                    return_df=return_df,
                    )
     
-    average_reps(sample_sheet, 
-                 in_lfc=file_dir+out_log2, 
+    average_reps(sample_sheet=sample_sheet, 
+                 in_lfc=file_dir+out_reads, 
                  file_dir=file_dir,
 
                  save=save, 
                  out_conds=out_conds, 
-                 return_df=return_df
+                 return_df=return_df,
                  )
     
     compare_conds(in_comparisons=in_comparisons, 
@@ -129,5 +126,7 @@ def batch_process(sample_sheet, in_ref, in_comparisons,
                   file_dir=file_dir,
 
                   out_comps=out_comps, 
-                  return_df=return_df
+                  save=save,
+                  return_df=return_df,
                   )
+    

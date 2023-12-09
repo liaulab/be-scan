@@ -13,7 +13,7 @@ def compare_conds(in_comparisons,
                   in_conds, 
                   file_dir='',
                   out_comps='agg_comps.csv', 
-                  return_df=False):
+                  save=True, return_df=False):
     """
     Perform pairwise comparisons given a list and export the output to a csv.
 
@@ -53,11 +53,10 @@ def compare_conds(in_comparisons,
         df_conds[name] = df_conds[treatment].sub(df_conds[control])
 
     # export files and return dataframes if necessary
-    outpath = path / file_dir
-    Path.mkdir(outpath, exist_ok=True)
-    df_conds.to_csv(outpath / out_comps, index=False)
+    if save: 
+        outpath = path / file_dir
+        Path.mkdir(outpath, exist_ok=True)
+        df_conds.to_csv(outpath / out_comps, index=False)
     print('Compare conditions completed')
     if return_df:
         return df_conds
-    else:
-        return
