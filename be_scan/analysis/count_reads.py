@@ -54,6 +54,10 @@ def count_reads(sample_sheet, in_ref,
         default is the start of the sgRNA scaffold sequence.
     dont_trim_G : bool, default False
         Whether to trim the first G from 21-nt sgRNA sequences to make them 20-nt.
+    return_df : bool, default True
+        Whether or not to return the resulting dataframe
+    save : bool, default True
+        Whether or not to save the resulting dataframe
     """
 
     df = pd.read_csv(sample_sheet)

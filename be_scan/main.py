@@ -42,6 +42,8 @@ def main():
     parser_count_reads.add_argument('--KEY', type=str, default=signat_cr.parameters['KEY'].default)
     parser_count_reads.add_argument('--KEY_REV', type=str, default=signat_cr.parameters['KEY_REV'].default)
     parser_count_reads.add_argument('--dont_trim_G', action='store_true')
+    parser_count_reads.add_argument('--save', type=bool, default=signat_cr.parameters['save'].default)
+    parser_count_reads.add_argument('--return_df', type=bool, default=signat_cr.parameters['return_df'].default)
     parser_count_reads.set_defaults(func=count_reads)
 
     ##################################################
@@ -57,10 +59,8 @@ def main():
     parser_merge_and_norm.add_argument('--file_dir', type=str, default=signat_man.parameters['file_dir'].default)
     parser_merge_and_norm.add_argument('--t0', type=str, default=signat_man.parameters['t0'].default)
     parser_merge_and_norm.add_argument('--dir_counts', type=str, default=signat_man.parameters['dir_counts'].default)
-    parser_merge_and_norm.add_argument('--save', type=str, default=signat_man.parameters['save'].default)
-    parser_merge_and_norm.add_argument('--out_reads', type=str, default=signat_man.parameters['out_reads'].default)
-    parser_merge_and_norm.add_argument('--out_log2', type=str, default=signat_man.parameters['out_log2'].default)
-    parser_merge_and_norm.add_argument('--out_t0', type=str, default=signat_man.parameters['out_t0'].default)
+    parser_merge_and_norm.add_argument('--out', type=str, default=signat_man.parameters['out'].default)
+    parser_merge_and_norm.add_argument('--save', type=bool, default=signat_man.parameters['save'].default)
     parser_merge_and_norm.add_argument('--return_df', type=bool, default=signat_man.parameters['return_df'].default)
     parser_merge_and_norm.set_defaults(func=merge_and_norm)
     
@@ -92,6 +92,7 @@ def main():
     parser_compare_conds.add_argument('in_conds', type=str)
     parser_compare_conds.add_argument('--file_dir', type=str, default=signat_cc.parameters['file_dir'].default)
     parser_compare_conds.add_argument('--out_comps', type=str, default=signat_cc.parameters['out_comps'].default)
+    parser_compare_conds.add_argument('--save', type=bool, default=signat_cc.parameters['save'].default)
     parser_compare_conds.add_argument('--return_df', type=bool, default=signat_cc.parameters['return_df'].default)
     parser_compare_conds.set_defaults(func=compare_conds)
     
@@ -106,22 +107,20 @@ def main():
     parser_batch_process.add_argument('sample_sheet', type=str)
     parser_batch_process.add_argument('in_ref', type=str)
     parser_batch_process.add_argument('in_comparisons', type=str)
-    parser_batch_process.add_argument('--file_dir', type=str, default=signat_cr.parameters['file_dir'].default)
-    parser_batch_process.add_argument('--save', type=bool, default=signat_ar.parameters['save'].default)
-    parser_batch_process.add_argument('--return_df', type=bool, default=signat_man.parameters['return_df'].default)
+    parser_batch_process.add_argument('--file_dir', type=str, default=signat_bp.parameters['file_dir'].default)
+    parser_batch_process.add_argument('--save', type=bool, default=signat_bp.parameters['save'].default)
+    parser_batch_process.add_argument('--return_df', type=bool, default=signat_bp.parameters['return_df'].default)
     # count_reads
-    parser_batch_process.add_argument('--KEY_INTERVAL', type=int, nargs=2, default=signat_cr.parameters['KEY_INTERVAL'].default)
-    parser_batch_process.add_argument('--KEY', type=str, default=signat_cr.parameters['KEY'].default)
-    parser_batch_process.add_argument('--KEY_REV', type=str, default=signat_cr.parameters['KEY_REV'].default)
+    parser_batch_process.add_argument('--KEY_INTERVAL', type=int, nargs=2, default=signat_bp.parameters['KEY_INTERVAL'].default)
+    parser_batch_process.add_argument('--KEY', type=str, default=signat_bp.parameters['KEY'].default)
+    parser_batch_process.add_argument('--KEY_REV', type=str, default=signat_bp.parameters['KEY_REV'].default)
     parser_batch_process.add_argument('--dont_trim_G', action='store_true')
     # merge_and_norm
-    parser_batch_process.add_argument('--t0', type=str, default=signat_man.parameters['t0'].default)
-    parser_batch_process.add_argument('--dir_counts', type=str, default=signat_man.parameters['dir_counts'].default)
-    parser_batch_process.add_argument('--out_reads', type=str, default=signat_man.parameters['out_reads'].default)
-    parser_batch_process.add_argument('--out_log2', type=str, default=signat_man.parameters['out_log2'].default)
-    parser_batch_process.add_argument('--out_t0', type=str, default=signat_man.parameters['out_t0'].default)
+    parser_batch_process.add_argument('--t0', type=str, default=signat_bp.parameters['t0'].default)
+    parser_batch_process.add_argument('--dir_counts', type=str, default=signat_bp.parameters['dir_counts'].default)
+    parser_batch_process.add_argument('--out_reads', type=str, default=signat_bp.parameters['out_reads'].default)
     # average_reps
-    parser_batch_process.add_argument('--out_conds', type=str, default=signat_ar.parameters['out_conds'].default)
+    parser_batch_process.add_argument('--out_conds', type=str, default=signat_bp.parameters['out_conds'].default)
     # compare_conds
     parser_batch_process.add_argument('--out_comps', type=str, default=signat_bp.parameters['out_comps'].default)
     parser_batch_process.set_defaults(func=batch_process)

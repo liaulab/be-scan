@@ -12,7 +12,7 @@ import re
 from be_scan.sgrna._genomic_ import rev_complement, protein_to_AAseq, bases
 from be_scan.sgrna._genomic_ import complements
 from be_scan.sgrna._guideRNA_ import calc_target, calc_coding_window, calc_editing_window
-from be_scan.sgrna._guideRNA_ import annotate_mutations, categorize_mutations, parse_position_frames
+from be_scan.sgrna._guideRNA_ import annotate_mutations, categorize_mutations, parse_position_frames, annotate_dual_mutations
 
 def annotate_guides(guides_file, gene_filepath, protein_filepath,
                     edit_from, edit_to,
@@ -32,10 +32,10 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
         The file with the gene .fasta sequence
     gene_filepath: str or path
         The file with the gene .fasta sequence
-    edit_from: char
-        The base (ACTG) to be replaced
-    edit_to: char
-        The base (ACTG) to replace with
+    edit_from: str
+        The base (ACTG) to be replaced, can be a string of multiple bases
+    edit_to: str
+        The base (ACTG) to replace with, can be a string of multiple bases
     protein_filepath: str or path
         The file with the protein .fasta sequence
     window: tuple or list, default = (4,8)
@@ -77,8 +77,10 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
 
     col_names = frame_col, strand_col, gene_pos_col, seq_col
 
-    # checks editing information is correct
-    assert edit_from in bases and edit_to in bases
+    # checks editing information is correct, and if len > 1 it is a dual/multi editor
+    assert len(edit_from) == len(edit_to)
+    for i in range(len(edit_from)): 
+        assert edit_from[i] in bases and edit_to[i] in bases 
     edit = edit_from, edit_to
 
     # read in guides file
@@ -115,7 +117,11 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
                                         )
 
     # edit_from+'_count'
-    guides_df[str(edit_from)+'_count'] = guides_df['sgRNA_seq'].apply(lambda x: x[window[0]-1:window[1]].count(edit_from))
+    if len(edit_from) > 1 and len(edit_to) > 1: 
+        guides_df[str(edit_from)+'_count'] = guides_df['sgRNA_seq'].apply(lambda x: 
+                                                                          sum([x[window[0]-1:window[1]].count(e) for e in edit_from]))
+    else: 
+        guides_df[str(edit_from)+'_count'] = guides_df['sgRNA_seq'].apply(lambda x: x[window[0]-1:window[1]].count(edit_from))
     # calculate target_CDS
     guides_df['target_CDS'] = guides_df.apply(lambda x: calc_coding_window(x, window, col_names), axis=1) 
 
@@ -128,12 +134,16 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
     guides_df['edit_site'] = guides_df['editing_window'].apply(lambda x: None if x is None else ((x[0]+x[1])/2)//3)
 
     # calculate mutations
-    guides_df['mutations'] = guides_df.apply(lambda x : annotate_mutations(x, edit, amino_acid_seq, col_names), axis=1)
+    if len(edit_from) > 1 and len(edit_to) > 1: 
+        guides_df['mutations'] = guides_df.apply(lambda x : annotate_dual_mutations(x, edit, amino_acid_seq, col_names), axis=1)
+    else:
+        guides_df['mutations'] = guides_df.apply(lambda x : annotate_mutations(x, edit, amino_acid_seq, col_names), axis=1)
     # calculate muttype
     guides_df['muttypes'] = guides_df.apply(lambda x: categorize_mutations(x, col_names), axis=1)
     # calculate muttype
     guides_df['muttype'] = guides_df['muttypes'].apply(lambda x: None if x is None else x[0] if len(x) == 1 else 'Mixed')
 
+    print('Guides annotated')
     # save df
     if save_df: 
         guides_df.to_csv(output_dir+output_name, index=False)

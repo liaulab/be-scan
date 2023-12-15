@@ -94,6 +94,7 @@ def check_guides(guides_file, genome_file,
     # merge 2 dfs so that genome_occurrences of each guide is logged   
     merged_df = pd.merge(guides_df, counts_df, on='coding_seq', how='inner')
 
+    print('Guides checked against reference genome')
     # output merged_df
     if save_df: 
         merged_df.to_csv(output_dir+output_name, index=False)

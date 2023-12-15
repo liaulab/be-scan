@@ -38,8 +38,10 @@ def compare_conds(in_comparisons,
         working directory.
     out_comps : str, default 'agg_comps.csv'
         Name of the comparisons csv output file.
-    return_df : bool, default False
-        Whether to return the comparisons dataframe. The default is False.
+    return_df : bool, default True
+        Whether or not to return the resulting dataframe
+    save : bool, default True
+        Whether or not to save the resulting dataframe
     """
 
     # import files, define variables, check for requirements

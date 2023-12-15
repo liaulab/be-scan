@@ -57,7 +57,7 @@ def annotate_mutations(row, edit, amino_acid_seq, col_names):
     Parameters
     ------------
     row : row of input df
-    edit : tuple, (edit_from edit_to)
+    edit : tuple, (edit_from edit_to) each are one character
     amino_acid_seq : dict, amino acid with {index : amino acid}
     col_names : tuple, (starting_frame, sgRNA_strand, gene_pos, seq_col)
 
@@ -65,6 +65,8 @@ def annotate_mutations(row, edit, amino_acid_seq, col_names):
     ------------
     mutation_details : list, a list of mutations
     """
+    assert len(edit[0]) == 1 and len(edit[1]) == 1
+    # if guide position is unannotated
     if row[col_names[2]] == -1: 
         return None
     
@@ -81,15 +83,59 @@ def annotate_mutations(row, edit, amino_acid_seq, col_names):
     # add to a list of mutations for each row
     mutation_details = []
     for m in mutation_combos(dna_window, edit, dir): 
-        if m == dna_window: # if the strand is unmutated
-            continue
         # construct new dna and new aa sequence from one potential mutation
         new_dna = dna.replace(dna_window, m)
         new_aa = DNA_to_AA(new_dna, upper=False)
         # write out which mutations are changed
         mutations = format_mutation(aa, new_aa, start, amino_acid_seq, row[col_names[3]])
         mutation_details.append(mutations)
-    return mutation_details
+    return mutation_details[1:]
+
+### only works for dual editor for now
+def annotate_dual_mutations(row, edit, amino_acid_seq, col_names): 
+    """
+    Come up with list of annotations (ie F877L, F877P, F877L/F877P)
+    for each guide for multiple possible bp edits. 
+
+    Parameters
+    ------------
+    row : row of input df
+    edit : tuple, (edit_from edit_to) each are multiple characters
+    amino_acid_seq : dict, amino acid with {index : amino acid}
+    col_names : tuple, (starting_frame, sgRNA_strand, gene_pos, seq_col)
+
+    Returns
+    ------------
+    mutation_details : list, a list of mutations
+    """
+    assert len(edit[0]) > 1 and len(edit[1]) > 1
+    # if guide position is unannotated
+    if row[col_names[2]] == -1: 
+        return None
+    
+    # extract relevant data from dataframe
+    frame, dir, pos = row[col_names[0]], row[col_names[1]], row[col_names[2]]
+    dna_window, dna, aa = row['target_CDS'], row['codon_window'], row['residue_window']
+
+    # starting index of amino acid is different for sense vs anti
+    if dir == 'sense': 
+        start = int((pos+(-1*frame))/3)+2 # indexed at 1, for index at 0 +3 instead of +6
+    else: 
+        start = int((pos+(-1*frame)+1)/3)-2
+
+    # add to a list of mutations for each row
+    mutation_details = []
+    edit1 = (edit[0][0], edit[1][0])
+    edit2 = (edit[0][1], edit[1][1])
+    for m1 in mutation_combos(dna_window, edit1, dir): 
+        for m2 in mutation_combos(m1, edit2, dir): 
+            # construct new dna and new aa sequence from one potential mutation
+            new_dna = dna.replace(dna_window, m2)
+            new_aa = DNA_to_AA(new_dna, upper=False)
+            # write out which mutations are changed
+            mutations = format_mutation(aa, new_aa, start, amino_acid_seq, row[col_names[3]])
+            mutation_details.append(mutations)
+    return mutation_details[1:]
 
 def mutation_combos(guide_window, edit, dir):
     """
@@ -141,7 +187,7 @@ def format_mutation(aa, new_aa, start, amino_acid_seq, x):
         if aa[i] != new_aa[i]: 
             mut = aa[i] + str(start+i) + new_aa[i]
             # checks mutation against the protein sequence
-            assert amino_acid_seq[start+i] == aa[i], f"{x}"
+            assert amino_acid_seq[start+i] == aa[i], 'guides '+f"{x}"
             # add edit to a list
             if mut not in result: 
                 result.append(mut)
@@ -164,12 +210,13 @@ def categorize_mutations(row, col_names):
         return None
     
     types = []
-    if len(row['mutations']) == 0 and 'Silent' not in types: 
-        types.append('Silent')
-    elif '.' in row['mutations'] and 'Nonsense' not in types: 
-        types.append('Nonsense')
-    elif 'Missense' not in types: 
-        types.append('Missense')
+    for mut in row['mutations']: 
+        if len(mut) == 0 and 'Silent' not in types: 
+            types.append('Silent')
+        elif '.' in mut and 'Nonsense' not in types: 
+            types.append('Nonsense')
+        elif 'Missense' not in types: 
+            types.append('Missense')
     return sorted(types)
 
 def calc_target(row, window, mode, col_names): 

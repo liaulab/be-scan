@@ -17,7 +17,7 @@ def test_average_reps():
                  file_dir       = file_dir,
                 )
     df_conds = pd.read_csv(file_dir + "agg_t0_conds.csv")
-    assert 't0' in df_conds.columns
+    assert 't0_t0' in df_conds.columns
 
     # clean up
     os.remove(file_dir + "agg_t0_conds.csv")

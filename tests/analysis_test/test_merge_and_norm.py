@@ -16,13 +16,9 @@ def test_merge_and_norm():
                    in_ref         = file_dir + "CRAF_and_cntrls_ref_lib.csv",
                    file_dir       = file_dir,
                     )
-    df_log2 = pd.read_csv(file_dir + "agg_log2.csv")
-    df_reads = pd.read_csv(file_dir + "agg_reads.csv")
-    df_t0reps = pd.read_csv(file_dir + "agg_t0_reps.csv")
-    assert 't0' in df_log2.columns and 't0' in df_reads.columns
+    df_reads = pd.read_csv(file_dir + "agg_log2_t0.csv")
+    assert 't0' in df_reads.columns
     # this is only t0 so there is no new column added to agg_t0_reps
 
     # clean up
-    os.remove(file_dir + "agg_log2.csv")
-    os.remove(file_dir + "agg_reads.csv")
-    os.remove(file_dir + "agg_t0_reps.csv")
+    os.remove(file_dir + "agg_log2_t0.csv")

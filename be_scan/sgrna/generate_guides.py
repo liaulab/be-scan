@@ -124,6 +124,7 @@ def generate_BE_guides(gene_filepath, gene_name,
     duplicate_rows = df.duplicated(subset='coding_seq', keep=False)
     df_no_duplicates = df[~duplicate_rows]
 
+    print('Guides generated and duplicates removed')
     # output df
     if save_df: 
         df_no_duplicates.to_csv(output_dir + output_name, index=False)

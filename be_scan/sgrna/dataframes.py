@@ -2,9 +2,6 @@
 
 import pandas as pd
 
-### func 2: merge 2 dataframes ex: ABE and CBE
-### keeping both of their annotated information
-### merge on guide, all annotated information specific to different mutation types need to be separated
 ### blanks need to be filled in with blanks or No_C No_A etc
 def merge_guide_df(guide_df1_filepath, guide_df2_filepath, 
                    output_name='merged_guides.csv', output_dir='', 
@@ -17,6 +14,12 @@ def merge_guide_df(guide_df1_filepath, guide_df2_filepath,
                    sort_by=['gene_pos'],
                    return_df=True, save_df=True,
                    ): 
+    """
+    Merge 2 Dataframes (for example ABE and CBE dataframes)
+    Keeps annotated information for both separate
+    Completes merge on the guide sequence, and keeps annotated information separate.
+    Deletes duplicated guides between the two dataframes. 
+    """
     
     df1 = pd.read_csv(guide_df1_filepath)
     df2 = pd.read_csv(guide_df2_filepath)
@@ -48,23 +51,41 @@ def merge_guide_df(guide_df1_filepath, guide_df2_filepath,
         assert cond in new_df.columns, f'Sort condition {cond} not found in both dataframe'
         new_df.sort_values(cond)
 
+    # delete duplicates
+    # Identify rows where either A or B is duplicated
+    duplicated_rows = new_df[new_df.duplicated(subset=['sgRNA_seq'], keep=False) | new_df.duplicated(subset=['coding_seq'], keep=False)]
+    # Identify rows where A appears in B
+    rows_to_remove = duplicated_rows[duplicated_rows['sgRNA_seq'].isin(duplicated_rows['coding_seq'])]
+    # Drop the identified rows from the original DataFrame
+    new_df = new_df.drop(rows_to_remove.index)
+
     if save_df: 
         new_df.to_csv(output_dir+output_name)
     if return_df:
         return new_df
 
-### func 1: add ex: adding control guides to an existing dataframe
-### reassign column names of second dataframe into first
 def add_guide_df(guides_df_filepath, additional_df_filepath,
                  output_name='new_guides.csv', output_dir='',
                  return_df=True, save_df=True,
                  ): 
+    """
+    Add 2 Dataframes (ex guides and control guides)
+    Reassigns the columns of second dataframe into first. 
+    """
     
     guides_df = pd.read_csv(guides_df_filepath)
     additional_df = pd.read_csv(additional_df_filepath)
     assert all(name in guides_df.columns for name in additional_df.columns), "Make sure dataframe column names match."
 
     new_df = pd.concat([guides_df, additional_df])
+    
+    # delete duplicates
+    # Identify rows where either A or B is duplicated
+    duplicated_rows = new_df[new_df.duplicated(subset=['sgRNA_seq'], keep=False) | new_df.duplicated(subset=['coding_seq'], keep=False)]
+    # Identify rows where A appears in B
+    rows_to_remove = duplicated_rows[duplicated_rows['sgRNA_seq'].isin(duplicated_rows['coding_seq'])]
+    # Drop the identified rows from the original DataFrame
+    new_df = new_df.drop(rows_to_remove.index)
 
     if save_df: 
         new_df.to_csv(output_dir+output_name)

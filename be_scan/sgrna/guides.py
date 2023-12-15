@@ -100,6 +100,7 @@ def guides(gene_filepath, gene_name, genome_file, protein_filepath,
                                 )
 
     os.remove('temp.csv')
+    print('Complete! Library generated from', gene_filepath)
     if save_df: 
         annotated.to_csv(output_dir+output_name, index=False)
     if return_df: 

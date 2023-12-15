@@ -40,12 +40,12 @@ def average_reps(sample_sheet, in_lfc,
 
     file_dir : str or path, defaults to ''
         String or path to the directory where all files are found and saved. 
-    save : bool, default True
-        Whether to save the averaged replicate values as a csv file.
     out_conds : str, default 'agg_t0_conds.csv'
         Name of the averaged replicate values csv output file.
-    return_df : bool, default False
-        Whether to return the averaged reps dataframe The default is False.
+    save : bool, default True
+        Whether to save the averaged replicate values as a csv file.
+    return_df : bool, default True
+        Whether or not to return the resulting dataframe
     """
 
     # import files, define variables, check for requirements, etc.
