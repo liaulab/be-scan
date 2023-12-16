@@ -8,6 +8,7 @@ This preprocessing includes separating intron and exons, and generating all poss
 
 import re
 
+from pathlib import Path
 from be_scan.sgrna._genomic_ import complements, rev_complement
 
 # this function is conditional on +-20 bps of introns flanking exons
@@ -15,8 +16,8 @@ class GeneForCRISPR():
     
     # initialize the .fasta file by reading the file into a string
     def __init__(self, filepath, output_dir=''): 
-        self.filepath = filepath
-        f = open(filepath, "r")
+        self.filepath = Path(filepath)
+        f = open(self.filepath, "r")
         self.file_content = f.read()
     
     # function to read in a .fasta file as its exons, separating into just exon and exon +- 20 bps
@@ -55,8 +56,7 @@ class GeneForCRISPR():
         assert isinstance(n, int)
         self.n = n
         self.fwd_guides = []
-        prev_frame = 0
-        prev_ind = 0
+        prev_frame, prev_ind = 0, 0
         # identify all n length sequences in exons
         for e, exon_extra in enumerate(self.exons_extra): 
             prev_exon_ind = 0
@@ -70,7 +70,7 @@ class GeneForCRISPR():
             prev_frame = (prev_frame+len(exon_extra)-40)%3
             prev_ind += len(exon_extra)-40
         # change instance variables
-        self.rev_guides = [[rev_complement(complements, g[0])] + [(g[1]+1)%3] + [g[2]+self.n-1] + [g[3]+self.n-1] + [g[4]] for g in self.fwd_guides]
+        self.rev_guides = [[rev_complement(complements, g[0]), (g[1]+1)%3, g[2]+self.n-1, g[3]+self.n-1, g[4]] for g in self.fwd_guides]
 
     def extract_metadata(self): 
         with open(self.filepath) as f:
@@ -84,5 +84,3 @@ class GeneForCRISPR():
         self.chrID = re.findall(r"(chr(X|Y|\d{1,2}))", first_line_list[1])[0][0]
         # extract strand information
         self.strand = 'plus' if ('+' in first_line_list[4]) else 'minus'
-
-

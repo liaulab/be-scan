@@ -1,5 +1,11 @@
+"""
+Author: Calvin XiaoYang Hu
+Date: 231204
 
+{Description: Functions for adding dataframes of guides together}
+"""
 
+from pathlib import Path
 import pandas as pd
 
 ### blanks need to be filled in with blanks or No_C No_A etc
@@ -11,6 +17,7 @@ def merge_guide_df(guide_df1_filepath, guide_df2_filepath,
                                        'gene_strand', 'gene', 'genome_occurrences'], 
                    col1_name = 'CBE',
                    col2_name = 'ABE',
+
                    sort_by=['gene_pos'],
                    return_df=True, save_df=True,
                    ): 
@@ -20,31 +27,14 @@ def merge_guide_df(guide_df1_filepath, guide_df2_filepath,
     Completes merge on the guide sequence, and keeps annotated information separate.
     Deletes duplicated guides between the two dataframes. 
     """
-    
+    guide_df1_filepath = Path(guide_df1_filepath)
+    guide_df2_filepath = Path(guide_df2_filepath)
     df1 = pd.read_csv(guide_df1_filepath)
     df2 = pd.read_csv(guide_df2_filepath)
+    assert 'sgRNA_seq' in df1.columns and 'sgRNA_seq' in df2.columns
+    assert 'coding_seq' in df1.columns and 'coding_seq' in df2.columns
 
-    # make sure shared_col_names appear in both dataframes
-    remove_ind = []
-    df1_colnames = df1.columns
-    df2_colnames = df2.columns
-    for i, x in enumerate(shared_col_names): 
-        if x not in df1_colnames or x not in df2_colnames: 
-            remove_ind.append(i)
-    for i in reversed(remove_ind): 
-        removed = shared_col_names.pop(i)
-        print(removed, 'removed from shared_col_names')
-
-    # gather names of other col_names and change their names according to col1_name col2_name
-    df1_original_names = [x for x in df1_colnames if x not in shared_col_names]
-    df1_new_names = ['_'.join([col1_name, x]) for x in df1_colnames if x not in shared_col_names]
-    df2_original_names = [x for x in df2_colnames if x not in shared_col_names]
-    df2_new_names = ['_'.join([col2_name, x]) for x in df2_colnames if x not in shared_col_names]
-    dict1 = dict(zip(df1_original_names, df1_new_names))
-    dict2 = dict(zip(df2_original_names, df2_new_names))
-    df1.rename(columns=dict1, inplace=True)
-    df2.rename(columns=dict2, inplace=True)
-
+    shared_col_names = [name for name in df1.columns if name in df2.columns]
     # merge dataframes
     new_df = df1.merge(df2, on=shared_col_names, how='outer')
     for cond in sort_by: 
@@ -52,15 +42,15 @@ def merge_guide_df(guide_df1_filepath, guide_df2_filepath,
         new_df.sort_values(cond)
 
     # delete duplicates
-    # Identify rows where either A or B is duplicated
-    duplicated_rows = new_df[new_df.duplicated(subset=['sgRNA_seq'], keep=False) | new_df.duplicated(subset=['coding_seq'], keep=False)]
-    # Identify rows where A appears in B
-    rows_to_remove = duplicated_rows[duplicated_rows['sgRNA_seq'].isin(duplicated_rows['coding_seq'])]
-    # Drop the identified rows from the original DataFrame
-    new_df = new_df.drop(rows_to_remove.index)
+    dupl_rows = new_df.duplicated(subset='sgRNA_seq', keep=False)
+    new_df = new_df[~dupl_rows]
+    dupl_rows = new_df.duplicated(subset='coding_seq', keep=False)
+    new_df = new_df[~dupl_rows]
+    new_df = new_df[~new_df['sgRNA_seq'].isin(new_df['coding_seq']) & ~new_df['coding_seq'].isin(new_df['sgRNA_seq'])]
 
     if save_df: 
-        new_df.to_csv(output_dir+output_name)
+        out_filepath = Path(output_dir)
+        new_df.to_csv(out_filepath / output_name, index=False)
     if return_df:
         return new_df
 
@@ -72,22 +62,27 @@ def add_guide_df(guides_df_filepath, additional_df_filepath,
     Add 2 Dataframes (ex guides and control guides)
     Reassigns the columns of second dataframe into first. 
     """
-    
+    guides_df_filepath = Path(guides_df_filepath)
+    additional_df_filepath = Path(additional_df_filepath)
     guides_df = pd.read_csv(guides_df_filepath)
     additional_df = pd.read_csv(additional_df_filepath)
+    assert 'sgRNA_seq' in guides_df.columns and 'sgRNA_seq' in additional_df.columns
+
+    # check column names are compatible
     assert all(name in guides_df.columns for name in additional_df.columns), "Make sure dataframe column names match."
+    if 'coding_seq' not in additional_df.columns: 
+        additional_df['coding_seq'] = additional_df['sgRNA_seq'] ### assuming all control guides are sense
 
     new_df = pd.concat([guides_df, additional_df])
-    
     # delete duplicates
-    # Identify rows where either A or B is duplicated
-    duplicated_rows = new_df[new_df.duplicated(subset=['sgRNA_seq'], keep=False) | new_df.duplicated(subset=['coding_seq'], keep=False)]
-    # Identify rows where A appears in B
-    rows_to_remove = duplicated_rows[duplicated_rows['sgRNA_seq'].isin(duplicated_rows['coding_seq'])]
-    # Drop the identified rows from the original DataFrame
-    new_df = new_df.drop(rows_to_remove.index)
+    dupl_rows = new_df.duplicated(subset='sgRNA_seq', keep=False)
+    new_df = new_df[~dupl_rows]
+    dupl_rows = new_df.duplicated(subset='coding_seq', keep=False)
+    new_df = new_df[~dupl_rows]
+    new_df = new_df[~new_df['sgRNA_seq'].isin(new_df['coding_seq']) & ~new_df['coding_seq'].isin(new_df['sgRNA_seq'])]
 
     if save_df: 
+
         new_df.to_csv(output_dir+output_name)
     if return_df:
         return new_df

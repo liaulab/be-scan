@@ -7,7 +7,7 @@ Date: 231204
 
 import pandas as pd
 import numpy as np
-import re
+from pathlib import Path
 
 from be_scan.sgrna._genomic_ import rev_complement, protein_to_AAseq, bases
 from be_scan.sgrna._genomic_ import complements
@@ -84,7 +84,8 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
     edit = edit_from, edit_to
 
     # read in guides file
-    guides_df = pd.read_csv(guides_file)
+    guides_filepath = Path(guides_file)
+    guides_df = pd.read_csv(guides_filepath)
 
     # assertions and warnings
     assert seq_col in guides_df.columns, f"Error {seq_col} not found"
@@ -103,50 +104,58 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
     for name in col_names: 
         assert name in guides_df.columns 
     edit = edit_from, edit_to
+    prefix = edit_from + 'to' + edit_to
     # coding_seq
     guides_df['coding_seq'] = np.where(guides_df['sgRNA_strand']=='sense', 
                                        guides_df['sgRNA_seq'],
                                        guides_df['sgRNA_seq'].apply(lambda x: rev_complement(complements, x))
                                        )
+    # delete entries with duplicates between fwd, between rev, and across fwd and rev
+    dupl_rows = guides_df.duplicated(subset='sgRNA_seq', keep=False)
+    guides_df = guides_df[~dupl_rows]
+    dupl_rows = guides_df.duplicated(subset='coding_seq', keep=False)
+    guides_df = guides_df[~dupl_rows]
+    guides_df = guides_df[~guides_df['sgRNA_seq'].isin(guides_df['coding_seq']) & ~guides_df['coding_seq'].isin(guides_df['sgRNA_seq'])]
 
     # calculate editing_window
-    guides_df['editing_window'] = guides_df.apply(lambda x: calc_editing_window(x, window, col_names), axis=1)
+    guides_df[prefix+'_editing_window'] = guides_df.apply(lambda x: calc_editing_window(x, window, col_names), axis=1)
     # win_overlap
-    guides_df['win_overlap'] = np.where(guides_df['coding_seq'].apply(lambda x: x[window[0]-1:window[1]].isupper()), 
+    guides_df[prefix+'_win_overlap'] = np.where(guides_df['coding_seq'].apply(lambda x: x[window[0]-1:window[1]].isupper()), 
                                         "Exon", "Exon/Intron"
                                         )
 
     # edit_from+'_count'
     if len(edit_from) > 1 and len(edit_to) > 1: 
-        guides_df[str(edit_from)+'_count'] = guides_df['sgRNA_seq'].apply(lambda x: 
+        guides_df[edit_from+'_count'] = guides_df['sgRNA_seq'].apply(lambda x: 
                                                                           sum([x[window[0]-1:window[1]].count(e) for e in edit_from]))
     else: 
-        guides_df[str(edit_from)+'_count'] = guides_df['sgRNA_seq'].apply(lambda x: x[window[0]-1:window[1]].count(edit_from))
+        guides_df[edit_from+'_count'] = guides_df['sgRNA_seq'].apply(lambda x: x[window[0]-1:window[1]].count(edit_from))
+
     # calculate target_CDS
-    guides_df['target_CDS'] = guides_df.apply(lambda x: calc_coding_window(x, window, col_names), axis=1) 
-
+    guides_df[prefix+'_target_CDS'] = guides_df.apply(lambda x: calc_coding_window(x, window, col_names), axis=1) 
     # calculate target_residue
-    guides_df['codon_window'] = guides_df.apply(lambda x: calc_target(x, window, 'DNA', col_names), axis=1)
+    guides_df[prefix+'_codon_window'] = guides_df.apply(lambda x: calc_target(x, window, 'DNA', col_names), axis=1)
     # calculate target_residue
-    guides_df['residue_window'] = guides_df.apply(lambda x: calc_target(x, window, 'AA', col_names), axis=1)
-
+    guides_df[prefix+'_residue_window'] = guides_df.apply(lambda x: calc_target(x, window, 'AA', col_names), axis=1)
     # calculate edit_site
-    guides_df['edit_site'] = guides_df['editing_window'].apply(lambda x: None if x is None else ((x[0]+x[1])/2)//3)
+    guides_df[prefix+'_edit_site'] = guides_df[prefix+'_editing_window'].apply(lambda x: None if x is None else ((x[0]+x[1])/2)//3)
 
     # calculate mutations
     if len(edit_from) > 1 and len(edit_to) > 1: 
-        guides_df['mutations'] = guides_df.apply(lambda x : annotate_dual_mutations(x, edit, amino_acid_seq, col_names), axis=1)
+        guides_df[prefix+'_mutations'] = guides_df.apply(lambda x : annotate_dual_mutations(x, edit, amino_acid_seq, col_names, prefix), axis=1)
     else:
-        guides_df['mutations'] = guides_df.apply(lambda x : annotate_mutations(x, edit, amino_acid_seq, col_names), axis=1)
+        guides_df[prefix+'_mutations'] = guides_df.apply(lambda x : annotate_mutations(x, edit, amino_acid_seq, col_names, prefix), axis=1)
+
     # calculate muttype
-    guides_df['muttypes'] = guides_df.apply(lambda x: categorize_mutations(x, col_names), axis=1)
+    guides_df[prefix+'_muttypes'] = guides_df.apply(lambda x: categorize_mutations(x, col_names, prefix), axis=1)
     # calculate muttype
-    guides_df['muttype'] = guides_df['muttypes'].apply(lambda x: None if x is None else x[0] if len(x) == 1 else 'Mixed')
+    guides_df[prefix+'_muttype'] = guides_df[prefix+'_muttypes'].apply(lambda x: None if x is None else x[0] if len(x) == 1 else 'Mixed')
 
     print('Guides annotated')
     # save df
     if save_df: 
-        guides_df.to_csv(output_dir+output_name, index=False)
+        out_filepath = Path(output_dir)
+        guides_df.to_csv(out_filepath / output_name, index=False)
     if return_df: 
         return guides_df
         

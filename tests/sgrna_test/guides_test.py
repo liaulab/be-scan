@@ -19,7 +19,7 @@ protein_filepath = 'tests/test_data/sgrna_data/P10275.fasta'
 @pytest.mark.parametrize("cas_type", ['SpG', 'SpRY'])
 @pytest.mark.parametrize("window", [(4,8)]) #, (4,7), (3,9)])
 @pytest.mark.parametrize("PAM", [None]) #, 'NGG', 'NGN', 'NRN'])
-def test_generate_BE_guides_basic_pos(edit_from, edit_to, cas_type, PAM, window):
+def test_guides_basic_pos(edit_from, edit_to, cas_type, PAM, window):
     df = guides(gene_filepath=AR_filepath,
                 genome_file=genome_filepath,
                 protein_filepath=protein_filepath,
@@ -30,10 +30,12 @@ def test_generate_BE_guides_basic_pos(edit_from, edit_to, cas_type, PAM, window)
                 window=window,
                 PAM=PAM,
                 )
+    prefix = edit_from+'to'+edit_to
     assert all(col in df.columns for col in ['sgRNA_seq', 'starting_frame', 'gene_pos', 'chr_pos', 
                                              'exon', 'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', 
-                                             'editing_window', 'win_overlap', 
-                                             'target_CDS', 'codon_window', 'residue_window', 'edit_site', 
-                                             'mutations', 'muttypes', 'muttype', 
+                                             prefix+'_editing_window', prefix+'_win_overlap', 
+                                             prefix+'_target_CDS', prefix+'_codon_window', 
+                                             prefix+'_residue_window', prefix+'_edit_site', 
+                                             prefix+'_mutations', prefix+'_muttypes', prefix+'_muttype', 
                                              ])
     os.remove('annotated_guides.csv')

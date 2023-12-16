@@ -5,6 +5,7 @@ Date: 231204
 {Description: Annotate window and mutation information about the guide}
 """
 import os
+from pathlib import Path
 
 from be_scan.sgrna.generate_guides import generate_BE_guides
 from be_scan.sgrna.check_guides import check_guides
@@ -14,7 +15,7 @@ def guides(gene_filepath, gene_name, genome_file, protein_filepath,
            cas_type, edit_from, edit_to, 
 
            PAM=None, window=(4,8), 
-           output_name='annotated_guides.csv', output_dir='',
+           output_name='annotated_guides.csv', output_dir='', delete=False,
            return_df=True, save_df=True,
            ): 
     """
@@ -78,6 +79,8 @@ def guides(gene_filepath, gene_name, genome_file, protein_filepath,
        'muttypes'       : list,   Missense Nonsense Silent No_C/Exon EssentialSpliceSite Control unique list
        'muttype'        : str,    muttypes condensed down to one type
     """
+    temp = "temp.csv"
+    gene_filepath, genome_file, protein_filepath = Path(gene_filepath), Path(genome_file), Path(protein_filepath)
     
     guides = generate_BE_guides(gene_filepath=gene_filepath,
                                 gene_name=gene_name, 
@@ -86,12 +89,15 @@ def guides(gene_filepath, gene_name, genome_file, protein_filepath,
                                 PAM=PAM, window=window, 
                                 return_df=True, save_df=False
                                 )
-    guides.to_csv('temp.csv', index=False)
-    filtered = check_guides('temp.csv', 
+    guides.to_csv(temp, index=False)
+
+    filtered = check_guides(temp, 
                             genome_file=genome_file, 
+                            delete=delete, 
                             return_df=True, save_df=False)
-    filtered.to_csv('temp.csv', index=False)
-    annotated = annotate_guides('temp.csv', 
+    filtered.to_csv(temp, index=False)
+
+    annotated = annotate_guides(temp, 
                                 gene_filepath=gene_filepath, 
                                 protein_filepath=protein_filepath,
                                 edit_from=edit_from, edit_to=edit_to,
@@ -99,10 +105,12 @@ def guides(gene_filepath, gene_name, genome_file, protein_filepath,
                                 return_df=True, save_df=False,
                                 )
 
-    os.remove('temp.csv')
-    print('Complete! Library generated from', gene_filepath)
+    os.remove(temp)
+    print('Complete! Library generated from', str(gene_filepath))
+
     if save_df: 
-        annotated.to_csv(output_dir+output_name, index=False)
+        out_filepath = Path(output_dir)
+        annotated.to_csv(out_filepath / output_name, index=False)
     if return_df: 
         return annotated
     

@@ -27,11 +27,13 @@ def test_annotate_guides_basic_pos(guides, edit_from, edit_to): #, window):
                          protein_filepath = protein_filepath, 
                         #  window           = window,
                          )
+    prefix = edit_from+'to'+edit_to
     assert all(col in df.columns for col in ['sgRNA_seq', 'starting_frame', 'gene_pos', 'chr_pos', 
                                              'exon', 'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', 
-                                             'editing_window', 'win_overlap', 
-                                             'target_CDS', 'codon_window', 'residue_window', 'edit_site', 
-                                             'mutations', 'muttypes', 'muttype', 
+                                             prefix+'_editing_window', prefix+'_win_overlap', 
+                                             prefix+'_target_CDS', prefix+'_codon_window', 
+                                             prefix+'_residue_window', prefix+'_edit_site', 
+                                             prefix+'_mutations', prefix+'_muttypes', prefix+'_muttype', 
                                              ])
     os.remove('annotated.csv')
 

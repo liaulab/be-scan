@@ -5,6 +5,7 @@ Date: 231204
 {Description: Annotate how often a guide appears in the genome reference file}
 """
 
+from pathlib import Path
 import pandas as pd
 import numpy as np
 
@@ -13,8 +14,8 @@ import ahocorasick # https://github.com/WojciechMula/pyahocorasick
 
 def check_guides(guides_file, genome_file, 
 
-                 output_name="filtered.csv", output_dir='', 
-                 return_df=True, save_df=True,
+                 output_name="filtered.csv", output_dir='', delete=False,
+                 return_df=True, save_df=True, 
                 ): 
     """
     Annotates a list of guides with a count of how many times,
@@ -29,6 +30,8 @@ def check_guides(guides_file, genome_file,
     genome_file: str or path
         The file with the genome .fasta sequence
 
+    delete : bool, default False
+        Whether or not to delete guides with multiple genomic occurrences
     output_name : str or path, default 'guides.csv'
         Name of the output .csv guides file
     output_dir : str or path, default ''
@@ -47,8 +50,9 @@ def check_guides(guides_file, genome_file,
         and also contains 'genome_occurrences'
     """
     
+    guides_filepath = Path(guides_file)
     # import guides df
-    guides_df = pd.read_csv(guides_file)
+    guides_df = pd.read_csv(guides_filepath)
     # coding_seq is what needs to be input into algorithm since ref is coding
     if 'coding_seq' not in guides_df.columns: 
         guides_df['coding_seq'] = np.where(guides_df['sgRNA_strand'] == 'sense', 
@@ -93,10 +97,14 @@ def check_guides(guides_file, genome_file,
                              columns=['coding_seq', 'genome_occurrences']) 
     # merge 2 dfs so that genome_occurrences of each guide is logged   
     merged_df = pd.merge(guides_df, counts_df, on='coding_seq', how='inner')
+    # if user wants, delete guides with logged multiple occurrences in reference genome
+    if delete: 
+        merged_df = merged_df.drop(merged_df[merged_df.merged_df >= 2].index)
 
     print('Guides checked against reference genome')
     # output merged_df
     if save_df: 
-        merged_df.to_csv(output_dir+output_name, index=False)
+        outpath = Path(output_dir)
+        merged_df.to_csv(outpath / output_name, index=False)
     if return_df: 
         return merged_df

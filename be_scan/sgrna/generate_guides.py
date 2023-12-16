@@ -113,20 +113,21 @@ def generate_BE_guides(gene_filepath, gene_name,
         x.append(gene_name)
 
     # set column names for outputing dataframe
-    column_names = ['sgRNA_seq', 'starting_frame', 
-                    'gene_pos', 'chr_pos', 
-                    'exon', 
+    column_names = ['sgRNA_seq', 'starting_frame', 'gene_pos', 'chr_pos', 'exon', 
                     'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', 
                     ]
 
-    # delete entries with duplicates between fwd and rev guides
+    # delete entries with duplicates between fwd, between rev, and across fwd and rev
     df = pd.DataFrame(fwd_results + rev_results, columns=column_names)
-    duplicate_rows = df.duplicated(subset='coding_seq', keep=False)
-    df_no_duplicates = df[~duplicate_rows]
+    dupl_rows = df.duplicated(subset='sgRNA_seq', keep=False)
+    df = df[~dupl_rows]
+    dupl_rows = df.duplicated(subset='coding_seq', keep=False)
+    df = df[~dupl_rows]
+    df_filt = df[~df['sgRNA_seq'].isin(df['coding_seq']) & ~df['coding_seq'].isin(df['sgRNA_seq'])]
 
     print('Guides generated and duplicates removed')
     # output df
     if save_df: 
-        df_no_duplicates.to_csv(output_dir + output_name, index=False)
+        df_filt.to_csv(output_dir + output_name, index=False)
     if return_df: 
-        return df_no_duplicates
+        return df_filt

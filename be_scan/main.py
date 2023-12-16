@@ -266,6 +266,7 @@ def main():
     parser_check_guides.add_argument('genome_file', type=str)
     parser_check_guides.add_argument('--output_name', type=str, default=signat_cg.parameters['output_name'].default)
     parser_check_guides.add_argument('--output_dir', type=str, default=signat_cg.parameters['output_dir'].default)
+    parser_check_guides.add_argument('--delete', type=bool, default=signat_cg.parameters['delete'].default)
     parser_check_guides.add_argument('--return_df', type=bool, default=signat_cg.parameters['return_df'].default)
     parser_check_guides.add_argument('--save_df', type=bool, default=signat_cg.parameters['save_df'].default)
     parser_check_guides.set_defaults(func=check_guides)
