@@ -29,7 +29,7 @@ def filter_guide(g, PAM_regex, PAM, edit, window):
     bool True or False
     """
     seq = g[0]
-    return PAM_regex.match(seq[-len(PAM):]) and edit[0] in seq[window[0]-1:window[1]]
+    return (True if PAM_regex.match(seq[-len(PAM):]) else False) and (edit[0] in seq[window[0]-1:window[1]])
 
 def filter_repeats(results): 
     """

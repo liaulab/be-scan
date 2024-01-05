@@ -123,11 +123,10 @@ def generate_BE_guides(gene_filepath, gene_name,
     df = df[~dupl_rows]
     dupl_rows = df.duplicated(subset='coding_seq', keep=False)
     df = df[~dupl_rows]
-    df_filt = df[~df['sgRNA_seq'].isin(df['coding_seq']) & ~df['coding_seq'].isin(df['sgRNA_seq'])]
 
     print('Guides generated and duplicates removed')
     # output df
     if save_df: 
-        df_filt.to_csv(output_dir + output_name, index=False)
+        df.to_csv(output_dir + output_name, index=False)
     if return_df: 
-        return df_filt
+        return df

@@ -46,7 +46,6 @@ def merge_guide_df(guide_df1_filepath, guide_df2_filepath,
     new_df = new_df[~dupl_rows]
     dupl_rows = new_df.duplicated(subset='coding_seq', keep=False)
     new_df = new_df[~dupl_rows]
-    new_df = new_df[~new_df['sgRNA_seq'].isin(new_df['coding_seq']) & ~new_df['coding_seq'].isin(new_df['sgRNA_seq'])]
 
     if save_df: 
         out_filepath = Path(output_dir)

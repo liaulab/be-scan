@@ -115,7 +115,6 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
     guides_df = guides_df[~dupl_rows]
     dupl_rows = guides_df.duplicated(subset='coding_seq', keep=False)
     guides_df = guides_df[~dupl_rows]
-    guides_df = guides_df[~guides_df['sgRNA_seq'].isin(guides_df['coding_seq']) & ~guides_df['coding_seq'].isin(guides_df['sgRNA_seq'])]
 
     # calculate editing_window
     guides_df[prefix+'_editing_window'] = guides_df.apply(lambda x: calc_editing_window(x, window, col_names), axis=1)
