@@ -15,9 +15,6 @@ def merge_guide_df(guide_df1_filepath, guide_df2_filepath,
                    shared_col_names = ['sgRNA_seq', 'starting_frame', 'gene_pos', 
                                        'chr_pos', 'exon', 'coding_seq', 'sgRNA_strand', 
                                        'gene_strand', 'gene', 'genome_occurrences'], 
-                   col1_name = 'CBE',
-                   col2_name = 'ABE',
-
                    sort_by=['gene_pos'],
                    return_df=True, save_df=True,
                    ): 
@@ -44,8 +41,8 @@ def merge_guide_df(guide_df1_filepath, guide_df2_filepath,
     # delete duplicates
     dupl_rows = new_df.duplicated(subset='sgRNA_seq', keep=False)
     new_df = new_df[~dupl_rows]
-    dupl_rows = new_df.duplicated(subset='coding_seq', keep=False)
-    new_df = new_df[~dupl_rows]
+    # dupl_rows = new_df.duplicated(subset='coding_seq', keep=False)
+    # new_df = new_df[~dupl_rows]
 
     if save_df: 
         out_filepath = Path(output_dir)
@@ -76,12 +73,11 @@ def add_guide_df(guides_df_filepath, additional_df_filepath,
     # delete duplicates
     dupl_rows = new_df.duplicated(subset='sgRNA_seq', keep=False)
     new_df = new_df[~dupl_rows]
-    dupl_rows = new_df.duplicated(subset='coding_seq', keep=False)
-    new_df = new_df[~dupl_rows]
-    new_df = new_df[~new_df['sgRNA_seq'].isin(new_df['coding_seq']) & ~new_df['coding_seq'].isin(new_df['sgRNA_seq'])]
+    # dupl_rows = new_df.duplicated(subset='coding_seq', keep=False)
+    # new_df = new_df[~dupl_rows]
+    # new_df = new_df[~new_df['sgRNA_seq'].isin(new_df['coding_seq']) & ~new_df['coding_seq'].isin(new_df['sgRNA_seq'])]
 
     if save_df: 
-
         new_df.to_csv(output_dir+output_name)
     if return_df:
         return new_df

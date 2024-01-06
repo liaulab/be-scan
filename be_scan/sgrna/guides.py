@@ -14,7 +14,7 @@ from be_scan.sgrna.annotate_guides import annotate_guides
 def guides(gene_filepath, gene_name, genome_file, protein_filepath, 
            cas_type, edit_from, edit_to, 
 
-           PAM=None, window=(4,8), 
+           PAM=None, window=[4,8], 
            output_name='annotated_guides.csv', output_dir='', delete=False,
            return_df=True, save_df=True,
            exclude_introns=True,
@@ -44,7 +44,7 @@ def guides(gene_filepath, gene_name, genome_file, protein_filepath,
     PAM: str, default None
         Optional field to input a custom PAM or a known PAM
         This field supercedes cas_type
-    window: tuple or list, default = (4,8)
+    window: tuple or list, default = [4,8]
         Editing window, 4th to 8th bases inclusive by default
 
     output_name : str or path, default 'guides.csv'
@@ -62,7 +62,8 @@ def guides(gene_filepath, gene_name, genome_file, protein_filepath,
     ------------
     df_no_duplicates : pandas dataframe
     Dataframe contains: 
-       'sgRNA_seq'      : str,    the sequence of the guide fwd if on sense strand and rev if on antisense
+       'sgRNA_seq'      : str,    the sequence of the guide 20 bps fwd if on sense strand and rev if on antisense
+       'PAM_seq'        : str,    the sequence of the PAM 3 bps fwd if on sense strand and rev if on antisense
        'starting_frame' : int,    (0, 1, 2) coding position of the first bp in fwd sgRNA or last bp in rev sgRNA
        'chr_pos'        : int,    the genome position of the first bp in a fwd sgRNA or last bp of a rev sgRNA
        'gene_pos'       : int,    the gene position of the first bp in a fwd sgRNA or last bp of a rev sgRNA
@@ -82,6 +83,7 @@ def guides(gene_filepath, gene_name, genome_file, protein_filepath,
        'muttypes'       : list,   Missense Nonsense Silent No_C/Exon EssentialSpliceSite Control unique list
        'muttype'        : str,    muttypes condensed down to one type
     """
+    
     temp = "temp.csv"
     gene_filepath, genome_file, protein_filepath = Path(gene_filepath), Path(genome_file), Path(protein_filepath)
     

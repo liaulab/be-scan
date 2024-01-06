@@ -9,13 +9,12 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-from be_scan.sgrna._genomic_ import rev_complement, protein_to_AAseq, bases
-from be_scan.sgrna._genomic_ import complements
+from be_scan.sgrna._genomic_ import *
 from be_scan.sgrna._guideRNA_ import *
 
 def annotate_guides(guides_file, gene_filepath, protein_filepath,
                     edit_from, edit_to,
-                    window=(4,8), 
+                    window=[4,8], 
 
                     seq_col = 'sgRNA_seq', gene_pos_col='gene_pos',
                     frame_col = 'starting_frame', strand_col = 'sgRNA_strand',
@@ -37,7 +36,7 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
         The base (ACTG) to replace with, can be a string of multiple bases
     protein_filepath: str or path
         The file with the protein .fasta sequence
-    window: tuple or list, default = (4,8)
+    window: tuple or list, default = [4,8]
         Editing window, 4th to 8th bases inclusive by default
 
     seq_col : str, default 'sgRNA_seq'
@@ -112,8 +111,8 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
     # delete entries with duplicates between fwd, between rev, and across fwd and rev
     dupl_rows = guides_df.duplicated(subset='sgRNA_seq', keep=False)
     guides_df = guides_df[~dupl_rows]
-    dupl_rows = guides_df.duplicated(subset='coding_seq', keep=False)
-    guides_df = guides_df[~dupl_rows]
+    # dupl_rows = guides_df.duplicated(subset='coding_seq', keep=False)
+    # guides_df = guides_df[~dupl_rows]
 
     # calculate editing_window
     guides_df[prefix+'_editing_window'] = guides_df.apply(lambda x: calc_editing_window(x, window, col_names), axis=1)
@@ -122,8 +121,7 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
 
     # edit_from+'_count'
     if len(edit_from) > 1 and len(edit_to) > 1: 
-        guides_df[edit_from+'_count'] = guides_df['sgRNA_seq'].apply(lambda x: 
-                                                                          sum([x[window[0]-1:window[1]].count(e) for e in edit_from]))
+        guides_df[edit_from+'_count'] = guides_df['sgRNA_seq'].apply(lambda x: sum([x[window[0]-1:window[1]].count(e) for e in edit_from]))
     else: 
         guides_df[edit_from+'_count'] = guides_df['sgRNA_seq'].apply(lambda x: x[window[0]-1:window[1]].count(edit_from))
 

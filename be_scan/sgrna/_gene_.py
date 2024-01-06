@@ -27,6 +27,7 @@ class GeneForCRISPR():
     def parse_exons(self): 
         exons_info = []
         exons_extra = []
+        intron_lens = []
         i = -1
         # split up file contents into strings and add line by line to exon+-20bps list
         for line in self.file_content.split('\n'): 
@@ -40,6 +41,14 @@ class GeneForCRISPR():
         # extract exons with uppercase letters
         for exon in exons_extra: 
             exons.append(''.join([base for base in exon if base.isupper()]))
+            intron_lens.append(sum(1 for c in exon if c.islower()))
+
+        # check intron lengths are consistent across fasta file
+        # lengths of introns are consistent across exons
+        assert len(set(intron_lens)) == 1, "Make sure all flanking introns are the same length"
+        # lengths of introns 5' and 3' are consistent
+        assert intron_lens[0] % 2 == 0, "Make sure 5' and 3' intron sequences are the same length"
+        self.intron_len = int(intron_lens[0]/2)
         # identify the start site of each exon
         exons_start = []
         for info in exons_info: 
@@ -59,20 +68,19 @@ class GeneForCRISPR():
         prev_frame, prev_ind = 0, 0
         # identify all n length sequences in exons
         for e, exon_extra in enumerate(self.exons_extra): 
-            prev_exon_ind = 0
             for i in range(len(exon_extra)-self.n-1): 
                 # the number 20 is due to 20 intron bps assumed to be present
-                frame = (i+prev_frame-20)%3
-                ind_gene = i-20+prev_ind
-                ind_chr = i+prev_exon_ind+self.starts[e]
+                frame = (i+prev_frame-self.intron_len)%3
+                ind_gene = i-self.intron_len+prev_ind
+                ind_chr = i+self.starts[e]
                 # add to instance variable
-                fwd_guides.append([exon_extra[i:i+self.n], exon_extra[i:i+self.n][:20], exon_extra[i:i+self.n][20:], frame, ind_gene, ind_chr, e])
-            prev_frame = (prev_frame+len(exon_extra)-40)%3
-            prev_ind += len(exon_extra)-40
+                seq = exon_extra[i:i+self.n]
+                fwd_guides.append([seq, seq[:20], seq[20:], frame, ind_gene, ind_chr, e])
+            prev_frame = (prev_frame+len(exon_extra)-(2*self.intron_len))%3
+            prev_ind += len(exon_extra)-(2*self.intron_len)
         # change instance variables
         self.fwd_guides = [g[1:] for g in fwd_guides]
         self.rev_guides = [[rev_complement(complements, g[0][3:]), rev_complement(complements, g[0][:3]), (g[3]+1)%3, g[4]+self.n-1, g[5]+self.n-1, g[6]] for g in fwd_guides]
-        ### need to get ride of these hard coded guide and PAM lengths
 
     def extract_metadata(self): 
         with open(self.filepath) as f:

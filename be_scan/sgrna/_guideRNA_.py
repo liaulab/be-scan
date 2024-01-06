@@ -12,7 +12,7 @@ from be_scan.sgrna._gene_ import GeneForCRISPR
 
 # evaluates if guide has PAM and has a residue in window
 # returns TRUE or FALSE
-def filter_guide(g, PAM_regex, PAM, edit, window, exclude_introns): 
+def filter_guide(g, PAM_regex, edit, window, exclude_introns): 
     """
     Evaluates if a guide has a PAM and target residue within its window. 
 
@@ -84,7 +84,7 @@ def annotate_mutations(row, edit, amino_acid_seq, col_names, prefix):
     if dir == 'sense': 
         start = int((pos+(-1*frame))/3)+2 # indexed at 1, for index at 0 +3 instead of +6
     else: 
-        start = int((pos+(-1*frame)+1)/3)-3
+        start = int((pos+(-1*frame)+1)/3)-2
 
     # add to a list of mutations for each row
     mutation_details = []
@@ -193,7 +193,7 @@ def format_mutation(aa, new_aa, start, amino_acid_seq, x):
         if aa[i] != new_aa[i]: 
             mut = aa[i] + str(start+i) + new_aa[i]
             # checks mutation against the protein sequence
-            # assert amino_acid_seq[start+i] == aa[i], 'guides '+f"{x}" + ", " + aa[i] + str(start+i) + new_aa[i] + ", " + amino_acid_seq[start+i]
+            assert amino_acid_seq[start+i] == aa[i], 'guides '+f"{x}" + ", " + aa[i] + str(start+i) + new_aa[i] + ", " + amino_acid_seq[start+i]
             # add edit to a list
             if mut not in result: 
                 result.append(mut)

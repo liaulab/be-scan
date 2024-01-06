@@ -7,10 +7,9 @@ Date: 230906
 
 import pandas as pd
 
-from be_scan.sgrna._genomic_ import bases, cas_key
+from be_scan.sgrna._genomic_ import *
 from be_scan.sgrna._guideRNA_ import filter_guide, filter_repeats
 from be_scan.sgrna._gene_ import GeneForCRISPR
-from be_scan.sgrna._genomic_ import process_PAM, rev_complement, complements
 
 def generate_BE_guides(gene_filepath, gene_name, 
                        cas_type, edit_from, edit_to, 
@@ -40,7 +39,7 @@ def generate_BE_guides(gene_filepath, gene_name,
     PAM: str, default None
         Optional field to input a custom PAM or a known PAM
         This field supercedes cas_type
-    window: tuple or list, default = (4,8)
+    window: tuple or list, default = [4,8]
         Editing window, 4th to 8th bases inclusive by default
 
     output_name : str or path, default 'guides.csv'
@@ -58,7 +57,8 @@ def generate_BE_guides(gene_filepath, gene_name,
     ------------
     df_no_duplicates : pandas dataframe
     Dataframe contains: 
-       'sgRNA_seq'      : str,    the sequence of the guide fwd if on sense strand and rev if on antisense
+       'sgRNA_seq'      : str,    the sequence of the guide 20 bps fwd if on sense strand and rev if on antisense
+       'PAM_seq'        : str,    the sequence of the PAM 3 bps fwd if on sense strand and rev if on antisense
        'starting_frame' : int,    (0, 1, 2) coding position of the first bp in fwd sgRNA or last bp in rev sgRNA
        'chr_pos'        : int,    the genome position of the first bp in a fwd sgRNA or last bp of a rev sgRNA
        'gene_pos'       : int,    the gene position of the first bp in a fwd sgRNA or last bp of a rev sgRNA
@@ -104,9 +104,9 @@ def generate_BE_guides(gene_filepath, gene_name,
     # filter for PAM and contains editable base in window
     #    (seq, frame012 of first base, index of first base, exon number)
     fwd_results = [g.copy() for g in gene.fwd_guides if 
-                   filter_guide(g, PAM_regex, PAM, edit, window, exclude_introns)]
+                   filter_guide(g, PAM_regex, edit, window, exclude_introns)]
     rev_results = [g.copy() for g in gene.rev_guides if 
-                   filter_guide(g, PAM_regex, PAM, edit, window, exclude_introns)]
+                   filter_guide(g, PAM_regex, edit, window, exclude_introns)]
 
     df1 = pd.DataFrame(fwd_results + rev_results, columns=column_names[:6])
     df1.to_csv("guides_1_pam_window.csv", index=False)
@@ -132,8 +132,8 @@ def generate_BE_guides(gene_filepath, gene_name,
     df = pd.DataFrame(fwd_results + rev_results, columns=column_names)
     dupl_rows = df.duplicated(subset='sgRNA_seq', keep=False)
     df = df[~dupl_rows]
-    dupl_rows = df.duplicated(subset='coding_seq', keep=False)
-    df = df[~dupl_rows]
+    # dupl_rows = df.duplicated(subset='coding_seq', keep=False)
+    # df = df[~dupl_rows]
 
     print('Guides generated and duplicates removed')
     # output df
