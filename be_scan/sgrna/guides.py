@@ -17,6 +17,7 @@ def guides(gene_filepath, gene_name, genome_file, protein_filepath,
            PAM=None, window=(4,8), 
            output_name='annotated_guides.csv', output_dir='', delete=False,
            return_df=True, save_df=True,
+           exclude_introns=True,
            ): 
     """
     Generates a list of guides based on a gene .fasta file,
@@ -54,6 +55,8 @@ def guides(gene_filepath, gene_name, genome_file, protein_filepath,
         Whether or not to return the resulting dataframe
     save_df : bool, default True
         Whether or not to save the resulting dataframe
+    exclude_introns : bool, default True
+        Whether or not the editible base needs to be in an intron
 
     Returns
     ------------
@@ -87,7 +90,8 @@ def guides(gene_filepath, gene_name, genome_file, protein_filepath,
                                 cas_type=cas_type, 
                                 edit_from=edit_from, edit_to=edit_to, 
                                 PAM=PAM, window=window, 
-                                return_df=True, save_df=False
+                                return_df=True, save_df=False, 
+                                exclude_introns=exclude_introns
                                 )
     guides.to_csv(temp, index=False)
 

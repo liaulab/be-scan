@@ -11,8 +11,7 @@ from pathlib import Path
 
 from be_scan.sgrna._genomic_ import rev_complement, protein_to_AAseq, bases
 from be_scan.sgrna._genomic_ import complements
-from be_scan.sgrna._guideRNA_ import calc_target, calc_coding_window, calc_editing_window
-from be_scan.sgrna._guideRNA_ import annotate_mutations, categorize_mutations, parse_position_frames, annotate_dual_mutations
+from be_scan.sgrna._guideRNA_ import *
 
 def annotate_guides(guides_file, gene_filepath, protein_filepath,
                     edit_from, edit_to,
@@ -119,9 +118,7 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
     # calculate editing_window
     guides_df[prefix+'_editing_window'] = guides_df.apply(lambda x: calc_editing_window(x, window, col_names), axis=1)
     # win_overlap
-    guides_df[prefix+'_win_overlap'] = np.where(guides_df['coding_seq'].apply(lambda x: x[window[0]-1:window[1]].isupper()), 
-                                        "Exon", "Exon/Intron"
-                                        )
+    guides_df[prefix+'_win_overlap'] = guides_df['coding_seq'].apply(lambda x: annotate_intron_exon(x, window))
 
     # edit_from+'_count'
     if len(edit_from) > 1 and len(edit_to) > 1: 

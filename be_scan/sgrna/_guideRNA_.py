@@ -12,7 +12,7 @@ from be_scan.sgrna._gene_ import GeneForCRISPR
 
 # evaluates if guide has PAM and has a residue in window
 # returns TRUE or FALSE
-def filter_guide(g, PAM_regex, PAM, edit, window): 
+def filter_guide(g, PAM_regex, PAM, edit, window, exclude_introns): 
     """
     Evaluates if a guide has a PAM and target residue within its window. 
 
@@ -23,13 +23,19 @@ def filter_guide(g, PAM_regex, PAM, edit, window):
     PAM : str, PAM sequence
     edit : tuple, (edit_from edit_to)
     window : tuple, inclusive range for editing
+    exclude_introns : bool, whether or not the editible base needs to be in an intron
 
     Returns
     ------------
     bool True or False
     """
     seq = g[0]
-    return (True if PAM_regex.match(seq[-len(PAM):]) else False) and (edit[0] in seq[window[0]-1:window[1]])
+    window = seq[window[0]-1:window[1]]
+    if exclude_introns: 
+        edit_in_window = (edit[0] in window)
+    else: 
+        edit_in_window = (edit[0].upper() in window) or (edit[0].lower() in window)
+    return (True if PAM_regex.match(g[1]) else False) and edit_in_window
 
 def filter_repeats(results): 
     """
@@ -78,7 +84,7 @@ def annotate_mutations(row, edit, amino_acid_seq, col_names, prefix):
     if dir == 'sense': 
         start = int((pos+(-1*frame))/3)+2 # indexed at 1, for index at 0 +3 instead of +6
     else: 
-        start = int((pos+(-1*frame)+1)/3)-2
+        start = int((pos+(-1*frame)+1)/3)-3
 
     # add to a list of mutations for each row
     mutation_details = []
@@ -187,7 +193,7 @@ def format_mutation(aa, new_aa, start, amino_acid_seq, x):
         if aa[i] != new_aa[i]: 
             mut = aa[i] + str(start+i) + new_aa[i]
             # checks mutation against the protein sequence
-            assert amino_acid_seq[start+i] == aa[i], 'guides '+f"{x}"
+            # assert amino_acid_seq[start+i] == aa[i], 'guides '+f"{x}" + ", " + aa[i] + str(start+i) + new_aa[i] + ", " + amino_acid_seq[start+i]
             # add edit to a list
             if mut not in result: 
                 result.append(mut)
@@ -385,3 +391,12 @@ def find_first_uppercase_index(input_string):
     for index, char in enumerate(input_string):
         if char.isupper():
             return index
+        
+def annotate_intron_exon(x, window): 
+    coding = x[window[0]-1: window[1]]
+    if coding.isupper(): 
+        return "Exon"
+    elif coding.islower(): 
+        return "Intron"
+    else: 
+        return "Exon/Intron"

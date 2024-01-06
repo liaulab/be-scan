@@ -50,12 +50,12 @@ class GeneForCRISPR():
     # generates all fwd and rev potential guides and their metadata
     # while this is computationally naive, genes are usually not long and can be computationally exhausted easily
     # outputs: none
-    # effect: saves guide sequences, the index of the first bp of the guide, 
+    # effect: saves guide sequences, the index of the first bp of the guide in the gene and in the chromosome, 
     #         the frame (0, 1, 2) of the first bp, and the exon # of guide
     def find_all_guides(self, n=23): 
         assert isinstance(n, int)
         self.n = n
-        self.fwd_guides = []
+        fwd_guides = []
         prev_frame, prev_ind = 0, 0
         # identify all n length sequences in exons
         for e, exon_extra in enumerate(self.exons_extra): 
@@ -66,11 +66,13 @@ class GeneForCRISPR():
                 ind_gene = i-20+prev_ind
                 ind_chr = i+prev_exon_ind+self.starts[e]
                 # add to instance variable
-                self.fwd_guides.append([exon_extra[i:i+self.n], frame, ind_gene, ind_chr, e])
+                fwd_guides.append([exon_extra[i:i+self.n], exon_extra[i:i+self.n][:20], exon_extra[i:i+self.n][20:], frame, ind_gene, ind_chr, e])
             prev_frame = (prev_frame+len(exon_extra)-40)%3
             prev_ind += len(exon_extra)-40
         # change instance variables
-        self.rev_guides = [[rev_complement(complements, g[0]), (g[1]+1)%3, g[2]+self.n-1, g[3]+self.n-1, g[4]] for g in self.fwd_guides]
+        self.fwd_guides = [g[1:] for g in fwd_guides]
+        self.rev_guides = [[rev_complement(complements, g[0][3:]), rev_complement(complements, g[0][:3]), (g[3]+1)%3, g[4]+self.n-1, g[5]+self.n-1, g[6]] for g in fwd_guides]
+        ### need to get ride of these hard coded guide and PAM lengths
 
     def extract_metadata(self): 
         with open(self.filepath) as f:

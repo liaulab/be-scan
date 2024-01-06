@@ -17,6 +17,7 @@ def generate_BE_guides(gene_filepath, gene_name,
                        PAM=None, window=[4,8], 
                        output_name='guides.csv', output_dir='',
                        return_df=True, save_df=True,
+                       exclude_introns=True,
                        ): 
     """
     Generates a list of guides based on a gene .fasta file,
@@ -50,6 +51,8 @@ def generate_BE_guides(gene_filepath, gene_name,
         Whether or not to return the resulting dataframe
     save_df : bool, default True
         Whether or not to save the resulting dataframe
+    exclude_introns : bool, default True
+        Whether or not the editible base needs to be in an intron
 
     Returns
     ------------
@@ -91,15 +94,28 @@ def generate_BE_guides(gene_filepath, gene_name,
     assert window[1] >= window[0] and window[0] >= 0 
     assert window[1] <= len(gene.fwd_guides[0][0])
 
+    # set column names for outputing dataframe
+    column_names = ['sgRNA_seq', 'PAM_seq', 'starting_frame', 'gene_pos', 'chr_pos', 'exon', 
+                    'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', 
+                    ]
+
+    df1 = pd.DataFrame(gene.fwd_guides + gene.rev_guides, columns=column_names[:6])
+    df1.to_csv("guides_prelim.csv", index=False)
     # filter for PAM and contains editable base in window
     #    (seq, frame012 of first base, index of first base, exon number)
-    fwd_results = [g.copy() for g in gene.fwd_guides if filter_guide(g, PAM_regex, PAM, edit, window)]
-    rev_results = [g.copy() for g in gene.rev_guides if filter_guide(g, PAM_regex, PAM, edit, window)]
+    fwd_results = [g.copy() for g in gene.fwd_guides if 
+                   filter_guide(g, PAM_regex, PAM, edit, window, exclude_introns)]
+    rev_results = [g.copy() for g in gene.rev_guides if 
+                   filter_guide(g, PAM_regex, PAM, edit, window, exclude_introns)]
 
+    df1 = pd.DataFrame(fwd_results + rev_results, columns=column_names[:6])
+    df1.to_csv("guides_1_pam_window.csv", index=False)
     # filter out repeating guides in fwd_results rev_results list
     fwd_results = filter_repeats(fwd_results)
     rev_results = filter_repeats(rev_results)
 
+    df1 = pd.DataFrame(fwd_results + rev_results, columns=column_names[:6])
+    df1.to_csv("guides_2_no_repeats.csv", index=False)
     # adding extra annotations for fwd and rev
     for x in fwd_results: 
         x.append(x[0])
@@ -111,11 +127,6 @@ def generate_BE_guides(gene_filepath, gene_name,
         x.append('antisense')
         x.append(gene.strand)
         x.append(gene_name)
-
-    # set column names for outputing dataframe
-    column_names = ['sgRNA_seq', 'starting_frame', 'gene_pos', 'chr_pos', 'exon', 
-                    'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', 
-                    ]
 
     # delete entries with duplicates between fwd, between rev, and across fwd and rev
     df = pd.DataFrame(fwd_results + rev_results, columns=column_names)
