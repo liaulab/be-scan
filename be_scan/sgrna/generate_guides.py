@@ -99,8 +99,6 @@ def generate_BE_guides(gene_filepath, gene_name,
                     'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', 
                     ]
 
-    df1 = pd.DataFrame(gene.fwd_guides + gene.rev_guides, columns=column_names[:6])
-    df1.to_csv("guides_prelim.csv", index=False)
     # filter for PAM and contains editable base in window
     #    (seq, frame012 of first base, index of first base, exon number)
     fwd_results = [g.copy() for g in gene.fwd_guides if 
@@ -108,14 +106,10 @@ def generate_BE_guides(gene_filepath, gene_name,
     rev_results = [g.copy() for g in gene.rev_guides if 
                    filter_guide(g, PAM_regex, edit, window, exclude_introns)]
 
-    df1 = pd.DataFrame(fwd_results + rev_results, columns=column_names[:6])
-    df1.to_csv("guides_1_pam_window.csv", index=False)
     # filter out repeating guides in fwd_results rev_results list
     fwd_results = filter_repeats(fwd_results)
     rev_results = filter_repeats(rev_results)
 
-    df1 = pd.DataFrame(fwd_results + rev_results, columns=column_names[:6])
-    df1.to_csv("guides_2_no_repeats.csv", index=False)
     # adding extra annotations for fwd and rev
     for x in fwd_results: 
         x.append(x[0])

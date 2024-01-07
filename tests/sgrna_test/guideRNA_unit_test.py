@@ -1,21 +1,21 @@
 
 import pytest
-from be_scan.sgrna._guideRNA_ import filter_guide, filter_repeats, mutation_combos, format_mutation, annotate_mutations, annotate_dual_mutations, categorize_mutations, calc_editing_window, calc_coding_window, calc_target
+from be_scan.sgrna._guideRNA_ import *
 from be_scan.sgrna._genomic_ import process_PAM
 
 # for C to T, NGN PAM
-@pytest.mark.parametrize("guide", [['AGCTAGCTAGCTAGCTAGCTAGA'], 
-                                   ['AGCTAGGTAGCTAGCTAGCTAGA'],
-                                   ['AGCTAGCTAGCTAGCTAGCTAAA'],
-                                   ['AGCTAGGTAGCTAGCTAGCTAAA'],
+@pytest.mark.parametrize("guide", [['AGCTAGCTAGCTAGCTAGCT', 'AGA'], 
+                                   ['AGCTAGGTAGCTAGCTAGCT', 'AGA'],
+                                   ['AGCTAGCTAGCTAGCTAGCT', 'AAA'],
+                                   ['AGCTAGGTAGCTAGCTAGCT', 'AAA'],
                                    ])
 @pytest.mark.parametrize("PAM_regex", [process_PAM('NGN')])
-@pytest.mark.parametrize("PAM", ['NGN'])
 @pytest.mark.parametrize("edit", [('C', 'T')])
 @pytest.mark.parametrize("window", [(4, 8)])
-def test_filter_guide(guide, PAM_regex, PAM, edit, window): 
-    res = filter_guide(guide, PAM_regex, PAM, edit, window)
-    assert (res == ('G' == guide[0][21] and 'C' in guide[0][3:8]))
+@pytest.mark.parametrize("exclude_introns", [False, True])
+def test_filter_guide(guide, PAM_regex, edit, window, exclude_introns): 
+    res = filter_guide(guide, PAM_regex, edit, window, exclude_introns)
+    assert (res == ('G' == guide[1][1] and 'C' in guide[0][3:8]))
 
 def test_filter_repeats(): 
     sample = [['ABA'], ['ABC'], ['ABA']]

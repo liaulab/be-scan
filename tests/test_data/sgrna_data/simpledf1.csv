@@ -1,0 +1,4 @@
+sgRNA_seq,coding_seq,C_in_window
+ACGT,ACGT,1
+ACGG,ACGG,1
+ACGC,ACGC,2

@@ -20,7 +20,7 @@ def GeneForCRISPR_assert_exons(gene_object):
 def GeneForCRISPR_assert_guides(gene_object): 
     # assert n is int
     assert len(gene_object.fwd_guides) == len(gene_object.rev_guides)
-    for g in gene_object.fwd_guides: assert len(g[0]) == gene_object.n
+    for g in gene_object.fwd_guides: assert len(g[0]) == gene_object.n-3
 
 def workflow(filepath): 
     gene_AR = GeneForCRISPR(filepath=filepath)

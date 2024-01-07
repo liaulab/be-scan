@@ -252,6 +252,7 @@ def main():
     parser_generate_BE_guides.add_argument('--output_dir', type=str, default=signat_gBEg.parameters['output_dir'].default)
     parser_generate_BE_guides.add_argument('--return_df', type=bool, default=signat_gBEg.parameters['return_df'].default)
     parser_generate_BE_guides.add_argument('--save_df', type=bool, default=signat_gBEg.parameters['save_df'].default)
+    parser_generate_BE_guides.add_argument('--exclude_introns', type=bool, default=signat_gBEg.parameters['exclude_introns'].default)
     parser_generate_BE_guides.set_defaults(func=generate_BE_guides)
 
     ##################################################
@@ -316,6 +317,7 @@ def main():
     parser_guides.add_argument('--output_dir', type=str, default=signat_g.parameters['output_dir'].default)
     parser_guides.add_argument('--return_df', type=bool, default=signat_g.parameters['return_df'].default)
     parser_guides.add_argument('--save_df', type=bool, default=signat_g.parameters['save_df'].default)
+    parser_guides.add_argument('--exclude_introns', type=bool, default=signat_g.parameters['exclude_introns'].default)
     parser_guides.set_defaults(func=guides)
 
     args = parser.parse_args()
