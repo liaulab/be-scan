@@ -11,8 +11,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 import pandas as pd
-from be_scan.plot._annotating_ import color_list, list_muttypes
-from be_scan.plot._annotating_ import norm_to_intergenic_ctrls, calc_negative_controls
+from be_scan.plot._annotating_ import *
 
 def plot_scatterplot(df_filepath, # dataframe
                      x_column, y_column, 
@@ -23,8 +22,12 @@ def plot_scatterplot(df_filepath, # dataframe
                      xlab='Amino Acid Position', ylab='sgRNA Score', # scatterplot labels
                      out_name='scatterplot', out_type='pdf', out_directory='', # output params
                      savefig=True,
-                     alpha=0.8, linewidth=1.0, edgecolor='black', s=25, # scatterplot params
-                     figsize=(8,4), 
+                     scatterplot_kws={'alpha':0.8, 'linewidth':1.0, 
+                                         'edgecolor':'black', 's':25},
+                     subplots_kws={'figsize':(8,4)},
+                     axhline_kws={'color':'k', 'ls':'--', 'lw':1},
+                     autoannotate=False,
+                     autoannotate_label=None, autoannotate_top=None, autoannotate_cutoff=None,
                      ):
     
     """[Summary]
@@ -59,18 +62,14 @@ def plot_scatterplot(df_filepath, # dataframe
     out_directory : str, optional, defaults to ''
         ath to output directory
     
-    alpha: float, optional, defaults to 0.8
-        transparency of scatterplot points
-    linewidth: float, optional, defaults to 1.0
-        linewidth of plot
-    edgecolor: str, optional, defaults to 'black'
-        color of scatterplot edge lines
-    s: int, optional, defaults to 25
-        size of scatterplot points
-    figsize: tuple of ints, optional, defaults to (8,4)
-        the figsize (length, width)
-    figsize: boolean, optional, defaults to True
-        option of saving figure to output or not
+    autoannotate : bool, False
+        Whether or not to autoannotate points
+    autoannotate_label : string, None
+        The column of the label in the dataframe
+    autoannotate_top : int, None
+        The top n scoring points will be labeled
+    autoannotate_cutoff : float, None
+        The absolute value cutoff for which points will be labeled
 
     Returns
     ----------
@@ -90,8 +89,7 @@ def plot_scatterplot(df_filepath, # dataframe
     
     for comp in comparisons:
         # Make plots
-        fig, ax = plt.subplots(figsize=figsize)
-
+        fig, ax = plt.subplots(**subplots_kws)
         # name of y values is comp + y_column
         y = comp+'_'+y_column 
         # scatterplot
@@ -100,12 +98,26 @@ def plot_scatterplot(df_filepath, # dataframe
                         x=x_column, y=y, # x and y columns plotted against each other
                         hue=hue_column, # color scatterplot according to column
                         hue_order=hue_order_s, palette=palette_s, 
-                        alpha=alpha, linewidth=linewidth, edgecolor=edgecolor, s=s)
+                        **scatterplot_kws
+                        )
         
         # Overlay neg ctrl avg +/- 2 sd as black dashed line
         tup_comp_stdev = [tup for tup in list_negctrlstats if tup[0] == comp][0][2]
-        ax.axhline(y=2*tup_comp_stdev, color=edgecolor, ls='--', lw=linewidth) # top baseline
-        ax.axhline(y=-2*tup_comp_stdev, color=edgecolor, ls='--', lw=linewidth) # bottom baseline
+        ax.axhline(y=2*tup_comp_stdev, **axhline_kws) # top baseline
+        ax.axhline(y=-2*tup_comp_stdev, **axhline_kws) # bottom baseline
+
+        # autoannotate the scoring hits
+        if autoannotate: 
+            if autoannotate_cutoff: 
+                for _, row in df_filtered[df_filtered[y].abs() > autoannotate_cutoff].iterrows():
+                    if row[autoannotate_label] != "nan": 
+                        plt.text(row[x_column], row[y], row[autoannotate_label], ha='right', va='bottom', fontsize=6)
+            elif autoannotate_top: 
+                print('Second')
+                for _, row in df_filtered.assign(yabs=df_filtered[y].abs()).sort_values(by='yabs', ascending=False).head(autoannotate_top).iterrows():
+                    plt.text(row[x_column], row[y], row[autoannotate_label], ha='right', va='bottom', fontsize=6)
+            else: 
+                print("Please include a cutoff or top value")
         
         # Adjust x and y axis limits
         ax.set_xlim(df_filtered[x_column].min()-10, df_filtered[x_column].max()+10)
@@ -114,7 +126,7 @@ def plot_scatterplot(df_filepath, # dataframe
         ax.set_ylim(-1*bound, bound)
         # Set title and axes labels
         ax.set_title(comp)
-        ax.set_xlim(xmin,xmax)
+        ax.set_xlim(xmin, xmax)
         ax.set_xlabel(xlab)
         ax.set_ylabel(ylab)
 

@@ -22,10 +22,12 @@ def plot_boxes(df_filepath,
                filter_column='Mut_type', filter_category='Missense',
                xlab='', ylab='Log2 Fold Change', # x and y label
                out_name='boxes', out_type='pdf', out_directory='', # output params
-               dimensions=(5,4), 
                yax_set=True, # adjusting plots params
-               sat_level=1, fliersize=4, width=0.4, # sns.boxplot params
-               flierprops={'marker':'o', 'mec':'black', 'lw':1, 'alpha':0.8}, # sns.boxplot params
+               subplots_kws={'figsize':(5,4)}, 
+               boxplot_kws = {'saturation':1, 'fliersize':4, 'width':0.4, 
+                              'flierprops':{'marker':'o', 'mec':'black', 'lw':1, 'alpha':0.8}
+                              },
+               axhline_kws = {'color':'k', 'ls':'--', 'lw':1},
                savefig=True,
                ):
     
@@ -87,20 +89,21 @@ def plot_boxes(df_filepath,
     for comp in comparisons:
                 
         # Make boxplot
-        fig, ax = plt.subplots(figsize=dimensions)
+        fig, ax = plt.subplots(**subplots_kws)
         sns.boxplot(data=df_filtered, 
                     ax=ax, 
                     x=plot_column, y=comp+'_'+y_column, 
                     # order=hue_order, palette=palette, 
-                    width=width, saturation=sat_level, fliersize=fliersize, flierprops=flierprops)
+                    **boxplot_kws
+                    )
         plt.setp(ax.artists, edgecolor='black')
         plt.setp(ax.lines, color='black')
 
         # Overlay neg ctrl avg +/- 2 sd as black dashed line
         if list_negctrlstats != None:
             tup_plot = [tup for tup in list_negctrlstats if tup[0] == comp][0]
-            plt.axhline(y=2*tup_plot[2], color='k', ls='--', lw=1)
-            plt.axhline(y=-2*tup_plot[2], color='k', ls='--', lw=1)
+            plt.axhline(y=2*tup_plot[2], **axhline_kws)
+            plt.axhline(y=-2*tup_plot[2], **axhline_kws)
         
         # Adjust x and y axis limits
         if yax_set: 

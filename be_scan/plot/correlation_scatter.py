@@ -19,8 +19,9 @@ def plot_corr_scatterplot(df_filepath,
                           xmin=None, xmax=None, ymin=None, ymax=None, 
                           xlab='cond1 score', ylab='cond2 score', 
                           out_directory='', out_name='correlation_scatterplot', out_type='pdf', 
-                          alpha=0.8, linewidth=1, edgecolor='black', s=25,
-                          figsize=(4.5, 4), 
+                          scatterplot_kws={'alpha':0.8, 'linewidth':1, 
+                                           'edgecolor':'black', 's':25}, 
+                          subplots_kws = {'figsize':(4.5, 4)},
                           savefig=True,
                           ):
     
@@ -63,19 +64,6 @@ def plot_corr_scatterplot(df_filepath,
         type of the output plot
     out_directory: str, optional, defaults to ''
         directory path of the output plot
-
-    alpha: float, optional, defaults to 0.8
-        transparency of scatterplot points
-    linewidth: float, optional, defaults to 1.0
-        linewidth of plot
-    edgecolor: str, optional, defaults to 'black'
-        color of scatterplot edge lines
-    s: int, optional, defaults to 25
-        size of scatterplot points
-    dimensions: tuple of ints, optional, defaults to (8,4)
-        the figsize (length, width)
-    figsize: boolean, optional, defaults to True
-        option of saving figure to output or not
     
     Returns
     ----------
@@ -86,12 +74,12 @@ def plot_corr_scatterplot(df_filepath,
     df_filtered = df_data.loc[df_data[hue_column].isin(hue_order)]
     
     # make plot
-    _, ax = plt.subplots(figsize=figsize)
+    _, ax = plt.subplots(**subplots_kws)
     sns.scatterplot(data=df_filtered, 
                     ax=ax, 
                     x=condition1, y=condition2, 
                     hue=hue_column, hue_order=hue_order, palette=palette, 
-                    alpha=alpha, linewidth=linewidth, edgecolor=edgecolor, s=s
+                    **scatterplot_kws,
                     )
     
     # adjust x and y axis limits

@@ -150,6 +150,13 @@ def main():
     parser_plot_scatterplot.add_argument('--out_name', type=str, default=signat_ps.parameters['out_name'].default)
     parser_plot_scatterplot.add_argument('--out_type', type=str, default=signat_ps.parameters['out_type'].default)
     parser_plot_scatterplot.add_argument('--out_directory', type=str, default=signat_ps.parameters['out_directory'].default)
+    parser_plot_scatterplot.add_argument('--scatterplot_kws', type=dict, default=signat_ps.parameters['scatterplot_kws'].default)
+    parser_plot_scatterplot.add_argument('--subplots_kws', type=dict, default=signat_ps.parameters['subplots_kws'].default)
+    parser_plot_scatterplot.add_argument('--axhline_kws', type=dict, default=signat_ps.parameters['axhline_kws'].default)
+    parser_plot_scatterplot.add_argument('--autoannotate', type=bool, default=signat_ps.parameters['autoannotate'].default)
+    parser_plot_scatterplot.add_argument('--autoannotate_label', type=str, default=signat_ps.parameters['autoannotate_label'].default)
+    parser_plot_scatterplot.add_argument('--autoannotate_top', type=int, default=signat_ps.parameters['autoannotate_top'].default)
+    parser_plot_scatterplot.add_argument('--autoannotate_cutoff', type=float, default=signat_ps.parameters['autoannotate_cutoff'].default)
     parser_plot_scatterplot.add_argument('--savefig', type=bool, default=signat_ps.parameters['savefig'].default)
     parser_plot_scatterplot.set_defaults(func=plot_scatterplot)
 
@@ -177,6 +184,9 @@ def main():
     parser_plot_boxes.add_argument('--out_name', type=str, default=signat_pb.parameters['out_name'].default)
     parser_plot_boxes.add_argument('--out_type', type=str, default=signat_pb.parameters['out_type'].default)
     parser_plot_boxes.add_argument('--out_directory', type=str, default=signat_pb.parameters['out_directory'].default)
+    parser_plot_boxes.add_argument('--subplots_kws', type=dict, default=signat_pb.parameters['subplots_kws'].default)
+    parser_plot_boxes.add_argument('--boxplot_kws', type=dict, default=signat_pb.parameters['boxplot_kws'].default)
+    parser_plot_boxes.add_argument('--axhline_kws', type=dict, default=signat_pb.parameters['axhline_kws'].default)
     parser_plot_boxes.add_argument('--savefig', type=bool, default=signat_pb.parameters['savefig'].default)
     ### extra args
     parser_plot_boxes.set_defaults(func=plot_boxes)
@@ -200,6 +210,8 @@ def main():
     parser_plot_corr_heatmap.add_argument('--out_directory', type=str, default=signat_pch.parameters['out_directory'].default)
     parser_plot_corr_heatmap.add_argument('--out_name', type=str, default=signat_pch.parameters['out_name'].default)
     parser_plot_corr_heatmap.add_argument('--out_type', type=str, default=signat_pch.parameters['out_type'].default)
+    parser_plot_corr_heatmap.add_argument('--heatmap_kws', type=dict, default=signat_pch.parameters['heatmap_kws'].default)
+    parser_plot_corr_heatmap.add_argument('--subplots_kws', type=dict, default=signat_pch.parameters['subplots_kws'].default)
     parser_plot_corr_heatmap.add_argument('--savefig', type=bool, default=signat_pch.parameters['savefig'].default)
     parser_plot_corr_heatmap.set_defaults(func=plot_corr_heatmap)
 
@@ -228,6 +240,8 @@ def main():
     parser_plot_corr_scatterplot.add_argument('--out_name', type=str, default=signat_pcs.parameters['out_name'].default)
     parser_plot_corr_scatterplot.add_argument('--out_type', type=str, default=signat_pcs.parameters['out_type'].default)
     parser_plot_corr_scatterplot.add_argument('--out_directory', type=str, default=signat_pcs.parameters['out_directory'].default)
+    parser_plot_corr_scatterplot.add_argument('--scatterplot_kws', type=dict, default=signat_pcs.parameters['scatterplot_kws'].default)
+    parser_plot_corr_scatterplot.add_argument('--subplots_kws', type=dict, default=signat_pcs.parameters['subplots_kws'].default)
     parser_plot_corr_scatterplot.add_argument('--savefig', type=bool, default=signat_pcs.parameters['savefig'].default)
     parser_plot_corr_scatterplot.set_defaults(func=plot_corr_scatterplot)
 

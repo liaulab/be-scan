@@ -99,8 +99,10 @@ def check_guides(guides_file, genome_file,
     merged_df = pd.merge(guides_df, counts_df, on='coding_seq', how='inner')
     # if user wants, delete guides with logged multiple occurrences in reference genome
     if delete: 
-        merged_df = merged_df.drop(merged_df[merged_df.merged_df >= 2].index)
+        merged_df = merged_df.drop(merged_df[merged_df.genome_occurrences >= 2].index)
 
+    count = (merged_df['genome_occurrences'] > 1).sum()
+    print(count, 'guides out of', merged_df.shape[0], 'guides occurred more than once in the reference genome')
     print('Guides checked against reference genome')
     # output merged_df
     if save_df: 

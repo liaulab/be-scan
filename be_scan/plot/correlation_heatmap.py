@@ -15,8 +15,13 @@ def plot_corr_heatmap(df_filepath,
                       corr_type='spearman', 
                       xlab='', ylab='', title='Spearman Correlation Heatmap', # output related params
                       out_directory='', out_name='correlation_heatmap', out_type='pdf', 
-                      center=0, linewidth=0.5, line_pos=[], cmap='coolwarm', # plot related params
+                      line_pos=[],
                       savefig=True,
+
+                      heatmap_kws={'center':0, 'linewidth':0.5,
+                                   'cmap':'coolwarm', 'square':True, 
+                                   'cbar_kws':{"shrink": 0.5}},
+                      subplots_kws = {'figsize':(4,4)}, 
                      ): 
     
     """[Summary]
@@ -45,18 +50,6 @@ def plot_corr_heatmap(df_filepath,
         name of figure output
     out_type : str, optional, defaults to 'pdf'
         file type of figure output
-
-    center : float, optional, defaults to 0
-        value for centering the colormap
-    linewidth : float, optional, defaults to 0.5
-        linewidth of lines dividing cells
-    line_pos : list of int, optional, defaults to []
-        positions to put larger lines for dividing the cells
-    cmap : str, optional, defaults to 'coolwarm'
-        matplotlib colormap
-    figsize : boolean, optional, defaults to True
-        option of saving figure to output or not
-    ...
     
     Returns
     ----------
@@ -72,10 +65,9 @@ def plot_corr_heatmap(df_filepath,
     df_corr = df_comp.corr(method=corr_type)
 
     # Set up the matplotlib figure
-    _, ax = plt.subplots(figsize=(4,4))
+    _, ax = plt.subplots(**subplots_kws)
     ax = sns.heatmap(df_corr, 
-                     cmap=cmap, center=center,
-                     square=True, linewidths=linewidth, cbar_kws={"shrink": 0.5}
+                     **heatmap_kws,
                      )
     
     # show frame
