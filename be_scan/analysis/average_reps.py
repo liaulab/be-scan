@@ -15,7 +15,7 @@ import re
 def average_reps(sample_sheet, in_lfc, 
                  file_dir='',
                  save=True, out_conds='agg_t0_conds.csv', 
-                 return_df=False
+                 return_df=True,
                  ):
     """
     Averages the replicates for each condition (e.g. treatment, control) and

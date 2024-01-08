@@ -113,7 +113,6 @@ def plot_scatterplot(df_filepath, # dataframe
                     if row[autoannotate_label] != "nan": 
                         plt.text(row[x_column], row[y], row[autoannotate_label], ha='right', va='bottom', fontsize=6)
             elif autoannotate_top: 
-                print('Second')
                 for _, row in df_filtered.assign(yabs=df_filtered[y].abs()).sort_values(by='yabs', ascending=False).head(autoannotate_top).iterrows():
                     plt.text(row[x_column], row[y], row[autoannotate_label], ha='right', va='bottom', fontsize=6)
             else: 

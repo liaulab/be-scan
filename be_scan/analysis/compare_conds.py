@@ -13,7 +13,8 @@ def compare_conds(in_comparisons,
                   in_conds, 
                   file_dir='',
                   out_comps='agg_comps.csv', 
-                  save=True, return_df=False):
+                  save=True, return_df=True, 
+                  ):
     """
     Perform pairwise comparisons given a list and export the output to a csv.
 
