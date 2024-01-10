@@ -9,14 +9,13 @@ Date: 231116
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
+from pathlib import Path
 
 def plot_corr_heatmap(df_filepath, 
                       comparisons, 
                       corr_type='spearman', 
-                      xlab='', ylab='', title='Spearman Correlation Heatmap', # output related params
-                      out_directory='', out_name='correlation_heatmap', out_type='pdf', 
-                      line_pos=[],
-                      savefig=True,
+                      xlab='', ylab='', title='Spearman Correlation Heatmap', # figure related params
+                      savefig=True, out_directory='', out_name='correlation_heatmap', out_type='pdf', # output related params
 
                       heatmap_kws={'center':0, 'linewidth':0.5,
                                    'cmap':'coolwarm', 'square':True, 
@@ -73,23 +72,19 @@ def plot_corr_heatmap(df_filepath,
     # show frame
     for _, spine in ax.spines.items():
         spine.set_visible(True)
-    
-    # rotate axis labels
-    if line_pos: 
-        for pos in line_pos:
-            plt.hlines(pos, *ax.get_xlim())
-            plt.vlines(pos, *ax.get_ylim())
     # adjustments and labels
     plt.title(title)
-    plt.xticks(rotation=45, horizontalalignment='right')
-    plt.yticks(rotation=0, horizontalalignment='right')
     plt.ylabel(xlab)
     plt.xlabel(ylab)
+    # rotate axis labels
+    plt.xticks(rotation=45, horizontalalignment='right')
+    plt.yticks(rotation=0, horizontalalignment='right')
     plt.tight_layout()
 
     # save pdf and close everything
     if savefig: 
-        output_path = out_directory + out_name + '.' + out_type
-        plt.savefig(output_path, format=out_type)
+        out = out_name + '.' + out_type
+        output_path = Path(out_directory)
+        plt.savefig(output_path / out, format=out_type)
     plt.show()
     plt.close()

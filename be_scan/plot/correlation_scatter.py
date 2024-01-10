@@ -9,20 +9,21 @@ Date: 231116
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
+from pathlib import Path
 
 from be_scan.plot._annotating_ import list_muttypes, color_list
 
 def plot_corr_scatterplot(df_filepath, 
                           condition1, condition2, 
-                          hue_column, 
-                          hue_order=list_muttypes, palette=color_list, 
-                          xmin=None, xmax=None, ymin=None, ymax=None, 
+
+                          hue=False, hue_column='Mut_type', hue_order=list_muttypes, palette=color_list, # color params
                           xlab='cond1 score', ylab='cond2 score', 
-                          out_directory='', out_name='correlation_scatterplot', out_type='pdf', 
+                          savefig=True, out_directory='', out_name='correlation_scatterplot', out_type='pdf', 
+
+                          xlim_kws={'xmin':None, 'xmax':None}, ylim_kws={'ymin':None, 'ymax':None},
                           scatterplot_kws={'alpha':0.8, 'linewidth':1, 
                                            'edgecolor':'black', 's':25}, 
                           subplots_kws = {'figsize':(4.5, 4)},
-                          savefig=True,
                           ):
     
     """[Summary]
@@ -37,54 +38,62 @@ def plot_corr_scatterplot(df_filepath,
         comparison condition 1, name of .csv data column
     condition2: str, required
         comparison condition 2, name of .csv data column
-    hue_column: str, required
-        the categorial dimension of the data, name of .csv data column
 
+    hue: bool, optional, default to False
+        whether or not to color points by a variable, will also restrict points plotted to only the hue_order values listed
+    hue_column: str, optional, defaults to 'Mut_type'
+        the categorial dimension of the data, name of .csv data column
     hue_order: list of str, optional, defaults to list_muttypes in _annotating_.py a preset list of column names
         a list of categorial variables in hue_column
     palette: list of str, optional, defaults to color_list in _annotating_.py a preset list of colors from ColorBrewer2
         a list of colors which correspond to hue_order
-
-    xmin: float, optional, defaults to None
-        x-axis left bound
-    xmax: float, optional, defaults to None
-        x-axis right bound
-    ymin: float, optional, defaults to None
-        y-axis lower bound
-    ymax: float, optional, defaults to None
-        y-axis upper bound
     xlab: str, optional, defaults to 'cond1 score'
         x-axis label
     ylab: str, optional, defaults to 'cond2 score'
         y-axis label
-
+        
+    savefig: bool, optional, defaults to True
+        whether or not to save the figure
     out_name: str, optional, defaults to 'scatterplot'
         name of the output plot
     out_type: str, optional, defaults to 'pdf'
         type of the output plot
     out_directory: str, optional, defaults to ''
         directory path of the output plot
-    
+
+    xlim_kws: dict, optional, defaults to {'xmin':None, 'xmax':None}
+        input params for ax.set_xlim()
+    ylim_kws: dict, optional, defaults to {'ymin':None, 'ymax':None}
+        input params for ax.set_ylim()
+    scatterplot_kws: dict, optional, defaults to {'alpha':0.8, 'linewidth':1, 'edgecolor':'black', 's':25}
+        input params for sns.scatterplot()
+    subplots_kws: dict, optional, defaults to {'figsize':(4.5, 4)}
+        input params for plt.subplots()
+
     Returns
     ----------
     None
     """
 
     df_data = pd.read_csv(df_filepath)
-    df_filtered = df_data.loc[df_data[hue_column].isin(hue_order)]
     
     # make plot
     _, ax = plt.subplots(**subplots_kws)
-    sns.scatterplot(data=df_filtered, 
-                    ax=ax, 
-                    x=condition1, y=condition2, 
-                    hue=hue_column, hue_order=hue_order, palette=palette, 
-                    **scatterplot_kws,
-                    )
+    baseline_params = {'data':df_data, 'ax':ax, 'x':condition1, 'y':condition2}
+    if hue: 
+        df_data = df_data.loc[df_data[hue_column].isin(hue_order)]
+        sns.scatterplot(**baseline_params,
+                        hue=hue_column, hue_order=hue_order, palette=palette, 
+                        **scatterplot_kws,
+                        )
+    else: 
+        sns.scatterplot(**baseline_params,
+                        **scatterplot_kws,
+                        )
     
     # adjust x and y axis limits
-    ax.set_xlim(xmin,xmax)
-    ax.set_ylim(ymin,ymax)
+    ax.set_xlim(**xlim_kws)
+    ax.set_ylim(**ylim_kws)
     # set labels
     plt.xlabel(xlab) # set x-axis label
     plt.ylabel(ylab) # set y-axis label
@@ -92,9 +101,8 @@ def plot_corr_scatterplot(df_filepath,
 
     # save to pdf and close
     if savefig: 
-        output_path = out_directory + condition1 + condition2 + '_' + out_name + '.' + out_type
-        plt.savefig(output_path, format=out_type)
+        out = condition1 + condition2 + '_' + out_name + '.' + out_type
+        output_path = Path(out_directory)
+        plt.savefig(output_path / out, format=out_type)
     plt.show()
     plt.close()
-
-# python3 -m be_scan plot_corr_scatterplot -df '../../../Downloads/NZL10196_v9_comparisons.csv' -c1 'd3-neg' -c2 'd9-pos' -hue 'Mut_type'

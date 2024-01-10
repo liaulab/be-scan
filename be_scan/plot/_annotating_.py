@@ -13,7 +13,7 @@ color_list = ['#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5',
 list_muttypes = ['Nonsense', 'Missense', 'Silent', 'Non-exon', 'Splice', 
                 'No_C/Exon', 'No_C/Non-exon', 'Control']
 
-def norm_to_intergenic_ctrls(in_dataframe, comparisons, avg_dict, y_column): 
+def norm_to_intergenic_ctrls(in_dataframe, comparisons, avg_dict, col_label): 
     """[Summary]
     This function normalizes data in in_dataframe to a 
     set of controls calculated from calc_negative_control, 
@@ -33,7 +33,7 @@ def norm_to_intergenic_ctrls(in_dataframe, comparisons, avg_dict, y_column):
     # tidy data by comparisons for each guide
     df_logfc = in_dataframe.copy()
     for comp in comparisons: 
-        df_logfc[comp+'_'+y_column] = in_dataframe[comp]
+        df_logfc[comp+'_'+col_label] = in_dataframe[comp]
 
     return df_logfc
 
@@ -57,7 +57,7 @@ def calc_negative_controls(df_data, list_compnames, neg_ctrl_col, neg_ctrl_categ
     """
 
     # use negative controls to set cutoffs
-    df_negctrl = df_data.loc[df_data[neg_ctrl_col] == neg_ctrl_category].copy()
+    df_negctrl = df_data.loc[df_data[neg_ctrl_col].isin(neg_ctrl_category)].copy()
 
     list_negctrlstats = [] # list of tups of (comp, avg, sd, avg+2sd, avg-2sd)
     avg_dict = {} # dictionary of comp: avg

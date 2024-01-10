@@ -137,27 +137,33 @@ def main():
                                                     formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_plot_scatterplot.add_argument('-df', '--df_filepath', type=str, required=True)
     parser_plot_scatterplot.add_argument('-x', '--x_column', type=str, required=True)
-    parser_plot_scatterplot.add_argument('-y', '--y_column', type=str, required=True)
-    parser_plot_scatterplot.add_argument('-hue', '--hue_column', type=str, required=True)
     parser_plot_scatterplot.add_argument('-c','--comparisons', nargs='+', type=str, required=True)
-    parser_plot_scatterplot.add_argument('-ncol', '--neg_ctrl_col', type=str, required=True)
-    parser_plot_scatterplot.add_argument('-ncat', '--neg_ctrl_category', type=str, required=True)
     # optional variables
-    parser_plot_scatterplot.add_argument('--xmin', type=float, default=signat_ps.parameters['xmin'].default)
-    parser_plot_scatterplot.add_argument('--xmax', type=float, default=signat_ps.parameters['xmax'].default)    
+    parser_plot_scatterplot.add_argument('--hue', type=bool, default=signat_ps.parameters['hue'].default)
+    parser_plot_scatterplot.add_argument('--hue_column', type=str, default=signat_ps.parameters['hue_column'].default)
+    parser_plot_scatterplot.add_argument('--palette', nargs='+', type=str, default=signat_ps.parameters['palette'].default)
+    parser_plot_scatterplot.add_argument('--neg_ctrl', type=bool, default=signat_ps.parameters['neg_ctrl'].default)
+    parser_plot_scatterplot.add_argument('--neg_ctrl_col', type=str, default=signat_ps.parameters['neg_ctrl_col'].default)
+    parser_plot_scatterplot.add_argument('--neg_ctrl_category', nargs='+', type=str, default=signat_ps.parameters['neg_ctrl_category'].default)
+    parser_plot_scatterplot.add_argument('--filter', type=bool, default=signat_ps.parameters['filter'].default)
+    parser_plot_scatterplot.add_argument('--filter_col', type=str, default=signat_ps.parameters['filter_col'].default) ###
+    parser_plot_scatterplot.add_argument('--filter_category', nargs='+', type=str, default=signat_ps.parameters['filter_category'].default) ### 
     parser_plot_scatterplot.add_argument('--xlab', type=str, default=signat_ps.parameters['xlab'].default)
     parser_plot_scatterplot.add_argument('--ylab', type=str, default=signat_ps.parameters['ylab'].default)
+    parser_plot_scatterplot.add_argument('--col_label', type=str, default=signat_ps.parameters['col_label'].default)
+    parser_plot_scatterplot.add_argument('--savefig', type=bool, default=signat_ps.parameters['savefig'].default)
     parser_plot_scatterplot.add_argument('--out_name', type=str, default=signat_ps.parameters['out_name'].default)
     parser_plot_scatterplot.add_argument('--out_type', type=str, default=signat_ps.parameters['out_type'].default)
     parser_plot_scatterplot.add_argument('--out_directory', type=str, default=signat_ps.parameters['out_directory'].default)
+    parser_plot_scatterplot.add_argument('--autoannot', type=bool, default=signat_ps.parameters['autoannot'].default)
+    parser_plot_scatterplot.add_argument('--autoannot_label', type=str, default=signat_ps.parameters['autoannot_label'].default)
+    parser_plot_scatterplot.add_argument('--autoannot_top', type=int, default=signat_ps.parameters['autoannot_top'].default)
+    parser_plot_scatterplot.add_argument('--autoannot_cutoff', type=float, default=signat_ps.parameters['autoannot_cutoff'].default)
+    parser_plot_scatterplot.add_argument('--xlim_kws', type=dict, default=signat_ps.parameters['xlim_kws'].default)
+    parser_plot_scatterplot.add_argument('--ylim_kws', type=dict, default=signat_ps.parameters['ylim_kws'].default)
     parser_plot_scatterplot.add_argument('--scatterplot_kws', type=dict, default=signat_ps.parameters['scatterplot_kws'].default)
     parser_plot_scatterplot.add_argument('--subplots_kws', type=dict, default=signat_ps.parameters['subplots_kws'].default)
     parser_plot_scatterplot.add_argument('--axhline_kws', type=dict, default=signat_ps.parameters['axhline_kws'].default)
-    parser_plot_scatterplot.add_argument('--autoannotate', type=bool, default=signat_ps.parameters['autoannotate'].default)
-    parser_plot_scatterplot.add_argument('--autoannotate_label', type=str, default=signat_ps.parameters['autoannotate_label'].default)
-    parser_plot_scatterplot.add_argument('--autoannotate_top', type=int, default=signat_ps.parameters['autoannotate_top'].default)
-    parser_plot_scatterplot.add_argument('--autoannotate_cutoff', type=float, default=signat_ps.parameters['autoannotate_cutoff'].default)
-    parser_plot_scatterplot.add_argument('--savefig', type=bool, default=signat_ps.parameters['savefig'].default)
     parser_plot_scatterplot.set_defaults(func=plot_scatterplot)
 
     ##################################################
@@ -170,25 +176,26 @@ def main():
                                               formatter_class=argparse.RawDescriptionHelpFormatter)
     # required args
     parser_plot_boxes.add_argument('-df', '--df_filepath', type=str, required=True)
+    parser_plot_boxes.add_argument('-c', '--comparisons', nargs='+', type=str, required=True)
     parser_plot_boxes.add_argument('-p', '--plot_column', type=str, required=True)
     parser_plot_boxes.add_argument('-pc', '--plot_conditions', nargs='+', type=str, required=True)
-    parser_plot_boxes.add_argument('-y', '--y_column', type=str, required=True)
-    parser_plot_boxes.add_argument('-c', '--comparisons', nargs='+', type=str, required=True)
-    parser_plot_boxes.add_argument('-ncol', '--neg_ctrl_col', type=str, required=True)
-    parser_plot_boxes.add_argument('-ncat', '--neg_ctrl_category', type=str, required=True)
     # optional variables
-    parser_plot_boxes.add_argument('--filter_column', type=str, default=signat_pb.parameters['filter_column'].default)
-    parser_plot_boxes.add_argument('--filter_category', type=str, default=signat_pb.parameters['filter_category'].default)
+    parser_plot_boxes.add_argument('--neg_ctrl', type=bool, default=signat_pb.parameters['neg_ctrl'].default)
+    parser_plot_boxes.add_argument('--neg_ctrl_col', type=str, default=signat_pb.parameters['neg_ctrl_col'].default)
+    parser_plot_boxes.add_argument('--neg_ctrl_category', nargs='+', type=str, default=signat_pb.parameters['neg_ctrl_category'].default)
+    parser_plot_boxes.add_argument('--filter', type=bool, default=signat_pb.parameters['filter'].default)
+    parser_plot_boxes.add_argument('--filter_col', type=str, default=signat_pb.parameters['filter_col'].default) ###
+    parser_plot_boxes.add_argument('--filter_category', nargs='+', type=str, default=signat_pb.parameters['filter_category'].default) ###
     parser_plot_boxes.add_argument('--xlab', type=str, default=signat_pb.parameters['xlab'].default)
     parser_plot_boxes.add_argument('--ylab', type=str, default=signat_pb.parameters['ylab'].default)
+    parser_plot_boxes.add_argument('--col_label', type=str, default=signat_pb.parameters['col_label'].default)
+    parser_plot_boxes.add_argument('--savefig', type=bool, default=signat_pb.parameters['savefig'].default)
     parser_plot_boxes.add_argument('--out_name', type=str, default=signat_pb.parameters['out_name'].default)
     parser_plot_boxes.add_argument('--out_type', type=str, default=signat_pb.parameters['out_type'].default)
     parser_plot_boxes.add_argument('--out_directory', type=str, default=signat_pb.parameters['out_directory'].default)
     parser_plot_boxes.add_argument('--subplots_kws', type=dict, default=signat_pb.parameters['subplots_kws'].default)
     parser_plot_boxes.add_argument('--boxplot_kws', type=dict, default=signat_pb.parameters['boxplot_kws'].default)
     parser_plot_boxes.add_argument('--axhline_kws', type=dict, default=signat_pb.parameters['axhline_kws'].default)
-    parser_plot_boxes.add_argument('--savefig', type=bool, default=signat_pb.parameters['savefig'].default)
-    ### extra args
     parser_plot_boxes.set_defaults(func=plot_boxes)
 
     ##################################################
@@ -227,22 +234,21 @@ def main():
     parser_plot_corr_scatterplot.add_argument('-df', '--df_filepath', type=str, required=True)
     parser_plot_corr_scatterplot.add_argument('-c1', '--condition1', type=str, required=True)
     parser_plot_corr_scatterplot.add_argument('-c2', '--condition2', type=str, required=True)
-    parser_plot_corr_scatterplot.add_argument('-hue', '--hue_column', type=str, required=True)
     # optional args
+    parser_plot_corr_scatterplot.add_argument('--hue', type=bool, default=signat_pcs.parameters['hue'].default)
+    parser_plot_corr_scatterplot.add_argument('--hue_column', type=str, default=signat_pcs.parameters['hue_column'].default)
     parser_plot_corr_scatterplot.add_argument('--hue_order', nargs='+', type=str, default=signat_pcs.parameters['hue_order'].default)
     parser_plot_corr_scatterplot.add_argument('--palette', nargs='+', type=str, default=signat_pcs.parameters['palette'].default)
-    parser_plot_corr_scatterplot.add_argument('--xmin', type=float, default=signat_pcs.parameters['xmin'].default)
-    parser_plot_corr_scatterplot.add_argument('--xmax', type=float, default=signat_pcs.parameters['xmax'].default)
-    parser_plot_corr_scatterplot.add_argument('--ymin', type=float, default=signat_pcs.parameters['ymin'].default)
-    parser_plot_corr_scatterplot.add_argument('--ymax', type=float, default=signat_pcs.parameters['ymax'].default)
     parser_plot_corr_scatterplot.add_argument('--xlab', type=str, default=signat_pcs.parameters['xlab'].default)
     parser_plot_corr_scatterplot.add_argument('--ylab', type=str, default=signat_pcs.parameters['ylab'].default)
+    parser_plot_corr_scatterplot.add_argument('--savefig', type=bool, default=signat_pcs.parameters['savefig'].default)
     parser_plot_corr_scatterplot.add_argument('--out_name', type=str, default=signat_pcs.parameters['out_name'].default)
     parser_plot_corr_scatterplot.add_argument('--out_type', type=str, default=signat_pcs.parameters['out_type'].default)
     parser_plot_corr_scatterplot.add_argument('--out_directory', type=str, default=signat_pcs.parameters['out_directory'].default)
+    parser_plot_corr_scatterplot.add_argument('--xlim_kws', type=dict, default=signat_pcs.parameters['xlim_kws'].default)
+    parser_plot_corr_scatterplot.add_argument('--ylim_kws', type=dict, default=signat_pcs.parameters['ylim_kws'].default)
     parser_plot_corr_scatterplot.add_argument('--scatterplot_kws', type=dict, default=signat_pcs.parameters['scatterplot_kws'].default)
     parser_plot_corr_scatterplot.add_argument('--subplots_kws', type=dict, default=signat_pcs.parameters['subplots_kws'].default)
-    parser_plot_corr_scatterplot.add_argument('--savefig', type=bool, default=signat_pcs.parameters['savefig'].default)
     parser_plot_corr_scatterplot.set_defaults(func=plot_corr_scatterplot)
 
     ##################################################
@@ -288,27 +294,27 @@ def main():
 
     ##################################################
     
-    from be_scan.sgrna import annotate_guides
-    signat_ag = inspect.signature(annotate_guides)
-    parser_annotate_guides = subparsers.add_parser('annotate_guides', 
-                                                   help=next(line for line in annotate_guides.__doc__.splitlines() if line),
-                                                   description=annotate_guides.__doc__,
+    from be_scan.sgrna import annot_guides
+    signat_ag = inspect.signature(annot_guides)
+    parser_annot_guides = subparsers.add_parser('annot_guides', 
+                                                   help=next(line for line in annot_guides.__doc__.splitlines() if line),
+                                                   description=annot_guides.__doc__,
                                                    formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser_annotate_guides.add_argument('guides_file', type=str)
-    parser_annotate_guides.add_argument('gene_filepath', type=str)
-    parser_annotate_guides.add_argument('protein_filepath', type=str)
-    parser_annotate_guides.add_argument('edit_from', type=str)
-    parser_annotate_guides.add_argument('edit_to', type=str)
-    parser_annotate_guides.add_argument('--window', type=list, default=signat_ag.parameters['window'].default)
-    parser_annotate_guides.add_argument('--seq_col', type=str, default=signat_ag.parameters['seq_col'].default)
-    parser_annotate_guides.add_argument('--gene_pos_col', type=str, default=signat_ag.parameters['gene_pos_col'].default)
-    parser_annotate_guides.add_argument('--frame_col', type=str, default=signat_ag.parameters['frame_col'].default)
-    parser_annotate_guides.add_argument('--strand_col', type=str, default=signat_ag.parameters['strand_col'].default)
-    parser_annotate_guides.add_argument('--output_name', type=str, default=signat_ag.parameters['output_name'].default)
-    parser_annotate_guides.add_argument('--output_dir', type=str, default=signat_ag.parameters['output_dir'].default)
-    parser_annotate_guides.add_argument('--return_df', type=bool, default=signat_ag.parameters['return_df'].default)
-    parser_annotate_guides.add_argument('--save_df', type=bool, default=signat_ag.parameters['save_df'].default)
-    parser_annotate_guides.set_defaults(func=annotate_guides)
+    parser_annot_guides.add_argument('guides_file', type=str)
+    parser_annot_guides.add_argument('gene_filepath', type=str)
+    parser_annot_guides.add_argument('protein_filepath', type=str)
+    parser_annot_guides.add_argument('edit_from', type=str)
+    parser_annot_guides.add_argument('edit_to', type=str)
+    parser_annot_guides.add_argument('--window', type=list, default=signat_ag.parameters['window'].default)
+    parser_annot_guides.add_argument('--seq_col', type=str, default=signat_ag.parameters['seq_col'].default)
+    parser_annot_guides.add_argument('--gene_pos_col', type=str, default=signat_ag.parameters['gene_pos_col'].default)
+    parser_annot_guides.add_argument('--frame_col', type=str, default=signat_ag.parameters['frame_col'].default)
+    parser_annot_guides.add_argument('--strand_col', type=str, default=signat_ag.parameters['strand_col'].default)
+    parser_annot_guides.add_argument('--output_name', type=str, default=signat_ag.parameters['output_name'].default)
+    parser_annot_guides.add_argument('--output_dir', type=str, default=signat_ag.parameters['output_dir'].default)
+    parser_annot_guides.add_argument('--return_df', type=bool, default=signat_ag.parameters['return_df'].default)
+    parser_annot_guides.add_argument('--save_df', type=bool, default=signat_ag.parameters['save_df'].default)
+    parser_annot_guides.set_defaults(func=annot_guides)
 
     ##################################################
     
