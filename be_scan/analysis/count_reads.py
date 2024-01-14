@@ -18,14 +18,14 @@ def count_reads(sample_sheet, in_ref,
                 file_dir='', 
                 KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTTAGA', 
                 dont_trim_G=False,
-                out='counts_library.csv',
-                save=True, return_df=True,
+                out_dir='', out_file='counts_library.csv',
+                save=True, return_df=True, save_files=True,
                 ):
     """
     Given a set of sgRNA sequences and a FASTQ file, count the reads in the
     FASTQ, assign the reads to sgRNAs, and export the counts to a csv file `out_counts`. All
     sgRNA sequences not found in the reference file (non-perfect matches) are
-    written to a separate csv file `out_np`.
+    written to a separate csv file `out_nc`.
 
     Parameters
     ----------
@@ -34,15 +34,13 @@ def count_reads(sample_sheet, in_ref,
         a sheet with information on sequence id, 
         in_fastq (string or path to the FASTQ file to be processed), 
         out_counts (string or path for the output csv file with perfect sgRNA matches ex: 'counts.csv'),
-        out_np (string or path for the output csv file with non-perfect sgRNA matches ex: 'noncounts.csv'), 
+        out_nc (string or path for the output csv file with non-perfect sgRNA matches ex: 'noncounts.csv'), 
         out_stats (string or path for the output txt file with the read counting statistics ex: 'stats.txt'), 
         condition names, and condition categories
     in_ref : str or path
         String or path to the reference file. in_ref must have column headers,
         with 'sgRNA_seq' as the header for the column with the sgRNA sequences.
 
-    file_dir : str or path, defaults to ''
-        String or path to the directory where all files are found and saved. 
     KEY_INTERVAL : tuple, default (10,80)
         Tuple of (KEY_START, KEY_END) that defines the KEY_REGION. Denotes the
         substring within the read to search for the KEY.
@@ -54,36 +52,37 @@ def count_reads(sample_sheet, in_ref,
         default is the start of the sgRNA scaffold sequence.
     dont_trim_G : bool, default False
         Whether to trim the first G from 21-nt sgRNA sequences to make them 20-nt.
+
+    file_dir : str or path, defaults to ''
+        String or path to the directory where all files are found. 
+    out_dir : str or path, defaults to ''
+        String or path to the directory where all files are found. 
+    out_file : str or path, defaults to 'counts_library.csv'
+        Name of output dataframe with guides and counts. 
     return_df : bool, default True
         Whether or not to return the resulting dataframe
     save : bool, default True
         Whether or not to save the resulting dataframe
+    save_files : bool, default True
+        Whether or not to save individual counts, noncounts, and stats files
     """
-
+    sample_sheet = Path(sample_sheet)
     df = pd.read_csv(sample_sheet)
     samples = [list(a) for a in zip(df.fastq_file, df.counts_file, df.noncounts_file, df.stats_file)]
 
     # STEP 1A: OPEN INPUT FILES FOR PROCESSING, CHECK FOR REQUIRED FORMATTING
     # look for 'sgRNA_seq' column, raise Exception if missing
+    in_ref = Path(in_ref)
     df_ref = pd.read_csv(in_ref, header=0) # explicit header = first row
     if 'sgRNA_seq' not in df_ref.columns.tolist():
         raise Exception('in_ref is missing column: sgRNA_seq')
-    
-    # look for other cols, raise Warning if suggested cols are missing
-    list_headcols = ['sgRNA_ID', 'sgRNA_seq', 'gene', 'edit_site', 'domain']
-    if not all(col in df_ref.columns.tolist() for col in list_headcols):
-        list_miss = [col for col in list_headcols if col not in df_ref.columns.tolist()]
-        warnings.warn('in_ref is missing column(s) for downstream functions: ' + str(list_miss))
 
-    for fastq, counts, nonp, stats in samples: 
+    for fastq, counts, nc, stats in samples: 
         # fastq file of reads and paths to all output files, imported from sample_sheet
-        in_fastq = file_dir + fastq
-        out_counts, out_np, out_stats = file_dir+counts, file_dir+nonp, file_dir+stats        
+        in_fastq = Path(file_dir) / fastq
+        out_counts, out_nc, out_stats = Path(out_dir) / counts, Path(out_dir) / nc, Path(out_dir) / stats        
         # try opening input FASTQ, raise Exception if not possible
-        if in_fastq.endswith('.gz'):
-            handle = gzip.open(in_fastq, 'rt')
-        else:
-            handle = open(in_fastq, 'rt')
+        handle = gzip.open(in_fastq, 'rt') if str(in_fastq).endswith('.gz') else open(in_fastq, 'rt')
 
         # STEP 1B: SET UP VARIABLES FOR SCRIPT
         # make dictionary to hold sgRNA counts - sgRNA_seq, count as k,v
@@ -129,17 +128,21 @@ def count_reads(sample_sheet, in_ref,
 
         # STEP 3: SORT DICTIONARIES AND GENERATE OUTPUT FILES
         # sort perf matches (A-Z) with guides, counts as k,v and output to csv
-        df_perfects = pd.DataFrame(data=dict_p.items(), columns=['sgRNA_seq', counts])
-        df_perfects.sort_values(by='sgRNA_seq', inplace=True)
-        df_perfects.to_csv(out_counts, index=False, header=False)
+        counts_name = counts.split("/")[-1]
+        df_perfects = pd.DataFrame(data=dict_p.items(), columns=['sgRNA_seq', counts_name])
+        if save_files:
+            df_perfects.sort_values(by=counts_name, ascending=False, inplace=True)
+            df_perfects.to_csv(out_counts, index=False)
         # add matching counts to dataframe
         df_ref = pd.merge(df_ref, df_perfects, on='sgRNA_seq', how='outer')
-        df_ref[counts] = df_ref[counts].fillna(0)
+        df_ref[counts_name] = df_ref[counts_name].fillna(0)
         # now sort non-perfect matches by frequency and output to csv
         dict_np = Counter(list_np) # use Counter to tally up np matches
-        df_npmatches = pd.DataFrame(data=dict_np.items(), columns=['sgRNA_seq', 'reads'])
-        df_npmatches.sort_values(by='reads', ascending=False, inplace=True)
-        df_npmatches.to_csv(out_np, index=False)
+        nc_name = nc.split("/")[-1]
+        df_ncmatches = pd.DataFrame(data=dict_np.items(), columns=['sgRNA_seq', nc_name])
+        if save_files:
+            df_ncmatches.sort_values(by=nc_name, ascending=False, inplace=True)
+            df_ncmatches.to_csv(out_nc, index=False)
         # calculate the read coverage (reads processed / sgRNAs in library)
         num_guides = df_ref['sgRNA_seq'].shape[0]
     
@@ -162,27 +165,30 @@ def count_reads(sample_sheet, in_ref,
         # calculate the number of unmapped reads (num_nokey / total_reads)
         pct_unmapped = round((num_nokey / num_reads) * 100, 2)
         # write analysis statistics to statfile
-        with open(out_stats, 'w') as statfile:
-            statfile.write('Number of reads processed: ' + str(num_reads) + '\n')
-            statfile.write('Number of reads where key was not found: ' + str(num_nokey) + '\n')
-            statfile.write('Number of reads where length was not 20bp: ' + str(num_badlength) + '\n')
-            statfile.write('Number of perfect guide matches: ' + str(num_p_matches) + '\n')
-            statfile.write('Number of nonperfect guide matches: ' + str(num_np_matches) + '\n')
-            statfile.write('Number of undetected guides: ' + str(guides_no_reads) + '\n')
-            statfile.write('Percentage of unmapped reads (key not found): ' + str(pct_unmapped) + '\n') #
-            statfile.write('Percentage of guides that matched perfectly: ' + str(pct_p_match) + '\n') #
-            statfile.write('Percentage of undetected guides: ' + str(pct_no_reads) + '\n') #
-            statfile.write('Skew ratio of top 10% to bottom 10%: ' + str(skew_ratio) + '\n') #
-            statfile.write('Read coverage: ' + str(coverage))
-            statfile.close()
-            print(str(in_fastq), 'processed')
+        if save_files:
+            with open(out_stats, 'w') as statfile:
+                statfile.write('Number of reads processed: ' + str(num_reads) + '\n')
+                statfile.write('Number of reads where key was not found: ' + str(num_nokey) + '\n')
+                statfile.write('Number of reads where length was not 20bp: ' + str(num_badlength) + '\n')
+                statfile.write('Number of perfect guide matches: ' + str(num_p_matches) + '\n')
+                statfile.write('Number of nonperfect guide matches: ' + str(num_np_matches) + '\n')
+                statfile.write('Number of undetected guides: ' + str(guides_no_reads) + '\n')
+                statfile.write('Percentage of unmapped reads (key not found): ' + str(pct_unmapped) + '\n') #
+                statfile.write('Percentage of guides that matched perfectly: ' + str(pct_p_match) + '\n') #
+                statfile.write('Percentage of undetected guides: ' + str(pct_no_reads) + '\n') #
+                statfile.write('Skew ratio of top 10% to bottom 10%: ' + str(skew_ratio) + '\n') #
+                statfile.write('Read coverage: ' + str(coverage))
+                statfile.close()
+                print(str(in_fastq), 'processed')
 
     # export files and return dataframes if necessary
     path = Path.cwd()
-    outpath = path / file_dir
-    Path.mkdir(outpath, exist_ok=True)
     if save: 
-        df_ref.to_csv(outpath / out, index=False)
+        outpath = path / out_dir
+        Path.mkdir(outpath, exist_ok=True)
+        df_ref.to_csv(outpath / out_file, index=False)
+        print('count_reads outputed to', str(outpath / out_file))
     print('Count reads completed')
     if return_df:
         return df_ref
+        

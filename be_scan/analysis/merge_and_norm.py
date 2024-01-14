@@ -13,9 +13,8 @@ import numpy as np
 import pandas as pd
 
 def merge_and_norm(sample_sheet, in_ref, 
-                   file_dir='',
-                   t0='t0', dir_counts='', 
-                   out='agg_log2_t0.csv', 
+                   t0='t0', counts_dir='', 
+                   out_dir='', out_file='agg_log2_t0.csv', 
                    save=True, return_df=True,
                    ):
     """
@@ -37,17 +36,18 @@ def merge_and_norm(sample_sheet, in_ref,
     in_ref : str or path
         String or path to the reference file. in_ref must have column headers,
         with 'sgRNA_seq' as the header for the column with the sgRNA sequences.
-    file_dir : str or path, defaults to ''
-        String or path to the directory where all files are found and saved. 
     t0 : str, default 't0'
         Name of the t0 sample in dict_counts. If you have multiple t0 samples
         (e.g. paired t0s for specific samples), then you will need to run this
         function separately for each set of samples with their appropriate t0.
-    dir_counts : str, default ''
+
+    counts_dir : str, default ''
         Name of the subfolder to find the read count csv files. The default is
         the current working directory.
-    out : str, default 'agg_log2_t0.csv'
-        Name of the aggregated t0 normalized values csv output file.
+    out_dir : str or path, defaults to ''
+        String or path to the directory where all files are found. 
+    out_file : str or path, defaults to 'agg_log2_t0.csv'
+        Name of output dataframe with guides and counts. 
     return_df : bool, default True
         Whether or not to return the resulting dataframe
     save : bool, default True
@@ -56,7 +56,7 @@ def merge_and_norm(sample_sheet, in_ref,
 
     # import reference file, define variables, check for requirements
     path = Path.cwd()
-    inpath = path / dir_counts
+    inpath = path / counts_dir
     df_ref = pd.read_csv(in_ref)
     # import sample_sheet and extract information for conditions and associated files
     df_samples = pd.read_csv(sample_sheet)
@@ -72,24 +72,24 @@ def merge_and_norm(sample_sheet, in_ref,
     # also perform log2 norm (brian/broad method; log2(rpm + 1 / total reads))
     df_reads = df_ref.copy()
     for sample in list_samples:
-        filepath = file_dir + dict_counts[sample]
-        df_temp = pd.read_csv(inpath / filepath, names=['sgRNA_seq', sample])
+        df_temp = pd.read_csv(inpath / dict_counts[sample], names=['sgRNA_seq', sample])
         # aggregating raw reads
         df_reads = pd.merge(df_reads, df_temp, on='sgRNA_seq')
         # log2 normalization
-        total_reads = df_reads[sample].sum()
-        df_reads[sample+'_log2'] = df_reads[sample].apply(lambda x: np.log2((x * 1e6 / total_reads) + 1))
+        total_reads = pd.to_numeric(df_reads[sample]).sum()
+        df_reads[sample+'_log2'] = df_reads[sample].apply(lambda x: np.log2(((float(x) * 1e6 + 1)/ total_reads)))
         # t0 normalization
         df_reads[sample+'_t0'] = df_reads[sample+'_log2'].sub(df_reads[t0+'_log2'])
+        # df_reads.drop(columns=[dict_counts[sample].split("/")[-1]])
     # drop the t0 column since it will be 0
     df_reads.drop(columns=t0+'_log2', inplace=True)
 
     # export files and return dataframes if necessary
-    outpath = path / file_dir
-    Path.mkdir(outpath, exist_ok=True)
-    # determine which files to export
-    if save == True:
-        df_reads.to_csv(outpath / out, index=False)
+    if save == True: 
+        outpath = path / out_dir
+        Path.mkdir(outpath, exist_ok=True)
+        df_reads.to_csv(outpath / out_file, index=False)
+        print('merge_and_norm outputed to', str(outpath / out_file))
     # determine df to return
     print('Merge and normalize completed')
     if return_df: 

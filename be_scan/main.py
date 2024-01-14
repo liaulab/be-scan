@@ -42,8 +42,11 @@ def main():
     parser_count_reads.add_argument('--KEY', type=str, default=signat_cr.parameters['KEY'].default)
     parser_count_reads.add_argument('--KEY_REV', type=str, default=signat_cr.parameters['KEY_REV'].default)
     parser_count_reads.add_argument('--dont_trim_G', action='store_true')
+    parser_count_reads.add_argument('--out_dir', type=str, default=signat_cr.parameters['out_dir'].default)
+    parser_count_reads.add_argument('--out_file', type=str, default=signat_cr.parameters['out_file'].default)
     parser_count_reads.add_argument('--save', type=bool, default=signat_cr.parameters['save'].default)
     parser_count_reads.add_argument('--return_df', type=bool, default=signat_cr.parameters['return_df'].default)
+    parser_count_reads.add_argument('--save_files', type=bool, default=signat_cr.parameters['save_files'].default)
     parser_count_reads.set_defaults(func=count_reads)
 
     ##################################################
@@ -56,10 +59,10 @@ def main():
                                                   formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_merge_and_norm.add_argument('sample_sheet', type=str)
     parser_merge_and_norm.add_argument('in_ref', type=str)
-    parser_merge_and_norm.add_argument('--file_dir', type=str, default=signat_man.parameters['file_dir'].default)
     parser_merge_and_norm.add_argument('--t0', type=str, default=signat_man.parameters['t0'].default)
-    parser_merge_and_norm.add_argument('--dir_counts', type=str, default=signat_man.parameters['dir_counts'].default)
-    parser_merge_and_norm.add_argument('--out', type=str, default=signat_man.parameters['out'].default)
+    parser_merge_and_norm.add_argument('--counts_dir', type=str, default=signat_man.parameters['counts_dir'].default)
+    parser_merge_and_norm.add_argument('--out_dir', type=str, default=signat_man.parameters['out_dir'].default)
+    parser_merge_and_norm.add_argument('--out_file', type=str, default=signat_man.parameters['out_file'].default)
     parser_merge_and_norm.add_argument('--save', type=bool, default=signat_man.parameters['save'].default)
     parser_merge_and_norm.add_argument('--return_df', type=bool, default=signat_man.parameters['return_df'].default)
     parser_merge_and_norm.set_defaults(func=merge_and_norm)
@@ -74,9 +77,9 @@ def main():
                                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_average_reps.add_argument('sample_sheet', type=str)
     parser_average_reps.add_argument('in_lfc', type=str)
-    parser_average_reps.add_argument('--file_dir', type=str, default=signat_ar.parameters['file_dir'].default)
+    parser_average_reps.add_argument('--out_dir', type=str, default=signat_ar.parameters['out_dir'].default)
+    parser_average_reps.add_argument('--out_file', type=str, default=signat_ar.parameters['out_file'].default)
     parser_average_reps.add_argument('--save', type=bool, default=signat_ar.parameters['save'].default)
-    parser_average_reps.add_argument('--out_conds', type=str, default=signat_ar.parameters['out_conds'].default)
     parser_average_reps.add_argument('--return_df', type=bool, default=signat_ar.parameters['return_df'].default)
     parser_average_reps.set_defaults(func=average_reps)
 
@@ -90,8 +93,8 @@ def main():
                                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_compare_conds.add_argument('in_comparisons', type=str)
     parser_compare_conds.add_argument('in_conds', type=str)
-    parser_compare_conds.add_argument('--file_dir', type=str, default=signat_cc.parameters['file_dir'].default)
-    parser_compare_conds.add_argument('--out_comps', type=str, default=signat_cc.parameters['out_comps'].default)
+    parser_compare_conds.add_argument('--out_dir', type=str, default=signat_cc.parameters['out_dir'].default)
+    parser_compare_conds.add_argument('--out_file', type=str, default=signat_cc.parameters['out_file'].default)
     parser_compare_conds.add_argument('--save', type=bool, default=signat_cc.parameters['save'].default)
     parser_compare_conds.add_argument('--return_df', type=bool, default=signat_cc.parameters['return_df'].default)
     parser_compare_conds.set_defaults(func=compare_conds)
@@ -107,22 +110,22 @@ def main():
     parser_batch_process.add_argument('sample_sheet', type=str)
     parser_batch_process.add_argument('in_ref', type=str)
     parser_batch_process.add_argument('in_comparisons', type=str)
-    parser_batch_process.add_argument('--file_dir', type=str, default=signat_bp.parameters['file_dir'].default)
-    parser_batch_process.add_argument('--save', type=bool, default=signat_bp.parameters['save'].default)
-    parser_batch_process.add_argument('--return_df', type=bool, default=signat_bp.parameters['return_df'].default)
-    # count_reads
+    
     parser_batch_process.add_argument('--KEY_INTERVAL', type=int, nargs=2, default=signat_bp.parameters['KEY_INTERVAL'].default)
     parser_batch_process.add_argument('--KEY', type=str, default=signat_bp.parameters['KEY'].default)
     parser_batch_process.add_argument('--KEY_REV', type=str, default=signat_bp.parameters['KEY_REV'].default)
     parser_batch_process.add_argument('--dont_trim_G', action='store_true')
-    # merge_and_norm
+    parser_batch_process.add_argument('--file_dir', type=str, default=signat_bp.parameters['file_dir'].default)
     parser_batch_process.add_argument('--t0', type=str, default=signat_bp.parameters['t0'].default)
-    parser_batch_process.add_argument('--dir_counts', type=str, default=signat_bp.parameters['dir_counts'].default)
-    parser_batch_process.add_argument('--out_reads', type=str, default=signat_bp.parameters['out_reads'].default)
-    # average_reps
-    parser_batch_process.add_argument('--out_conds', type=str, default=signat_bp.parameters['out_conds'].default)
-    # compare_conds
-    parser_batch_process.add_argument('--out_comps', type=str, default=signat_bp.parameters['out_comps'].default)
+    parser_batch_process.add_argument('--counts_dir', type=str, default=signat_bp.parameters['counts_dir'].default)
+
+    parser_batch_process.add_argument('--out_dir', type=str, default=signat_bp.parameters['out_dir'].default)
+    parser_batch_process.add_argument('--out_counts', type=str, default=signat_bp.parameters['out_counts'].default) # count_reads
+    parser_batch_process.add_argument('--out_lfc', type=str, default=signat_bp.parameters['out_lfc'].default) # merge_and_norm
+    parser_batch_process.add_argument('--out_conds', type=str, default=signat_bp.parameters['out_conds'].default) # average_reps
+    parser_batch_process.add_argument('--out_comps', type=str, default=signat_bp.parameters['out_comps'].default) # compare_conds
+    parser_batch_process.add_argument('--save', type=bool, default=signat_bp.parameters['save'].default)
+    parser_batch_process.add_argument('--return_df', type=bool, default=signat_bp.parameters['return_df'].default)
     parser_batch_process.set_defaults(func=batch_process)
     
     ##################################################
@@ -144,10 +147,10 @@ def main():
     parser_plot_scatterplot.add_argument('--palette', nargs='+', type=str, default=signat_ps.parameters['palette'].default)
     parser_plot_scatterplot.add_argument('--neg_ctrl', type=bool, default=signat_ps.parameters['neg_ctrl'].default)
     parser_plot_scatterplot.add_argument('--neg_ctrl_col', type=str, default=signat_ps.parameters['neg_ctrl_col'].default)
-    parser_plot_scatterplot.add_argument('--neg_ctrl_category', nargs='+', type=str, default=signat_ps.parameters['neg_ctrl_category'].default)
+    parser_plot_scatterplot.add_argument('--neg_ctrl_conditions', nargs='+', type=str, default=signat_ps.parameters['neg_ctrl_conditions'].default)
     parser_plot_scatterplot.add_argument('--filter', type=bool, default=signat_ps.parameters['filter'].default)
     parser_plot_scatterplot.add_argument('--filter_col', type=str, default=signat_ps.parameters['filter_col'].default) ###
-    parser_plot_scatterplot.add_argument('--filter_category', nargs='+', type=str, default=signat_ps.parameters['filter_category'].default) ### 
+    parser_plot_scatterplot.add_argument('--filter_conditions', nargs='+', type=str, default=signat_ps.parameters['filter_conditions'].default) ### 
     parser_plot_scatterplot.add_argument('--xlab', type=str, default=signat_ps.parameters['xlab'].default)
     parser_plot_scatterplot.add_argument('--ylab', type=str, default=signat_ps.parameters['ylab'].default)
     parser_plot_scatterplot.add_argument('--col_label', type=str, default=signat_ps.parameters['col_label'].default)
@@ -182,10 +185,10 @@ def main():
     # optional variables
     parser_plot_boxes.add_argument('--neg_ctrl', type=bool, default=signat_pb.parameters['neg_ctrl'].default)
     parser_plot_boxes.add_argument('--neg_ctrl_col', type=str, default=signat_pb.parameters['neg_ctrl_col'].default)
-    parser_plot_boxes.add_argument('--neg_ctrl_category', nargs='+', type=str, default=signat_pb.parameters['neg_ctrl_category'].default)
+    parser_plot_boxes.add_argument('--neg_ctrl_conditions', nargs='+', type=str, default=signat_pb.parameters['neg_ctrl_conditions'].default)
     parser_plot_boxes.add_argument('--filter', type=bool, default=signat_pb.parameters['filter'].default)
     parser_plot_boxes.add_argument('--filter_col', type=str, default=signat_pb.parameters['filter_col'].default) ###
-    parser_plot_boxes.add_argument('--filter_category', nargs='+', type=str, default=signat_pb.parameters['filter_category'].default) ###
+    parser_plot_boxes.add_argument('--filter_conditions', nargs='+', type=str, default=signat_pb.parameters['filter_conditions'].default) ###
     parser_plot_boxes.add_argument('--xlab', type=str, default=signat_pb.parameters['xlab'].default)
     parser_plot_boxes.add_argument('--ylab', type=str, default=signat_pb.parameters['ylab'].default)
     parser_plot_boxes.add_argument('--col_label', type=str, default=signat_pb.parameters['col_label'].default)
@@ -294,11 +297,11 @@ def main():
 
     ##################################################
     
-    from be_scan.sgrna import annot_guides
-    signat_ag = inspect.signature(annot_guides)
+    from be_scan.sgrna import annotate_guides
+    signat_ag = inspect.signature(annotate_guides)
     parser_annot_guides = subparsers.add_parser('annot_guides', 
-                                                   help=next(line for line in annot_guides.__doc__.splitlines() if line),
-                                                   description=annot_guides.__doc__,
+                                                   help=next(line for line in annotate_guides.__doc__.splitlines() if line),
+                                                   description=annotate_guides.__doc__,
                                                    formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_annot_guides.add_argument('guides_file', type=str)
     parser_annot_guides.add_argument('gene_filepath', type=str)
@@ -314,7 +317,7 @@ def main():
     parser_annot_guides.add_argument('--output_dir', type=str, default=signat_ag.parameters['output_dir'].default)
     parser_annot_guides.add_argument('--return_df', type=bool, default=signat_ag.parameters['return_df'].default)
     parser_annot_guides.add_argument('--save_df', type=bool, default=signat_ag.parameters['save_df'].default)
-    parser_annot_guides.set_defaults(func=annot_guides)
+    parser_annot_guides.set_defaults(func=annotate_guides)
 
     ##################################################
     

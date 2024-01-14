@@ -15,15 +15,15 @@ file_dir = "tests/test_data/analysis_data/"
 
 # baseline
 def test_count_reads():
-    with pytest.warns(UserWarning, match="missing column"):
-        count_reads(sample_sheet   = file_dir + "guides_sample_sheet.csv", 
-                    in_ref         = file_dir + "guides_ref.csv",
-                    file_dir       = file_dir,
-                    )
-    df_counts = pd.read_csv(file_dir + "counts.csv", index_col=0, header=None).squeeze("columns")
-    assert df_counts.loc["AAAAAAAAAAAAAAAAAAAA"] == 1
-    assert df_counts.loc["TTTTTTTTTTTTTTTTTTTT"] == 2
-    assert len(df_counts) == 2
+    count_reads(sample_sheet   = file_dir + "guides_sample_sheet.csv", 
+                in_ref         = file_dir + "guides_ref.csv",
+                file_dir       = file_dir,
+                out_dir = file_dir,
+                )
+    df_counts = pd.read_csv(file_dir + "counts_library.csv", index_col=0, header=None).squeeze("columns")
+    assert df_counts.loc["AAAAAAAAAAAAAAAAAAAA"] == '1'
+    assert df_counts.loc["TTTTTTTTTTTTTTTTTTTT"] == '2'
+    assert len(df_counts) == 3
     # clean up
     os.remove(file_dir + "counts.csv")
     os.remove(file_dir + "noncounts.csv")
@@ -65,14 +65,15 @@ def test_matching(query, ref, match):
         sample_sheet.to_csv(file_dir + fname_sample_sheet)
 
         # run count_reads
-        with pytest.warns(UserWarning, match="missing column"):
-            count_reads(sample_sheet = file_dir + fname_sample_sheet, 
-                        in_ref       = file_dir + fname_ref,
-                        file_dir     = file_dir,
-                        )
+        count_reads(sample_sheet = file_dir + fname_sample_sheet, 
+                    in_ref       = file_dir + fname_ref,
+                    file_dir       = file_dir,
+                    out_dir = file_dir,
+                    )
         # check whether it's counted as a match
         with open(f"{file_dir}counts.csv", "rt") as fh:
             line = fh.readline().rstrip()
+            line = fh.readline().rstrip() # read second line
         assert line == f"{ref},{int(match)}"
         
     finally:

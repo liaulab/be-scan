@@ -7,12 +7,9 @@ def test_plot_scatterplot(monkeypatch):
     comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg']
     be_scan.plot.plot_scatterplot(df_filepath       =file_dir+'NZL10196_v9_comparisons.csv', 
                                   x_column          ='Edit_site_3A1', 
-                                  y_column          ='log2_fc', 
-                                  hue_column        ='Mut_type', 
                                   comparisons       =comparisons, 
-                                  neg_ctrl_col      ='Gene', 
-                                  neg_ctrl_category ='NON-GENE',
-                                  xmin              =200, 
+                                  hue=True, hue_column='Mut_type', 
+                                  neg_ctrl=True, neg_ctrl_col='Gene', neg_ctrl_conditions=['NON-GENE'],
     )
     for suffix in comparisons: 
         path = f"scatterplot{suffix}.pdf"
@@ -44,11 +41,9 @@ def test_plot_boxes(monkeypatch):
     comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg']
     be_scan.plot.plot_boxes(df_filepath       =file_dir+'NZL10196_v9_comparisons.csv', 
                             plot_column       ='Domain', 
-                            plot_conditions   =['PWWP', 'ADD', 'MTase'], 
-                            y_column          ='log2_fc', 
+                            plot_conditions   =['PWWP', 'ADD', 'MTase', 'Nterm'], 
                             comparisons       =comparisons, 
-                            neg_ctrl_col      ='Gene', 
-                            neg_ctrl_category ='NON-GENE',
+                            neg_ctrl=True, neg_ctrl_col='Gene', neg_ctrl_conditions=['NON-GENE'],
     )
     for suffix in comparisons: 
         path = f"boxes{suffix}.pdf"

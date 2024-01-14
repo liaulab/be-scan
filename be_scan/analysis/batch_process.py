@@ -12,16 +12,16 @@ from be_scan.analysis.average_reps import average_reps
 from be_scan.analysis.compare_conds import compare_conds
 
 def batch_process(sample_sheet, in_ref, in_comparisons, 
-                  
-                  file_dir='', save=True, return_df=False,
 
                   KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTTAGA', dont_trim_G=False,
+                  file_dir='', t0='t0', counts_dir='', 
+                  
+                  out_dir='', out_counts='counts_library.csv', out_lfc='agg_log2_t0.csv', 
+                  out_conds='avg_conds.csv', out_comps='conditions.csv', 
+                  save=True, return_df=False,
 
-                  t0='t0', dir_counts='', 
-                  out_reads='agg_log2_t0.csv', 
-                  out_conds='agg_t0_conds.csv', 
-
-                  out_comps='agg_comps.csv', 
+                # file_dir='', 
+                # t0='t0', counts_dir='', 
                  ):
     
     """
@@ -86,40 +86,28 @@ def batch_process(sample_sheet, in_ref, in_comparisons,
         Name of the comparisons csv output file.
     """
 
-    count_reads(sample_sheet=sample_sheet, 
-                in_ref=in_ref, 
-                file_dir=file_dir,
+    count_reads_params = {
+        'sample_sheet':sample_sheet, 'in_ref':in_ref, 'file_dir':file_dir, 
+        'KEY_INTERVAL':KEY_INTERVAL, 'KEY':KEY, 'KEY_REV':KEY_REV, 'dont_trim_G':dont_trim_G, 
+        'out_dir':out_dir, 'out_file':out_counts, 'save':save, 'return_df':return_df, 'save_files':save, 
+    }
+    count_reads(**count_reads_params)
 
-                KEY_INTERVAL=KEY_INTERVAL, 
-                KEY=KEY, 
-                KEY_REV=KEY_REV, 
-                dont_trim_G=dont_trim_G,
-                )
+    merge_and_norm_params = {
+        'sample_sheet':sample_sheet, 'in_ref':out_dir+out_counts, 't0':t0, 'counts_dir':counts_dir, 
+        'out_dir':out_dir, 'out_file':out_lfc, 'save':save, 'return_df':return_df,
+    }
+    merge_and_norm(**merge_and_norm_params)
     
-    merge_and_norm(sample_sheet=sample_sheet, 
-                   in_ref=file_dir+'counts_library.csv', 
-                   file_dir=file_dir,
-
-                   save=save, 
-                   out=out_reads, 
-                   return_df=return_df,
-                   )
+    average_reps_params = {
+        'sample_sheet':sample_sheet, 'in_lfc':out_dir+out_lfc, 
+        'out_dir':out_dir, 'out_file':out_conds, 'save':save, 'return_df':return_df,
+    }
+    average_reps(**average_reps_params)
     
-    average_reps(sample_sheet=sample_sheet, 
-                 in_lfc=file_dir+out_reads, 
-                 file_dir=file_dir,
-
-                 save=save, 
-                 out_conds=out_conds, 
-                 return_df=return_df,
-                 )
-    
-    compare_conds(in_comparisons=in_comparisons, 
-                  in_conds=file_dir+out_conds, 
-                  file_dir=file_dir,
-
-                  out_comps=out_comps, 
-                  save=save,
-                  return_df=return_df,
-                  )
+    compare_conds_params = {
+        'in_comparisons':in_comparisons, 'in_conds':out_dir+out_conds, 
+        'out_dir':out_dir, 'out_file':out_comps, 'save':save, 'return_df':return_df,
+    }
+    compare_conds(**compare_conds_params)
     

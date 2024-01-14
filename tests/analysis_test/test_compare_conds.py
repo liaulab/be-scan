@@ -14,11 +14,11 @@ file_dir = "tests/test_data/analysis_data/"
 def test_compare_conds(): 
     compare_conds(in_comparisons = file_dir + "comparisons.csv", 
                   in_conds       = file_dir + "agg_t0_conds_.csv",
-                  file_dir       = file_dir,
+                  out_dir        = file_dir,
                   )
-    df_comps = pd.read_csv(file_dir + "agg_comps.csv")
+    df_comps = pd.read_csv(file_dir + "conditions.csv")
     assert 'sorted-unsorted' in df_comps.columns
     # this is only t0 so there is no new column added to agg_t0_reps
 
     # clean up
-    os.remove(file_dir + "agg_comps.csv")
+    os.remove(file_dir + "conditions.csv")

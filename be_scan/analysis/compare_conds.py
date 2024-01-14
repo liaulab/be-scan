@@ -11,8 +11,7 @@ import pandas as pd
 
 def compare_conds(in_comparisons, 
                   in_conds, 
-                  file_dir='',
-                  out_comps='agg_comps.csv', 
+                  out_dir='', out_file='conditions.csv', 
                   save=True, return_df=True, 
                   ):
     """
@@ -34,11 +33,10 @@ def compare_conds(in_comparisons,
         String or path to the csv file containing the values for comparison.
         The column headers must match the sample names in in_comparisons
 
-    file_dir : str, default ''
-        Name of the subfolder to save output files. The default is the current
-        working directory.
-    out_comps : str, default 'agg_comps.csv'
-        Name of the comparisons csv output file.
+    out_dir : str or path, defaults to ''
+        String or path to the directory where all files are found. 
+    out_file : str or path, defaults to 'conditions.csv'
+        Name of output dataframe with guides and counts. 
     return_df : bool, default True
         Whether or not to return the resulting dataframe
     save : bool, default True
@@ -57,9 +55,10 @@ def compare_conds(in_comparisons,
 
     # export files and return dataframes if necessary
     if save: 
-        outpath = path / file_dir
+        outpath = path / out_dir
         Path.mkdir(outpath, exist_ok=True)
-        df_conds.to_csv(outpath / out_comps, index=False)
+        df_conds.to_csv(outpath / out_file, index=False)
+        print('compare_conds outputed to', str(outpath / out_file))
     print('Compare conditions completed')
     if return_df:
         return df_conds

@@ -13,9 +13,8 @@ import pandas as pd
 import re
 
 def average_reps(sample_sheet, in_lfc, 
-                 file_dir='',
-                 save=True, out_conds='agg_t0_conds.csv', 
-                 return_df=True,
+                 out_dir='', out_file='avg_conds.csv', 
+                 save=True, return_df=True,
                  ):
     """
     Averages the replicates for each condition (e.g. treatment, control) and
@@ -38,10 +37,10 @@ def average_reps(sample_sheet, in_lfc,
         String or path to the individual replicate values csv file. The column
         headers for the replicate values must match the keys in dict_conds
 
-    file_dir : str or path, defaults to ''
-        String or path to the directory where all files are found and saved. 
-    out_conds : str, default 'agg_t0_conds.csv'
-        Name of the averaged replicate values csv output file.
+    out_dir : str or path, defaults to ''
+        String or path to the directory where all files are found. 
+    out_file : str or path, defaults to 'avg_conds.csv'
+        Name of output dataframe with guides and counts. 
     save : bool, default True
         Whether to save the averaged replicate values as a csv file.
     return_df : bool, default True
@@ -58,12 +57,12 @@ def average_reps(sample_sheet, in_lfc,
     # make df to map replicates to condition
     df_map = pd.DataFrame(data=dict_conds.items(), columns=['rep','condition'])
     # check to make sure replicates are in the input file
-    list_reps = df_map['rep'].tolist()
-    if not all(rep in list_reps for rep in df_lfc.columns.tolist()):
-        list_miss = [rep for rep in list_reps if rep not in df_lfc.columns.tolist()]
-        # remove missing replicates from df_map and raise Warning
-        df_map = df_map.loc[~df_map['rep'].isin(list_miss)]
-        warnings.warn('in_lfc is missing replicates (removed from analysis): ' + str(list_miss))
+    # list_reps = df_map['rep'].tolist()
+    # if not all(rep in list_reps for rep in df_lfc.columns.tolist()):
+    #     list_miss = [rep for rep in list_reps if rep not in df_lfc.columns.tolist()]
+    #     # remove missing replicates from df_map and raise Warning
+    #     df_map = df_map.loc[~df_map['rep'].isin(list_miss)]
+    #     warnings.warn('in_lfc is missing replicates (removed from analysis): ' + str(list_miss))
 
     # generate df to hold the averaged replicates per condition
     for cond in df_map['condition'].unique().tolist():
@@ -72,16 +71,19 @@ def average_reps(sample_sheet, in_lfc,
         # skip averaging for single replicates (otherwise breaks script)
         if len(reps) > 1:
             df_lfc[cond] = df_lfc[reps].mean(axis=1)
+            df_lfc[cond+'_stdev'] = df_lfc[reps].std(axis=1)
         elif len(reps) == 1:
             df_lfc[cond] = df_lfc[reps]
-        else:
+            df_lfc[cond+'_stdev'] = 0
+        else: 
             raise Exception('Error! Replicate number not valid')
 
     # export files and return dataframes if necessary
     if save:
-        outpath = path / file_dir
+        outpath = path / out_dir
         Path.mkdir(outpath, exist_ok=True)
-        df_lfc.to_csv(outpath / out_conds, index=False)
+        df_lfc.to_csv(outpath / out_file, index=False)
+        print('average_reps outputed to', str(outpath / out_file))
     print('Average reps completed')
     if return_df: 
         return df_lfc
