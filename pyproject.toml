@@ -24,7 +24,7 @@ dependencies = [
   "pandas",
   "scikit-learn",
   "biopython",
-  "pyahocorasick@git+https://github.com/WojciechMula/pyahocorasick",
+  "pyahocorasick"
 ]
 
 [project.optional-dependencies]
