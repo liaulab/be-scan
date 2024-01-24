@@ -419,4 +419,5 @@ dependencies:
       - sphinxcontrib-serializinghtml==1.1.9
       - twine==4.0.2
       - virtualenv==20.17.1
+      - git+https://github.com/WojciechMula/pyahocorasick.git
 prefix: /Users/calvinxyh/opt/anaconda3
