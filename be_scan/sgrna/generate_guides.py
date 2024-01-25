@@ -130,6 +130,7 @@ def generate_BE_guides(gene_filepath, gene_name,
     # df = df[~dupl_rows]
 
     print('Guides generated and duplicates removed')
+    print(df.shape[0], 'guides were generated')
     # output df
     if save_df: 
         df.to_csv(output_dir + output_name, index=False)
