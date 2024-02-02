@@ -3,3 +3,4 @@ Sphinx
 nbsphinx
 sphinx-rtd-theme
 python-docs-theme
+ipykernel
