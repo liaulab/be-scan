@@ -11,12 +11,14 @@ from be_scan.sgrna._genomic_ import *
 from be_scan.sgrna._guideRNA_ import filter_guide, filter_repeats
 from be_scan.sgrna._gene_ import GeneForCRISPR
 
-def generate_BE_guides(gene_filepath, gene_name, 
+def generate_BE_guides(gene_filepath, 
                        cas_type, edit_from, edit_to, 
-                       PAM=None, window=[4,8], 
+
+                       gene_name='', PAM=None, window=[4,8], 
                        output_name='guides.csv', output_dir='',
                        return_df=True, save_df=True,
-                       exclude_introns=True,
+                       exclude_introns=True, 
+                       exclude_nontargeting=True,
                        ): 
     """
     Generates a list of guides based on a gene .fasta file,
@@ -27,8 +29,6 @@ def generate_BE_guides(gene_filepath, gene_name,
     ------------
     gene_filepath: str or path
         The file with the gene .fasta sequence
-    gene_name: str
-        The name of the gene, can be any string
     cas_type: str
         A type of predetermined Cas (ie Sp, SpG, SpRY, etc)
         This variable is superceded by PAM
@@ -36,6 +36,9 @@ def generate_BE_guides(gene_filepath, gene_name,
         The base (ACTG) to be replaced
     edit_to: char
         The base (ACTG) to replace with
+
+    gene_name: str, default ''
+        The name of the gene, can be any string
     PAM: str, default None
         Optional field to input a custom PAM or a known PAM
         This field supercedes cas_type
@@ -99,13 +102,12 @@ def generate_BE_guides(gene_filepath, gene_name,
                     'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', 
                     ]
 
-    # filter for PAM and contains editable base in window
+    # filter for PAM, options to filter for containing editable base in window and intron targeting
     #    (seq, frame012 of first base, index of first base, exon number)
     fwd_results = [g.copy() for g in gene.fwd_guides if 
-                   filter_guide(g, PAM_regex, edit, window, exclude_introns)]
+                   filter_guide(g, PAM_regex, edit, window, exclude_introns, exclude_nontargeting)]
     rev_results = [g.copy() for g in gene.rev_guides if 
-                   filter_guide(g, PAM_regex, edit, window, exclude_introns)]
-
+                   filter_guide(g, PAM_regex, edit, window, exclude_introns, exclude_nontargeting)]
     # filter out repeating guides in fwd_results rev_results list
     fwd_results = filter_repeats(fwd_results)
     rev_results = filter_repeats(rev_results)

@@ -13,9 +13,11 @@ from be_scan.sgrna._genomic_ import process_PAM
 @pytest.mark.parametrize("edit", [('C', 'T')])
 @pytest.mark.parametrize("window", [(4, 8)])
 @pytest.mark.parametrize("exclude_introns", [False, True])
-def test_filter_guide(guide, PAM_regex, edit, window, exclude_introns): 
-    res = filter_guide(guide, PAM_regex, edit, window, exclude_introns)
-    assert (res == ('G' == guide[1][1] and 'C' in guide[0][3:8]))
+@pytest.mark.parametrize("exclude_nontargeting", [False, True])
+def test_filter_guide(guide, PAM_regex, edit, window, exclude_introns, exclude_nontargeting): 
+    res = filter_guide(guide, PAM_regex, edit, window, exclude_introns, exclude_nontargeting)
+    if exclude_nontargeting:
+        assert (res == ('G' == guide[1][1] and 'C' in guide[0][3:8]))
 
 def test_filter_repeats(): 
     sample = [['ABA'], ['ABC'], ['ABA']]

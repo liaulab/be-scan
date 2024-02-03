@@ -8,11 +8,10 @@ Date: 231204
 from pathlib import Path
 import pandas as pd
 
-### blanks need to be filled in with blanks or No_C No_A etc
 def merge_guide_df(guide_df1_filepath, guide_df2_filepath, 
                    output_name='merged_guides.csv', output_dir='', 
 
-                   shared_col_names = ['sgRNA_seq', 'starting_frame', 'gene_pos', 
+                   shared_col_names = ['sgRNA_seq', 'PAM_seq', 'starting_frame', 'gene_pos', 
                                        'chr_pos', 'exon', 'coding_seq', 'sgRNA_strand', 
                                        'gene_strand', 'gene', 'genome_occurrences'], 
                    sort_by=['gene_pos'],
@@ -23,6 +22,9 @@ def merge_guide_df(guide_df1_filepath, guide_df2_filepath,
     Keeps annotated information for both separate
     Completes merge on the guide sequence, and keeps annotated information separate.
     Deletes duplicated guides between the two dataframes. 
+
+    This function is based on pd.merge, for more documentation please see: 
+    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.merge.html
     """
     guide_df1_filepath = Path(guide_df1_filepath)
     guide_df2_filepath = Path(guide_df2_filepath)
@@ -41,8 +43,6 @@ def merge_guide_df(guide_df1_filepath, guide_df2_filepath,
     # delete duplicates
     dupl_rows = new_df.duplicated(subset='sgRNA_seq', keep=False)
     new_df = new_df[~dupl_rows]
-    # dupl_rows = new_df.duplicated(subset='coding_seq', keep=False)
-    # new_df = new_df[~dupl_rows]
 
     if save_df: 
         out_filepath = Path(output_dir)
@@ -57,6 +57,9 @@ def add_guide_df(guides_df_filepath, additional_df_filepath,
     """
     Add 2 Dataframes (ex guides and control guides)
     Reassigns the columns of second dataframe into first. 
+
+    This function is based on pd.concat, for more documentation please see: 
+    https://pandas.pydata.org/docs/reference/api/pandas.concat.html
     """
     guides_df_filepath = Path(guides_df_filepath)
     additional_df_filepath = Path(additional_df_filepath)
@@ -73,9 +76,6 @@ def add_guide_df(guides_df_filepath, additional_df_filepath,
     # delete duplicates
     dupl_rows = new_df.duplicated(subset='sgRNA_seq', keep=False)
     new_df = new_df[~dupl_rows]
-    # dupl_rows = new_df.duplicated(subset='coding_seq', keep=False)
-    # new_df = new_df[~dupl_rows]
-    # new_df = new_df[~new_df['sgRNA_seq'].isin(new_df['coding_seq']) & ~new_df['coding_seq'].isin(new_df['sgRNA_seq'])]
 
     if save_df: 
         new_df.to_csv(output_dir+output_name)

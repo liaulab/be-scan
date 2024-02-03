@@ -12,10 +12,10 @@ from pathlib import Path
 from be_scan.sgrna._genomic_ import *
 from be_scan.sgrna._guideRNA_ import *
 
-def annotate_guides(guides_file, gene_filepath, protein_filepath,
+def annotate_guides(guides_file, gene_filepath,
                     edit_from, edit_to,
-                    window=[4,8], 
-
+                    
+                    protein_filepath='', window=[4,8], 
                     seq_col = 'sgRNA_seq', gene_pos_col='gene_pos',
                     frame_col = 'starting_frame', strand_col = 'sgRNA_strand',
                     output_name="annotated.csv", output_dir='',
@@ -34,8 +34,9 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
         The base (ACTG) to be replaced, can be a string of multiple bases
     edit_to: str
         The base (ACTG) to replace with, can be a string of multiple bases
-    protein_filepath: str or path
-        The file with the protein .fasta sequence
+
+    protein_filepath: str or path, default ''
+        The file with the protein .fasta sequence for double checking the mutations annotated
     window: tuple or list, default = [4,8]
         Editing window, 4th to 8th bases inclusive by default
 
@@ -97,7 +98,10 @@ def annotate_guides(guides_file, gene_filepath, protein_filepath,
                                               frame_col, strand_col, gene_pos_col)
     # after this point we should have sgRNA_seq, starting frame, sgRNA_strand, and window
     # read in protein_file
-    amino_acid_seq = protein_to_AAseq(protein_filepath)
+    if len(protein_filepath) > 0: 
+        amino_acid_seq = protein_to_AAseq(protein_filepath)
+    else: 
+        amino_acid_seq = None
 
     for name in col_names: 
         assert name in guides_df.columns 

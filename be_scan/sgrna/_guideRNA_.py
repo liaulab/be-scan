@@ -12,7 +12,7 @@ from be_scan.sgrna._gene_ import GeneForCRISPR
 
 # evaluates if guide has PAM and has a residue in window
 # returns TRUE or FALSE
-def filter_guide(g, PAM_regex, edit, window, exclude_introns): 
+def filter_guide(g, PAM_regex, edit, window, exclude_introns, exclude_nontargeting): 
     """
     Evaluates if a guide has a PAM and target residue within its window. 
 
@@ -24,6 +24,7 @@ def filter_guide(g, PAM_regex, edit, window, exclude_introns):
     edit : tuple, (edit_from edit_to)
     window : tuple, inclusive range for editing
     exclude_introns : bool, whether or not the editible base needs to be in an intron
+    exclude_nontargeting : bool, whether or not the editible base needs to be in the window
 
     Returns
     ------------
@@ -31,7 +32,9 @@ def filter_guide(g, PAM_regex, edit, window, exclude_introns):
     """
     seq = g[0]
     window = seq[window[0]-1:window[1]]
-    if exclude_introns: 
+    if not exclude_nontargeting: 
+        edit_in_window = True
+    elif exclude_introns: 
         edit_in_window = (edit[0] in window)
     else: 
         edit_in_window = (edit[0].upper() in window) or (edit[0].lower() in window)
@@ -193,7 +196,8 @@ def format_mutation(aa, new_aa, start, amino_acid_seq, x):
         if aa[i] != new_aa[i]: 
             mut = aa[i] + str(start+i) + new_aa[i]
             # checks mutation against the protein sequence
-            assert amino_acid_seq[start+i] == aa[i], 'guides '+f"{x}" + ", " + aa[i] + str(start+i) + new_aa[i] + ", " + amino_acid_seq[start+i]
+            if amino_acid_seq is not None: 
+                assert amino_acid_seq[start+i] == aa[i], 'guides '+f"{x}" + ", " + aa[i] + str(start+i) + new_aa[i] + ", " + amino_acid_seq[start+i]
             # add edit to a list
             if mut not in result: 
                 result.append(mut)

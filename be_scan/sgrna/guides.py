@@ -11,10 +11,11 @@ from be_scan.sgrna.generate_guides import generate_BE_guides
 from be_scan.sgrna.check_guides import check_guides
 from be_scan.sgrna.annotate_guides import annotate_guides
 
-def guides(gene_filepath, gene_name, genome_file, protein_filepath, 
+def guides(gene_filepath, genome_file, 
            cas_type, edit_from, edit_to, 
 
-           PAM=None, window=[4,8], 
+           protein_filepath='',
+           gene_name='', PAM=None, window=[4,8], 
            output_name='annotated_guides.csv', output_dir='', delete=False,
            return_df=True, save_df=True,
            exclude_introns=True,
@@ -28,12 +29,8 @@ def guides(gene_filepath, gene_name, genome_file, protein_filepath,
     ------------
     gene_filepath: str or path
         The file with the gene .fasta sequence
-    gene_name: str
-        The name of the gene, can be any string
     genome_file: str or path
         The file with the genome .fasta sequence
-    protein_filepath: str or path
-        The file with the protein .fasta sequence
     cas_type: str
         A type of predetermined Cas (ie Sp, SpG, SpRY, etc)
         This variable is superceded by PAM
@@ -41,6 +38,11 @@ def guides(gene_filepath, gene_name, genome_file, protein_filepath,
         The base (ACTG) to be replaced
     edit_to: char
         The base (ACTG) to replace with
+
+    gene_name: str, default ''
+        The name of the gene, can be any string
+    protein_filepath: str or path, default ''
+        The file with the protein .fasta sequence for double checking the mutations annotated
     PAM: str, default None
         Optional field to input a custom PAM or a known PAM
         This field supercedes cas_type
@@ -85,7 +87,6 @@ def guides(gene_filepath, gene_name, genome_file, protein_filepath,
     """
     
     temp = "temp.csv"
-    gene_filepath, genome_file, protein_filepath = Path(gene_filepath), Path(genome_file), Path(protein_filepath)
     
     guides = generate_BE_guides(gene_filepath=gene_filepath,
                                 gene_name=gene_name, 
