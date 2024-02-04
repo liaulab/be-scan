@@ -12,8 +12,8 @@ import pandas as pd
 file_dir = "tests/test_data/analysis_data/"
 
 def test_compare_conds(): 
-    compare_conds(in_comparisons = file_dir + "comparisons.csv", 
-                  in_conds       = file_dir + "agg_t0_conds_.csv",
+    compare_conds(comparisons    = file_dir + "comparisons.csv", 
+                  annotated_lib  = file_dir + "agg_t0_conds_.csv",
                   out_dir        = file_dir,
                   )
     df_comps = pd.read_csv(file_dir + "conditions.csv")

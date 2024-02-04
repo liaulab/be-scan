@@ -7,6 +7,7 @@ many of these would be included in bioconda etc but I'm writing these out to avo
 """
 
 import re
+from pathlib import Path
 
 # VARIABLES
 
@@ -83,6 +84,7 @@ def complement(complements, seq):
 
 # take in a protein .fasta file and extract the protein sequence
 def protein_to_AAseq(filename): 
+    filepath = Path(filename)
     f = open(filename, "r")
     file_content = f.read().split('\n')
     seq = ''.join(file_content[1:])

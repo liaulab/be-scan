@@ -12,10 +12,10 @@ from pathlib import Path
 from be_scan.sgrna._genomic_ import *
 from be_scan.sgrna._guideRNA_ import *
 
-def annotate_guides(guides_file, gene_filepath,
+def annotate_guides(guides_file,
                     edit_from, edit_to,
                     
-                    protein_filepath='', window=[4,8], 
+                    gene_filepath='', protein_filepath='', window=[4,8], 
                     seq_col = 'sgRNA_seq', gene_pos_col='gene_pos',
                     frame_col = 'starting_frame', strand_col = 'sgRNA_strand',
                     output_name="annotated.csv", output_dir='',
@@ -27,14 +27,14 @@ def annotate_guides(guides_file, gene_filepath,
     Parameters
     ------------
     guides_file: str or path
-        The file with the gene .fasta sequence
-    gene_filepath: str or path
-        The file with the gene .fasta sequence
+        The file with the list of guide sequences
     edit_from: str
         The base (ACTG) to be replaced, can be a string of multiple bases
     edit_to: str
         The base (ACTG) to replace with, can be a string of multiple bases
 
+    gene_filepath: str or path, default ''
+        The file with the gene .fasta sequence
     protein_filepath: str or path, default ''
         The file with the protein .fasta sequence for double checking the mutations annotated
     window: tuple or list, default = [4,8]
@@ -74,6 +74,7 @@ def annotate_guides(guides_file, gene_filepath,
        'muttype'        : str,    muttypes condensed down to one type
     """
 
+    path = Path.cwd()
     col_names = frame_col, strand_col, gene_pos_col, seq_col
 
     # checks editing information is correct, and if len > 1 it is a dual/multi editor
@@ -152,8 +153,9 @@ def annotate_guides(guides_file, gene_filepath,
     print('Guides annotated')
     # save df
     if save_df: 
-        out_filepath = Path(output_dir)
-        guides_df.to_csv(out_filepath / output_name, index=False)
+        outpath = path / output_dir
+        Path.mkdir(outpath, exist_ok=True)
+        guides_df.to_csv(outpath / output_name, index=False)
     if return_df: 
         return guides_df
         

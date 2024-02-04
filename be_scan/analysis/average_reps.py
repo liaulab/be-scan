@@ -12,7 +12,7 @@ import warnings
 import pandas as pd
 import re
 
-def average_reps(sample_sheet, in_lfc, 
+def average_reps(sample_sheet, annotated_lib, 
                  out_dir='', out_file='avg_conds.csv', 
                  save=True, return_df=True,
                  ):
@@ -33,7 +33,7 @@ def average_reps(sample_sheet, in_lfc,
         out_np (string or path for the output csv file with non-perfect sgRNA matches ex: 'noncounts.csv'), 
         out_stats (string or path for the output txt file with the read counting statistics ex: 'stats.txt'), 
         condition names, and condition categories
-    in_lfc : str or path
+    annotated_lib : str or path
         String or path to the individual replicate values csv file. The column
         headers for the replicate values must match the keys in dict_conds
 
@@ -49,20 +49,13 @@ def average_reps(sample_sheet, in_lfc,
 
     # import files, define variables, check for requirements, etc.
     path = Path.cwd()
-    df_lfc = pd.read_csv(in_lfc)
+    df_lfc = pd.read_csv(annotated_lib)
     # import sample_sheet and derive relevant information for conditions and aggregation
     df_samples = pd.read_csv(sample_sheet)
     dict_conds = dict(zip(df_samples.condition, df_samples.agg_conditions))
 
     # make df to map replicates to condition
     df_map = pd.DataFrame(data=dict_conds.items(), columns=['rep','condition'])
-    # check to make sure replicates are in the input file
-    # list_reps = df_map['rep'].tolist()
-    # if not all(rep in list_reps for rep in df_lfc.columns.tolist()):
-    #     list_miss = [rep for rep in list_reps if rep not in df_lfc.columns.tolist()]
-    #     # remove missing replicates from df_map and raise Warning
-    #     df_map = df_map.loc[~df_map['rep'].isin(list_miss)]
-    #     warnings.warn('in_lfc is missing replicates (removed from analysis): ' + str(list_miss))
 
     # generate df to hold the averaged replicates per condition
     for cond in df_map['condition'].unique().tolist():

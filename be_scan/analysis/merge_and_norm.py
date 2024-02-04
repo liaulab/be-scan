@@ -12,7 +12,7 @@ import warnings
 import numpy as np
 import pandas as pd
 
-def merge_and_norm(sample_sheet, in_ref, 
+def merge_and_norm(sample_sheet, annotated_lib, 
                    t0='t0', counts_dir='', 
                    out_dir='', out_file='agg_log2_t0.csv', 
                    save=True, return_df=True,
@@ -33,8 +33,8 @@ def merge_and_norm(sample_sheet, in_ref,
         out_np (string or path for the output csv file with non-perfect sgRNA matches ex: 'noncounts.csv'), 
         out_stats (string or path for the output txt file with the read counting statistics ex: 'stats.txt'), 
         condition names, and condition categories
-    in_ref : str or path
-        String or path to the reference file. in_ref must have column headers,
+    annotated_lib : str or path
+        String or path to the reference file. annotated_lib must have column headers,
         with 'sgRNA_seq' as the header for the column with the sgRNA sequences.
     t0 : str, default 't0'
         Name of the t0 sample in dict_counts. If you have multiple t0 samples
@@ -57,13 +57,13 @@ def merge_and_norm(sample_sheet, in_ref,
     # import reference file, define variables, check for requirements
     path = Path.cwd()
     inpath = path / counts_dir
-    df_ref = pd.read_csv(in_ref)
+    df_ref = pd.read_csv(annotated_lib)
     # import sample_sheet and extract information for conditions and associated files
     df_samples = pd.read_csv(sample_sheet)
     dict_counts = dict(zip(df_samples.condition, df_samples.counts_file))
 
     if 'sgRNA_seq' not in df_ref.columns.tolist():
-        raise Exception('in_ref is missing column: sgRNA_seq')
+        raise Exception('annotated_lib is missing column: sgRNA_seq')
     if t0 not in dict_counts.keys():
         raise Exception ('sample sheet is missing the t0 sample')
     # rearrange the dict samples to place t0 first (for order purposes later)

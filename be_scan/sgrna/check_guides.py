@@ -50,6 +50,7 @@ def check_guides(guides_file, genome_file,
         and also contains 'genome_occurrences'
     """
     
+    path = Path.cwd()
     guides_filepath = Path(guides_file)
     # import guides df
     guides_df = pd.read_csv(guides_filepath)
@@ -72,7 +73,8 @@ def check_guides(guides_file, genome_file,
     it = automaton.iter("")
     
     # read in genome file
-    genome = open(genome_file, 'r')
+    genome_filepath = Path(genome_file)
+    genome = open(genome_filepath, 'r')
     # read genome file in line by line
     count = 0
     while True: 
@@ -106,7 +108,8 @@ def check_guides(guides_file, genome_file,
     print('Guides checked against reference genome')
     # output merged_df
     if save_df: 
-        outpath = Path(output_dir)
+        outpath = path / output_dir
+        Path.mkdir(outpath, exist_ok=True)
         merged_df.to_csv(outpath / output_name, index=False)
     if return_df: 
         return merged_df

@@ -11,7 +11,7 @@ from be_scan.analysis.merge_and_norm import merge_and_norm
 from be_scan.analysis.average_reps import average_reps
 from be_scan.analysis.compare_conds import compare_conds
 
-def batch_process(sample_sheet, in_ref, in_comparisons, 
+def batch_process(sample_sheet, annotated_lib, comparisons, 
 
                   KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTTAGA', dont_trim_G=False,
                   file_dir='', t0='t0', counts_dir='', 
@@ -38,10 +38,10 @@ def batch_process(sample_sheet, in_ref, in_comparisons,
         out_np (string or path for the output csv file with non-perfect sgRNA matches ex: 'noncounts.csv'), 
         out_stats (string or path for the output txt file with the read counting statistics ex: 'stats.txt'), 
         condition names, and condition categories
-    in_ref : str or path
-        String or path to the reference file. in_ref must have column headers,
+    annotated_lib : str or path
+        String or path to the reference file. annotated_lib must have column headers,
         with 'sgRNA_seq' as the header for the column with the sgRNA sequences.
-    in_comparisons : in_comparisons .csv in format (name, treatment, control)
+    comparisons : comparisons .csv in format (name, treatment, control)
         A dataframe denoting the comparisons to make, with the comparison
         being treatment - control. The output column
         headers will be labeled by the name in the dataframe.
@@ -87,14 +87,14 @@ def batch_process(sample_sheet, in_ref, in_comparisons,
     """
 
     count_reads_params = {
-        'sample_sheet':sample_sheet, 'in_ref':in_ref, 'file_dir':file_dir, 
+        'sample_sheet':sample_sheet, 'annotated_lib':annotated_lib, 'file_dir':file_dir, 
         'KEY_INTERVAL':KEY_INTERVAL, 'KEY':KEY, 'KEY_REV':KEY_REV, 'dont_trim_G':dont_trim_G, 
         'out_dir':out_dir, 'out_file':out_counts, 'save':save, 'return_df':return_df, 'save_files':save, 
     }
     count_reads(**count_reads_params)
 
     merge_and_norm_params = {
-        'sample_sheet':sample_sheet, 'in_ref':out_dir+out_counts, 't0':t0, 'counts_dir':counts_dir, 
+        'sample_sheet':sample_sheet, 'annotated_lib':out_dir+out_counts, 't0':t0, 'counts_dir':counts_dir, 
         'out_dir':out_dir, 'out_file':out_lfc, 'save':save, 'return_df':return_df,
     }
     merge_and_norm(**merge_and_norm_params)
@@ -106,7 +106,7 @@ def batch_process(sample_sheet, in_ref, in_comparisons,
     average_reps(**average_reps_params)
     
     compare_conds_params = {
-        'in_comparisons':in_comparisons, 'in_conds':out_dir+out_conds, 
+        'comparisons':comparisons, 'in_conds':out_dir+out_conds, 
         'out_dir':out_dir, 'out_file':out_comps, 'save':save, 'return_df':return_df,
     }
     compare_conds(**compare_conds_params)

@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-def count_reads(sample_sheet, in_ref, 
+def count_reads(sample_sheet, annotated_lib, 
                 file_dir='', 
                 KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTTAGA', 
                 dont_trim_G=False,
@@ -37,8 +37,8 @@ def count_reads(sample_sheet, in_ref,
         out_nc (string or path for the output csv file with non-perfect sgRNA matches ex: 'noncounts.csv'), 
         out_stats (string or path for the output txt file with the read counting statistics ex: 'stats.txt'), 
         condition names, and condition categories
-    in_ref : str or path
-        String or path to the reference file. in_ref must have column headers,
+    annotated_lib : str or path
+        String or path to the reference file. annotated_lib must have column headers,
         with 'sgRNA_seq' as the header for the column with the sgRNA sequences.
 
     KEY_INTERVAL : tuple, default (10,80)
@@ -72,10 +72,10 @@ def count_reads(sample_sheet, in_ref,
 
     # STEP 1A: OPEN INPUT FILES FOR PROCESSING, CHECK FOR REQUIRED FORMATTING
     # look for 'sgRNA_seq' column, raise Exception if missing
-    in_ref = Path(in_ref)
-    df_ref = pd.read_csv(in_ref, header=0) # explicit header = first row
+    annotated_lib = Path(annotated_lib)
+    df_ref = pd.read_csv(annotated_lib, header=0) # explicit header = first row
     if 'sgRNA_seq' not in df_ref.columns.tolist():
-        raise Exception('in_ref is missing column: sgRNA_seq')
+        raise Exception('annotated_lib is missing column: sgRNA_seq')
 
     for fastq, counts, nc, stats in samples: 
         # fastq file of reads and paths to all output files, imported from sample_sheet

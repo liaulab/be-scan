@@ -9,8 +9,8 @@ Date: 231128
 from pathlib import Path
 import pandas as pd
 
-def compare_conds(in_comparisons, 
-                  in_conds, 
+def compare_conds(comparisons, 
+                  annotated_lib, 
                   out_dir='', out_file='conditions.csv', 
                   save=True, return_df=True, 
                   ):
@@ -25,13 +25,13 @@ def compare_conds(in_comparisons,
 
     Parameters
     ----------
-    in_comparisons : in_comparisons .csv in format (name, treatment, control)
+    comparisons : comparisons .csv in format (name, treatment, control)
         A dataframe denoting the comparisons to make, with the comparison
         being treatment - control. The output column
         headers will be labeled by the name in the dataframe.
-    in_conds : str or path
+    annotated_lib : str or path
         String or path to the csv file containing the values for comparison.
-        The column headers must match the sample names in in_comparisons
+        The column headers must match the sample names in comparisons
 
     out_dir : str or path, defaults to ''
         String or path to the directory where all files are found. 
@@ -45,9 +45,9 @@ def compare_conds(in_comparisons,
 
     # import files, define variables, check for requirements
     path = Path.cwd()
-    df_conds = pd.read_csv(in_conds)
+    df_conds = pd.read_csv(annotated_lib)
 
-    comparisons_df = pd.read_csv(in_comparisons)
+    comparisons_df = pd.read_csv(comparisons)
     comparisons_list = list(comparisons_df.itertuples(index=False, name=None))
     # perform treatment vs. control comparison
     for name, treatment, control in comparisons_list:

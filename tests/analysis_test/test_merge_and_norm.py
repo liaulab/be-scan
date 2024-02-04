@@ -13,8 +13,8 @@ file_dir = "tests/test_data/analysis_data/"
 
 def test_merge_and_norm(): 
     merge_and_norm(sample_sheet   = file_dir + "sample_sheet_batch_count_CBE.csv", 
-                   in_ref         = file_dir + "CRAF_and_cntrls_ref_lib.csv",
-                   counts_dir=file_dir,
+                   annotated_lib  = file_dir + "CRAF_and_cntrls_ref_lib.csv",
+                   counts_dir     = file_dir,
                    out_dir        = file_dir,
                     )
     df_reads = pd.read_csv(file_dir + "agg_log2_t0.csv")

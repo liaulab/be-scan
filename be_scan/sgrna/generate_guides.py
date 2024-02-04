@@ -5,6 +5,7 @@ Date: 230906
 {Description: Generates a dataframe of guides based on taking a gene file and filtering conditions}
 """
 
+from pathlib import Path
 import pandas as pd
 
 from be_scan.sgrna._genomic_ import *
@@ -55,6 +56,8 @@ def generate_BE_guides(gene_filepath,
         Whether or not to save the resulting dataframe
     exclude_introns : bool, default True
         Whether or not the editible base needs to be in an intron
+    exclude_nontargeting : bool, default True
+        Whether or not the editible base needs to be in the window
 
     Returns
     ------------
@@ -71,6 +74,7 @@ def generate_BE_guides(gene_filepath,
        'gene'           : str,    name of the gene
     """
     
+    path = Path.cwd()
     # create gene object and parses all guides as preprocessing
     gene = GeneForCRISPR(filepath=gene_filepath)
     print('Create gene object from', gene_filepath)
@@ -135,6 +139,8 @@ def generate_BE_guides(gene_filepath,
     print(df.shape[0], 'guides were generated')
     # output df
     if save_df: 
-        df.to_csv(output_dir + output_name, index=False)
+        outpath = path / output_dir
+        Path.mkdir(outpath, exist_ok=True)
+        df.to_csv(outpath / output_name, index=False)
     if return_df: 
         return df

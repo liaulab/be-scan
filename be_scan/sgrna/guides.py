@@ -18,7 +18,7 @@ def guides(gene_filepath, genome_file,
            gene_name='', PAM=None, window=[4,8], 
            output_name='annotated_guides.csv', output_dir='', delete=False,
            return_df=True, save_df=True,
-           exclude_introns=True,
+           exclude_introns=True, exclude_nontargeting=True,
            ): 
     """
     Generates a list of guides based on a gene .fasta file,
@@ -85,32 +85,25 @@ def guides(gene_filepath, genome_file,
        'muttypes'       : list,   Missense Nonsense Silent No_C/Exon EssentialSpliceSite Control unique list
        'muttype'        : str,    muttypes condensed down to one type
     """
-    
     temp = "temp.csv"
-    
-    guides = generate_BE_guides(gene_filepath=gene_filepath,
-                                gene_name=gene_name, 
-                                cas_type=cas_type, 
-                                edit_from=edit_from, edit_to=edit_to, 
-                                PAM=PAM, window=window, 
-                                return_df=True, save_df=False, 
-                                exclude_introns=exclude_introns
-                                )
+
+    generate_guides_params = {'gene_filepath':gene_filepath, 'gene_name':gene_name, 
+                              'cas_type':cas_type, 'edit_from':edit_from, 'edit_to':edit_to, 
+                              'PAM':PAM, 'window':window, 'return_df':True, 'save_df':False, 
+                              'exclude_introns':exclude_introns, 'exclude_nontargeting':exclude_nontargeting
+    }
+    guides = generate_BE_guides(**generate_guides_params)
     guides.to_csv(temp, index=False)
 
-    filtered = check_guides(temp, 
-                            genome_file=genome_file, 
-                            delete=delete, 
-                            return_df=True, save_df=False)
+    check_guides_params = {'guides_file':temp, 'genome_file':genome_file, 
+                            'delete':delete, 'return_df':True, 'save_df':False}
+    filtered = check_guides(**check_guides_params)
     filtered.to_csv(temp, index=False)
 
-    annotated = annotate_guides(temp, 
-                                gene_filepath=gene_filepath, 
-                                protein_filepath=protein_filepath,
-                                edit_from=edit_from, edit_to=edit_to,
-                                window=window, 
-                                return_df=True, save_df=False,
-                                )
+    annotate_guides_params = {'guides_file':temp, 'gene_filepath':gene_filepath, 
+                             'protein_filepath':protein_filepath, 'edit_from':edit_from, 'edit_to':edit_to,
+                             'window':window, 'return_df':True, 'save_df':False}
+    annotated = annotate_guides(**annotate_guides_params)
 
     os.remove(temp)
     print('Complete! Library generated from', str(gene_filepath))

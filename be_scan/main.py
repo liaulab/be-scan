@@ -36,7 +36,7 @@ def main():
                                                description=count_reads.__doc__,
                                                formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_count_reads.add_argument('sample_sheet', type=str)
-    parser_count_reads.add_argument('in_ref', type=str)
+    parser_count_reads.add_argument('annotated_lib', type=str)
     parser_count_reads.add_argument('--file_dir', type=str, default=signat_cr.parameters['file_dir'].default)
     parser_count_reads.add_argument('--KEY_INTERVAL', type=int, nargs=2, default=signat_cr.parameters['KEY_INTERVAL'].default)
     parser_count_reads.add_argument('--KEY', type=str, default=signat_cr.parameters['KEY'].default)
@@ -58,7 +58,7 @@ def main():
                                                   description=merge_and_norm.__doc__,
                                                   formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_merge_and_norm.add_argument('sample_sheet', type=str)
-    parser_merge_and_norm.add_argument('in_ref', type=str)
+    parser_merge_and_norm.add_argument('annotated_lib', type=str)
     parser_merge_and_norm.add_argument('--t0', type=str, default=signat_man.parameters['t0'].default)
     parser_merge_and_norm.add_argument('--counts_dir', type=str, default=signat_man.parameters['counts_dir'].default)
     parser_merge_and_norm.add_argument('--out_dir', type=str, default=signat_man.parameters['out_dir'].default)
@@ -76,7 +76,7 @@ def main():
                                                 description=average_reps.__doc__,
                                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_average_reps.add_argument('sample_sheet', type=str)
-    parser_average_reps.add_argument('in_lfc', type=str)
+    parser_average_reps.add_argument('annotated_lib', type=str)
     parser_average_reps.add_argument('--out_dir', type=str, default=signat_ar.parameters['out_dir'].default)
     parser_average_reps.add_argument('--out_file', type=str, default=signat_ar.parameters['out_file'].default)
     parser_average_reps.add_argument('--save', type=bool, default=signat_ar.parameters['save'].default)
@@ -91,8 +91,8 @@ def main():
                                                 help=next(line for line in compare_conds.__doc__.splitlines() if line),
                                                 description=compare_conds.__doc__,
                                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser_compare_conds.add_argument('in_comparisons', type=str)
-    parser_compare_conds.add_argument('in_conds', type=str)
+    parser_compare_conds.add_argument('comparisons', type=str)
+    parser_compare_conds.add_argument('annotated_lib', type=str)
     parser_compare_conds.add_argument('--out_dir', type=str, default=signat_cc.parameters['out_dir'].default)
     parser_compare_conds.add_argument('--out_file', type=str, default=signat_cc.parameters['out_file'].default)
     parser_compare_conds.add_argument('--save', type=bool, default=signat_cc.parameters['save'].default)
@@ -108,8 +108,8 @@ def main():
                                                  description=batch_process.__doc__,
                                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_batch_process.add_argument('sample_sheet', type=str)
-    parser_batch_process.add_argument('in_ref', type=str)
-    parser_batch_process.add_argument('in_comparisons', type=str)
+    parser_batch_process.add_argument('annotated_lib', type=str)
+    parser_batch_process.add_argument('comparisons', type=str)
     
     parser_batch_process.add_argument('--KEY_INTERVAL', type=int, nargs=2, default=signat_bp.parameters['KEY_INTERVAL'].default)
     parser_batch_process.add_argument('--KEY', type=str, default=signat_bp.parameters['KEY'].default)

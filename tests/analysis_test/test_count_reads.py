@@ -16,7 +16,7 @@ file_dir = "tests/test_data/analysis_data/"
 # baseline
 def test_count_reads():
     count_reads(sample_sheet   = file_dir + "guides_sample_sheet.csv", 
-                in_ref         = file_dir + "guides_ref.csv",
+                annotated_lib  = file_dir + "guides_ref.csv",
                 file_dir       = file_dir,
                 out_dir = file_dir,
                 )
@@ -65,8 +65,8 @@ def test_matching(query, ref, match):
         sample_sheet.to_csv(file_dir + fname_sample_sheet)
 
         # run count_reads
-        count_reads(sample_sheet = file_dir + fname_sample_sheet, 
-                    in_ref       = file_dir + fname_ref,
+        count_reads(sample_sheet   = file_dir + fname_sample_sheet, 
+                    annotated_lib  = file_dir + fname_ref,
                     file_dir       = file_dir,
                     out_dir = file_dir,
                     )

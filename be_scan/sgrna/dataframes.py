@@ -26,6 +26,7 @@ def merge_guide_df(guide_df1_filepath, guide_df2_filepath,
     This function is based on pd.merge, for more documentation please see: 
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.merge.html
     """
+    path = Path.cwd()
     guide_df1_filepath = Path(guide_df1_filepath)
     guide_df2_filepath = Path(guide_df2_filepath)
     df1 = pd.read_csv(guide_df1_filepath)
@@ -45,8 +46,9 @@ def merge_guide_df(guide_df1_filepath, guide_df2_filepath,
     new_df = new_df[~dupl_rows]
 
     if save_df: 
-        out_filepath = Path(output_dir)
-        new_df.to_csv(out_filepath / output_name, index=False)
+        outpath = path / output_dir
+        Path.mkdir(outpath, exist_ok=True)
+        new_df.to_csv(outpath / output_name, index=False)
     if return_df:
         return new_df
 
@@ -61,6 +63,7 @@ def add_guide_df(guides_df_filepath, additional_df_filepath,
     This function is based on pd.concat, for more documentation please see: 
     https://pandas.pydata.org/docs/reference/api/pandas.concat.html
     """
+    path = Path.cwd()
     guides_df_filepath = Path(guides_df_filepath)
     additional_df_filepath = Path(additional_df_filepath)
     guides_df = pd.read_csv(guides_df_filepath)
@@ -78,6 +81,8 @@ def add_guide_df(guides_df_filepath, additional_df_filepath,
     new_df = new_df[~dupl_rows]
 
     if save_df: 
-        new_df.to_csv(output_dir+output_name)
+        outpath = path / output_dir
+        Path.mkdir(outpath, exist_ok=True)
+        new_df.to_csv(outpath / output_name, index=False)
     if return_df:
         return new_df
