@@ -242,16 +242,11 @@ def main():
     parser_plot_corr_scatterplot.add_argument('--hue_column', type=str, default=signat_pcs.parameters['hue_column'].default)
     parser_plot_corr_scatterplot.add_argument('--hue_order', nargs='+', type=str, default=signat_pcs.parameters['hue_order'].default)
     parser_plot_corr_scatterplot.add_argument('--palette', nargs='+', type=str, default=signat_pcs.parameters['palette'].default)
-    parser_plot_corr_scatterplot.add_argument('--xlab', type=str, default=signat_pcs.parameters['xlab'].default)
-    parser_plot_corr_scatterplot.add_argument('--ylab', type=str, default=signat_pcs.parameters['ylab'].default)
     parser_plot_corr_scatterplot.add_argument('--savefig', type=bool, default=signat_pcs.parameters['savefig'].default)
     parser_plot_corr_scatterplot.add_argument('--out_name', type=str, default=signat_pcs.parameters['out_name'].default)
     parser_plot_corr_scatterplot.add_argument('--out_type', type=str, default=signat_pcs.parameters['out_type'].default)
     parser_plot_corr_scatterplot.add_argument('--out_directory', type=str, default=signat_pcs.parameters['out_directory'].default)
-    parser_plot_corr_scatterplot.add_argument('--xlim_kws', type=dict, default=signat_pcs.parameters['xlim_kws'].default)
-    parser_plot_corr_scatterplot.add_argument('--ylim_kws', type=dict, default=signat_pcs.parameters['ylim_kws'].default)
-    parser_plot_corr_scatterplot.add_argument('--scatterplot_kws', type=dict, default=signat_pcs.parameters['scatterplot_kws'].default)
-    parser_plot_corr_scatterplot.add_argument('--subplots_kws', type=dict, default=signat_pcs.parameters['subplots_kws'].default)
+    parser_plot_corr_scatterplot.add_argument('--jointplot_kws', type=dict, default=signat_pcs.parameters['jointplot_kws'].default)
     parser_plot_corr_scatterplot.set_defaults(func=plot_corr_scatterplot)
 
     ##################################################

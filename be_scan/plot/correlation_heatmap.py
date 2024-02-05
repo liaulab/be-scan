@@ -19,7 +19,7 @@ def plot_corr_heatmap(df_filepath,
 
                       heatmap_kws={'center':0, 'linewidth':0.5,
                                    'cmap':'coolwarm', 'square':True, 
-                                   'cbar_kws':{"shrink": 0.5}},
+                                   'cbar_kws':{"shrink": 0.5}, 'annot':True},
                       subplots_kws = {'figsize':(4,4)}, 
                      ): 
     
@@ -59,6 +59,7 @@ def plot_corr_heatmap(df_filepath,
     sns.set_style('ticks')
 
     # Compute correlation matrix
+    df_filepath = Path(df_filepath)
     df = pd.read_csv(df_filepath)
     df_comp = df[comparisons].copy()
     df_corr = df_comp.corr(method=corr_type)
@@ -82,9 +83,10 @@ def plot_corr_heatmap(df_filepath,
     plt.tight_layout()
 
     # save pdf and close everything
+    path = Path.cwd()
     if savefig: 
-        out = out_name + '.' + out_type
-        output_path = Path(out_directory)
-        plt.savefig(output_path / out, format=out_type)
+        outpath = path / out_directory
+        out_name = out_name + '.' + out_type
+        plt.savefig(outpath / out_name, format=out_type)
     plt.show()
     plt.close()

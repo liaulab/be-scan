@@ -88,7 +88,8 @@ def plot_boxes(df_filepath,
     ----------
     None
     """
-
+    
+    df_filepath = Path(df_filepath)
     df_input = pd.read_csv(df_filepath)
     # normalize data to intergenic controls if neg_ctrl is provided
     if neg_ctrl: 
@@ -130,9 +131,10 @@ def plot_boxes(df_filepath,
         # Adjust dimensions
         plt.tight_layout()
         # Save to pdf
+        path = Path.cwd()
         if savefig: 
+            outpath = path / out_directory
             out = out_name + comp + '.' + out_type
-            output_path = Path(out_directory)
-            plt.savefig(output_path / out, format=out_type)
+            plt.savefig(outpath / out, format=out_type)
         plt.show()
         plt.close()

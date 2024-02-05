@@ -16,7 +16,7 @@ import pandas as pd
 
 def count_reads(sample_sheet, annotated_lib, 
                 file_dir='', 
-                KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTTAGA', 
+                KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', 
                 dont_trim_G=False,
                 out_dir='', out_file='counts_library.csv',
                 save=True, return_df=True, save_files=True,
@@ -25,7 +25,9 @@ def count_reads(sample_sheet, annotated_lib,
     Given a set of sgRNA sequences and a FASTQ file, count the reads in the
     FASTQ, assign the reads to sgRNAs, and export the counts to a csv file `out_counts`. All
     sgRNA sequences not found in the reference file (non-perfect matches) are
-    written to a separate csv file `out_nc`.
+    written to a separate csv file `out_nc`. 
+    count_reads works by reading through a .fastq file and searching for the guide in between
+    the subsequences for KEY and KEY_REV within the KEY_INTERVAL. These counts are then recorded.
 
     Parameters
     ----------
@@ -47,7 +49,7 @@ def count_reads(sample_sheet, annotated_lib,
     KEY : str, default 'CGAAACACC'
         Sequence that is expected upstream of the spacer sequence. The default
         is the end of the hU6 promoter.
-    KEY_REV : str, default 'GTTTTAGA'
+    KEY_REV : str, default 'GTTTGAGA'
         Sequence that is expected downstream of the spacer sequence. The
         default is the start of the sgRNA scaffold sequence.
     dont_trim_G : bool, default False

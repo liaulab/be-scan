@@ -92,19 +92,26 @@ def plot_scatterplot(df_filepath, # dataframe
         ath to output directory
 
     xlim_kws: dict, optional, defaults to {'xmin':None, 'xmax':None}
-        input params for ax.set_xlim()
+        additional input params for ax.set_xlim()
+        For more information please check https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlim.html
     ylim_kws: dict, optional, defaults to {'ymin':None, 'ymax':None}
-        input params for ax.set_ylim()
+        additional input params for ax.set_ylim()
+        For more information please check https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylim.html
     scatterplot_kws: dict, optional, defaults to {'alpha':0.8, 'linewidth':1, 'edgecolor':'black', 's':25}
-        input params for sns.scatterplot()
+        additional input params for sns.scatterplot()
+        For more information please check https://seaborn.pydata.org/generated/seaborn.scatterplot.html
     subplots_kws: dict, optional, defaults to {'figsize':(4.5, 4)}
-        input params for plt.subplots()
+        additional input params for plt.subplots()
+        For more information please check https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
+    axhline_kws: dict, optional, defaults to {'color':'k', 'ls':'--', 'lw':1}
+        additional input params for plt.axhline()
+        For more information please check https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axhline.html
 
     Returns
     ----------
     None
     """
-
+    df_filepath = Path(df_filepath)
     df_input = pd.read_csv(df_filepath)
     # normalize data to intergenic controls if neg_ctrl is provided
     if neg_ctrl: 
@@ -155,6 +162,7 @@ def plot_scatterplot(df_filepath, # dataframe
                     abs(np.ceil(df_input[y].max())))
         ax.set_ylim(-1*bound, bound)
         # Set title and axes labels
+        ax.legend(loc='center left', bbox_to_anchor=(1.2, 0.5))
         ax.set_title(comp)
         ax.set_xlim(**xlim_kws)
         ax.set_ylim(**ylim_kws)
@@ -164,9 +172,10 @@ def plot_scatterplot(df_filepath, # dataframe
         # Adjust figsize
         plt.tight_layout()
         # Save to pdf
+        path = Path.cwd()
         if savefig:
+            outpath = path / out_directory
             out = out_name + comp + '.' + out_type
-            output_path = Path(out_directory)
-            plt.savefig(output_path / out, format=out_type)
+            plt.savefig(outpath / out, format=out_type)
         plt.show()
         plt.close()

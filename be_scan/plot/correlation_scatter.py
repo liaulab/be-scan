@@ -10,20 +10,19 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
+import scipy.stats as stats
 
 from be_scan.plot._annotating_ import list_muttypes, color_list
 
 def plot_corr_scatterplot(df_filepath, 
                           condition1, condition2, 
 
+                          filter=False, filter_col=[], filter_conditions=[], # filter out unwanted data params
                           hue=False, hue_column='Mut_type', hue_order=list_muttypes, palette=color_list, # color params
-                          xlab='cond1 score', ylab='cond2 score', 
                           savefig=True, out_directory='', out_name='correlation_scatterplot', out_type='pdf', 
 
-                          xlim_kws={'xmin':None, 'xmax':None}, ylim_kws={'ymin':None, 'ymax':None},
-                          scatterplot_kws={'alpha':0.8, 'linewidth':1, 
+                          jointplot_kws={'alpha':0.8, 'linewidth':1, 
                                            'edgecolor':'black', 's':25}, 
-                          subplots_kws = {'figsize':(4.5, 4)},
                           ):
     
     """[Summary]
@@ -61,48 +60,44 @@ def plot_corr_scatterplot(df_filepath,
     out_directory: str, optional, defaults to ''
         directory path of the output plot
 
-    xlim_kws: dict, optional, defaults to {'xmin':None, 'xmax':None}
-        input params for ax.set_xlim()
-    ylim_kws: dict, optional, defaults to {'ymin':None, 'ymax':None}
-        input params for ax.set_ylim()
-    scatterplot_kws: dict, optional, defaults to {'alpha':0.8, 'linewidth':1, 'edgecolor':'black', 's':25}
-        input params for sns.scatterplot()
-    subplots_kws: dict, optional, defaults to {'figsize':(4.5, 4)}
-        input params for plt.subplots()
+    jointplot_kws: dict, optional, defaults to {'alpha':0.8, 'linewidth':1, 'edgecolor':'black', 's':25}
+        input params for sns.jointplot()
 
     Returns
     ----------
     None
     """
 
+    df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)
     
+    if filter: 
+        for col, conds in zip(filter_col, filter_conditions): 
+            df_data = df_data.loc[df_data[col].isin(conds)]
+            
     # make plot
-    _, ax = plt.subplots(**subplots_kws)
-    baseline_params = {'data':df_data, 'ax':ax, 'x':condition1, 'y':condition2}
+    baseline_params = {'data':df_data, 'x':condition1, 'y':condition2}
     if hue: 
         df_data = df_data.loc[df_data[hue_column].isin(hue_order)]
-        sns.scatterplot(**baseline_params,
-                        hue=hue_column, hue_order=hue_order, palette=palette, 
-                        **scatterplot_kws,
-                        )
-    else: 
-        sns.scatterplot(**baseline_params,
-                        **scatterplot_kws,
-                        )
-    
-    # adjust x and y axis limits
-    ax.set_xlim(**xlim_kws)
-    ax.set_ylim(**ylim_kws)
-    # set labels
-    plt.xlabel(xlab) # set x-axis label
-    plt.ylabel(ylab) # set y-axis label
+        baseline_params = {**baseline_params, 
+                           **{'hue':hue_column, 'hue_order':hue_order, 'palette':palette}}
+        
+    sns.jointplot(**baseline_params,
+                  **jointplot_kws,
+                 )
     plt.tight_layout()
+    ax = plt.gca()
+    ax.legend(loc='center left', bbox_to_anchor=(1.3, 0.5))
+
+    slope, intercept, r_value, p_value, std_err = stats.linregress(df_data[condition1], df_data[condition2])
+    print("R: {0} (p-value {1})".format(r_value, p_value))
+    print("R2: {0}".format(r_value**2))
 
     # save to pdf and close
+    path = Path.cwd()
     if savefig: 
+        outpath = path / out_directory
         out = condition1 + condition2 + '_' + out_name + '.' + out_type
-        output_path = Path(out_directory)
-        plt.savefig(output_path / out, format=out_type)
+        plt.savefig(outpath / out, format=out_type)
     plt.show()
     plt.close()

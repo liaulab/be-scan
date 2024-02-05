@@ -22,6 +22,7 @@ def test_count_reads():
                 )
     df_counts = pd.read_csv(file_dir + "counts_library.csv", index_col=0, header=None).squeeze("columns")
     assert df_counts.loc["AAAAAAAAAAAAAAAAAAAA"] == '1'
+    print(df_counts)
     assert df_counts.loc["TTTTTTTTTTTTTTTTTTTT"] == '2'
     assert len(df_counts) == 3
     # clean up
@@ -44,7 +45,7 @@ def test_matching(query, ref, match):
         # create fake .fastq file of reads
         test_id = str(uuid.uuid4())
         fname_query = test_id + ".fastq"
-        read = "TTGTGGAAAGGACGAAACACC" + query + "GTTTTAGAGCTAGAAATAGCAAGTTAAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTTTTAAGCTTGGCGTAACTAGATCTTGAGAC"
+        read = "TTGTGGAAAGGACGAAACACC" + query + "GTTTGAGAGCTAGAAATAGCAAGTTAAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTTTTAAGCTTGGCGTAACTAGATCTTGAGAC"
         with open(file_dir + fname_query, "wt") as fh:
             fh.writelines([
                 "@read1\n",
