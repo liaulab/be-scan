@@ -19,7 +19,8 @@ def generate_BE_guides(gene_filepath,
                        output_name='guides.csv', output_dir='',
                        return_df=True, save_df=True,
                        exclude_introns=True, 
-                       exclude_nontargeting=True,
+                       exclude_nontargeting=True, 
+                       domains={}, 
                        ): 
     """
     Generates a list of guides based on a gene .fasta file,
@@ -72,6 +73,7 @@ def generate_BE_guides(gene_filepath,
        'sgRNA_strand'   : str,    (ie sense or antisense)
        'gene_strand'    : str,    (ie plus or minus)
        'gene'           : str,    name of the gene
+       'domain'         : str,    name of the domain
     """
     
     path = Path.cwd()
@@ -103,11 +105,11 @@ def generate_BE_guides(gene_filepath,
 
     # set column names for outputing dataframe
     column_names = ['sgRNA_seq', 'PAM_seq', 'starting_frame', 'gene_pos', 'chr_pos', 'exon', 
-                    'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', 
+                    'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', 'domain', 
                     ]
 
     # filter for PAM, options to filter for containing editable base in window and intron targeting
-    #    (seq, frame012 of first base, index of first base, exon number)
+    #    (seq, PAMseq, frame012 of first base, index of first base, exon number)
     fwd_results = [g.copy() for g in gene.fwd_guides if 
                    filter_guide(g, PAM_regex, edit, window, exclude_introns, exclude_nontargeting)]
     rev_results = [g.copy() for g in gene.rev_guides if 
@@ -122,11 +124,25 @@ def generate_BE_guides(gene_filepath,
         x.append('sense')
         x.append(gene.strand)
         x.append(gene_name)
+        if domains: 
+            for name, range in domains: 
+                if range[0] <= x[3] <= range[1]: 
+                    x.append(name)
+                    break
+        if len(x) == 10: 
+            x.append('No Domain')
     for x in rev_results: 
         x.append(rev_complement(complements, x[0]))
         x.append('antisense')
         x.append(gene.strand)
         x.append(gene_name)
+        if domains: 
+            for name, range in domains: 
+                if range[0] <= x[3] <= range[1]: 
+                    x.append(name)
+                    break
+        if len(x) == 10: 
+            x.append('No Domain')
 
     # delete entries with duplicates between fwd, between rev, and across fwd and rev
     df = pd.DataFrame(fwd_results + rev_results, columns=column_names)

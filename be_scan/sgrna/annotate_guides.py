@@ -15,6 +15,7 @@ from be_scan.sgrna._guideRNA_ import *
 def annotate_guides(guides_file,
                     edit_from, edit_to,
                     
+                    domains={}, 
                     gene_filepath='', protein_filepath='', window=[4,8], 
                     seq_col = 'sgRNA_seq', gene_pos_col='gene_pos',
                     frame_col = 'starting_frame', strand_col = 'sgRNA_strand',
@@ -33,6 +34,8 @@ def annotate_guides(guides_file,
     edit_to: str
         The base (ACTG) to replace with, can be a string of multiple bases
 
+    domains: dict, default {}
+        A dictionary of {'domain_name':(range as a tuple)}
     gene_filepath: str or path, default ''
         The file with the gene .fasta sequence
     protein_filepath: str or path, default ''
