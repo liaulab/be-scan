@@ -60,7 +60,7 @@ def average_reps(sample_sheet, annotated_lib,
     # generate df to hold the averaged replicates per condition
     for cond in df_map['condition'].unique().tolist():
         # for each unique condition, find the reps
-        reps = [x+'_t0' for x in df_map.loc[df_map['condition'] == cond]['rep'].tolist()]
+        reps = [x+'_subt0' for x in df_map.loc[df_map['condition'] == cond]['rep'].tolist()]
         # skip averaging for single replicates (otherwise breaks script)
         if len(reps) > 1:
             df_lfc[cond] = df_lfc[reps].mean(axis=1)

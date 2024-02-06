@@ -14,14 +14,11 @@ from be_scan.analysis.compare_conds import compare_conds
 def batch_process(sample_sheet, annotated_lib, comparisons, 
 
                   KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTTAGA', dont_trim_G=False,
-                  file_dir='', t0='t0', counts_dir='', 
+                  file_dir='', controls=['t0'], 
                   
                   out_dir='', out_counts='counts_library.csv', out_lfc='agg_log2_t0.csv', 
                   out_conds='avg_conds.csv', out_comps='conditions.csv', 
                   save=True, return_df=False,
-
-                # file_dir='', 
-                # t0='t0', counts_dir='', 
                  ):
     
     """
@@ -65,10 +62,8 @@ def batch_process(sample_sheet, annotated_lib, comparisons,
     dont_trim_G : bool, default False
         Whether to trim the first G from 21-nt sgRNA sequences to make them 20-nt.
 
-    t0 : str, default 't0'
-        Name of the t0 sample in dict_counts. If you have multiple t0 samples
-        (e.g. paired t0s for specific samples), then you will need to run this
-        function separately for each set of samples with their appropriate t0.
+    controls : str, default ['t0']
+        Name of the control condition samples in sample_sheet. 
     dir_counts : str, default ''
         Name of the subfolder to find the read count csv files. The default is
         the current working directory.
@@ -94,19 +89,19 @@ def batch_process(sample_sheet, annotated_lib, comparisons,
     count_reads(**count_reads_params)
 
     merge_and_norm_params = {
-        'sample_sheet':sample_sheet, 'annotated_lib':out_dir+out_counts, 't0':t0, 'counts_dir':counts_dir, 
+        'sample_sheet':sample_sheet, 'annotated_lib':out_dir+out_counts, 'controls':controls, 
         'out_dir':out_dir, 'out_file':out_lfc, 'save':save, 'return_df':return_df,
     }
     merge_and_norm(**merge_and_norm_params)
     
     average_reps_params = {
-        'sample_sheet':sample_sheet, 'in_lfc':out_dir+out_lfc, 
+        'sample_sheet':sample_sheet, 'annotated_lib':out_dir+out_lfc, 
         'out_dir':out_dir, 'out_file':out_conds, 'save':save, 'return_df':return_df,
     }
     average_reps(**average_reps_params)
     
     compare_conds_params = {
-        'comparisons':comparisons, 'in_conds':out_dir+out_conds, 
+        'comparisons':comparisons, 'annotated_lib':out_dir+out_conds, 
         'out_dir':out_dir, 'out_file':out_comps, 'save':save, 'return_df':return_df,
     }
     compare_conds(**compare_conds_params)

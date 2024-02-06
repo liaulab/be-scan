@@ -59,8 +59,7 @@ def main():
                                                   formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_merge_and_norm.add_argument('sample_sheet', type=str)
     parser_merge_and_norm.add_argument('annotated_lib', type=str)
-    parser_merge_and_norm.add_argument('--t0', type=str, default=signat_man.parameters['t0'].default)
-    parser_merge_and_norm.add_argument('--counts_dir', type=str, default=signat_man.parameters['counts_dir'].default)
+    parser_merge_and_norm.add_argument('--controls', type=str, default=signat_man.parameters['controls'].default)
     parser_merge_and_norm.add_argument('--out_dir', type=str, default=signat_man.parameters['out_dir'].default)
     parser_merge_and_norm.add_argument('--out_file', type=str, default=signat_man.parameters['out_file'].default)
     parser_merge_and_norm.add_argument('--save', type=bool, default=signat_man.parameters['save'].default)
@@ -116,8 +115,7 @@ def main():
     parser_batch_process.add_argument('--KEY_REV', type=str, default=signat_bp.parameters['KEY_REV'].default)
     parser_batch_process.add_argument('--dont_trim_G', action='store_true')
     parser_batch_process.add_argument('--file_dir', type=str, default=signat_bp.parameters['file_dir'].default)
-    parser_batch_process.add_argument('--t0', type=str, default=signat_bp.parameters['t0'].default)
-    parser_batch_process.add_argument('--counts_dir', type=str, default=signat_bp.parameters['counts_dir'].default)
+    parser_batch_process.add_argument('--controls', type=str, default=signat_bp.parameters['controls'].default)
 
     parser_batch_process.add_argument('--out_dir', type=str, default=signat_bp.parameters['out_dir'].default)
     parser_batch_process.add_argument('--out_counts', type=str, default=signat_bp.parameters['out_counts'].default) # count_reads

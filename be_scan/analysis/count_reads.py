@@ -68,9 +68,12 @@ def count_reads(sample_sheet, annotated_lib,
     save_files : bool, default True
         Whether or not to save individual counts, noncounts, and stats files
     """
-    sample_sheet = Path(sample_sheet)
-    df = pd.read_csv(sample_sheet)
-    samples = [list(a) for a in zip(df.fastq_file, df.counts_file, df.noncounts_file, df.stats_file)]
+    sample_filepath = Path(sample_sheet)
+    sample_df = pd.read_csv(sample_filepath)
+    ### check all column names are present
+    samples = [list(a) for a in zip(sample_df.fastq_file, sample_df.counts_file, 
+                                    sample_df.noncounts_file, sample_df.stats_file, 
+                                    sample_df.condition)]
 
     # STEP 1A: OPEN INPUT FILES FOR PROCESSING, CHECK FOR REQUIRED FORMATTING
     # look for 'sgRNA_seq' column, raise Exception if missing
@@ -79,7 +82,7 @@ def count_reads(sample_sheet, annotated_lib,
     if 'sgRNA_seq' not in df_ref.columns.tolist():
         raise Exception('annotated_lib is missing column: sgRNA_seq')
 
-    for fastq, counts, nc, stats in samples: 
+    for fastq, counts, nc, stats, cond in samples: 
         # fastq file of reads and paths to all output files, imported from sample_sheet
         in_fastq = Path(file_dir) / fastq
         out_counts, out_nc, out_stats = Path(out_dir) / counts, Path(out_dir) / nc, Path(out_dir) / stats        
@@ -130,14 +133,14 @@ def count_reads(sample_sheet, annotated_lib,
 
         # STEP 3: SORT DICTIONARIES AND GENERATE OUTPUT FILES
         # sort perf matches (A-Z) with guides, counts as k,v and output to csv
-        counts_name = counts.split("/")[-1]
-        df_perfects = pd.DataFrame(data=dict_p.items(), columns=['sgRNA_seq', counts_name])
+        df_perfects = pd.DataFrame(data=dict_p.items(), columns=['sgRNA_seq', cond])
         if save_files:
-            df_perfects.sort_values(by=counts_name, ascending=False, inplace=True)
+            df_perfects.sort_values(by=cond, ascending=False, inplace=True)
             df_perfects.to_csv(out_counts, index=False)
         # add matching counts to dataframe
         df_ref = pd.merge(df_ref, df_perfects, on='sgRNA_seq', how='outer')
-        df_ref[counts_name] = df_ref[counts_name].fillna(0)
+        df_ref[cond] = df_ref[cond].fillna(0)
+
         # now sort non-perfect matches by frequency and output to csv
         dict_np = Counter(list_np) # use Counter to tally up np matches
         nc_name = nc.split("/")[-1]
@@ -152,8 +155,8 @@ def count_reads(sample_sheet, annotated_lib,
         # percentage of guides that matched perfectly
         pct_p_match = round(num_p_matches/float(num_p_matches + num_np_matches) * 100, 1)
         # percentage of undetected guides (no read counts)
-        guides_with_reads = np.count_nonzero(dict_p.values())
-        guides_no_reads = len(dict_p) - guides_with_reads
+        vals_p = np.fromiter(dict_p.values(), dtype=int)
+        guides_no_reads = np.count_nonzero(vals_p==0)
         pct_no_reads = round(guides_no_reads/float(len(dict_p.values())) * 100, 1)
         # skew ratio of top 10% to bottom 10% of guide counts
         top_10 = np.percentile(list(dict_p.values()), 90)
