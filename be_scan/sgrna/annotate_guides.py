@@ -15,7 +15,6 @@ from be_scan.sgrna._guideRNA_ import *
 def annotate_guides(guides_file,
                     edit_from, edit_to,
                     
-                    domains={}, 
                     gene_filepath='', protein_filepath='', window=[4,8], 
                     seq_col = 'sgRNA_seq', gene_pos_col='gene_pos',
                     frame_col = 'starting_frame', strand_col = 'sgRNA_strand',
@@ -34,8 +33,6 @@ def annotate_guides(guides_file,
     edit_to: str
         The base (ACTG) to replace with, can be a string of multiple bases
 
-    domains: dict, default {}
-        A dictionary of {'domain_name':(range as a tuple)}
     gene_filepath: str or path, default ''
         The file with the gene .fasta sequence
     protein_filepath: str or path, default ''
@@ -119,8 +116,6 @@ def annotate_guides(guides_file,
     # delete entries with duplicates between fwd, between rev, and across fwd and rev
     dupl_rows = guides_df.duplicated(subset='sgRNA_seq', keep=False)
     guides_df = guides_df[~dupl_rows]
-    # dupl_rows = guides_df.duplicated(subset='coding_seq', keep=False)
-    # guides_df = guides_df[~dupl_rows]
 
     # calculate editing_window
     guides_df[prefix+'_editing_window'] = guides_df.apply(lambda x: calc_editing_window(x, window, col_names), axis=1)

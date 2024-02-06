@@ -19,6 +19,7 @@ def guides(gene_filepath, genome_file,
            output_name='annotated_guides.csv', output_dir='', delete=False,
            return_df=True, save_df=True,
            exclude_introns=True, exclude_nontargeting=True,
+           domains={},
            ): 
     """
     Generates a list of guides based on a gene .fasta file,
@@ -73,6 +74,7 @@ def guides(gene_filepath, genome_file,
        'sgRNA_strand'   : str,    (ie sense or antisense)
        'gene_strand'    : str,    (ie plus or minus)
        'gene'           : str,    name of the gene
+       'domain'         : str,    name of the domain according to input ranges, defulats to 'No Domain'
        'coding_seq'     : str,    the sense strand sequence of the guide, always fwd
        'editing_window' : tuple,  the gene positions of the editing windows bounds inclusive
        'win_overlap'    : str,    where the window sits (Exon, Exon/Intron, Intron)
@@ -90,7 +92,8 @@ def guides(gene_filepath, genome_file,
     generate_guides_params = {'gene_filepath':gene_filepath, 'gene_name':gene_name, 
                               'cas_type':cas_type, 'edit_from':edit_from, 'edit_to':edit_to, 
                               'PAM':PAM, 'window':window, 'return_df':True, 'save_df':False, 
-                              'exclude_introns':exclude_introns, 'exclude_nontargeting':exclude_nontargeting
+                              'exclude_introns':exclude_introns, 'exclude_nontargeting':exclude_nontargeting, 
+                              'domains':domains,
     }
     guides = generate_BE_guides(**generate_guides_params)
     guides.to_csv(temp, index=False)

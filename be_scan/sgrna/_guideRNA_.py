@@ -58,7 +58,7 @@ def filter_repeats(results):
     results = [g.copy() for g in results if g[0] not in dup_seqs]
     return results
 
-def annotate_mutations(row, edit, amino_acid_seq, col_names, prefix): 
+def annotate_mutations(row, edit, amino_acid_seq, col_names, pre): 
     """
     Come up with list of annotations (ie F877L, F877P, F877L/F877P)
     for each guide. 
@@ -81,7 +81,7 @@ def annotate_mutations(row, edit, amino_acid_seq, col_names, prefix):
     
     # extract relevant data from dataframe
     frame, dir, pos = row[col_names[0]], row[col_names[1]], row[col_names[2]]
-    dna_window, dna, aa = row[prefix+'_target_CDS'], row[prefix+'_codon_window'], row[prefix+'_residue_window']
+    dna_window, dna, aa = row[pre+'_target_CDS'], row[pre+'_codon_window'], row[pre+'_residue_window']
 
     # starting index of amino acid is different for sense vs anti
     if dir == 'sense': 
@@ -101,7 +101,7 @@ def annotate_mutations(row, edit, amino_acid_seq, col_names, prefix):
     return mutation_details[1:]
 
 ### only works for dual editor for now
-def annotate_dual_mutations(row, edit, amino_acid_seq, col_names, prefix): 
+def annotate_dual_mutations(row, edit, amino_acid_seq, col_names, pre): 
     """
     Come up with list of annotations (ie F877L, F877P, F877L/F877P)
     for each guide for multiple possible bp edits. 
@@ -124,7 +124,7 @@ def annotate_dual_mutations(row, edit, amino_acid_seq, col_names, prefix):
     
     # extract relevant data from dataframe
     frame, dir, pos = row[col_names[0]], row[col_names[1]], row[col_names[2]]
-    dna_window, dna, aa = row[prefix+'_target_CDS'], row[prefix+'_codon_window'], row[prefix+'_residue_window']
+    dna_window, dna, aa = row[pre+'_target_CDS'], row[pre+'_codon_window'], row[pre+'_residue_window']
 
     # starting index of amino acid is different for sense vs anti
     if dir == 'sense': 
@@ -197,14 +197,14 @@ def format_mutation(aa, new_aa, start, amino_acid_seq, x):
             mut = aa[i] + str(start+i) + new_aa[i]
             # checks mutation against the protein sequence
             if amino_acid_seq is not None: 
-                assert amino_acid_seq[start+i] == aa[i], 'guides '+f"{x}" + ", " + aa[i] + str(start+i) + new_aa[i] + ", " + amino_acid_seq[start+i]
+                assert amino_acid_seq[start+i] == aa[i], f"Error: guide {x}"
             # add edit to a list
             if mut not in result: 
                 result.append(mut)
     mutation = '/'.join(result)
     return mutation
 
-def categorize_mutations(row, col_names, prefix): 
+def categorize_mutations(row, col_names, pre): 
     """
     Categorizes mutations by Missense, Nonsense, Silent, etc
     
@@ -220,7 +220,7 @@ def categorize_mutations(row, col_names, prefix):
         return None
     
     types = []
-    for mut in row[prefix+'_mutations']: 
+    for mut in row[pre+'_mutations']: 
         if len(mut) == 0 and 'Silent' not in types: 
             types.append('Silent')
         elif '.' in mut and 'Nonsense' not in types: 

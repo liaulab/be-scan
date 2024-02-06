@@ -1,318 +1,318 @@
-,0,1,2,3,4,5,6
-0,tcaaggATGGAAGTGCAGTTAGG,0,-6,0,"[['No Change'], ['M>V']]","[[], [1]]",fwd
-1,caaggATGGAAGTGCAGTTAGGG,1,-5,0,"[['No Change'], ['M>V']]","[[], [1]]",fwd
-2,gATGGAAGTGCAGTTAGGGCTGG,2,-1,0,"[['No Change'], ['No Change'], ['E>G'], ['E>G']]","[[], [], [2], [2]]",fwd
-3,ATGGAAGTGCAGTTAGGGCTGGG,0,0,0,"[['No Change'], ['No Change'], ['E>G'], ['E>G']]","[[], [], [2], [2]]",fwd
-4,AAGTGCAGTTAGGGCTGGGAAGG,1,4,0,"[['No Change'], ['Q>R']]","[[], [4]]",fwd
-5,AGTGCAGTTAGGGCTGGGAAGGG,2,5,0,"[['No Change'], ['Q>R']]","[[], [4]]",fwd
-6,GGCTGGGAAGGGTCTACCCTCGG,1,16,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-7,GCGCGAAGTGATCCAGAACCCGG,2,89,0,"[['No Change'], ['No Change'], ['E>G'], ['E>G']]","[[], [], [32], [32]]",fwd
-8,CGCGAAGTGATCCAGAACCCGGG,0,90,0,"[['No Change'], ['No Change'], ['E>G'], ['E>G']]","[[], [], [32], [32]]",fwd
-9,TGATCCAGAACCCGGGCCCCAGG,1,97,0,"[['No Change'], ['Q>R']]","[[], [35]]",fwd
-10,GCCGCGAGCGCAGCACCTCCCGG,0,129,0,"[['No Change'], ['S>G']]","[[], [46]]",fwd
-11,AGCAGCAAGAGACTAGCCCCAGG,1,232,0,"[['No Change'], ['No Change'], ['Q>R'], ['Q>R'], ['Q>R'], ['Q>R'], ['Q>R', 'Q>R'], ['Q>R', 'Q>R']]","[[], [], [80], [80], [79], [79], [79, 80], [79, 80]]",fwd
-12,CAGGCAGCAGCAGCAGCAGCAGG,2,251,0,"[['No Change'], ['Q>R']]","[[], [86]]",fwd
-13,AGGCAGCAGCAGCAGCAGCAGGG,0,252,0,"[['No Change'], ['Q>R'], ['Q>R'], ['Q>R', 'Q>R']]","[[], [87], [86], [86, 87]]",fwd
-14,GCAGCAGCAGCAGCAGGGTGAGG,2,257,0,"[['No Change'], ['Q>R']]","[[], [88]]",fwd
-15,CAGCAGCAGCAGGGTGAGGATGG,0,261,0,"[['No Change'], ['Q>R'], ['Q>R'], ['Q>R', 'Q>R']]","[[], [90], [89], [89, 90]]",fwd
-16,TCTCCCCAAGCCCATCGTAGAGG,0,285,0,"[['No Change'], ['Q>R']]","[[], [98]]",fwd
-17,GCCCATCGTAGAGGCCCCACAGG,0,294,0,"[['No Change'], ['H>R']]","[[], [100]]",fwd
-18,TAGAGGCCCCACAGGCTACCTGG,2,302,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-19,CCCCACAGGCTACCTGGTCCTGG,2,308,0,"[['No Change'], ['No Change'], ['T>A'], ['T>A']]","[[], [], [105], [105]]",fwd
-20,AGGCTACCTGGTCCTGGATGAGG,2,314,0,"[['No Change'], ['Y>C']]","[[], [107]]",fwd
-21,GCAACCTTCACAGCCGCAGTCGG,2,341,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-22,TTCACAGCCGCAGTCGGCCCTGG,2,347,0,"[['No Change'], ['Q>R'], ['No Change'], ['Q>R']]","[[], [118], [], [118]]",fwd
-23,CTGGAGTGCCACCCCGAGAGAGG,0,366,0,"[['No Change'], ['E>G']]","[[], [124]]",fwd
-24,CCCAGAGCCTGGAGCCGCCGTGG,2,395,0,"[['No Change'], ['E>G'], ['No Change'], ['E>G']]","[[], [134], [], [134]]",fwd
-25,GCAGCAGCTGCCAGCACCTCCGG,2,437,0,"[['No Change'], ['Q>R']]","[[], [148]]",fwd
-26,GCTGCCAGCACCTCCGGACGAGG,2,443,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-27,CCCATCCACGTTGTCCCTGCTGG,2,479,0,"[['No Change'], ['T>A'], ['No Change'], ['T>A']]","[[], [163], [], [163]]",fwd
-28,CCATCCACGTTGTCCCTGCTGGG,0,480,0,"[['No Change'], ['T>A']]","[[], [163]]",fwd
-29,CCTTAAAGACATCCTGAGCGAGG,2,539,0,"[['No Change'], ['No Change'], ['K>R'], ['K>R'], ['K>E'], ['K>E'], ['K>G'], ['K>G']]","[[], [], [182], [182], [182], [182], [182], [182]]",fwd
-30,CAGCAGGAAGCAGTATCCGAAGG,0,591,0,"[['No Change'], ['E>G'], ['Q>R'], ['Q>R', 'E>G']]","[[], [200], [199], [199, 200]]",fwd
-31,GTATCCGAAGGCAGCAGCAGCGG,0,603,0,"[['No Change'], ['E>G']]","[[], [204]]",fwd
-32,TATCCGAAGGCAGCAGCAGCGGG,1,604,0,"[['No Change'], ['No Change'], ['E>G'], ['E>G']]","[[], [], [204], [204]]",fwd
-33,GCAGCAGCAGCGGGAGAGCGAGG,1,613,0,"[['No Change'], ['S>G']]","[[], [207]]",fwd
-34,CAGCAGCAGCGGGAGAGCGAGGG,2,614,0,"[['No Change'], ['S>G'], ['S>G'], ['S>G', 'S>G']]","[[], [208], [207], [207, 208]]",fwd
-35,CAGCAGCGGGAGAGCGAGGGAGG,2,617,0,"[['No Change'], ['S>G']]","[[], [208]]",fwd
-36,CGGGAGAGCGAGGGAGGCCTCGG,2,623,0,"[['No Change'], ['No Change'], ['R>G'], ['R>G']]","[[], [], [210], [210]]",fwd
-37,GGGAGAGCGAGGGAGGCCTCGGG,0,624,0,"[['No Change'], ['No Change'], ['R>G'], ['R>G']]","[[], [], [210], [210]]",fwd
-38,GGAGAGCGAGGGAGGCCTCGGGG,1,625,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-39,GAGAGCGAGGGAGGCCTCGGGGG,2,626,0,"[['No Change'], ['R>G'], ['No Change'], ['R>G']]","[[], [212], [], [212]]",fwd
-40,TCCTCCAAGGACAATTACTTAGG,0,657,0,"[['No Change'], ['K>R'], ['K>E'], ['K>G']]","[[], [222], [222], [222]]",fwd
-41,CCTCCAAGGACAATTACTTAGGG,1,658,0,"[['No Change'], ['K>R'], ['K>E'], ['K>G']]","[[], [222], [222], [222]]",fwd
-42,CTCCAAGGACAATTACTTAGGGG,2,659,0,"[['No Change'], ['K>R'], ['K>E'], ['K>G']]","[[], [222], [222], [222]]",fwd
-43,TCCAAGGACAATTACTTAGGGGG,0,660,0,"[['No Change'], ['D>G'], ['K>R'], ['K>R', 'D>G'], ['K>E'], ['K>E', 'D>G'], ['K>G'], ['K>G', 'D>G']]","[[], [223], [222], [222, 223], [222], [222, 223], [222], [222, 223]]",fwd
-44,GACCATTTCTGACAACGCCAAGG,2,689,0,"[['No Change'], ['I>V']]","[[], [232]]",fwd
-45,CAACGCCAAGGAGTTGTGTAAGG,2,701,0,"[['No Change'], ['K>E']]","[[], [237]]",fwd
-46,TAAGGCAGTGTCGGTGTCCATGG,2,719,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-47,AAGGCAGTGTCGGTGTCCATGGG,0,720,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-48,GGTGTCCATGGGCCTGGGTGTGG,2,731,0,"[['No Change'], ['M>V']]","[[], [247]]",fwd
-49,GTCCATGGGCCTGGGTGTGGAGG,2,734,0,"[['No Change'], ['M>V']]","[[], [247]]",fwd
-50,GCGTTGGAGCATCTGAGTCCAGG,0,756,0,"[['No Change'], ['E>G']]","[[], [255]]",fwd
-51,CGTTGGAGCATCTGAGTCCAGGG,1,757,0,"[['No Change'], ['E>G']]","[[], [255]]",fwd
-52,GTTGGAGCATCTGAGTCCAGGGG,2,758,0,"[['No Change'], ['E>G']]","[[], [255]]",fwd
-53,TGAGTCCAGGGGAACAGCTTCGG,1,769,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-54,GAGTCCAGGGGAACAGCTTCGGG,2,770,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-55,AGTCCAGGGGAACAGCTTCGGGG,0,771,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-56,GTCCAGGGGAACAGCTTCGGGGG,1,772,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-57,TCCAGGGGAACAGCTTCGGGGGG,2,773,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-58,TTGCATGTACGCCCCACTTTTGG,2,797,0,"[['No Change'], ['M>V']]","[[], [268]]",fwd
-59,TGCATGTACGCCCCACTTTTGGG,0,798,0,"[['No Change'], ['Y>C'], ['M>V'], ['M>V', 'Y>C']]","[[], [269], [268], [268, 269]]",fwd
-60,TCCCACTCCTTGTGCCCCATTGG,2,839,0,"[['No Change'], ['T>A']]","[[], [282]]",fwd
-61,GCCCCATTGGCCGAATGCAAAGG,0,852,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-62,TGCTGAGTATTCCCCTTTCAAGG,2,917,0,"[['No Change'], ['E>G']]","[[], [308]]",fwd
-63,GCTGAGTATTCCCCTTTCAAGGG,0,918,0,"[['No Change'], ['Y>C'], ['E>G'], ['E>G', 'Y>C']]","[[], [309], [308], [308, 309]]",fwd
-64,GAGTATTCCCCTTTCAAGGGAGG,0,921,0,"[['No Change'], ['Y>C']]","[[], [309]]",fwd
-65,TTCAAGGGAGGTTACACCAAAGG,0,933,0,"[['No Change'], ['K>R'], ['K>E'], ['K>G']]","[[], [313], [313], [313]]",fwd
-66,TCAAGGGAGGTTACACCAAAGGG,1,934,0,"[['No Change'], ['No Change'], ['K>R'], ['K>R']]","[[], [], [313], [313]]",fwd
-67,GGTTACACCAAAGGGCTAGAAGG,0,942,0,"[['No Change'], ['T>A'], ['Y>C'], ['Y>C', 'T>A']]","[[], [317], [316], [316, 317]]",fwd
-68,GGGCTAGAAGGCGAGAGCCTAGG,0,954,0,"[['No Change'], ['E>G'], ['No Change'], ['E>G']]","[[], [321], [], [321]]",fwd
-69,GGCGAGAGCCTAGGCTGCTCTGG,0,963,0,"[['No Change'], ['S>G'], ['E>G'], ['E>G', 'S>G']]","[[], [324], [323], [323, 324]]",fwd
-70,GCGCTGCAGCAGGGAGCTCCGGG,1,988,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-71,TCTCTACAAGTCCGGAGCACTGG,2,1037,0,"[['No Change'], ['K>E'], ['Y>C'], ['Y>C', 'K>E']]","[[], [349], [348], [348, 349]]",fwd
-72,CGACTACTACAACTTTCCACTGG,2,1085,0,"[['No Change'], ['Y>C']]","[[], [364]]",fwd
-73,CTACAACTTTCCACTGGCTCTGG,2,1091,0,"[['No Change'], ['N>S'], ['N>D'], ['N>G']]","[[], [366], [366], [366]]",fwd
-74,TCCCCACGCTCGCATCAAGCTGG,2,1145,0,"[['No Change'], ['H>R']]","[[], [384]]",fwd
-75,CATCAAGCTGGAGAACCCGCTGG,2,1157,0,"[['No Change'], ['K>R'], ['K>E'], ['K>G']]","[[], [388], [388], [388]]",fwd
-76,CTGGAGAACCCGCTGGACTACGG,0,1164,0,"[['No Change'], ['N>S'], ['N>D'], ['N>G'], ['E>G'], ['E>G', 'N>S'], ['E>G', 'N>D'], ['E>G', 'N>G']]","[[], [391], [391], [391], [390], [390, 391], [390, 391], [390, 391]]",fwd
-77,CGCTGGACTACGGCAGCGCCTGG,1,1174,0,"[['No Change'], ['D>G']]","[[], [394]]",fwd
-78,GCTGGACTACGGCAGCGCCTGGG,2,1175,0,"[['No Change'], ['D>G']]","[[], [394]]",fwd
-79,GGACTACGGCAGCGCCTGGGCGG,2,1178,0,"[['No Change'], ['Y>C']]","[[], [395]]",fwd
-80,CGGCAGCGCCTGGGCGGCTGCGG,2,1184,0,"[['No Change'], ['S>G']]","[[], [397]]",fwd
-81,GGGGACCTGGCGAGCCTGCATGG,0,1224,0,"[['No Change'], ['D>G']]","[[], [410]]",fwd
-82,CCTGGCGAGCCTGCATGGCGCGG,2,1229,0,"[['No Change'], ['S>G']]","[[], [413]]",fwd
-83,CTGGCGAGCCTGCATGGCGCGGG,0,1230,0,"[['No Change'], ['S>G']]","[[], [413]]",fwd
-84,CCTGCATGGCGCGGGTGCAGCGG,2,1238,0,"[['No Change'], ['H>R']]","[[], [415]]",fwd
-85,CTGCATGGCGCGGGTGCAGCGGG,0,1239,0,"[['No Change'], ['H>R']]","[[], [415]]",fwd
-86,GGTGCAGCGGGACCCGGTTCTGG,0,1251,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-87,GTGCAGCGGGACCCGGTTCTGGG,1,1252,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-88,GCCGAAGAAGGCCAGTTGTATGG,0,1320,0,"[['No Change'], ['E>G'], ['No Change'], ['E>G'], ['E>G'], ['E>G', 'E>G'], ['E>G'], ['E>G', 'E>G']]","[[], [443], [], [443], [442], [442, 443], [442], [442, 443]]",fwd
-89,GGCCAGTTGTATGGACCGTGTGG,0,1329,0,"[['No Change'], ['Q>R']]","[[], [445]]",fwd
-90,CAGTTGTATGGACCGTGTGGTGG,0,1332,0,"[['No Change'], ['Y>C']]","[[], [447]]",fwd
-91,TTGTATGGACCGTGTGGTGGTGG,0,1335,0,"[['No Change'], ['Y>C']]","[[], [447]]",fwd
-92,TATGGACCGTGTGGTGGTGGTGG,0,1338,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-93,ATGGACCGTGTGGTGGTGGTGGG,1,1339,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-94,TGGACCGTGTGGTGGTGGTGGGG,2,1340,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-95,GCGGGAGCTGTAGCCCCCTACGG,0,1422,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-96,CGGCTACACTCGGCCCCCTCAGG,2,1442,0,"[['No Change'], ['T>A'], ['Y>C'], ['Y>C', 'T>A']]","[[], [484], [483], [483, 484]]",fwd
-97,GGCTACACTCGGCCCCCTCAGGG,0,1443,0,"[['No Change'], ['T>A'], ['Y>C'], ['Y>C', 'T>A']]","[[], [484], [483], [483, 484]]",fwd
-98,GCTACACTCGGCCCCCTCAGGGG,1,1444,0,"[['No Change'], ['T>A'], ['Y>C'], ['Y>C', 'T>A']]","[[], [484], [483], [483, 484]]",fwd
-99,CCCTCAGGGGCTGGCGGGCCAGG,2,1457,0,"[['No Change'], ['Q>R']]","[[], [488]]",fwd
-100,ACTTCACCGCACCTGATGTGTGG,1,1486,0,"[['No Change'], ['T>A']]","[[], [498]]",fwd
-101,GCACCTGATGTGTGGTACCCTGG,0,1494,0,"[['No Change'], ['D>G']]","[[], [501]]",fwd
-102,CCTGATGTGTGGTACCCTGGCGG,0,1497,0,"[['No Change'], ['D>G']]","[[], [501]]",fwd
-103,TCAAAAGCGAAATGGGCCCCTGG,1,1558,0,"[['No Change'], ['S>G'], ['No Change'], ['S>G'], ['K>R'], ['K>R', 'S>G'], ['K>R'], ['K>R', 'S>G']]","[[], [522], [], [522], [521], [521, 522], [521], [521, 522]]",fwd
-104,AAGCGAAATGGGCCCCTGGATGG,2,1562,0,"[['No Change'], ['M>V'], ['No Change'], ['M>V'], ['E>G'], ['E>G', 'M>V'], ['E>G'], ['E>G', 'M>V']]","[[], [524], [], [524], [523], [523, 524], [523], [523, 524]]",fwd
-105,CCCTGGATGGATAGCTACTCCGG,0,1575,0,"[['No Change'], ['M>V']]","[[], [528]]",fwd
-106,GATAGCTACTCCGGACCTTACGG,0,1584,0,"[['No Change'], ['Y>C'], ['S>G'], ['S>G', 'Y>C']]","[[], [531], [530], [530, 531]]",fwd
-107,ATAGCTACTCCGGACCTTACGGG,1,1585,0,"[['No Change'], ['Y>C']]","[[], [531]]",fwd
-108,TAGCTACTCCGGACCTTACGGGG,2,1586,0,"[['No Change'], ['Y>C']]","[[], [531]]",fwd
-109,CCGGACCTTACGGGGACATGCGg,1,1594,0,"[['No Change'], ['No Change']]","[[], []]",fwd
-110,CAGAAGACCTGCCTGATCTGTGG,0,1668,1,"[['No Change'], ['T>A'], ['K>R'], ['K>R', 'T>A'], ['K>E'], ['K>E', 'T>A'], ['K>G'], ['K>G', 'T>A']]","[[], [559], [558], [558, 559], [558], [558, 559], [558], [558, 559]]",fwd
-111,TCTGTGGAGATGAAGCTTCTGGG,1,1684,1,"[['No Change'], ['No Change']]","[[], []]",fwd
-112,CACTATGGAGCTCTCACATGTGG,0,1710,1,"[['No Change'], ['Y>C']]","[[], [572]]",fwd
-113,TCTCACATGTGGAAGCTGCAAGG,2,1721,1,"[['No Change'], ['No Change'], ['T>A'], ['T>A']]","[[], [], [576], [576]]",fwd
-114,TTCTTCAAAAGAGCCGCTGAAGg,0,1746,1,"[['No Change'], ['K>R'], ['K>E'], ['K>G']]","[[], [585], [585], [585]]",fwd
-115,AAAAGAGCCGCTGAAGgtaaagg,0,1752,1,"[['No Change'], ['No Change'], ['R>G'], ['R>G']]","[[], [], [586], [586]]",fwd
-116,AAAGAGCCGCTGAAGgtaaaggg,1,1753,1,"[['No Change'], ['No Change']]","[[], []]",fwd
-117,GCACTATTGATAAATTCCGAAGG,1,1804,2,"[['No Change'], ['I>V']]","[[], [604]]",fwd
-118,ATTGTCCATCTTGTCGTCTTCGG,1,1831,2,"[['No Change'], ['No Change']]","[[], []]",fwd
-119,CTTCGGAAATGTTATGAAGCAGG,0,1848,2,"[['No Change'], ['K>R'], ['K>E'], ['K>G']]","[[], [619], [619], [619]]",fwd
-120,TTCGGAAATGTTATGAAGCAGGG,1,1849,2,"[['No Change'], ['No Change'], ['K>R'], ['K>R'], ['K>E'], ['K>E'], ['K>G'], ['K>G']]","[[], [], [619], [619], [619], [619], [619], [619]]",fwd
-121,TTATGAAGCAGGGATGACTCTGG,2,1859,2,"[['No Change'], ['No Change'], ['E>G'], ['E>G']]","[[], [], [622], [622]]",fwd
-122,TATGAAGCAGGGATGACTCTGGG,0,1860,2,"[['No Change'], ['No Change'], ['E>G'], ['E>G']]","[[], [], [622], [622]]",fwd
-123,GAAGCAGGGATGACTCTGGGAGg,0,1863,2,"[['No Change'], ['No Change']]","[[], []]",fwd
-124,gCCCGGAAGCTGAAGAAACTTGG,0,1884,3,"[['No Change'], ['K>R'], ['K>E'], ['K>G']]","[[], [631], [631], [631]]",fwd
-125,ACTTGGTAATCTGAAACTACAGG,2,1901,3,"[['No Change'], ['N>D']]","[[], [637]]",fwd
-126,TGGTAATCTGAAACTACAGGAGG,2,1904,3,"[['No Change'], ['N>S'], ['N>D'], ['N>G']]","[[], [637], [637], [637]]",fwd
-127,AATCTGAAACTACAGGAGGAAGG,0,1908,3,"[['No Change'], ['K>R'], ['K>E'], ['K>G']]","[[], [639], [639], [639]]",fwd
-128,GAAACTACAGGAGGAAGGAGAGG,2,1913,3,"[['No Change'], ['No Change'], ['No Change'], ['No Change']]","[[], [], [], []]",fwd
-129,CAGCACCACCAGCCCCACTGAGG,2,1940,3,"[['No Change'], ['T>A'], ['T>A'], ['T>A', 'T>A']]","[[], [650], [649], [649, 650]]",fwd
-130,CTGACAGTGTCACACATTGAAGG,0,1977,3,"[['No Change'], ['No Change'], ['T>A'], ['T>A']]","[[], [], [661], [661]]",fwd
-131,GCCCATCTTTCTGAATGTCCTGG,2,2012,3,"[['No Change'], ['I>V']]","[[], [673]]",fwd
-132,GTCCTGGAAGCCATTGAGCCAGG,0,2028,3,"[['No Change'], ['E>G']]","[[], [679]]",fwd
-133,GAGCCAGGTGTAGTGTGTGCTGG,0,2043,3,"[['No Change'], ['No Change']]","[[], []]",fwd
-134,GCTCTCTAGCCTCAATGAACTGG,2,2102,3,"[['No Change'], ['S>G']]","[[], [704]]",fwd
-135,CTCTCTAGCCTCAATGAACTGGG,0,2103,3,"[['No Change'], ['S>G']]","[[], [704]]",fwd
-136,AGAGAGACAGCTTGTACACGTGG,2,2126,3,"[['No Change'], ['No Change'], ['R>G'], ['R>G']]","[[], [], [711], [711]]",fwd
-137,AGCTTGTACACGTGGTCAAGTGG,1,2134,3,"[['No Change'], ['No Change']]","[[], []]",fwd
-138,GCTTGTACACGTGGTCAAGTGGG,2,2135,3,"[['No Change'], ['No Change']]","[[], []]",fwd
-139,GGCCAAGGCCTTGCCTGgtaagg,2,2156,3,"[['No Change'], ['K>R'], ['K>E'], ['K>G']]","[[], [721], [721], [721]]",fwd
-140,CTTACACGTGGACGACCAGATGG,2,2183,4,"[['No Change'], ['H>R'], ['No Change'], ['H>R']]","[[], [730], [], [730]]",fwd
-141,TGTCATTCAGTACTCCTGGATGG,2,2207,4,"[['No Change'], ['I>V']]","[[], [738]]",fwd
-142,GTCATTCAGTACTCCTGGATGGG,0,2208,4,"[['No Change'], ['Q>R'], ['I>V'], ['I>V', 'Q>R']]","[[], [739], [738], [738, 739]]",fwd
-143,TCATTCAGTACTCCTGGATGGGG,1,2209,4,"[['No Change'], ['Q>R']]","[[], [739]]",fwd
-144,GGGGCTCATGGTGTTTGCCATGG,2,2228,4,"[['No Change'], ['M>V']]","[[], [746]]",fwd
-145,GGGCTCATGGTGTTTGCCATGGG,0,2229,4,"[['No Change'], ['M>V']]","[[], [746]]",fwd
-146,CCTTCACCAATGTCAACTCCAGG,1,2260,4,"[['No Change'], ['T>A']]","[[], [756]]",fwd
-147,GCTCTACTTCGCCCCTGATCTGG,2,2285,4,"[['No Change'], ['Y>C']]","[[], [764]]",fwd
-148,TTTCAATGAgtaagtgctcctgg,2,2309,4,"[['No Change'], ['N>S'], ['N>D'], ['N>G']]","[[], [772], [772], [772]]",fwd
-149,TTCAATGAgtaagtgctcctggg,0,2310,4,"[['No Change'], ['No Change'], ['N>S'], ['N>S'], ['N>D'], ['N>D'], ['N>G'], ['N>G']]","[[], [], [772], [772], [772], [772], [772], [772]]",fwd
-150,TCAATGAgtaagtgctcctgggg,1,2311,4,"[['No Change'], ['No Change'], ['N>S'], ['N>S']]","[[], [], [772], [772]]",fwd
-151,gGTACCGCATGCACAAGTCCCGG,1,2317,5,"[['No Change'], ['Y>C']]","[[], [774]]",fwd
-152,ACAGCCAGTGTGTCCGAATGAGG,1,2344,5,"[['No Change'], ['Q>R']]","[[], [784]]",fwd
-153,AGGCACCTCTCTCAAGAGTTTGG,0,2364,5,"[['No Change'], ['H>R']]","[[], [790]]",fwd
-154,ACTTCGAATGAACTACATCAAGG,2,2489,6,"[['No Change'], ['M>V'], ['No Change'], ['M>V']]","[[], [833], [], [833]]",fwd
-155,CTACCAGCTCACCAAGCTCCTGG,2,2570,6,"[['No Change'], ['Q>R']]","[[], [859]]",fwd
-156,TGCAGCCTgtaagcaaacgatgg,1,2599,6,"[['No Change'], ['Q>R']]","[[], [868]]",fwd
-157,CCTGCTAATCAAGTCACACATGG,2,2639,7,"[['No Change'], ['I>V'], ['No Change'], ['I>V']]","[[], [883], [], [883]]",fwd
-158,CAAGTCACACATGGTGAGCGTGG,2,2648,7,"[['No Change'], ['No Change']]","[[], []]",fwd
-159,CATGGTGAGCGTGGACTTTCCGG,2,2657,7,"[['No Change'], ['S>G']]","[[], [889]]",fwd
-160,CGTGGACTTTCCGGAAATGATGG,2,2666,7,"[['No Change'], ['D>G']]","[[], [891]]",fwd
-161,TTCCACACCCAGTGAagcattgg,0,2748,7,"[['No Change'], ['T>A'], ['H>R'], ['H>R', 'T>A']]","[[], [919], [918], [918, 919]]",fwd
-162,TGCACTTCCATccttgagcttgg,1,10,0,"[['No Change'], ['V>A']]","[[], [2]]",rev
-163,CCTCGGTAGGTCTTGGACGGCGG,1,61,0,"[['No Change'], ['Y>H']]","[[], [18]]",rev
-164,GAAAGCTCCTCGGTAGGTCTTGG,2,68,0,"[['No Change'], ['No Change']]","[[], []]",rev
-165,ATTCTGGAAAGCTCCTCGGTAGG,2,74,0,"[['No Change'], ['F>S']]","[[], [22]]",rev
-166,ACAGATTCTGGAAAGCTCCTCGG,0,78,0,"[['No Change'], ['No Change']]","[[], []]",rev
-167,GGATCACTTCGCGCACGCTCTGG,0,102,0,"[['No Change'], ['V>A']]","[[], [32]]",rev
-168,GCCGGGAGGTGCTGCGCTCGCGG,2,152,0,"[['No Change'], ['No Change']]","[[], []]",rev
-169,AGCAGCAAACTGGCGCCGGGAGG,1,166,0,"[['No Change'], ['No Change'], ['L>S'], ['L>P'], ['L>P'], ['L>P'], ['L>S', 'L>P'], ['L>P', 'L>P']]","[[], [], [53], [53], [54], [54], [53, 54], [53, 54]]",rev
-170,AGCAGCAGCAAACTGGCGCCGGG,1,169,0,"[['No Change'], ['L>P'], ['L>P'], ['L>P', 'L>P']]","[[], [54], [55], [54, 55]]",rev
-171,CAGCAGCAGCAAACTGGCGCCGG,2,170,0,"[['No Change'], ['L>P'], ['L>P'], ['L>P', 'L>P']]","[[], [54], [55], [54, 55]]",rev
-172,CTGCTGCAGCAGCAGCAAACTGG,2,176,0,"[['No Change'], ['L>P']]","[[], [56]]",rev
-173,CCAGGACCAGGTAGCCTGTGGGG,0,330,0,"[['No Change'], ['V>A']]","[[], [108]]",rev
-174,TCCAGGACCAGGTAGCCTGTGGG,1,331,0,"[['No Change'], ['V>A'], ['L>P'], ['V>A', 'L>P']]","[[], [108], [109], [108, 109]]",rev
-175,ATCCAGGACCAGGTAGCCTGTGG,2,332,0,"[['No Change'], ['V>A'], ['L>P'], ['V>A', 'L>P']]","[[], [108], [109], [108, 109]]",rev
-176,AGGGCCGACTGCGGCTGTGAAGG,1,367,0,"[['No Change'], ['S>P']]","[[], [120]]",rev
-177,TGGCACTCCAGGGCCGACTGCGG,1,376,0,"[['No Change'], ['C>R']]","[[], [124]]",rev
-178,GGACGCAACCTCTCTCGGGGTGG,0,396,0,"[['No Change'], ['No Change'], ['C>R'], ['C>R']]","[[], [], [130], [130]]",rev
-179,CTGGGACGCAACCTCTCTCGGGG,0,399,0,"[['No Change'], ['V>A']]","[[], [131]]",rev
-180,TCTGGGACGCAACCTCTCTCGGG,1,400,0,"[['No Change'], ['V>A']]","[[], [131]]",rev
-181,CTCTGGGACGCAACCTCTCTCGG,2,401,0,"[['No Change'], ['V>A']]","[[], [131]]",rev
-182,GCCACGGCGGCTCCAGGCTCTGG,1,418,0,"[['No Change'], ['V>A']]","[[], [138]]",rev
-183,CTGCGGCAGCCCCTTGCTGGCGG,2,440,0,"[['No Change'], ['L>P']]","[[], [144]]",rev
-184,GCTGAGTCATCCTCGTCCGGAGG,1,475,0,"[['No Change'], ['S>P']]","[[], [157]]",rev
-185,GCAGCTGAGTCATCCTCGTCCGG,1,478,0,"[['No Change'], ['S>P']]","[[], [157]]",rev
-186,CAGCAGGGACAACGTGGATGGGG,2,500,0,"[['No Change'], ['L>P']]","[[], [165]]",rev
-187,CCAGCAGGGACAACGTGGATGGG,0,501,0,"[['No Change'], ['L>P']]","[[], [165]]",rev
-188,CCCAGCAGGGACAACGTGGATGG,1,502,0,"[['No Change'], ['L>P'], ['L>P'], ['L>P', 'L>P']]","[[], [165], [166], [165, 166]]",rev
-189,GGGGCCCAGCAGGGACAACGTGG,2,506,0,"[['No Change'], ['L>P']]","[[], [166]]",rev
-190,GGGGAAAGTGGGGCCCAGCAGGG,2,515,0,"[['No Change'], ['No Change'], ['F>L'], ['F>L'], ['F>S'], ['F>S'], ['F>P'], ['F>P']]","[[], [], [170], [170], [170], [170], [170], [170]]",rev
-191,CGGGGAAAGTGGGGCCCAGCAGG,0,516,0,"[['No Change'], ['No Change'], ['F>L'], ['F>L'], ['F>S'], ['F>S'], ['F>P'], ['F>P']]","[[], [], [170], [170], [170], [170], [170], [170]]",rev
-192,TGCTTAAGCCGGGGAAAGTGGGG,0,525,0,"[['No Change'], ['No Change'], ['L>S'], ['L>P']]","[[], [], [173], [173]]",rev
-193,CTGCTTAAGCCGGGGAAAGTGGG,1,526,0,"[['No Change'], ['No Change'], ['L>S'], ['L>P']]","[[], [], [173], [173]]",rev
-194,GCTGCTTAAGCCGGGGAAAGTGG,2,527,0,"[['No Change'], ['L>S']]","[[], [173]]",rev
-195,CGGAGCAGCTGCTTAAGCCGGGG,0,534,0,"[['No Change'], ['C>R'], ['S>P'], ['C>R', 'S>P']]","[[], [176], [177], [176, 177]]",rev
-196,GCGGAGCAGCTGCTTAAGCCGGG,1,535,0,"[['No Change'], ['C>R'], ['S>P'], ['C>R', 'S>P']]","[[], [176], [177], [176, 177]]",rev
-197,AGCGGAGCAGCTGCTTAAGCCGG,2,536,0,"[['No Change'], ['S>P']]","[[], [177]]",rev
-198,CAGGATGTCTTTAAGGTCAGCGG,2,554,0,"[['No Change'], ['I>T']]","[[], [183]]",rev
-199,CTGAAGGAGTTGCATGGTGCTGG,2,584,0,"[['No Change'], ['L>P'], ['L>P'], ['L>P', 'L>P'], ['No Change'], ['L>P'], ['L>P'], ['L>P', 'L>P']]","[[], [192], [193], [192, 193], [], [192], [193], [192, 193]]",rev
-200,GGAGGAAGTGGGAGCCCCCGAGG,2,662,0,"[['No Change'], ['No Change'], ['S>P'], ['S>P']]","[[], [], [219], [219]]",rev
-201,GTAATTGTCCTTGGAGGAAGTGG,2,674,0,"[['No Change'], ['No Change']]","[[], []]",rev
-202,CCCTAAGTAATTGTCCTTGGAGG,2,680,0,"[['No Change'], ['No Change'], ['L>S'], ['L>P']]","[[], [], [225], [225]]",rev
-203,GCCCCCTAAGTAATTGTCCTTGG,2,683,0,"[['No Change'], ['L>S']]","[[], [225]]",rev
-204,CGCCTCCACACCCAGGCCCATGG,2,758,0,"[['No Change'], ['V>A']]","[[], [250]]",rev
-205,GCTCCAACGCCTCCACACCCAGG,0,765,0,"[['No Change'], ['No Change'], ['L>S'], ['L>P']]","[[], [], [253], [253]]",rev
-206,GGGTGGAACTCCCAAAAGTGGGG,2,830,0,"[['No Change'], ['V>A'], ['No Change'], ['V>A']]","[[], [274], [], [274]]",rev
-207,CGGGTGGAACTCCCAAAAGTGGG,0,831,0,"[['No Change'], ['No Change']]","[[], []]",rev
-208,CAAGGAGTGGGACGCACAGCGGG,1,850,0,"[['No Change'], ['No Change']]","[[], []]",rev
-209,ACAAGGAGTGGGACGCACAGCGG,2,851,0,"[['No Change'], ['No Change'], ['No Change'], ['No Change']]","[[], [], [], []]",rev
-210,GCCAATGGGGCACAAGGAGTGGG,1,862,0,"[['No Change'], ['No Change'], ['L>S'], ['L>P']]","[[], [], [286], [286]]",rev
-211,GGCCAATGGGGCACAAGGAGTGG,2,863,0,"[['No Change'], ['No Change'], ['L>S'], ['L>P']]","[[], [], [286], [286]]",rev
-212,TAGCAGAGAACCTTTGCATTCGG,2,884,0,"[['No Change'], ['No Change'], ['L>P'], ['L>P']]","[[], [], [293], [293]]",rev
-213,GGTGTAACCTCCCTTGAAAGGGG,2,950,0,"[['No Change'], ['No Change'], ['Y>H'], ['Y>H']]","[[], [], [315], [315]]",rev
-214,TGGTGTAACCTCCCTTGAAAGGG,0,951,0,"[['No Change'], ['No Change'], ['Y>H'], ['Y>H']]","[[], [], [315], [315]]",rev
-215,TTGGTGTAACCTCCCTTGAAAGG,1,952,0,"[['No Change'], ['Y>H']]","[[], [315]]",rev
-216,AGACGGCAGTTCAAGTGTCCCGG,2,1028,0,"[['No Change'], ['L>P']]","[[], [340]]",rev
-217,TTGTAGAGAGACAGGGTAGACGG,1,1045,0,"[['No Change'], ['L>P'], ['Y>H'], ['L>P', 'Y>H']]","[[], [346], [347], [346, 347]]",rev
-218,TCCGGACTTGTAGAGAGACAGGG,2,1052,0,"[['No Change'], ['S>P']]","[[], [349]]",rev
-219,CTCCGGACTTGTAGAGAGACAGG,0,1053,0,"[['No Change'], ['S>P']]","[[], [349]]",rev
-220,AGTTGTAGTAGTCGCGACTCTGG,0,1098,0,"[['No Change'], ['Y>H']]","[[], [364]]",rev
-221,CGGCGGAGGGGGCGGCGGTCCGG,2,1136,0,"[['No Change'], ['No Change']]","[[], []]",rev
-222,TGGGGAGGCGGCGGAGGGGGCGG,1,1144,0,"[['No Change'], ['No Change']]","[[], []]",rev
-223,GGGATGGGGAGGCGGCGGAGGGG,2,1148,0,"[['No Change'], ['No Change']]","[[], []]",rev
-224,GGGGATGGGGAGGCGGCGGAGGG,0,1149,0,"[['No Change'], ['No Change']]","[[], []]",rev
-225,TGGGGATGGGGAGGCGGCGGAGG,1,1150,0,"[['No Change'], ['No Change']]","[[], []]",rev
-226,ATGCGAGCGTGGGGATGGGGAGG,1,1159,0,"[['No Change'], ['No Change']]","[[], []]",rev
-227,TTGATGCGAGCGTGGGGATGGGG,1,1162,0,"[['No Change'], ['I>T']]","[[], [386]]",rev
-228,CTTGATGCGAGCGTGGGGATGGG,2,1163,0,"[['No Change'], ['I>T']]","[[], [386]]",rev
-229,GCTTGATGCGAGCGTGGGGATGG,0,1164,0,"[['No Change'], ['I>T']]","[[], [386]]",rev
-230,TCCAGCTTGATGCGAGCGTGGGG,1,1168,0,"[['No Change'], ['L>P']]","[[], [388]]",rev
-231,CTCCAGCTTGATGCGAGCGTGGG,2,1169,0,"[['No Change'], ['L>P']]","[[], [388]]",rev
-232,TCTCCAGCTTGATGCGAGCGTGG,0,1170,0,"[['No Change'], ['L>P']]","[[], [388]]",rev
-233,CCGCGCCATGCAGGCTCGCCAGG,0,1251,0,"[['No Change'], ['No Change']]","[[], []]",rev
-234,CCGCTGCACCCGCGCCATGCAGG,0,1260,0,"[['No Change'], ['No Change']]","[[], []]",rev
-235,GCTGAGGGTGACCCAGAACCGGG,1,1285,0,"[['No Change'], ['S>P']]","[[], [427]]",rev
-236,GGCTGAGGGTGACCCAGAACCGG,2,1286,0,"[['No Change'], ['S>P']]","[[], [427]]",rev
-237,GATGAGGAAGCGGCGGCTGAGGG,1,1300,0,"[['No Change'], ['S>P'], ['S>P'], ['S>P', 'S>P']]","[[], [431], [432], [431, 432]]",rev
-238,GGATGAGGAAGCGGCGGCTGAGG,2,1301,0,"[['No Change'], ['S>P']]","[[], [432]]",rev
-239,GTGCCAGGATGAGGAAGCGGCGG,2,1307,0,"[['No Change'], ['W>R']]","[[], [434]]",rev
-240,GAAGAGAGTGTGCCAGGATGAGG,2,1316,0,"[['No Change'], ['No Change'], ['L>P'], ['L>P']]","[[], [], [437], [437]]",rev
-241,GGCTGTGAAGAGAGTGTGCCAGG,2,1322,0,"[['No Change'], ['F>S']]","[[], [438]]",rev
-242,TCCATACAACTGGCCTTCTTCGG,2,1343,0,"[['No Change'], ['L>S'], ['Y>H'], ['L>S', 'Y>H'], ['No Change'], ['L>S'], ['Y>H'], ['L>S', 'Y>H']]","[[], [445], [446], [445, 446], [], [445], [446], [445, 446]]",rev
-243,CACCACACGGTCCATACAACTGG,0,1353,0,"[['No Change'], ['C>R'], ['No Change'], ['C>R']]","[[], [449], [], [449]]",rev
-244,GGGCCGAGTGTAGCCGTAGGGGG,2,1457,0,"[['No Change'], ['No Change']]","[[], []]",rev
-245,GGGGCCGAGTGTAGCCGTAGGGG,0,1458,0,"[['No Change'], ['No Change']]","[[], []]",rev
-246,AGGGTACCACACATCAGGTGCGG,2,1514,0,"[['No Change'], ['Y>H']]","[[], [503]]",rev
-247,CCGCCAGGGTACCACACATCAGG,1,1519,0,"[['No Change'], ['No Change']]","[[], []]",rev
-248,ACACAAGTGGGACTGGGATAGGG,1,1558,0,"[['No Change'], ['No Change'], ['C>R'], ['C>R']]","[[], [], [518], [518]]",rev
-249,GACACAAGTGGGACTGGGATAGG,2,1559,0,"[['No Change'], ['No Change'], ['C>R'], ['C>R'], ['No Change'], ['No Change'], ['C>R'], ['C>R']]","[[], [], [518], [518], [], [], [518], [518]]",rev
-250,CTTTTGACACAAGTGGGACTGGG,1,1564,0,"[['No Change'], ['V>A']]","[[], [519]]",rev
-251,GCTTTTGACACAAGTGGGACTGG,2,1565,0,"[['No Change'], ['V>A']]","[[], [519]]",rev
-252,CGGAGTAGCTATCCATCCAGGGG,0,1596,0,"[['No Change'], ['Y>H'], ['S>P'], ['Y>H', 'S>P']]","[[], [530], [531], [530, 531]]",rev
-253,CCGGAGTAGCTATCCATCCAGGG,1,1597,0,"[['No Change'], ['Y>H'], ['S>P'], ['Y>H', 'S>P']]","[[], [530], [531], [530, 531]]",rev
-254,TCCGGAGTAGCTATCCATCCAGG,2,1598,0,"[['No Change'], ['S>P']]","[[], [531]]",rev
-255,cCGCATGTCCCCGTAAGGTCCGG,2,1616,0,"[['No Change'], ['M>T']]","[[], [537]]",rev
-256,AATGGGCAAAACATGGTCCCTGG,2,1649,1,"[['No Change'], ['L>S']]","[[], [547]]",rev
-257,AATAGTCAATGGGCAAAACATGG,0,1656,1,"[['No Change'], ['No Change'], ['Y>H'], ['Y>H']]","[[], [], [551], [551]]",rev
-258,GGTGGAAAGTAATAGTCAATGGG,1,1666,1,"[['No Change'], ['F>L'], ['F>S'], ['F>P'], ['No Change'], ['F>L'], ['F>S'], ['F>P']]","[[], [553], [553], [553], [], [553], [553], [553]]",rev
-259,GGGTGGAAAGTAATAGTCAATGG,2,1667,1,"[['No Change'], ['F>S'], ['No Change'], ['F>S']]","[[], [553], [], [553]]",rev
-260,ATCAGGCAGGTCTTCTGGGGTGG,1,1684,1,"[['No Change'], ['C>R'], ['L>P'], ['C>R', 'L>P']]","[[], [559], [560], [559, 560]]",rev
-261,CAGATCAGGCAGGTCTTCTGGGG,1,1687,1,"[['No Change'], ['L>P'], ['I>T'], ['L>P', 'I>T']]","[[], [560], [561], [560, 561]]",rev
-262,ACAGATCAGGCAGGTCTTCTGGG,2,1688,1,"[['No Change'], ['L>P'], ['I>T'], ['L>P', 'I>T']]","[[], [560], [561], [560, 561]]",rev
-263,CACAGATCAGGCAGGTCTTCTGG,0,1689,1,"[['No Change'], ['I>T'], ['C>R'], ['I>T', 'C>R']]","[[], [561], [562], [561, 562]]",rev
-264,TTCATCTCCACAGATCAGGCAGG,2,1697,1,"[['No Change'], ['No Change']]","[[], []]",rev
-265,AAGCTTCATCTCCACAGATCAGG,0,1701,1,"[['No Change'], ['No Change']]","[[], []]",rev
-266,ACAGGTACTTCTGTTTCCctggg,0,1785,2,"[['No Change'], ['Y>H']]","[[], [593]]",rev
-267,CACAGGTACTTCTGTTTCCctgg,1,1786,2,"[['No Change'], ['Y>H'], ['L>P'], ['Y>H', 'L>P']]","[[], [593], [594], [593, 594]]",rev
-268,AATCATTTCTGCTGGCGCACAGG,0,1803,2,"[['No Change'], ['No Change']]","[[], []]",rev
-269,AATAGTGCAATCATTTCTGCTGG,2,1811,2,"[['No Change'], ['No Change']]","[[], []]",rev
-270,AAGATGGACAATTTTTCCTTCGG,0,1842,2,"[['No Change'], ['No Change'], ['S>P'], ['S>P']]","[[], [], [613], [613]]",rev
-271,TCTTCAGCTTCCGGGctattggg,0,1899,3,"[['No Change'], ['L>P']]","[[], [631]]",rev
-272,TTCTTCAGCTTCCGGGctattgg,1,1900,3,"[['No Change'], ['L>P']]","[[], [631]]",rev
-273,ACCAAGTTTCTTCAGCTTCCGGG,2,1907,3,"[['No Change'], ['L>P'], ['No Change'], ['L>P']]","[[], [634], [], [634]]",rev
-274,TACCAAGTTTCTTCAGCTTCCGG,0,1908,3,"[['No Change'], ['L>P'], ['No Change'], ['L>P']]","[[], [634], [], [634]]",rev
-275,CTCAGTGGGGCTGGTGGTGCTGG,2,1961,3,"[['No Change'], ['No Change']]","[[], []]",rev
-276,GTGTGACACTGTCAGCTTCTGGG,2,1991,3,"[['No Change'], ['V>A'], ['S>P'], ['V>A', 'S>P']]","[[], [661], [662], [661, 662]]",rev
-277,TGTGTGACACTGTCAGCTTCTGG,0,1992,3,"[['No Change'], ['S>P']]","[[], [662]]",rev
-278,TCCAGGACATTCAGAAAGATGGG,1,2035,3,"[['No Change'], ['V>A'], ['L>P'], ['V>A', 'L>P']]","[[], [676], [677], [676, 677]]",rev
-279,TTCCAGGACATTCAGAAAGATGG,2,2036,3,"[['No Change'], ['V>A'], ['L>P'], ['V>A', 'L>P']]","[[], [676], [677], [676, 677]]",rev
-280,ACACACTACACCTGGCTCAATGG,2,2060,3,"[['No Change'], ['V>A'], ['V>A'], ['V>A', 'V>A']]","[[], [684], [685], [684, 685]]",rev
-281,TGTCCAGCACACACTACACCTGG,1,2068,3,"[['No Change'], ['No Change']]","[[], []]",rev
-282,AGGCTGCAAAGGAGTCGGGCTGG,0,2100,3,"[['No Change'], ['No Change']]","[[], []]",rev
-283,AGCAAGGCTGCAAAGGAGTCGGG,1,2104,3,"[['No Change'], ['No Change'], ['L>S'], ['L>P']]","[[], [], [700], [700]]",rev
-284,GAGCAAGGCTGCAAAGGAGTCGG,2,2105,3,"[['No Change'], ['No Change'], ['L>S'], ['L>P']]","[[], [], [700], [700]]",rev
-285,GCTAGAGAGCAAGGCTGCAAAGG,2,2111,3,"[['No Change'], ['L>P'], ['S>P'], ['L>P', 'S>P'], ['No Change'], ['L>P'], ['S>P'], ['L>P', 'S>P']]","[[], [701], [702], [701, 702], [], [701], [702], [701, 702]]",rev
-286,TTCATTGAGGCTAGAGAGCAAGG,2,2120,3,"[['No Change'], ['L>P'], ['No Change'], ['L>P']]","[[], [704], [], [704]]",rev
-287,GCGGAAGCctggagaagaagagg,2,2180,4,"[['No Change'], ['F>L'], ['F>S'], ['F>P']]","[[], [725], [725], [725]]",rev
-288,ACGTGTAAGTTGCGGAAGCctgg,1,2191,4,"[['No Change'], ['No Change'], ['L>S'], ['L>P']]","[[], [], [728], [728]]",rev
-289,AGTACTGAATGACAGCCATCTGG,0,2220,4,"[['No Change'], ['No Change'], ['Y>H'], ['Y>H']]","[[], [], [739], [739]]",rev
-290,AAACACCATGAGCCCCATCCAGG,2,2243,4,"[['No Change'], ['M>T'], ['V>A'], ['M>T', 'V>A']]","[[], [745], [746], [745, 746]]",rev
-291,GGTGAAGGATCGCCAGCCCATGG,2,2267,4,"[['No Change'], ['F>L'], ['F>S'], ['F>P']]","[[], [754], [754], [754]]",rev
-292,CCTGGAGTTGACATTGGTGAAGG,2,2282,4,"[['No Change'], ['S>P']]","[[], [759]]",rev
-293,GAGCATCCTGGAGTTGACATTGG,2,2288,4,"[['No Change'], ['M>T']]","[[], [761]]",rev
-294,AGGGGCGAAGTAGAGCATCCTGG,2,2300,4,"[['No Change'], ['F>S']]","[[], [764]]",rev
-295,cTCATTGAAAACCAGATCAGGGG,2,2318,4,"[['No Change'], ['F>S'], ['No Change'], ['F>S']]","[[], [770], [], [770]]",rev
-296,acTCATTGAAAACCAGATCAGGG,0,2319,4,"[['No Change'], ['No Change']]","[[], []]",rev
-297,tacTCATTGAAAACCAGATCAGG,1,2320,4,"[['No Change'], ['No Change']]","[[], []]",rev
-298,TGTGCATGCGGTACctgggaagg,0,2331,5,"[['No Change'], ['M>T']]","[[], [775]]",rev
-299,GACACACTGGCTGTACATCCGGG,2,2357,5,"[['No Change'], ['C>R'], ['No Change'], ['C>R']]","[[], [784], [], [784]]",rev
-300,GGACACACTGGCTGTACATCCGG,0,2358,5,"[['No Change'], ['C>R'], ['No Change'], ['C>R']]","[[], [784], [], [784]]",rev
-301,CTTGAGAGAGGTGCCTCATTCGG,0,2379,5,"[['No Change'], ['S>P'], ['No Change'], ['S>P']]","[[], [791], [], [791]]",rev
-302,GCCATCCAAACTCTTGAGAGAGG,0,2391,5,"[['No Change'], ['No Change'], ['W>R'], ['W>R']]","[[], [], [796], [796]]",rev
-303,GGAATTCCTGGGGGGTGATTTGG,0,2415,5,"[['No Change'], ['F>L']]","[[], [804]]",rev
-304,CATGCACAGGAATTCCTGGGGGG,2,2423,5,"[['No Change'], ['L>P'], ['C>R'], ['L>P', 'C>R']]","[[], [805], [806], [805, 806]]",rev
-305,TCATGCACAGGAATTCCTGGGGG,0,2424,5,"[['No Change'], ['C>R']]","[[], [806]]",rev
-306,TTCATGCACAGGAATTCCTGGGG,1,2425,5,"[['No Change'], ['C>R'], ['M>T'], ['C>R', 'M>T']]","[[], [806], [807], [806, 807]]",rev
-307,TTTCATGCACAGGAATTCCTGGG,2,2426,5,"[['No Change'], ['M>T']]","[[], [807]]",rev
-308,CTTTCATGCACAGGAATTCCTGG,0,2427,5,"[['No Change'], ['M>T']]","[[], [807]]",rev
-309,GTAGCAGTGCTTTCATGCACAGG,0,2436,5,"[['No Change'], ['L>P']]","[[], [810]]",rev
-310,CCATCCACTGGAActgatgtggg,1,2461,6,"[['No Change'], ['V>A']]","[[], [818]]",rev
-311,CCCATCCACTGGAActgatgtgg,2,2462,6,"[['No Change'], ['V>A'], ['No Change'], ['V>A']]","[[], [818], [], [818]]",rev
-312,CTGGTAGAAGCGTCTTGAGCAGG,2,2576,6,"[['No Change'], ['F>S'], ['Y>H'], ['F>S', 'Y>H']]","[[], [856], [857], [856, 857]]",rev
-313,AGTCCAGGAGCTTGGTGAGCTGG,0,2595,6,"[['No Change'], ['L>P']]","[[], [863]]",rev
-314,CTGCACGGAGTCCAGGAGCTTGG,2,2603,6,"[['No Change'], ['V>A']]","[[], [866]]",rev
-315,ttacAGGCTGCACGGAGTCCAGG,0,2610,6,"[['No Change'], ['No Change']]","[[], []]",rev
-316,ATGATCTCTGCCATCATTTCCGG,1,2698,7,"[['No Change'], ['I>T']]","[[], [898]]",rev
+sgRNA_seq,PAM_seq,starting_frame,gene_pos,chr_pos,exon,coding_seq,sgRNA_strand,gene_strand,gene,domain
+tcaaggATGGAAGTGCAGTT,AGG,0,-6,67545141,0,tcaaggATGGAAGTGCAGTT,sense,plus,,No Domain
+caaggATGGAAGTGCAGTTA,GGG,1,-5,67545142,0,caaggATGGAAGTGCAGTTA,sense,plus,,No Domain
+gATGGAAGTGCAGTTAGGGC,TGG,2,-1,67545146,0,gATGGAAGTGCAGTTAGGGC,sense,plus,,No Domain
+ATGGAAGTGCAGTTAGGGCT,GGG,0,0,67545147,0,ATGGAAGTGCAGTTAGGGCT,sense,plus,,No Domain
+AAGTGCAGTTAGGGCTGGGA,AGG,1,4,67545151,0,AAGTGCAGTTAGGGCTGGGA,sense,plus,,No Domain
+AGTGCAGTTAGGGCTGGGAA,GGG,2,5,67545152,0,AGTGCAGTTAGGGCTGGGAA,sense,plus,,No Domain
+GGCTGGGAAGGGTCTACCCT,CGG,1,16,67545163,0,GGCTGGGAAGGGTCTACCCT,sense,plus,,No Domain
+GCGCGAAGTGATCCAGAACC,CGG,2,89,67545236,0,GCGCGAAGTGATCCAGAACC,sense,plus,,No Domain
+CGCGAAGTGATCCAGAACCC,GGG,0,90,67545237,0,CGCGAAGTGATCCAGAACCC,sense,plus,,No Domain
+TGATCCAGAACCCGGGCCCC,AGG,1,97,67545244,0,TGATCCAGAACCCGGGCCCC,sense,plus,,No Domain
+GCCGCGAGCGCAGCACCTCC,CGG,0,129,67545276,0,GCCGCGAGCGCAGCACCTCC,sense,plus,,No Domain
+AGCAGCAAGAGACTAGCCCC,AGG,1,232,67545379,0,AGCAGCAAGAGACTAGCCCC,sense,plus,,No Domain
+CAGGCAGCAGCAGCAGCAGC,AGG,2,251,67545398,0,CAGGCAGCAGCAGCAGCAGC,sense,plus,,No Domain
+AGGCAGCAGCAGCAGCAGCA,GGG,0,252,67545399,0,AGGCAGCAGCAGCAGCAGCA,sense,plus,,No Domain
+GCAGCAGCAGCAGCAGGGTG,AGG,2,257,67545404,0,GCAGCAGCAGCAGCAGGGTG,sense,plus,,No Domain
+CAGCAGCAGCAGGGTGAGGA,TGG,0,261,67545408,0,CAGCAGCAGCAGGGTGAGGA,sense,plus,,No Domain
+TCTCCCCAAGCCCATCGTAG,AGG,0,285,67545432,0,TCTCCCCAAGCCCATCGTAG,sense,plus,,No Domain
+GCCCATCGTAGAGGCCCCAC,AGG,0,294,67545441,0,GCCCATCGTAGAGGCCCCAC,sense,plus,,No Domain
+TAGAGGCCCCACAGGCTACC,TGG,2,302,67545449,0,TAGAGGCCCCACAGGCTACC,sense,plus,,No Domain
+CCCCACAGGCTACCTGGTCC,TGG,2,308,67545455,0,CCCCACAGGCTACCTGGTCC,sense,plus,,No Domain
+AGGCTACCTGGTCCTGGATG,AGG,2,314,67545461,0,AGGCTACCTGGTCCTGGATG,sense,plus,,No Domain
+GCAACCTTCACAGCCGCAGT,CGG,2,341,67545488,0,GCAACCTTCACAGCCGCAGT,sense,plus,,No Domain
+TTCACAGCCGCAGTCGGCCC,TGG,2,347,67545494,0,TTCACAGCCGCAGTCGGCCC,sense,plus,,No Domain
+CTGGAGTGCCACCCCGAGAG,AGG,0,366,67545513,0,CTGGAGTGCCACCCCGAGAG,sense,plus,,No Domain
+CCCAGAGCCTGGAGCCGCCG,TGG,2,395,67545542,0,CCCAGAGCCTGGAGCCGCCG,sense,plus,,No Domain
+GCAGCAGCTGCCAGCACCTC,CGG,2,437,67545584,0,GCAGCAGCTGCCAGCACCTC,sense,plus,,No Domain
+GCTGCCAGCACCTCCGGACG,AGG,2,443,67545590,0,GCTGCCAGCACCTCCGGACG,sense,plus,,No Domain
+CCCATCCACGTTGTCCCTGC,TGG,2,479,67545626,0,CCCATCCACGTTGTCCCTGC,sense,plus,,No Domain
+CCATCCACGTTGTCCCTGCT,GGG,0,480,67545627,0,CCATCCACGTTGTCCCTGCT,sense,plus,,No Domain
+CCTTAAAGACATCCTGAGCG,AGG,2,539,67545686,0,CCTTAAAGACATCCTGAGCG,sense,plus,,No Domain
+CAGCAGGAAGCAGTATCCGA,AGG,0,591,67545738,0,CAGCAGGAAGCAGTATCCGA,sense,plus,,No Domain
+GTATCCGAAGGCAGCAGCAG,CGG,0,603,67545750,0,GTATCCGAAGGCAGCAGCAG,sense,plus,,No Domain
+TATCCGAAGGCAGCAGCAGC,GGG,1,604,67545751,0,TATCCGAAGGCAGCAGCAGC,sense,plus,,No Domain
+GCAGCAGCAGCGGGAGAGCG,AGG,1,613,67545760,0,GCAGCAGCAGCGGGAGAGCG,sense,plus,,No Domain
+CAGCAGCAGCGGGAGAGCGA,GGG,2,614,67545761,0,CAGCAGCAGCGGGAGAGCGA,sense,plus,,No Domain
+CAGCAGCGGGAGAGCGAGGG,AGG,2,617,67545764,0,CAGCAGCGGGAGAGCGAGGG,sense,plus,,No Domain
+CGGGAGAGCGAGGGAGGCCT,CGG,2,623,67545770,0,CGGGAGAGCGAGGGAGGCCT,sense,plus,,No Domain
+GGGAGAGCGAGGGAGGCCTC,GGG,0,624,67545771,0,GGGAGAGCGAGGGAGGCCTC,sense,plus,,No Domain
+GGAGAGCGAGGGAGGCCTCG,GGG,1,625,67545772,0,GGAGAGCGAGGGAGGCCTCG,sense,plus,,No Domain
+GAGAGCGAGGGAGGCCTCGG,GGG,2,626,67545773,0,GAGAGCGAGGGAGGCCTCGG,sense,plus,,No Domain
+TCCTCCAAGGACAATTACTT,AGG,0,657,67545804,0,TCCTCCAAGGACAATTACTT,sense,plus,,No Domain
+CCTCCAAGGACAATTACTTA,GGG,1,658,67545805,0,CCTCCAAGGACAATTACTTA,sense,plus,,No Domain
+CTCCAAGGACAATTACTTAG,GGG,2,659,67545806,0,CTCCAAGGACAATTACTTAG,sense,plus,,No Domain
+TCCAAGGACAATTACTTAGG,GGG,0,660,67545807,0,TCCAAGGACAATTACTTAGG,sense,plus,,No Domain
+GACCATTTCTGACAACGCCA,AGG,2,689,67545836,0,GACCATTTCTGACAACGCCA,sense,plus,,No Domain
+CAACGCCAAGGAGTTGTGTA,AGG,2,701,67545848,0,CAACGCCAAGGAGTTGTGTA,sense,plus,,No Domain
+TAAGGCAGTGTCGGTGTCCA,TGG,2,719,67545866,0,TAAGGCAGTGTCGGTGTCCA,sense,plus,,No Domain
+AAGGCAGTGTCGGTGTCCAT,GGG,0,720,67545867,0,AAGGCAGTGTCGGTGTCCAT,sense,plus,,No Domain
+GGTGTCCATGGGCCTGGGTG,TGG,2,731,67545878,0,GGTGTCCATGGGCCTGGGTG,sense,plus,,No Domain
+GTCCATGGGCCTGGGTGTGG,AGG,2,734,67545881,0,GTCCATGGGCCTGGGTGTGG,sense,plus,,No Domain
+GCGTTGGAGCATCTGAGTCC,AGG,0,756,67545903,0,GCGTTGGAGCATCTGAGTCC,sense,plus,,No Domain
+CGTTGGAGCATCTGAGTCCA,GGG,1,757,67545904,0,CGTTGGAGCATCTGAGTCCA,sense,plus,,No Domain
+GTTGGAGCATCTGAGTCCAG,GGG,2,758,67545905,0,GTTGGAGCATCTGAGTCCAG,sense,plus,,No Domain
+TGAGTCCAGGGGAACAGCTT,CGG,1,769,67545916,0,TGAGTCCAGGGGAACAGCTT,sense,plus,,No Domain
+GAGTCCAGGGGAACAGCTTC,GGG,2,770,67545917,0,GAGTCCAGGGGAACAGCTTC,sense,plus,,No Domain
+AGTCCAGGGGAACAGCTTCG,GGG,0,771,67545918,0,AGTCCAGGGGAACAGCTTCG,sense,plus,,No Domain
+GTCCAGGGGAACAGCTTCGG,GGG,1,772,67545919,0,GTCCAGGGGAACAGCTTCGG,sense,plus,,No Domain
+TCCAGGGGAACAGCTTCGGG,GGG,2,773,67545920,0,TCCAGGGGAACAGCTTCGGG,sense,plus,,No Domain
+TTGCATGTACGCCCCACTTT,TGG,2,797,67545944,0,TTGCATGTACGCCCCACTTT,sense,plus,,No Domain
+TGCATGTACGCCCCACTTTT,GGG,0,798,67545945,0,TGCATGTACGCCCCACTTTT,sense,plus,,No Domain
+TCCCACTCCTTGTGCCCCAT,TGG,2,839,67545986,0,TCCCACTCCTTGTGCCCCAT,sense,plus,,No Domain
+GCCCCATTGGCCGAATGCAA,AGG,0,852,67545999,0,GCCCCATTGGCCGAATGCAA,sense,plus,,No Domain
+TGCTGAGTATTCCCCTTTCA,AGG,2,917,67546064,0,TGCTGAGTATTCCCCTTTCA,sense,plus,,No Domain
+GCTGAGTATTCCCCTTTCAA,GGG,0,918,67546065,0,GCTGAGTATTCCCCTTTCAA,sense,plus,,No Domain
+GAGTATTCCCCTTTCAAGGG,AGG,0,921,67546068,0,GAGTATTCCCCTTTCAAGGG,sense,plus,,No Domain
+TTCAAGGGAGGTTACACCAA,AGG,0,933,67546080,0,TTCAAGGGAGGTTACACCAA,sense,plus,,No Domain
+TCAAGGGAGGTTACACCAAA,GGG,1,934,67546081,0,TCAAGGGAGGTTACACCAAA,sense,plus,,No Domain
+GGTTACACCAAAGGGCTAGA,AGG,0,942,67546089,0,GGTTACACCAAAGGGCTAGA,sense,plus,,No Domain
+GGGCTAGAAGGCGAGAGCCT,AGG,0,954,67546101,0,GGGCTAGAAGGCGAGAGCCT,sense,plus,,No Domain
+GGCGAGAGCCTAGGCTGCTC,TGG,0,963,67546110,0,GGCGAGAGCCTAGGCTGCTC,sense,plus,,No Domain
+GCGCTGCAGCAGGGAGCTCC,GGG,1,988,67546135,0,GCGCTGCAGCAGGGAGCTCC,sense,plus,,No Domain
+TCTCTACAAGTCCGGAGCAC,TGG,2,1037,67546184,0,TCTCTACAAGTCCGGAGCAC,sense,plus,,No Domain
+CGACTACTACAACTTTCCAC,TGG,2,1085,67546232,0,CGACTACTACAACTTTCCAC,sense,plus,,No Domain
+CTACAACTTTCCACTGGCTC,TGG,2,1091,67546238,0,CTACAACTTTCCACTGGCTC,sense,plus,,No Domain
+TCCCCACGCTCGCATCAAGC,TGG,2,1145,67546292,0,TCCCCACGCTCGCATCAAGC,sense,plus,,No Domain
+CATCAAGCTGGAGAACCCGC,TGG,2,1157,67546304,0,CATCAAGCTGGAGAACCCGC,sense,plus,,No Domain
+CTGGAGAACCCGCTGGACTA,CGG,0,1164,67546311,0,CTGGAGAACCCGCTGGACTA,sense,plus,,No Domain
+CGCTGGACTACGGCAGCGCC,TGG,1,1174,67546321,0,CGCTGGACTACGGCAGCGCC,sense,plus,,No Domain
+GCTGGACTACGGCAGCGCCT,GGG,2,1175,67546322,0,GCTGGACTACGGCAGCGCCT,sense,plus,,No Domain
+GGACTACGGCAGCGCCTGGG,CGG,2,1178,67546325,0,GGACTACGGCAGCGCCTGGG,sense,plus,,No Domain
+CGGCAGCGCCTGGGCGGCTG,CGG,2,1184,67546331,0,CGGCAGCGCCTGGGCGGCTG,sense,plus,,No Domain
+GGGGACCTGGCGAGCCTGCA,TGG,0,1224,67546371,0,GGGGACCTGGCGAGCCTGCA,sense,plus,,No Domain
+CCTGGCGAGCCTGCATGGCG,CGG,2,1229,67546376,0,CCTGGCGAGCCTGCATGGCG,sense,plus,,No Domain
+CTGGCGAGCCTGCATGGCGC,GGG,0,1230,67546377,0,CTGGCGAGCCTGCATGGCGC,sense,plus,,No Domain
+CCTGCATGGCGCGGGTGCAG,CGG,2,1238,67546385,0,CCTGCATGGCGCGGGTGCAG,sense,plus,,No Domain
+CTGCATGGCGCGGGTGCAGC,GGG,0,1239,67546386,0,CTGCATGGCGCGGGTGCAGC,sense,plus,,No Domain
+GGTGCAGCGGGACCCGGTTC,TGG,0,1251,67546398,0,GGTGCAGCGGGACCCGGTTC,sense,plus,,No Domain
+GTGCAGCGGGACCCGGTTCT,GGG,1,1252,67546399,0,GTGCAGCGGGACCCGGTTCT,sense,plus,,No Domain
+GCCGAAGAAGGCCAGTTGTA,TGG,0,1320,67546467,0,GCCGAAGAAGGCCAGTTGTA,sense,plus,,No Domain
+GGCCAGTTGTATGGACCGTG,TGG,0,1329,67546476,0,GGCCAGTTGTATGGACCGTG,sense,plus,,No Domain
+CAGTTGTATGGACCGTGTGG,TGG,0,1332,67546479,0,CAGTTGTATGGACCGTGTGG,sense,plus,,No Domain
+TTGTATGGACCGTGTGGTGG,TGG,0,1335,67546482,0,TTGTATGGACCGTGTGGTGG,sense,plus,,No Domain
+TATGGACCGTGTGGTGGTGG,TGG,0,1338,67546485,0,TATGGACCGTGTGGTGGTGG,sense,plus,,No Domain
+ATGGACCGTGTGGTGGTGGT,GGG,1,1339,67546486,0,ATGGACCGTGTGGTGGTGGT,sense,plus,,No Domain
+TGGACCGTGTGGTGGTGGTG,GGG,2,1340,67546487,0,TGGACCGTGTGGTGGTGGTG,sense,plus,,No Domain
+GCGGGAGCTGTAGCCCCCTA,CGG,0,1422,67546569,0,GCGGGAGCTGTAGCCCCCTA,sense,plus,,No Domain
+CGGCTACACTCGGCCCCCTC,AGG,2,1442,67546589,0,CGGCTACACTCGGCCCCCTC,sense,plus,,No Domain
+GGCTACACTCGGCCCCCTCA,GGG,0,1443,67546590,0,GGCTACACTCGGCCCCCTCA,sense,plus,,No Domain
+GCTACACTCGGCCCCCTCAG,GGG,1,1444,67546591,0,GCTACACTCGGCCCCCTCAG,sense,plus,,No Domain
+CCCTCAGGGGCTGGCGGGCC,AGG,2,1457,67546604,0,CCCTCAGGGGCTGGCGGGCC,sense,plus,,No Domain
+ACTTCACCGCACCTGATGTG,TGG,1,1486,67546633,0,ACTTCACCGCACCTGATGTG,sense,plus,,No Domain
+GCACCTGATGTGTGGTACCC,TGG,0,1494,67546641,0,GCACCTGATGTGTGGTACCC,sense,plus,,No Domain
+CCTGATGTGTGGTACCCTGG,CGG,0,1497,67546644,0,CCTGATGTGTGGTACCCTGG,sense,plus,,No Domain
+TCAAAAGCGAAATGGGCCCC,TGG,1,1558,67546705,0,TCAAAAGCGAAATGGGCCCC,sense,plus,,No Domain
+AAGCGAAATGGGCCCCTGGA,TGG,2,1562,67546709,0,AAGCGAAATGGGCCCCTGGA,sense,plus,,No Domain
+CCCTGGATGGATAGCTACTC,CGG,0,1575,67546722,0,CCCTGGATGGATAGCTACTC,sense,plus,,No Domain
+GATAGCTACTCCGGACCTTA,CGG,0,1584,67546731,0,GATAGCTACTCCGGACCTTA,sense,plus,,No Domain
+ATAGCTACTCCGGACCTTAC,GGG,1,1585,67546732,0,ATAGCTACTCCGGACCTTAC,sense,plus,,No Domain
+TAGCTACTCCGGACCTTACG,GGG,2,1586,67546733,0,TAGCTACTCCGGACCTTACG,sense,plus,,No Domain
+CCGGACCTTACGGGGACATG,CGg,1,1594,67546741,0,CCGGACCTTACGGGGACATG,sense,plus,,No Domain
+CAGAAGACCTGCCTGATCTG,TGG,0,1668,67643308,1,CAGAAGACCTGCCTGATCTG,sense,plus,,No Domain
+TCTGTGGAGATGAAGCTTCT,GGG,1,1684,67643324,1,TCTGTGGAGATGAAGCTTCT,sense,plus,,No Domain
+CACTATGGAGCTCTCACATG,TGG,0,1710,67643350,1,CACTATGGAGCTCTCACATG,sense,plus,,No Domain
+TCTCACATGTGGAAGCTGCA,AGG,2,1721,67643361,1,TCTCACATGTGGAAGCTGCA,sense,plus,,No Domain
+TTCTTCAAAAGAGCCGCTGA,AGg,0,1746,67643386,1,TTCTTCAAAAGAGCCGCTGA,sense,plus,,No Domain
+AAAAGAGCCGCTGAAGgtaa,agg,0,1752,67643392,1,AAAAGAGCCGCTGAAGgtaa,sense,plus,,No Domain
+AAAGAGCCGCTGAAGgtaaa,ggg,1,1753,67643393,1,AAAGAGCCGCTGAAGgtaaa,sense,plus,,No Domain
+GCACTATTGATAAATTCCGA,AGG,1,1804,67686046,2,GCACTATTGATAAATTCCGA,sense,plus,,No Domain
+ATTGTCCATCTTGTCGTCTT,CGG,1,1831,67686073,2,ATTGTCCATCTTGTCGTCTT,sense,plus,,No Domain
+CTTCGGAAATGTTATGAAGC,AGG,0,1848,67686090,2,CTTCGGAAATGTTATGAAGC,sense,plus,,No Domain
+TTCGGAAATGTTATGAAGCA,GGG,1,1849,67686091,2,TTCGGAAATGTTATGAAGCA,sense,plus,,No Domain
+TTATGAAGCAGGGATGACTC,TGG,2,1859,67686101,2,TTATGAAGCAGGGATGACTC,sense,plus,,No Domain
+TATGAAGCAGGGATGACTCT,GGG,0,1860,67686102,2,TATGAAGCAGGGATGACTCT,sense,plus,,No Domain
+GAAGCAGGGATGACTCTGGG,AGg,0,1863,67686105,2,GAAGCAGGGATGACTCTGGG,sense,plus,,No Domain
+gCCCGGAAGCTGAAGAAACT,TGG,0,1884,67711401,3,gCCCGGAAGCTGAAGAAACT,sense,plus,,No Domain
+ACTTGGTAATCTGAAACTAC,AGG,2,1901,67711418,3,ACTTGGTAATCTGAAACTAC,sense,plus,,No Domain
+TGGTAATCTGAAACTACAGG,AGG,2,1904,67711421,3,TGGTAATCTGAAACTACAGG,sense,plus,,No Domain
+AATCTGAAACTACAGGAGGA,AGG,0,1908,67711425,3,AATCTGAAACTACAGGAGGA,sense,plus,,No Domain
+GAAACTACAGGAGGAAGGAG,AGG,2,1913,67711430,3,GAAACTACAGGAGGAAGGAG,sense,plus,,No Domain
+CAGCACCACCAGCCCCACTG,AGG,2,1940,67711457,3,CAGCACCACCAGCCCCACTG,sense,plus,,No Domain
+CTGACAGTGTCACACATTGA,AGG,0,1977,67711494,3,CTGACAGTGTCACACATTGA,sense,plus,,No Domain
+GCCCATCTTTCTGAATGTCC,TGG,2,2012,67711529,3,GCCCATCTTTCTGAATGTCC,sense,plus,,No Domain
+GTCCTGGAAGCCATTGAGCC,AGG,0,2028,67711545,3,GTCCTGGAAGCCATTGAGCC,sense,plus,,No Domain
+GAGCCAGGTGTAGTGTGTGC,TGG,0,2043,67711560,3,GAGCCAGGTGTAGTGTGTGC,sense,plus,,No Domain
+GCTCTCTAGCCTCAATGAAC,TGG,2,2102,67711619,3,GCTCTCTAGCCTCAATGAAC,sense,plus,,No Domain
+CTCTCTAGCCTCAATGAACT,GGG,0,2103,67711620,3,CTCTCTAGCCTCAATGAACT,sense,plus,,No Domain
+AGAGAGACAGCTTGTACACG,TGG,2,2126,67711643,3,AGAGAGACAGCTTGTACACG,sense,plus,,No Domain
+AGCTTGTACACGTGGTCAAG,TGG,1,2134,67711651,3,AGCTTGTACACGTGGTCAAG,sense,plus,,No Domain
+GCTTGTACACGTGGTCAAGT,GGG,2,2135,67711652,3,GCTTGTACACGTGGTCAAGT,sense,plus,,No Domain
+GGCCAAGGCCTTGCCTGgta,agg,2,2156,67711673,3,GGCCAAGGCCTTGCCTGgta,sense,plus,,No Domain
+CTTACACGTGGACGACCAGA,TGG,2,2183,67717488,4,CTTACACGTGGACGACCAGA,sense,plus,,No Domain
+TGTCATTCAGTACTCCTGGA,TGG,2,2207,67717512,4,TGTCATTCAGTACTCCTGGA,sense,plus,,No Domain
+GTCATTCAGTACTCCTGGAT,GGG,0,2208,67717513,4,GTCATTCAGTACTCCTGGAT,sense,plus,,No Domain
+TCATTCAGTACTCCTGGATG,GGG,1,2209,67717514,4,TCATTCAGTACTCCTGGATG,sense,plus,,No Domain
+GGGGCTCATGGTGTTTGCCA,TGG,2,2228,67717533,4,GGGGCTCATGGTGTTTGCCA,sense,plus,,No Domain
+GGGCTCATGGTGTTTGCCAT,GGG,0,2229,67717534,4,GGGCTCATGGTGTTTGCCAT,sense,plus,,No Domain
+CCTTCACCAATGTCAACTCC,AGG,1,2260,67717565,4,CCTTCACCAATGTCAACTCC,sense,plus,,No Domain
+GCTCTACTTCGCCCCTGATC,TGG,2,2285,67717590,4,GCTCTACTTCGCCCCTGATC,sense,plus,,No Domain
+TTTCAATGAgtaagtgctcc,tgg,2,2309,67717614,4,TTTCAATGAgtaagtgctcc,sense,plus,,No Domain
+TTCAATGAgtaagtgctcct,ggg,0,2310,67717615,4,TTCAATGAgtaagtgctcct,sense,plus,,No Domain
+TCAATGAgtaagtgctcctg,ggg,1,2311,67717616,4,TCAATGAgtaagtgctcctg,sense,plus,,No Domain
+gGTACCGCATGCACAAGTCC,CGG,1,2317,67721832,5,gGTACCGCATGCACAAGTCC,sense,plus,,No Domain
+ACAGCCAGTGTGTCCGAATG,AGG,1,2344,67721859,5,ACAGCCAGTGTGTCCGAATG,sense,plus,,No Domain
+AGGCACCTCTCTCAAGAGTT,TGG,0,2364,67721879,5,AGGCACCTCTCTCAAGAGTT,sense,plus,,No Domain
+ACTTCGAATGAACTACATCA,AGG,2,2489,67722867,6,ACTTCGAATGAACTACATCA,sense,plus,,No Domain
+CTACCAGCTCACCAAGCTCC,TGG,2,2570,67722948,6,CTACCAGCTCACCAAGCTCC,sense,plus,,No Domain
+TGCAGCCTgtaagcaaacga,tgg,1,2599,67722977,6,TGCAGCCTgtaagcaaacga,sense,plus,,No Domain
+CCTGCTAATCAAGTCACACA,TGG,2,2639,67723718,7,CCTGCTAATCAAGTCACACA,sense,plus,,No Domain
+CAAGTCACACATGGTGAGCG,TGG,2,2648,67723727,7,CAAGTCACACATGGTGAGCG,sense,plus,,No Domain
+CATGGTGAGCGTGGACTTTC,CGG,2,2657,67723736,7,CATGGTGAGCGTGGACTTTC,sense,plus,,No Domain
+CGTGGACTTTCCGGAAATGA,TGG,2,2666,67723745,7,CGTGGACTTTCCGGAAATGA,sense,plus,,No Domain
+TTCCACACCCAGTGAagcat,tgg,0,2748,67723827,7,TTCCACACCCAGTGAagcat,sense,plus,,No Domain
+TGCACTTCCATccttgagct,tgg,1,10,67545157,0,agctcaaggATGGAAGTGCA,antisense,plus,,No Domain
+CCTCGGTAGGTCTTGGACGG,CGG,1,61,67545208,0,CCGTCCAAGACCTACCGAGG,antisense,plus,,No Domain
+GAAAGCTCCTCGGTAGGTCT,TGG,2,68,67545215,0,AGACCTACCGAGGAGCTTTC,antisense,plus,,No Domain
+ATTCTGGAAAGCTCCTCGGT,AGG,2,74,67545221,0,ACCGAGGAGCTTTCCAGAAT,antisense,plus,,No Domain
+ACAGATTCTGGAAAGCTCCT,CGG,0,78,67545225,0,AGGAGCTTTCCAGAATCTGT,antisense,plus,,No Domain
+GGATCACTTCGCGCACGCTC,TGG,0,102,67545249,0,GAGCGTGCGCGAAGTGATCC,antisense,plus,,No Domain
+GCCGGGAGGTGCTGCGCTCG,CGG,2,152,67545299,0,CGAGCGCAGCACCTCCCGGC,antisense,plus,,No Domain
+AGCAGCAAACTGGCGCCGGG,AGG,1,166,67545313,0,CCCGGCGCCAGTTTGCTGCT,antisense,plus,,No Domain
+AGCAGCAGCAAACTGGCGCC,GGG,1,169,67545316,0,GGCGCCAGTTTGCTGCTGCT,antisense,plus,,No Domain
+CAGCAGCAGCAAACTGGCGC,CGG,2,170,67545317,0,GCGCCAGTTTGCTGCTGCTG,antisense,plus,,No Domain
+CTGCTGCAGCAGCAGCAAAC,TGG,2,176,67545323,0,GTTTGCTGCTGCTGCAGCAG,antisense,plus,,No Domain
+CCAGGACCAGGTAGCCTGTG,GGG,0,330,67545477,0,CACAGGCTACCTGGTCCTGG,antisense,plus,,No Domain
+TCCAGGACCAGGTAGCCTGT,GGG,1,331,67545478,0,ACAGGCTACCTGGTCCTGGA,antisense,plus,,No Domain
+ATCCAGGACCAGGTAGCCTG,TGG,2,332,67545479,0,CAGGCTACCTGGTCCTGGAT,antisense,plus,,No Domain
+AGGGCCGACTGCGGCTGTGA,AGG,1,367,67545514,0,TCACAGCCGCAGTCGGCCCT,antisense,plus,,No Domain
+TGGCACTCCAGGGCCGACTG,CGG,1,376,67545523,0,CAGTCGGCCCTGGAGTGCCA,antisense,plus,,No Domain
+GGACGCAACCTCTCTCGGGG,TGG,0,396,67545543,0,CCCCGAGAGAGGTTGCGTCC,antisense,plus,,No Domain
+CTGGGACGCAACCTCTCTCG,GGG,0,399,67545546,0,CGAGAGAGGTTGCGTCCCAG,antisense,plus,,No Domain
+TCTGGGACGCAACCTCTCTC,GGG,1,400,67545547,0,GAGAGAGGTTGCGTCCCAGA,antisense,plus,,No Domain
+CTCTGGGACGCAACCTCTCT,CGG,2,401,67545548,0,AGAGAGGTTGCGTCCCAGAG,antisense,plus,,No Domain
+GCCACGGCGGCTCCAGGCTC,TGG,1,418,67545565,0,GAGCCTGGAGCCGCCGTGGC,antisense,plus,,No Domain
+CTGCGGCAGCCCCTTGCTGG,CGG,2,440,67545587,0,CCAGCAAGGGGCTGCCGCAG,antisense,plus,,No Domain
+GCTGAGTCATCCTCGTCCGG,AGG,1,475,67545622,0,CCGGACGAGGATGACTCAGC,antisense,plus,,No Domain
+GCAGCTGAGTCATCCTCGTC,CGG,1,478,67545625,0,GACGAGGATGACTCAGCTGC,antisense,plus,,No Domain
+CAGCAGGGACAACGTGGATG,GGG,2,500,67545647,0,CATCCACGTTGTCCCTGCTG,antisense,plus,,No Domain
+CCAGCAGGGACAACGTGGAT,GGG,0,501,67545648,0,ATCCACGTTGTCCCTGCTGG,antisense,plus,,No Domain
+CCCAGCAGGGACAACGTGGA,TGG,1,502,67545649,0,TCCACGTTGTCCCTGCTGGG,antisense,plus,,No Domain
+GGGGCCCAGCAGGGACAACG,TGG,2,506,67545653,0,CGTTGTCCCTGCTGGGCCCC,antisense,plus,,No Domain
+GGGGAAAGTGGGGCCCAGCA,GGG,2,515,67545662,0,TGCTGGGCCCCACTTTCCCC,antisense,plus,,No Domain
+CGGGGAAAGTGGGGCCCAGC,AGG,0,516,67545663,0,GCTGGGCCCCACTTTCCCCG,antisense,plus,,No Domain
+TGCTTAAGCCGGGGAAAGTG,GGG,0,525,67545672,0,CACTTTCCCCGGCTTAAGCA,antisense,plus,,No Domain
+CTGCTTAAGCCGGGGAAAGT,GGG,1,526,67545673,0,ACTTTCCCCGGCTTAAGCAG,antisense,plus,,No Domain
+GCTGCTTAAGCCGGGGAAAG,TGG,2,527,67545674,0,CTTTCCCCGGCTTAAGCAGC,antisense,plus,,No Domain
+CGGAGCAGCTGCTTAAGCCG,GGG,0,534,67545681,0,CGGCTTAAGCAGCTGCTCCG,antisense,plus,,No Domain
+GCGGAGCAGCTGCTTAAGCC,GGG,1,535,67545682,0,GGCTTAAGCAGCTGCTCCGC,antisense,plus,,No Domain
+AGCGGAGCAGCTGCTTAAGC,CGG,2,536,67545683,0,GCTTAAGCAGCTGCTCCGCT,antisense,plus,,No Domain
+CAGGATGTCTTTAAGGTCAG,CGG,2,554,67545701,0,CTGACCTTAAAGACATCCTG,antisense,plus,,No Domain
+CTGAAGGAGTTGCATGGTGC,TGG,2,584,67545731,0,GCACCATGCAACTCCTTCAG,antisense,plus,,No Domain
+GGAGGAAGTGGGAGCCCCCG,AGG,2,662,67545809,0,CGGGGGCTCCCACTTCCTCC,antisense,plus,,No Domain
+GTAATTGTCCTTGGAGGAAG,TGG,2,674,67545821,0,CTTCCTCCAAGGACAATTAC,antisense,plus,,No Domain
+CCCTAAGTAATTGTCCTTGG,AGG,2,680,67545827,0,CCAAGGACAATTACTTAGGG,antisense,plus,,No Domain
+GCCCCCTAAGTAATTGTCCT,TGG,2,683,67545830,0,AGGACAATTACTTAGGGGGC,antisense,plus,,No Domain
+CGCCTCCACACCCAGGCCCA,TGG,2,758,67545905,0,TGGGCCTGGGTGTGGAGGCG,antisense,plus,,No Domain
+GCTCCAACGCCTCCACACCC,AGG,0,765,67545912,0,GGGTGTGGAGGCGTTGGAGC,antisense,plus,,No Domain
+GGGTGGAACTCCCAAAAGTG,GGG,2,830,67545977,0,CACTTTTGGGAGTTCCACCC,antisense,plus,,No Domain
+CGGGTGGAACTCCCAAAAGT,GGG,0,831,67545978,0,ACTTTTGGGAGTTCCACCCG,antisense,plus,,No Domain
+CAAGGAGTGGGACGCACAGC,GGG,1,850,67545997,0,GCTGTGCGTCCCACTCCTTG,antisense,plus,,No Domain
+ACAAGGAGTGGGACGCACAG,CGG,2,851,67545998,0,CTGTGCGTCCCACTCCTTGT,antisense,plus,,No Domain
+GCCAATGGGGCACAAGGAGT,GGG,1,862,67546009,0,ACTCCTTGTGCCCCATTGGC,antisense,plus,,No Domain
+GGCCAATGGGGCACAAGGAG,TGG,2,863,67546010,0,CTCCTTGTGCCCCATTGGCC,antisense,plus,,No Domain
+TAGCAGAGAACCTTTGCATT,CGG,2,884,67546031,0,AATGCAAAGGTTCTCTGCTA,antisense,plus,,No Domain
+GGTGTAACCTCCCTTGAAAG,GGG,2,950,67546097,0,CTTTCAAGGGAGGTTACACC,antisense,plus,,No Domain
+TGGTGTAACCTCCCTTGAAA,GGG,0,951,67546098,0,TTTCAAGGGAGGTTACACCA,antisense,plus,,No Domain
+TTGGTGTAACCTCCCTTGAA,AGG,1,952,67546099,0,TTCAAGGGAGGTTACACCAA,antisense,plus,,No Domain
+AGACGGCAGTTCAAGTGTCC,CGG,2,1028,67546175,0,GGACACTTGAACTGCCGTCT,antisense,plus,,No Domain
+TTGTAGAGAGACAGGGTAGA,CGG,1,1045,67546192,0,TCTACCCTGTCTCTCTACAA,antisense,plus,,No Domain
+TCCGGACTTGTAGAGAGACA,GGG,2,1052,67546199,0,TGTCTCTCTACAAGTCCGGA,antisense,plus,,No Domain
+CTCCGGACTTGTAGAGAGAC,AGG,0,1053,67546200,0,GTCTCTCTACAAGTCCGGAG,antisense,plus,,No Domain
+AGTTGTAGTAGTCGCGACTC,TGG,0,1098,67546245,0,GAGTCGCGACTACTACAACT,antisense,plus,,No Domain
+CGGCGGAGGGGGCGGCGGTC,CGG,2,1136,67546283,0,GACCGCCGCCCCCTCCGCCG,antisense,plus,,No Domain
+TGGGGAGGCGGCGGAGGGGG,CGG,1,1144,67546291,0,CCCCCTCCGCCGCCTCCCCA,antisense,plus,,No Domain
+GGGATGGGGAGGCGGCGGAG,GGG,2,1148,67546295,0,CTCCGCCGCCTCCCCATCCC,antisense,plus,,No Domain
+GGGGATGGGGAGGCGGCGGA,GGG,0,1149,67546296,0,TCCGCCGCCTCCCCATCCCC,antisense,plus,,No Domain
+TGGGGATGGGGAGGCGGCGG,AGG,1,1150,67546297,0,CCGCCGCCTCCCCATCCCCA,antisense,plus,,No Domain
+ATGCGAGCGTGGGGATGGGG,AGG,1,1159,67546306,0,CCCCATCCCCACGCTCGCAT,antisense,plus,,No Domain
+TTGATGCGAGCGTGGGGATG,GGG,1,1162,67546309,0,CATCCCCACGCTCGCATCAA,antisense,plus,,No Domain
+CTTGATGCGAGCGTGGGGAT,GGG,2,1163,67546310,0,ATCCCCACGCTCGCATCAAG,antisense,plus,,No Domain
+GCTTGATGCGAGCGTGGGGA,TGG,0,1164,67546311,0,TCCCCACGCTCGCATCAAGC,antisense,plus,,No Domain
+TCCAGCTTGATGCGAGCGTG,GGG,1,1168,67546315,0,CACGCTCGCATCAAGCTGGA,antisense,plus,,No Domain
+CTCCAGCTTGATGCGAGCGT,GGG,2,1169,67546316,0,ACGCTCGCATCAAGCTGGAG,antisense,plus,,No Domain
+TCTCCAGCTTGATGCGAGCG,TGG,0,1170,67546317,0,CGCTCGCATCAAGCTGGAGA,antisense,plus,,No Domain
+CCGCGCCATGCAGGCTCGCC,AGG,0,1251,67546398,0,GGCGAGCCTGCATGGCGCGG,antisense,plus,,No Domain
+CCGCTGCACCCGCGCCATGC,AGG,0,1260,67546407,0,GCATGGCGCGGGTGCAGCGG,antisense,plus,,No Domain
+GCTGAGGGTGACCCAGAACC,GGG,1,1285,67546432,0,GGTTCTGGGTCACCCTCAGC,antisense,plus,,No Domain
+GGCTGAGGGTGACCCAGAAC,CGG,2,1286,67546433,0,GTTCTGGGTCACCCTCAGCC,antisense,plus,,No Domain
+GATGAGGAAGCGGCGGCTGA,GGG,1,1300,67546447,0,TCAGCCGCCGCTTCCTCATC,antisense,plus,,No Domain
+GGATGAGGAAGCGGCGGCTG,AGG,2,1301,67546448,0,CAGCCGCCGCTTCCTCATCC,antisense,plus,,No Domain
+GTGCCAGGATGAGGAAGCGG,CGG,2,1307,67546454,0,CCGCTTCCTCATCCTGGCAC,antisense,plus,,No Domain
+GAAGAGAGTGTGCCAGGATG,AGG,2,1316,67546463,0,CATCCTGGCACACTCTCTTC,antisense,plus,,No Domain
+GGCTGTGAAGAGAGTGTGCC,AGG,2,1322,67546469,0,GGCACACTCTCTTCACAGCC,antisense,plus,,No Domain
+TCCATACAACTGGCCTTCTT,CGG,2,1343,67546490,0,AAGAAGGCCAGTTGTATGGA,antisense,plus,,No Domain
+CACCACACGGTCCATACAAC,TGG,0,1353,67546500,0,GTTGTATGGACCGTGTGGTG,antisense,plus,,No Domain
+GGGCCGAGTGTAGCCGTAGG,GGG,2,1457,67546604,0,CCTACGGCTACACTCGGCCC,antisense,plus,,No Domain
+GGGGCCGAGTGTAGCCGTAG,GGG,0,1458,67546605,0,CTACGGCTACACTCGGCCCC,antisense,plus,,No Domain
+AGGGTACCACACATCAGGTG,CGG,2,1514,67546661,0,CACCTGATGTGTGGTACCCT,antisense,plus,,No Domain
+CCGCCAGGGTACCACACATC,AGG,1,1519,67546666,0,GATGTGTGGTACCCTGGCGG,antisense,plus,,No Domain
+ACACAAGTGGGACTGGGATA,GGG,1,1558,67546705,0,TATCCCAGTCCCACTTGTGT,antisense,plus,,No Domain
+GACACAAGTGGGACTGGGAT,AGG,2,1559,67546706,0,ATCCCAGTCCCACTTGTGTC,antisense,plus,,No Domain
+CTTTTGACACAAGTGGGACT,GGG,1,1564,67546711,0,AGTCCCACTTGTGTCAAAAG,antisense,plus,,No Domain
+GCTTTTGACACAAGTGGGAC,TGG,2,1565,67546712,0,GTCCCACTTGTGTCAAAAGC,antisense,plus,,No Domain
+CGGAGTAGCTATCCATCCAG,GGG,0,1596,67546743,0,CTGGATGGATAGCTACTCCG,antisense,plus,,No Domain
+CCGGAGTAGCTATCCATCCA,GGG,1,1597,67546744,0,TGGATGGATAGCTACTCCGG,antisense,plus,,No Domain
+TCCGGAGTAGCTATCCATCC,AGG,2,1598,67546745,0,GGATGGATAGCTACTCCGGA,antisense,plus,,No Domain
+cCGCATGTCCCCGTAAGGTC,CGG,2,1616,67546763,0,GACCTTACGGGGACATGCGg,antisense,plus,,No Domain
+AATGGGCAAAACATGGTCCC,TGG,2,1649,67643289,1,GGGACCATGTTTTGCCCATT,antisense,plus,,No Domain
+AATAGTCAATGGGCAAAACA,TGG,0,1656,67643296,1,TGTTTTGCCCATTGACTATT,antisense,plus,,No Domain
+GGTGGAAAGTAATAGTCAAT,GGG,1,1666,67643306,1,ATTGACTATTACTTTCCACC,antisense,plus,,No Domain
+GGGTGGAAAGTAATAGTCAA,TGG,2,1667,67643307,1,TTGACTATTACTTTCCACCC,antisense,plus,,No Domain
+ATCAGGCAGGTCTTCTGGGG,TGG,1,1684,67643324,1,CCCCAGAAGACCTGCCTGAT,antisense,plus,,No Domain
+CAGATCAGGCAGGTCTTCTG,GGG,1,1687,67643327,1,CAGAAGACCTGCCTGATCTG,antisense,plus,,No Domain
+ACAGATCAGGCAGGTCTTCT,GGG,2,1688,67643328,1,AGAAGACCTGCCTGATCTGT,antisense,plus,,No Domain
+CACAGATCAGGCAGGTCTTC,TGG,0,1689,67643329,1,GAAGACCTGCCTGATCTGTG,antisense,plus,,No Domain
+TTCATCTCCACAGATCAGGC,AGG,2,1697,67643337,1,GCCTGATCTGTGGAGATGAA,antisense,plus,,No Domain
+AAGCTTCATCTCCACAGATC,AGG,0,1701,67643341,1,GATCTGTGGAGATGAAGCTT,antisense,plus,,No Domain
+ACAGGTACTTCTGTTTCCct,ggg,0,1785,67686027,2,agGGAAACAGAAGTACCTGT,antisense,plus,,No Domain
+CACAGGTACTTCTGTTTCCc,tgg,1,1786,67686028,2,gGGAAACAGAAGTACCTGTG,antisense,plus,,No Domain
+AATCATTTCTGCTGGCGCAC,AGG,0,1803,67686045,2,GTGCGCCAGCAGAAATGATT,antisense,plus,,No Domain
+AATAGTGCAATCATTTCTGC,TGG,2,1811,67686053,2,GCAGAAATGATTGCACTATT,antisense,plus,,No Domain
+AAGATGGACAATTTTTCCTT,CGG,0,1842,67686084,2,AAGGAAAAATTGTCCATCTT,antisense,plus,,No Domain
+TCTTCAGCTTCCGGGctatt,ggg,0,1899,67711416,3,aatagCCCGGAAGCTGAAGA,antisense,plus,,No Domain
+TTCTTCAGCTTCCGGGctat,tgg,1,1900,67711417,3,atagCCCGGAAGCTGAAGAA,antisense,plus,,No Domain
+ACCAAGTTTCTTCAGCTTCC,GGG,2,1907,67711424,3,GGAAGCTGAAGAAACTTGGT,antisense,plus,,No Domain
+TACCAAGTTTCTTCAGCTTC,CGG,0,1908,67711425,3,GAAGCTGAAGAAACTTGGTA,antisense,plus,,No Domain
+CTCAGTGGGGCTGGTGGTGC,TGG,2,1961,67711478,3,GCACCACCAGCCCCACTGAG,antisense,plus,,No Domain
+GTGTGACACTGTCAGCTTCT,GGG,2,1991,67711508,3,AGAAGCTGACAGTGTCACAC,antisense,plus,,No Domain
+TGTGTGACACTGTCAGCTTC,TGG,0,1992,67711509,3,GAAGCTGACAGTGTCACACA,antisense,plus,,No Domain
+TCCAGGACATTCAGAAAGAT,GGG,1,2035,67711552,3,ATCTTTCTGAATGTCCTGGA,antisense,plus,,No Domain
+TTCCAGGACATTCAGAAAGA,TGG,2,2036,67711553,3,TCTTTCTGAATGTCCTGGAA,antisense,plus,,No Domain
+ACACACTACACCTGGCTCAA,TGG,2,2060,67711577,3,TTGAGCCAGGTGTAGTGTGT,antisense,plus,,No Domain
+TGTCCAGCACACACTACACC,TGG,1,2068,67711585,3,GGTGTAGTGTGTGCTGGACA,antisense,plus,,No Domain
+AGGCTGCAAAGGAGTCGGGC,TGG,0,2100,67711617,3,GCCCGACTCCTTTGCAGCCT,antisense,plus,,No Domain
+AGCAAGGCTGCAAAGGAGTC,GGG,1,2104,67711621,3,GACTCCTTTGCAGCCTTGCT,antisense,plus,,No Domain
+GAGCAAGGCTGCAAAGGAGT,CGG,2,2105,67711622,3,ACTCCTTTGCAGCCTTGCTC,antisense,plus,,No Domain
+GCTAGAGAGCAAGGCTGCAA,AGG,2,2111,67711628,3,TTGCAGCCTTGCTCTCTAGC,antisense,plus,,No Domain
+TTCATTGAGGCTAGAGAGCA,AGG,2,2120,67711637,3,TGCTCTCTAGCCTCAATGAA,antisense,plus,,No Domain
+GCGGAAGCctggagaagaag,agg,2,2180,67717485,4,cttcttctccagGCTTCCGC,antisense,plus,,No Domain
+ACGTGTAAGTTGCGGAAGCc,tgg,1,2191,67717496,4,gGCTTCCGCAACTTACACGT,antisense,plus,,No Domain
+AGTACTGAATGACAGCCATC,TGG,0,2220,67717525,4,GATGGCTGTCATTCAGTACT,antisense,plus,,No Domain
+AAACACCATGAGCCCCATCC,AGG,2,2243,67717548,4,GGATGGGGCTCATGGTGTTT,antisense,plus,,No Domain
+GGTGAAGGATCGCCAGCCCA,TGG,2,2267,67717572,4,TGGGCTGGCGATCCTTCACC,antisense,plus,,No Domain
+CCTGGAGTTGACATTGGTGA,AGG,2,2282,67717587,4,TCACCAATGTCAACTCCAGG,antisense,plus,,No Domain
+GAGCATCCTGGAGTTGACAT,TGG,2,2288,67717593,4,ATGTCAACTCCAGGATGCTC,antisense,plus,,No Domain
+AGGGGCGAAGTAGAGCATCC,TGG,2,2300,67717605,4,GGATGCTCTACTTCGCCCCT,antisense,plus,,No Domain
+cTCATTGAAAACCAGATCAG,GGG,2,2318,67717623,4,CTGATCTGGTTTTCAATGAg,antisense,plus,,No Domain
+acTCATTGAAAACCAGATCA,GGG,0,2319,67717624,4,TGATCTGGTTTTCAATGAgt,antisense,plus,,No Domain
+tacTCATTGAAAACCAGATC,AGG,1,2320,67717625,4,GATCTGGTTTTCAATGAgta,antisense,plus,,No Domain
+TGTGCATGCGGTACctggga,agg,0,2331,67721846,5,tcccagGTACCGCATGCACA,antisense,plus,,No Domain
+GACACACTGGCTGTACATCC,GGG,2,2357,67721872,5,GGATGTACAGCCAGTGTGTC,antisense,plus,,No Domain
+GGACACACTGGCTGTACATC,CGG,0,2358,67721873,5,GATGTACAGCCAGTGTGTCC,antisense,plus,,No Domain
+CTTGAGAGAGGTGCCTCATT,CGG,0,2379,67721894,5,AATGAGGCACCTCTCTCAAG,antisense,plus,,No Domain
+GCCATCCAAACTCTTGAGAG,AGG,0,2391,67721906,5,CTCTCAAGAGTTTGGATGGC,antisense,plus,,No Domain
+GGAATTCCTGGGGGGTGATT,TGG,0,2415,67721930,5,AATCACCCCCCAGGAATTCC,antisense,plus,,No Domain
+CATGCACAGGAATTCCTGGG,GGG,2,2423,67721938,5,CCCAGGAATTCCTGTGCATG,antisense,plus,,No Domain
+TCATGCACAGGAATTCCTGG,GGG,0,2424,67721939,5,CCAGGAATTCCTGTGCATGA,antisense,plus,,No Domain
+TTCATGCACAGGAATTCCTG,GGG,1,2425,67721940,5,CAGGAATTCCTGTGCATGAA,antisense,plus,,No Domain
+TTTCATGCACAGGAATTCCT,GGG,2,2426,67721941,5,AGGAATTCCTGTGCATGAAA,antisense,plus,,No Domain
+CTTTCATGCACAGGAATTCC,TGG,0,2427,67721942,5,GGAATTCCTGTGCATGAAAG,antisense,plus,,No Domain
+GTAGCAGTGCTTTCATGCAC,AGG,0,2436,67721951,5,GTGCATGAAAGCACTGCTAC,antisense,plus,,No Domain
+CCATCCACTGGAActgatgt,ggg,1,2461,67722839,6,acatcagTTCCAGTGGATGG,antisense,plus,,No Domain
+CCCATCCACTGGAActgatg,tgg,2,2462,67722840,6,catcagTTCCAGTGGATGGG,antisense,plus,,No Domain
+CTGGTAGAAGCGTCTTGAGC,AGG,2,2576,67722954,6,GCTCAAGACGCTTCTACCAG,antisense,plus,,No Domain
+AGTCCAGGAGCTTGGTGAGC,TGG,0,2595,67722973,6,GCTCACCAAGCTCCTGGACT,antisense,plus,,No Domain
+CTGCACGGAGTCCAGGAGCT,TGG,2,2603,67722981,6,AGCTCCTGGACTCCGTGCAG,antisense,plus,,No Domain
+ttacAGGCTGCACGGAGTCC,AGG,0,2610,67722988,6,GGACTCCGTGCAGCCTgtaa,antisense,plus,,No Domain
+ATGATCTCTGCCATCATTTC,CGG,1,2698,67723777,7,GAAATGATGGCAGAGATCAT,antisense,plus,,No Domain

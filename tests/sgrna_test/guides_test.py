@@ -10,16 +10,20 @@ import pytest
 from be_scan.sgrna.guides import guides
 
 AR_filepath = 'tests/test_data/sgrna_data/230408_AR_Input.fasta'
-genome_filepath = '../reference_genomes/GCF_000001405.26/ncbi_dataset/data/GCF_000001405.26/GCF_000001405.26_GRCh38_genomic.fna'
+genome_filepath = 'tests/ref_data/sgrna_data/hg38_short.fa' # shorter genome file to speed up tests
 protein_filepath = 'tests/test_data/sgrna_data/P10275.fasta'
 
-# takes about a minute per test, can't do too many tests
 @pytest.mark.parametrize("edit_from", ['A', 'C'])
 @pytest.mark.parametrize("edit_to", ['G', 'T'])
 @pytest.mark.parametrize("cas_type", ['SpG', 'SpRY'])
-@pytest.mark.parametrize("window", [(4,8)]) #, (4,7), (3,9)])
-@pytest.mark.parametrize("PAM", [None]) #, 'NGG', 'NGN', 'NRN'])
-def test_guides_basic_pos(edit_from, edit_to, cas_type, PAM, window):
+@pytest.mark.parametrize("window", [(4,8), (3,9)]) # (4, 7) doesn't work
+@pytest.mark.parametrize("PAM", ['NGG', 'NGN', 'NRN'])
+@pytest.mark.parametrize("exclude_introns", [True, False])
+@pytest.mark.parametrize("exclude_nontargeting", [True, False])
+@pytest.mark.parametrize("domains", [{'IDR': [1, 555], 'DNA Binding' : [600, 700]}])
+def test_guides_basic_pos(edit_from, edit_to, cas_type, window, PAM,
+                          exclude_introns, exclude_nontargeting, domains
+                          ):
     df = guides(gene_filepath=AR_filepath,
                 genome_file=genome_filepath,
                 protein_filepath=protein_filepath,
@@ -29,6 +33,9 @@ def test_guides_basic_pos(edit_from, edit_to, cas_type, PAM, window):
                 cas_type=cas_type, 
                 window=window,
                 PAM=PAM,
+                exclude_introns=exclude_introns, 
+                exclude_nontargeting=exclude_nontargeting, 
+                domains=domains,
                 )
     prefix = edit_from+'to'+edit_to
     assert all(col in df.columns for col in ['sgRNA_seq', 'starting_frame', 'gene_pos', 'chr_pos', 

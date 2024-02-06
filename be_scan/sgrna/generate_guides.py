@@ -17,7 +17,7 @@ def generate_BE_guides(gene_filepath,
 
                        gene_name='', PAM=None, window=[4,8], 
                        output_name='guides.csv', output_dir='',
-                       return_df=True, save_df=True,
+                       return_df=True, save_df=True, 
                        exclude_introns=True, 
                        exclude_nontargeting=True, 
                        domains={}, 
@@ -73,7 +73,7 @@ def generate_BE_guides(gene_filepath,
        'sgRNA_strand'   : str,    (ie sense or antisense)
        'gene_strand'    : str,    (ie plus or minus)
        'gene'           : str,    name of the gene
-       'domain'         : str,    name of the domain
+       'domain'         : str,    name of the domain according to input ranges, defulats to 'No Domain'
     """
     
     path = Path.cwd()
@@ -103,6 +103,8 @@ def generate_BE_guides(gene_filepath,
     assert window[1] >= window[0] and window[0] >= 0 
     assert window[1] <= len(gene.fwd_guides[0][0])
 
+    assert isinstance(domains, dict)
+
     # set column names for outputing dataframe
     column_names = ['sgRNA_seq', 'PAM_seq', 'starting_frame', 'gene_pos', 'chr_pos', 'exon', 
                     'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', 'domain', 
@@ -125,7 +127,9 @@ def generate_BE_guides(gene_filepath,
         x.append(gene.strand)
         x.append(gene_name)
         if domains: 
-            for name, range in domains: 
+            for name, range in domains.items(): 
+                assert isinstance(name, str)
+                assert isinstance(range[0], int) and isinstance(range[0], int)
                 if range[0] <= x[3] <= range[1]: 
                     x.append(name)
                     break
@@ -137,7 +141,9 @@ def generate_BE_guides(gene_filepath,
         x.append(gene.strand)
         x.append(gene_name)
         if domains: 
-            for name, range in domains: 
+            for name, range in domains.items(): 
+                assert isinstance(name, str)
+                assert isinstance(range[0], int) and isinstance(range[0], int)
                 if range[0] <= x[3] <= range[1]: 
                     x.append(name)
                     break

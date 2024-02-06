@@ -263,12 +263,13 @@ def main():
     parser_generate_BE_guides.add_argument('edit_to', type=str)
     parser_generate_BE_guides.add_argument('--gene_name', type=str, default=signat_gBEg.parameters['gene_name'].default)
     parser_generate_BE_guides.add_argument('--PAM', type=str, default=signat_gBEg.parameters['PAM'].default)
-    parser_generate_BE_guides.add_argument('--window', type=list, default=signat_gBEg.parameters['window'].default)
+    parser_generate_BE_guides.add_argument('--window', nargs='+', type=int, default=signat_gBEg.parameters['window'].default)
     parser_generate_BE_guides.add_argument('--output_name', type=str, default=signat_gBEg.parameters['output_name'].default)
     parser_generate_BE_guides.add_argument('--output_dir', type=str, default=signat_gBEg.parameters['output_dir'].default)
     parser_generate_BE_guides.add_argument('--return_df', type=bool, default=signat_gBEg.parameters['return_df'].default)
     parser_generate_BE_guides.add_argument('--save_df', type=bool, default=signat_gBEg.parameters['save_df'].default)
     parser_generate_BE_guides.add_argument('--exclude_introns', type=bool, default=signat_gBEg.parameters['exclude_introns'].default)
+    parser_generate_BE_guides.add_argument('--exclude_nontargeting', type=bool, default=signat_gBEg.parameters['exclude_nontargeting'].default)
     parser_generate_BE_guides.set_defaults(func=generate_BE_guides)
 
     ##################################################
@@ -292,16 +293,16 @@ def main():
     
     from be_scan.sgrna import annotate_guides
     signat_ag = inspect.signature(annotate_guides)
-    parser_annot_guides = subparsers.add_parser('annot_guides', 
+    parser_annot_guides = subparsers.add_parser('annotate_guides', 
                                                    help=next(line for line in annotate_guides.__doc__.splitlines() if line),
                                                    description=annotate_guides.__doc__,
                                                    formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_annot_guides.add_argument('guides_file', type=str)
-    parser_annot_guides.add_argument('gene_filepath', type=str)
     parser_annot_guides.add_argument('edit_from', type=str)
     parser_annot_guides.add_argument('edit_to', type=str)
+    parser_annot_guides.add_argument('--gene_filepath', type=str, default=signat_ag.parameters['gene_filepath'].default)
     parser_annot_guides.add_argument('--protein_filepath', type=str, default=signat_ag.parameters['protein_filepath'].default)
-    parser_annot_guides.add_argument('--window', type=list, default=signat_ag.parameters['window'].default)
+    parser_annot_guides.add_argument('--window', nargs='+', type=int, default=signat_ag.parameters['window'].default)
     parser_annot_guides.add_argument('--seq_col', type=str, default=signat_ag.parameters['seq_col'].default)
     parser_annot_guides.add_argument('--gene_pos_col', type=str, default=signat_ag.parameters['gene_pos_col'].default)
     parser_annot_guides.add_argument('--frame_col', type=str, default=signat_ag.parameters['frame_col'].default)
@@ -328,12 +329,13 @@ def main():
     parser_guides.add_argument('--gene_name', type=str, default=signat_g.parameters['gene_name'].default)
     parser_guides.add_argument('--protein_filepath', type=str, default=signat_g.parameters['protein_filepath'].default)
     parser_guides.add_argument('--PAM', type=str, default=signat_g.parameters['PAM'].default)
-    parser_guides.add_argument('--window', type=list, default=signat_g.parameters['window'].default)
+    parser_guides.add_argument('--window', nargs='+', type=int, default=signat_g.parameters['window'].default)
     parser_guides.add_argument('--output_name', type=str, default=signat_g.parameters['output_name'].default)
     parser_guides.add_argument('--output_dir', type=str, default=signat_g.parameters['output_dir'].default)
     parser_guides.add_argument('--return_df', type=bool, default=signat_g.parameters['return_df'].default)
     parser_guides.add_argument('--save_df', type=bool, default=signat_g.parameters['save_df'].default)
     parser_guides.add_argument('--exclude_introns', type=bool, default=signat_g.parameters['exclude_introns'].default)
+    parser_guides.add_argument('--exclude_nontargeting', type=bool, default=signat_g.parameters['exclude_nontargeting'].default)
     parser_guides.set_defaults(func=guides)
 
     args = parser.parse_args()
