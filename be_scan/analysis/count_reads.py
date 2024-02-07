@@ -15,13 +15,15 @@ import numpy as np
 import pandas as pd
 
 def count_reads(sample_sheet, annotated_lib, 
-                file_dir='', 
-                KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', 
-                dont_trim_G=False,
-                out_dir='', out_file='counts_library.csv',
-                save=True, return_df=True, save_files=True,
-                ):
-    """
+                
+    file_dir='', 
+    KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', 
+    dont_trim_G=False,
+    out_dir='', out_file='counts_library.csv',
+    save=True, return_df=True, save_files=True,
+    ):
+    
+    """[Summary]
     Given a set of sgRNA sequences and a FASTQ file, count the reads in the
     FASTQ, assign the reads to sgRNAs, and export the counts to a csv file `out_counts`. All
     sgRNA sequences not found in the reference file (non-perfect matches) are

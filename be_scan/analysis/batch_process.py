@@ -13,15 +13,15 @@ from be_scan.analysis.compare_conds import compare_conds
 
 def batch_process(sample_sheet, annotated_lib, comparisons, 
 
-                  KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTTAGA', dont_trim_G=False,
-                  file_dir='', controls=['t0'], 
-                  
-                  out_dir='', out_counts='counts_library.csv', out_lfc='agg_log2_t0.csv', 
-                  out_conds='avg_conds.csv', out_comps='conditions.csv', 
-                  save=True, return_df=False,
-                 ):
+    KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTTAGA', dont_trim_G=False,
+    file_dir='', controls=['t0'], 
     
-    """
+    out_dir='', out_counts='counts_library.csv', out_lfc='agg_log2_t0.csv', 
+    out_conds='avg_conds.csv', out_comps='conditions.csv', 
+    save=True, return_df=False,
+    ):
+    
+    """[Summary]
     Given a set of sgRNA sequences, a sample sheet, and a list of comparisons, 
     complete count_reads, merge_and_norm, average_reps, compare_conds runs.
 

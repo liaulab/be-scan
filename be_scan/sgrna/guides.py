@@ -14,14 +14,15 @@ from be_scan.sgrna.annotate_guides import annotate_guides
 def guides(gene_filepath, genome_file, 
            cas_type, edit_from, edit_to, 
 
-           protein_filepath='',
-           gene_name='', PAM=None, window=[4,8], 
-           output_name='annotated_guides.csv', output_dir='', delete=False,
-           return_df=True, save_df=True,
-           exclude_introns=True, exclude_nontargeting=True,
-           domains={},
-           ): 
-    """
+    protein_filepath='',
+    gene_name='', PAM=None, window=[4,8], 
+    output_name='annotated_guides.csv', output_dir='', delete=False,
+    return_df=True, save_df=True,
+    exclude_introns=True, exclude_nontargeting=True,
+    domains={},
+    ): 
+    
+    """[Summary]
     Generates a list of guides based on a gene .fasta file,
     and filtering these guides based on PAM and edit available
     in a given window. 

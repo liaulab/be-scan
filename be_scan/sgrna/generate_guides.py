@@ -15,14 +15,15 @@ from be_scan.sgrna._gene_ import GeneForCRISPR
 def generate_BE_guides(gene_filepath, 
                        cas_type, edit_from, edit_to, 
 
-                       gene_name='', PAM=None, window=[4,8], 
-                       output_name='guides.csv', output_dir='',
-                       return_df=True, save_df=True, 
-                       exclude_introns=True, 
-                       exclude_nontargeting=True, 
-                       domains={}, 
-                       ): 
-    """
+    gene_name='', PAM=None, window=[4,8], 
+    output_name='guides.csv', output_dir='',
+    return_df=True, save_df=True, 
+    exclude_introns=True, 
+    exclude_nontargeting=True, 
+    domains={}, 
+    ): 
+    
+    """[Summary]
     Generates a list of guides based on a gene .fasta file,
     and filtering these guides based on PAM and edit available
     in a given window. 

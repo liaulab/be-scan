@@ -12,23 +12,22 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
 
-from be_scan.plot._annotating_ import norm_to_intergenic_ctrls, calc_negative_controls
+from be_scan.plot._annotating_ import *
 
-def plot_boxes(df_filepath, 
-               comparisons, # each comparison is a plot
+def plot_boxes(df_filepath, comparisons, # each comparison is a plot
                plot_column, plot_conditions, # each plot condition is a box in a plot
 
-               neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # normalization params
-               filter=False, filter_col='', filter_conditions=[], # filter out unwanted data params
-               xlab='', ylab='Log2 Fold Change', col_label='subavg', # labels
-               savefig=True, out_name='boxes', out_type='pdf', out_directory='', # output params
+    filter_val=False, val_cols=[], val_min=None, # filter out unwanted quantitative params
+    filter_params=False, params_cols=[], params_conditions=[], # filter out unwanted categorical params
+    neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # normalization params
+    xlab='', ylab='Log2 Fold Change', col_label='subavg', # labels
+    savefig=True, out_name='boxes', out_type='png', out_directory='', # output params
 
-               subplots_kws={'figsize':(5,4)}, 
-               boxplot_kws = {'saturation':1, 'fliersize':4, 'width':0.4, 
-                              'flierprops':{'marker':'o', 'mec':'black', 'lw':1, 'alpha':0.8}
-                              },
-               axhline_kws = {'color':'k', 'ls':'--', 'lw':1},
-               ):
+    subplots_kws={'figsize':(5,4)}, 
+    boxplot_kws = {'saturation':1, 'fliersize':4, 'width':0.4, 
+                   'flierprops':{'marker':'o', 'mec':'black', 'lw':1, 'alpha':0.8}},
+    axhline_kws = {'color':'k', 'ls':'--', 'lw':1},
+    ):
     
     """[Summary]
     This function takes in a dataframe from count_reads, performs normalization, 
@@ -46,19 +45,24 @@ def plot_boxes(df_filepath,
     plot_conditions : list of str, required
         category names of plot_column
 
+    filter_val : bool, optional, defaults to False
+        whether or not to exclude a subset of data from plotting by a minimum value
+    val_cols : list of str, optional, defaults to []
+        names of columns to filter dataframe for plotting
+    val_min : list of str, optional, defaults to None
+        the minimum value by which to filter rows by val_cols
+    filter_params : bool, optional, defaults to False
+        whether or not to exclude a subset of data from plotting by categorical params
+    params_cols : list of str, optional, defaults to []
+        names of column to filter dataframe for plotting
+    params_conditions : list of lists of str, optional, defaults to []
+        names of categories of filter_col to filter dataframe
     neg_ctrl : bool, optional, defaults to False
         whether or not to calulate negative control for normalization and line drawing
     neg_ctrl_col : str, optional, defaults to ''
         column of .csv which correspond to normalization control
     neg_ctrl_conditions : list of str, optional, defaults to []
         name of categories of neg_ctrl_col to normalize dataframe
-    filter : bool, optional, defaults to False
-        whether or not to exclude a subset of data from plotting
-    filter_col : list of str, optional, defaults to []
-        names of column to filter dataframe for plotting
-    filter_conditions : list of lists of str, optional, defaults to []
-        names of categories of filter_col to filter dataframe
-
     xlab : str, optional, defaults to ''
         name of x-axis label
     ylab : str, optional, defaults to 'Log2 Fold Change'
@@ -75,41 +79,70 @@ def plot_boxes(df_filepath,
     out_directory : str, optional, defaults to ''
         path to output directory
 
-    axhline_kws: dict, optional, defaults to {'color':'k', 'ls':'--', 'lw':1}
-        input params for plt.axhline()
-    boxplot_kws: dict, optional, defaults to {'saturation':1, 'fliersize':4, 'width':0.4, 
-                                              'flierprops':{'marker':'o', 'mec':'black', 
-                                              'lw':1, 'alpha':0.8}
-        input params for sns.boxplot()
-    subplots_kws: dict, optional, defaults to {'figsize':(4.5, 4)}
-        input params for plt.subplots()
+    subplots_kws: dict, optional, defaults to 
+        {'figsize':(5,4)}
+        input params for plt.subplots() 
+        https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
+    boxplot_kws: dict, optional, defaults to 
+        {'saturation':1, 'fliersize':4, 'width':0.4, 
+        'flierprops':{'marker':'o', 'mec':'black', 'lw':1, 'alpha':0.8}}
+        input params for sns.boxplot() 
+        https://seaborn.pydata.org/generated/seaborn.boxplot.html
+    axhline_kws: dict, optional, defaults to 
+        {'color':'k', 'ls':'--', 'lw':1}
+        input params for plt.axhline() 
+        https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axhline.html
 
     Returns
     ----------
     None
     """
-    
+
     df_filepath = Path(df_filepath)
-    df_input = pd.read_csv(df_filepath)
+    df_data = pd.read_csv(df_filepath)
+
+    # check conflicting params and output for user
+    if filter_val: 
+        assert isinstance(val_min, int), "check param: val_min"
+        assert isinstance(val_cols, list) and len(val_cols) > 0, "check param: val_cols"
+        for vc in val_cols: 
+            assert vc in df_data.columns.tolist(), "check param: val_cols"
+    if filter_params: 
+        assert isinstance(params_cols, list), "check param: params_cols"
+        assert isinstance(params_conditions, list), "check param: params_conditions"
+        for pc in params_cols: 
+            assert pc in df_data.columns.tolist(), "check param: val_cols"
+    if neg_ctrl: 
+        assert isinstance(neg_ctrl_col, str), "check param: params_cols"
+        assert isinstance(neg_ctrl_conditions, list), "check param: params_conditions"
+        assert neg_ctrl_col in df_data.columns.tolist(), "check param: val_cols"
+    assert isinstance(subplots_kws, dict), "check param: subplots_kws"
+    assert isinstance(boxplot_kws, dict), "check param: boxplot_kws"
+    assert isinstance(axhline_kws, dict), "check param: axhline_kws"
+
     # normalize data to intergenic controls if neg_ctrl is provided
     if neg_ctrl: 
         # calculate negative control stats
-        _, list_negctrlstats, avg_dict = calc_negative_controls(df_input, comparisons, neg_ctrl_col, neg_ctrl_conditions)
+        _, list_negctrlstats, avg_dict = calc_neg_ctrls(df_data, comparisons, 
+                                                        neg_ctrl_col, neg_ctrl_conditions)
         # calculate normalized log_fc scores for each comp condition
-        df_input = norm_to_intergenic_ctrls(df_input, comparisons, avg_dict, col_label)
-    # filter out subset of data if filter is provided
-    if filter: 
-        for col, conds in zip(filter_col, filter_conditions): 
-            df_input = df_input.loc[df_input[col].isin(conds)]
-    df_input = df_input.loc[df_input[plot_column].isin(plot_conditions)].copy()
+        df_data = norm_to_intergenic_ctrls(df_data, comparisons, avg_dict, col_label)
+
+    # filter out subset of data if filters are provided
+    if filter_params: 
+        for col, conds in zip(params_cols, params_conditions): 
+            df_data = df_data.loc[df_data[col].isin(conds)]
+    if filter_val: 
+        for col in val_cols: 
+            df_data = df_data[df_data[col] > val_min]
+    df_data = df_data.loc[df_data[plot_column].isin(plot_conditions)].copy()
     
     for comp in comparisons:
         # make plot for every comparison
         _, ax = plt.subplots(**subplots_kws)
         y = comp+'_'+col_label if neg_ctrl else comp
-        sns.boxplot(data=df_input, ax=ax, x=plot_column, y=y, 
-                    **boxplot_kws
-                    )
+        sns.boxplot(data=df_data, ax=ax, x=plot_column, y=y, 
+                    **boxplot_kws)
         plt.setp(ax.artists, edgecolor='black')
         plt.setp(ax.lines, color='black')
 
@@ -120,16 +153,15 @@ def plot_boxes(df_filepath,
             plt.axhline(y=-2*tup_comp_stdev, **axhline_kws) # bottom baseline
         
         # Adjust x and y axis limits
-        plt.ylim(np.floor(df_input[y].min()),
-                 np.ceil(df_input[y].max()))
+        plt.ylim(np.floor(df_data[y].min()),
+                 np.ceil(df_data[y].max()))
         # Set/adjust labels
-        plt.title(comp) # Set plot title
-        plt.ylabel(ylab) # Set y-axis label
-        plt.xlabel(xlab) # Remove x-axis label
+        plt.title(comp)
+        plt.ylabel(ylab) ; plt.xlabel(xlab)
         plt.xticks(rotation=45, horizontalalignment='right')
-        
         # Adjust dimensions
         plt.tight_layout()
+
         # Save to pdf
         path = Path.cwd()
         if savefig: 

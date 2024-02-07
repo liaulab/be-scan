@@ -12,16 +12,16 @@ from pathlib import Path
 from be_scan.sgrna._genomic_ import *
 from be_scan.sgrna._guideRNA_ import *
 
-def annotate_guides(guides_file,
-                    edit_from, edit_to,
+def annotate_guides(guides_file, edit_from, edit_to,
                     
-                    gene_filepath='', protein_filepath='', window=[4,8], 
-                    seq_col = 'sgRNA_seq', gene_pos_col='gene_pos',
-                    frame_col = 'starting_frame', strand_col = 'sgRNA_strand',
-                    output_name="annotated.csv", output_dir='',
-                    return_df=True, save_df=True,
-                   ): 
-    """
+    gene_filepath='', protein_filepath='', window=[4,8], 
+    seq_col = 'sgRNA_seq', gene_pos_col='gene_pos',
+    frame_col = 'starting_frame', strand_col = 'sgRNA_strand',
+    output_name="annotated.csv", output_dir='',
+    return_df=True, save_df=True,
+    ): 
+    
+    """[Summary]
     Annotates a list of guides in a dataframe with mutational information. 
 
     Parameters

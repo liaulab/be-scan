@@ -12,9 +12,10 @@ from be_scan.plot._annotating_ import *
 def calc_controls(annotated_lib, comparisons, 
                   neg_ctrl_col, neg_ctrl_conditions,
 
-                  out_dir='', out_file='stats.txt', 
-                  ):
-    """
+    out_dir='', out_file='stats.txt', 
+    ):
+
+    """[Summary]
     Calculate and output the normalization controls of the dataframe conditions. 
 
     Parameters
@@ -43,10 +44,10 @@ def calc_controls(annotated_lib, comparisons,
     # normalize data to intergenic controls if neg_ctrl is provided
     # calculate negative control stats
     
-    _, list_negctrlstats, _ = calc_negative_controls(df_conds, 
-                                                     comparisons, 
-                                                     neg_ctrl_col, 
-                                                     neg_ctrl_conditions)
+    _, list_negctrlstats, _ = calc_neg_ctrls(df_conds, 
+                                             comparisons, 
+                                             neg_ctrl_col, 
+                                             neg_ctrl_conditions)
     f = open("demofile2.txt", "a")
     f.write("Now the file has more content!")
     f.close()

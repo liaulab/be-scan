@@ -13,10 +13,12 @@ import pandas as pd
 import re
 
 def average_reps(sample_sheet, annotated_lib, 
-                 out_dir='', out_file='avg_conds.csv', 
-                 save=True, return_df=True,
-                 ):
-    """
+                 
+    out_dir='', out_file='avg_conds.csv', 
+    save=True, return_df=True,
+    ):
+
+    """[Summary]
     Averages the replicates for each condition (e.g. treatment, control) and
     exports the csv file with averaged replicate values for each condition.
     Note that this function is generally used for averaging t0 normalized

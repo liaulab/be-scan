@@ -9,12 +9,13 @@ Date: 231128
 from pathlib import Path
 import pandas as pd
 
-def compare_conds(comparisons, 
-                  annotated_lib, 
-                  out_dir='', out_file='conditions.csv', 
-                  save=True, return_df=True, 
-                  ):
-    """
+def compare_conds(comparisons, annotated_lib, 
+                  
+    out_dir='', out_file='conditions.csv', 
+    save=True, return_df=True, 
+    ):
+    
+    """[Summary]
     Perform pairwise comparisons given a list and export the output to a csv.
 
     Given a list of comparisons (e.g. treatment vs. control), perform pairwise

@@ -17,6 +17,27 @@ protein = "P10275.fasta"
 genome = "tests/ref_data/sgrna_data/hg38_short.fa"
 
 
+def test_plot_scatterplot():
+    out = subprocess.run("python -m be_scan generate_BE_guides -h", shell=True, capture_output=True)
+    assert b"usage: be_scan generate_BE_guides" in out.stdout
+    assert b"Generates a list of guides based on a gene .fasta file" in out.stdout
+
+def test_plot_boxes():
+    out = subprocess.run("python -m be_scan check_guides -h", shell=True, capture_output=True)
+    assert b"usage: be_scan check_guides" in out.stdout
+    assert b"Annotates a list of guides with a count of how many times" in out.stdout
+
+def test_plot_corr_heatmap():
+    out = subprocess.run("python -m be_scan annotate_guides -h", shell=True, capture_output=True)
+    assert b"usage: be_scan annotate_guides" in out.stdout
+    assert b"Annotates a list of guides in a dataframe with mutational information" in out.stdout
+
+def test_plot_corr_scatterplot():
+    out = subprocess.run("python -m be_scan guides -h", shell=True, capture_output=True)
+    assert b"usage: be_scan guides" in out.stdout
+    assert b"Generates a list of guides based on a gene .fasta file" in out.stdout
+
+
 @pytest.mark.parametrize("query, output", 
                         [
                         ("Sp C T", "AR_CBESp_library.csv"), # Sp C to T

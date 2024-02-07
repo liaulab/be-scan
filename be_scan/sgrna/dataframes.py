@@ -9,15 +9,16 @@ from pathlib import Path
 import pandas as pd
 
 def merge_guide_df(guide_df1_filepath, guide_df2_filepath, 
-                   output_name='merged_guides.csv', output_dir='', 
-
-                   shared_col_names = ['sgRNA_seq', 'PAM_seq', 'starting_frame', 'gene_pos', 
-                                       'chr_pos', 'exon', 'coding_seq', 'sgRNA_strand', 
-                                       'gene_strand', 'gene', 'genome_occurrences'], 
-                   sort_by=['gene_pos'],
-                   return_df=True, save_df=True,
-                   ): 
-    """
+                   
+    output_name='merged_guides.csv', output_dir='', 
+    shared_col_names = ['sgRNA_seq', 'PAM_seq', 'starting_frame', 'gene_pos', 
+                        'chr_pos', 'exon', 'coding_seq', 'sgRNA_strand', 
+                        'gene_strand', 'gene', 'genome_occurrences'], 
+    sort_by=['gene_pos'],
+    return_df=True, save_df=True,
+    ): 
+    
+    """[Summary]
     Merge 2 Dataframes (for example ABE and CBE dataframes)
     Keeps annotated information for both separate
     Completes merge on the guide sequence, and keeps annotated information separate.
@@ -53,9 +54,11 @@ def merge_guide_df(guide_df1_filepath, guide_df2_filepath,
         return new_df
 
 def add_guide_df(guides_df_filepath, additional_df_filepath,
-                 output_name='new_guides.csv', output_dir='',
-                 return_df=True, save_df=True,
-                 ): 
+                 
+    output_name='new_guides.csv', output_dir='',
+    return_df=True, save_df=True,
+    ): 
+
     """
     Add 2 Dataframes (ex guides and control guides)
     Reassigns the columns of second dataframe into first. 

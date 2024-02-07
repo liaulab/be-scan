@@ -13,10 +13,12 @@ import numpy as np
 import pandas as pd
 
 def merge_and_norm(sample_sheet, annotated_lib, 
-                   controls=['t0'], out_dir='', out_file='agg_log2_t0.csv', 
-                   save=True, return_df=True,
-                   ):
-    """
+                   
+    controls=['t0'], out_dir='', out_file='agg_log2_t0.csv', 
+    save=True, return_df=True,
+    ):
+    
+    """[Summary]
     For a given set of samples and their raw read count files from count_reads,
     aggregate them into a single dataframe, normalize counts to reads per million,
     perform log2 transform, and then normalize to t0. The aggregated raw reads,

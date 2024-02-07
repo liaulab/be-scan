@@ -38,7 +38,7 @@ def norm_to_intergenic_ctrls(in_dataframe, comparisons, avg_dict, col_label):
     return df_logfc
 
 # calculate the negative controls (ie the mean and stdev for the non)
-def calc_negative_controls(df_data, list_compnames, neg_ctrl_col, neg_ctrl_category): 
+def calc_neg_ctrls(df_data, list_compnames, neg_ctrl_col, neg_ctrl_category): 
     """[Summary]
 
     This function calculates the negative control mean, stdev, upper, and lower. 

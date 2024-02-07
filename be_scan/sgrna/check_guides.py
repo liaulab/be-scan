@@ -14,10 +14,11 @@ import ahocorasick # https://github.com/WojciechMula/pyahocorasick
 
 def check_guides(guides_file, genome_file, 
 
-                 output_name="filtered.csv", output_dir='', delete=False,
-                 return_df=True, save_df=True, 
-                ): 
-    """
+    output_name="filtered.csv", output_dir='', delete=False,
+    return_df=True, save_df=True, 
+    ): 
+
+    """[Summary]
     Annotates a list of guides with a count of how many times,
     a guide and it's rev_complement appears in the reference genome file.
 
