@@ -25,7 +25,7 @@ def plot_scatterplot(df_filepath, # dataframe
 
     autoannot=False, autoannot_label=None, autoannot_top=None, autoannot_cutoff=None, # autoannotate outliers
     xlab='Amino Acid Position', ylab='sgRNA Score', col_label='subavg', # scatterplot labels
-    savefig=True, out_name='scatterplot', out_type='pdf', out_directory='', # output params
+    savefig=True, out_name='scatterplot', out_type='png', out_directory='', show=True, # output params
 
     xlim_kws={'xmin':None, 'xmax':None}, ylim_kws={'ymin':None, 'ymax':None},
     scatterplot_kws={'alpha':0.8, 'linewidth':1.0, 
@@ -97,7 +97,9 @@ def plot_scatterplot(df_filepath, # dataframe
     out_type : str, optional, defaults to 'pdf'
         file type of figure output
     out_directory : str, optional, defaults to ''
-        ath to output directory
+        path to output directory
+    show : bool, optional, defaults to True
+        whether or not to show the plot
 
     xlim_kws: dict, optional, defaults to 
         {'xmin':None, 'xmax':None}
@@ -130,7 +132,7 @@ def plot_scatterplot(df_filepath, # dataframe
 
     # check conflicting params and output for user
     if filter_val: 
-        assert isinstance(val_min, int), "check param: val_min"
+        assert isinstance(val_min, float), "check param: val_min"
         assert isinstance(val_cols, list) and len(val_cols) > 0, "check param: val_cols"
     if filter_params: 
         assert isinstance(params_cols, list), "check param: params_cols"
@@ -143,6 +145,11 @@ def plot_scatterplot(df_filepath, # dataframe
         assert isinstance(neg_ctrl_col, str), "check param: params_cols"
         assert isinstance(neg_ctrl_conditions, list), "check param: params_conditions"
         assert neg_ctrl_col in df_data.columns.tolist(), "check param: val_cols"
+    if autoannot: 
+        assert isinstance(autoannot_label, str), "check param: autoannot_label"
+        assert autoannot_label in df_data.columns.tolist(), "check param: autoannot_label"
+        autoannot_bool = isinstance(autoannot_top, int) or isinstance(autoannot_cutoff, float)
+        assert autoannot_bool, "check param: autoannot_top autoannot_cutoff"
     assert isinstance(xlim_kws, dict), "check param: xlim_kws"
     assert isinstance(ylim_kws, dict), "check param: ylim_kws"
     assert isinstance(scatterplot_kws, dict), "check param: scatterplot_kws"
@@ -214,5 +221,6 @@ def plot_scatterplot(df_filepath, # dataframe
             outpath = path / out_directory
             out = out_name + comp + '.' + out_type
             plt.savefig(outpath / out, format=out_type)
-        plt.show()
+        if show: 
+            plt.show()
         plt.close()

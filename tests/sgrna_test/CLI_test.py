@@ -48,8 +48,10 @@ def test_plot_corr_scatterplot():
                         ("SpRY A G", "AR_ABESpRY_library.csv"), # SpRY A to G
                         ("SpG C T --PAM AGG", "AR_CBESpG_PAMAGG_library.csv"), # pam
                         ("SpG C T --window 3 7", "AR_CBESpG_window37_library.csv"), # window
-                        ("SpG C T --exclude_introns False", "AR_CBESpG_exclintron_library.csv"), # SpG C to T
-                        ("SpG C T --exclude_nontargeting False", "AR_CBESpG_exclnontarg_library.csv"), # SpG C to T
+                        ("SpG C T --exclude_introns", 
+                            "AR_CBESpG_exclintron_library.csv"), # SpG C to T
+                        ("SpG C T --exclude_nontargeting", 
+                            "AR_CBESpG_exclnontarg_library.csv"), # SpG C to T
                         ])
 def test_generate_BE_guides_integration_pos(query, output): 
     out = subprocess.run("python3 -m be_scan generate_BE_guides {0}{1} {2} --output_name {3}".format(test_dir, DNA, 
@@ -57,7 +59,7 @@ def test_generate_BE_guides_integration_pos(query, output):
                          shell=True, capture_output=True)
     assert out.returncode == 0
     assert filecmp.cmp(output, "{0}{1}".format(ref_dir, output))
-    os.system("rm {0}".format(output))
+    # os.system("rm {0}".format(output))
 
 
 @pytest.mark.parametrize("guides_file, query, output", 
@@ -106,8 +108,9 @@ def test_check_guides_pos(guides_file, output):
                             "AR_CBESpG_genename_library.csv"), # pam
                         (" SpG C T --PAM AGG ", "AR_CBESpG_PAMAGG_library.csv"), # pam
                         (" SpG C T --window 3 7 ", "AR_CBESpG_window37_library.csv"), # window
-                        (" SpG C T --exclude_introns False ", "AR_CBESpG_exclintron_library.csv"), # SpG C to T
-                        (" SpG C T --exclude_nontargeting False ", 
+                        (" SpG C T --exclude_introns ", 
+                            "AR_CBESpG_exclintron_library.csv"), # SpG C to T
+                        (" SpG C T --exclude_nontargeting ", 
                             "AR_CBESpG_exclnontarg_library.csv"), # SpG C to T
                         ])
 def test_guides_pos(query, output): 

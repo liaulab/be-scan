@@ -21,7 +21,7 @@ def plot_boxes(df_filepath, comparisons, # each comparison is a plot
     filter_params=False, params_cols=[], params_conditions=[], # filter out unwanted categorical params
     neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # normalization params
     xlab='', ylab='Log2 Fold Change', col_label='subavg', # labels
-    savefig=True, out_name='boxes', out_type='png', out_directory='', # output params
+    savefig=True, out_name='boxes', out_type='png', out_directory='', show=True, # output params
 
     subplots_kws={'figsize':(5,4)}, 
     boxplot_kws = {'saturation':1, 'fliersize':4, 'width':0.4, 
@@ -49,7 +49,7 @@ def plot_boxes(df_filepath, comparisons, # each comparison is a plot
         whether or not to exclude a subset of data from plotting by a minimum value
     val_cols : list of str, optional, defaults to []
         names of columns to filter dataframe for plotting
-    val_min : list of str, optional, defaults to None
+    val_min : float, optional, defaults to None
         the minimum value by which to filter rows by val_cols
     filter_params : bool, optional, defaults to False
         whether or not to exclude a subset of data from plotting by categorical params
@@ -78,6 +78,8 @@ def plot_boxes(df_filepath, comparisons, # each comparison is a plot
         file type of figure output
     out_directory : str, optional, defaults to ''
         path to output directory
+    show : bool, optional, defaults to True
+        whether or not to show the plot
 
     subplots_kws: dict, optional, defaults to 
         {'figsize':(5,4)}
@@ -103,7 +105,7 @@ def plot_boxes(df_filepath, comparisons, # each comparison is a plot
 
     # check conflicting params and output for user
     if filter_val: 
-        assert isinstance(val_min, int), "check param: val_min"
+        assert isinstance(val_min, float), "check param: val_min"
         assert isinstance(val_cols, list) and len(val_cols) > 0, "check param: val_cols"
         for vc in val_cols: 
             assert vc in df_data.columns.tolist(), "check param: val_cols"
@@ -168,5 +170,6 @@ def plot_boxes(df_filepath, comparisons, # each comparison is a plot
             outpath = path / out_directory
             out = out_name + comp + '.' + out_type
             plt.savefig(outpath / out, format=out_type)
-        plt.show()
+        if show: 
+            plt.show()
         plt.close()

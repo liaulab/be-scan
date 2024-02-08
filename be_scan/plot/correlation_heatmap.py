@@ -17,7 +17,7 @@ def plot_corr_heatmap(df_filepath, comparisons,
     filter_val=False, val_cols=[], val_min=None, # filter out unwanted quantitative params
     filter_params=False, params_cols=[], params_conditions=[], # filter out unwanted categorical params
     xlab='', ylab='', title='Spearman Correlation Heatmap', # figure related params
-    savefig=True, out_directory='', out_name='correlation_heatmap', out_type='png', # output related params
+    savefig=True, out_directory='', out_name='correlation_heatmap', out_type='png', show=True, # output related params
 
     heatmap_kws={'center':0, 'linewidth':0.5, 'cmap':'coolwarm', 
                  'square':True, 'cbar_kws':{"shrink": 0.5}, 'annot':True},
@@ -64,6 +64,8 @@ def plot_corr_heatmap(df_filepath, comparisons,
         name of figure output
     out_type : str, optional, defaults to 'pdf'
         file type of figure output
+    show : bool, optional, defaults to True
+        whether or not to show the plot
     
     heatmap_kws: dict, optional, defaults to 
         {'center':0, 'linewidth':0.5, 'cmap':'coolwarm', 
@@ -85,7 +87,7 @@ def plot_corr_heatmap(df_filepath, comparisons,
 
     # check conflicting params and output for user
     if filter_val: 
-        assert isinstance(val_min, int), "check param: val_min"
+        assert isinstance(val_min, float), "check param: val_min"
         assert isinstance(val_cols, list) and len(val_cols) > 0, "check param: val_cols"
         for vc in val_cols: 
             assert vc in df_data.columns.tolist(), "check param: val_cols"
@@ -135,5 +137,6 @@ def plot_corr_heatmap(df_filepath, comparisons,
         outpath = path / out_directory
         out_name = out_name + '.' + out_type
         plt.savefig(outpath / out_name, format=out_type)
-    plt.show()
+    if show: 
+        plt.show()
     plt.close()

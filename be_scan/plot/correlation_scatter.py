@@ -19,7 +19,7 @@ def plot_corr_scatterplot(df_filepath, condition1, condition2,
     filter_val=False, val_cols=[], val_min=None, # filter out unwanted quantitative params
     filter_params=False, params_cols=[], params_conditions=[], # filter out unwanted categorical params
     include_hue=False, hue_col='Mut_type', hue_order=list_muttypes, palette=color_list, # color params
-    savefig=True, out_directory='', out_name='correlation_scatterplot', out_type='png', 
+    savefig=True, out_directory='', out_name='correlation_scatterplot', out_type='png', show=True,
 
     jointplot_kws={'alpha':0.8, 'linewidth':1, 
                     'edgecolor':'black', 's':25}, 
@@ -72,6 +72,8 @@ def plot_corr_scatterplot(df_filepath, condition1, condition2,
         type of the output plot
     out_directory: str, optional, defaults to ''
         directory path of the output plot
+    show : bool, optional, defaults to True
+        whether or not to show the plot
 
     jointplot_kws: dict, optional, defaults to 
         {'alpha':0.8, 'linewidth':1, 
@@ -89,7 +91,7 @@ def plot_corr_scatterplot(df_filepath, condition1, condition2,
 
     # check conflicting params and output for user
     if filter_val: 
-        assert isinstance(val_min, int), "check param: val_min"
+        assert isinstance(val_min, float), "check param: val_min"
         assert isinstance(val_cols, list) and len(val_cols) > 0, "check param: val_cols"
     if filter_params: 
         assert isinstance(params_cols, list), "check param: params_cols"
@@ -136,5 +138,6 @@ def plot_corr_scatterplot(df_filepath, condition1, condition2,
         outpath = path / out_directory
         out = condition1 + condition2 + '_' + out_name + '.' + out_type
         plt.savefig(outpath / out, format=out_type)
-    plt.show()
+    if show: 
+        plt.show()
     plt.close()
