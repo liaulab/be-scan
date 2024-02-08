@@ -70,7 +70,7 @@ def merge_and_norm(sample_sheet, annotated_lib,
         for sample in list_samples:
             # log2 normalization
             total_reads = pd.to_numeric(df_reads[sample]).sum()
-            df_reads[sample+'_log2'] = df_reads[sample].apply(lambda x: np.log2(((float(x) * 1e6 + 1)/ total_reads)))
+            df_reads[sample+'_log2'] = df_reads[sample].apply(lambda x: np.log2((x * 1000000 / total_reads) + 1))
             # t0 normalization
             df_reads[sample+'_subt0'] = df_reads[sample+'_log2'].sub(df_reads[t0+'_log2'])
         # drop the t0 column since it will be 0
