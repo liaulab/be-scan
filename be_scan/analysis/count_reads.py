@@ -93,7 +93,7 @@ def count_reads(sample_sheet, annotated_lib,
 
         # STEP 1B: SET UP VARIABLES FOR SCRIPT
         # make dictionary to hold sgRNA counts - sgRNA_seq, count as k,v
-        dict_p = {sgRNA:0 for sgRNA in df_ref['sgRNA_seq']}
+        dict_p = {sgRNA.upper():0 for sgRNA in df_ref['sgRNA_seq']}
         list_np = [] # placeholder list for non-perfect matches
         # reads count of: total, perfect match, non perfect match, no key found, not 20bps
         num_reads, num_p_matches, num_np_matches, num_nokey, num_badlength = 0, 0, 0, 0, 0
