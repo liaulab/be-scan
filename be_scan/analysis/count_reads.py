@@ -81,6 +81,7 @@ def count_reads(sample_sheet, annotated_lib,
     # look for 'sgRNA_seq' column, raise Exception if missing
     annotated_lib = Path(annotated_lib)
     df_ref = pd.read_csv(annotated_lib, header=0) # explicit header = first row
+    df_ref['sgRNA_seq'] = df_ref['sgRNA_seq'].str.upper() 
     if 'sgRNA_seq' not in df_ref.columns.tolist():
         raise Exception('annotated_lib is missing column: sgRNA_seq')
 
@@ -93,7 +94,7 @@ def count_reads(sample_sheet, annotated_lib,
 
         # STEP 1B: SET UP VARIABLES FOR SCRIPT
         # make dictionary to hold sgRNA counts - sgRNA_seq, count as k,v
-        dict_p = {sgRNA.upper():0 for sgRNA in df_ref['sgRNA_seq']}
+        dict_p = {sgRNA:0 for sgRNA in df_ref['sgRNA_seq']}
         list_np = [] # placeholder list for non-perfect matches
         # reads count of: total, perfect match, non perfect match, no key found, not 20bps
         num_reads, num_p_matches, num_np_matches, num_nokey, num_badlength = 0, 0, 0, 0, 0
