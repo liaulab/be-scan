@@ -2,8 +2,9 @@ import be_scan.plot as bsplot
 import os
 import pytest
 
-file = "tests/test_data/plot_data/NZL10196_v9_comparisons.csv"
+file = "tests/test_data/plot/NZL10196_v9_comparisons.csv"
 comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg']
+corr_params = {"df_filepath":file, "comparisons":comparisons, }
 
 def check_comparisons(): 
     path = f"correlation_heatmap.png"
@@ -13,20 +14,17 @@ def check_comparisons():
 # positive tests
 
 def test_plot_corrheatmap_basic_pos():
-    bsplot.plot_corr_heatmap(df_filepath = file, comparisons = comparisons, 
-    )
+    bsplot.plot_corr_heatmap(**corr_params, )
     check_comparisons()
         
 def test_plot_corrheatmap_filtervals_pos():
-    bsplot.plot_corr_heatmap(df_filepath = file, comparisons = comparisons, 
-                            filter_val=True, val_min=0.0, val_cols=['d3-pos', 'd6-pos', 'd9-pos'],
-    )
+    bsplot.plot_corr_heatmap(**corr_params, filter_val=True, 
+                             val_min=0.0, val_cols=['d3-pos', 'd6-pos', 'd9-pos'], )
     check_comparisons()
 
 def test_plot_corrheatmap_filterparams_pos():
-    bsplot.plot_corr_heatmap(df_filepath = file, comparisons = comparisons, 
-                            filter_params=True, params_cols=['sgRNA_strand'], params_conditions=[['sense']],
-    )
+    bsplot.plot_corr_heatmap(**corr_params, filter_params=True, 
+                             params_cols=['sgRNA_strand'], params_conditions=[['sense']], )
     check_comparisons()
 
 # negative tests
@@ -36,8 +34,7 @@ def test_plot_corrheatmap_filterparams_pos():
                         ])
 def test_plot_corrheatmap_filtervals_neg(params):
     with pytest.raises(AssertionError): 
-        bsplot.plot_corr_heatmap(df_filepath = file, comparisons = comparisons, 
-                                filter_val=True, **params )
+        bsplot.plot_corr_heatmap(**corr_params, filter_val=True, **params )
         check_comparisons()
 
 @pytest.mark.parametrize("params", [{'params_cols':'sgRNA_strand', 'params_conditions':[['sense']]}, # params_cols type error
@@ -45,6 +42,5 @@ def test_plot_corrheatmap_filtervals_neg(params):
                         ])
 def test_plot_corrheatmap_filterparams_neg(params):
     with pytest.raises(AssertionError): 
-        bsplot.plot_corr_heatmap(df_filepath = file, comparisons = comparisons, 
-                                filter_params=True, **params )
+        bsplot.plot_corr_heatmap(**corr_params, filter_params=True, **params )
         check_comparisons()

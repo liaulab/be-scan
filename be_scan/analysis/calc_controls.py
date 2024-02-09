@@ -9,10 +9,11 @@ from pathlib import Path
 import pandas as pd
 from be_scan.plot._annotating_ import *
 
-def calc_controls(annotated_lib, comparisons, 
+def calc_controls(annotated_lib, stats_comparisons, 
                   neg_ctrl_col, neg_ctrl_conditions,
 
     out_dir='', out_file='stats.txt', 
+    save=True, return_txt=False,
     ):
 
     """[Summary]
@@ -22,8 +23,8 @@ def calc_controls(annotated_lib, comparisons,
     ----------
     annotated_lib : str or path
         String or path to the csv file containing the values for comparison.
-        The column headers must match the sample names in comparisons
-    comparisons : list of str
+        The column headers must match the sample names in stats_comparisons
+    stats_comparisons : list of str
         a list of columns of the annotated_lib for which to calculate negative controls
     neg_ctrl_col : str
         column of annotated_lib which correspond to normalization control
@@ -41,28 +42,28 @@ def calc_controls(annotated_lib, comparisons,
     path = Path.cwd()
     df_conds = pd.read_csv(annotated_lib)
 
-    # normalize data to intergenic controls if neg_ctrl is provided
-    # calculate negative control stats
-    
-    _, list_negctrlstats, _ = calc_neg_ctrls(df_conds, 
-                                             comparisons, 
-                                             neg_ctrl_col, 
-                                             neg_ctrl_conditions)
-    f = open("demofile2.txt", "a")
-    f.write("Now the file has more content!")
-    f.close()
+    # calculate negative control stats    
+    _, list_negctrlstats, _ = calc_neg_ctrls(df_conds, stats_comparisons, 
+                                             neg_ctrl_col, neg_ctrl_conditions)
 
     # write and export files
     outpath = path / out_dir
     Path.mkdir(outpath, exist_ok=True)
 
-    f = open(outpath / out_file, "w")
-    for comp, mean, stdev, top, bottom in list_negctrlstats: 
-        f.write("For comparison {0}".format(comp))
-        f.write("Mean is {0}".format(mean))
-        f.write("Standard deviation is {0}".format(stdev))
-        f.write("Mean +- 2 standard deviations {0} {1}".format(top, bottom))
-    f.close()
+    if save: 
+        f = open(outpath / out_file, "w")
+        for comp, mean, stdev, top, bottom in list_negctrlstats: 
+            f.write("For comparison {0}\n".format(comp))
+            f.write("Mean is {0}\n".format(mean))
+            f.write("Standard deviation is {0}\n".format(stdev))
+            f.write("Mean +- 2 standard deviations {0} {1}\n".format(top, bottom))
+        f.close()
+        print('calc_controls outputed to', str(outpath / out_file))
+    if return_txt: 
+        for comp, mean, stdev, top, bottom in list_negctrlstats: 
+            print("For comparison {0}\n".format(comp))
+            print("Mean is {0}\n".format(mean))
+            print("Standard deviation is {0}\n".format(stdev))
+            print("Mean +- 2 standard deviations {0} {1}\n".format(top, bottom))
 
-    print('calc_controls outputed to', str(outpath / out_file))
     print('Calculating controls completed')

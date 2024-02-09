@@ -1,8 +1,0 @@
-sample_id,fastq_file,counts_file,condition,agg_conditions,noncounts_file,stats_file
-MY0,MY400-D0_S45_L001_R1_001.fastq.gz,counts-1.csv,t0,t0,noncounts-1.csv,stats-1.txt
-MY1,MY400-Unsorted1_S49_L001_R1_001.fastq.gz,counts-5.csv,unsorted-1,24h_unsorted,noncounts-5.csv,stats-5.txt
-MY2,MY400-Unsorted2_S50_L001_R1_001.fastq.gz,counts-6.csv,unsorted-2,24h_unsorted,noncounts-6.csv,stats-6.txt
-MY3,MY400-Unsorted3_S51_L001_R1_001.fastq.gz,counts-7.csv,unsorted-3,24h_unsorted,noncounts-7.csv,stats-7.txt
-MY4,MY400-Sorted1_S52_L001_R1_001.fastq.gz,counts-8.csv,sorted-1,24h_sorted,noncounts-8.csv,stats-8.txt
-MY5,MY400-Sorted2_S53_L001_R1_001.fastq.gz,counts-9.csv,sorted-2,24h_sorted,noncounts-9.csv,stats-9.txt
-MY6,MY400-Sorted3_S54_L001_R1_001.fastq.gz,counts-10.csv,sorted-3,24h_sorted,noncounts-10.csv,stats-10.txt

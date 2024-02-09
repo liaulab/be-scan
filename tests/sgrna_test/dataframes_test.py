@@ -5,10 +5,10 @@ from pathlib import Path
 
 from be_scan.sgrna.dataframes import *
 
-testdata_filepath = "tests/test_data/sgrna_data/"
-df1 = Path(testdata_filepath + "simpledf1.csv")
-df2 = Path(testdata_filepath + "simpledf2.csv")
-df3 = Path(testdata_filepath + "simpledf3.csv")
+testdata_filepath = "tests/test_data/sgrna/"
+df1 = Path(f"{testdata_filepath}simpledf1.csv")
+df2 = Path(f"{testdata_filepath}simpledf2.csv")
+df3 = Path(f"{testdata_filepath}simpledf3.csv")
 
 def test_merge_guide_df_pos(): 
     out = merge_guide_df(

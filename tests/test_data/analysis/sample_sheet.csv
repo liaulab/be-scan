@@ -1,0 +1,5 @@
+sample_id,fastq_file,condition,agg_conditions,counts_file,noncounts_file,stats_file
+0,dummy.fastq,counts1,t0,counts-1.csv,noncounts-1.csv,stats-1.txt
+0,dummy.fastq,counts2,cond1,counts-1.csv,noncounts-1.csv,stats-1.txt
+0,dummy.fastq,counts3,cond1,counts-1.csv,noncounts-1.csv,stats-1.txt
+0,dummy.fastq,counts4,cond1,counts-1.csv,noncounts-1.csv,stats-1.txt

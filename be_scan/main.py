@@ -59,7 +59,7 @@ def main():
                                                   formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_merge_and_norm.add_argument('sample_sheet', type=str)
     parser_merge_and_norm.add_argument('annotated_lib', type=str)
-    parser_merge_and_norm.add_argument('--controls', type=str, default=signat_man.parameters['controls'].default)
+    parser_merge_and_norm.add_argument('--controls', nargs='+', type=str, default=signat_man.parameters['controls'].default)
     parser_merge_and_norm.add_argument('--out_dir', type=str, default=signat_man.parameters['out_dir'].default)
     parser_merge_and_norm.add_argument('--out_file', type=str, default=signat_man.parameters['out_file'].default)
     parser_merge_and_norm.add_argument('--save', action='store_false', default=signat_man.parameters['save'].default)
@@ -100,6 +100,24 @@ def main():
     
     ##################################################
     
+    from be_scan.analysis import calc_controls
+    signat_ccs = inspect.signature(calc_controls)
+    parser_calc_controls = subparsers.add_parser('calc_controls', 
+                                                help=next(line for line in calc_controls.__doc__.splitlines() if line),
+                                                description=calc_controls.__doc__,
+                                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser_calc_controls.add_argument('annotated_lib', type=str)
+    parser_calc_controls.add_argument('neg_ctrl_col', type=str)
+    parser_calc_controls.add_argument('-sc', '--stats_comparisons', nargs='+', type=str, required=True)
+    parser_calc_controls.add_argument('-ncc', '--neg_ctrl_conditions', nargs='+', type=str, required=True)
+    parser_calc_controls.add_argument('--out_dir', type=str, default=signat_ccs.parameters['out_dir'].default)
+    parser_calc_controls.add_argument('--out_file', type=str, default=signat_ccs.parameters['out_file'].default)
+    parser_calc_controls.add_argument('--save', action='store_false', default=signat_ccs.parameters['save'].default)
+    parser_calc_controls.add_argument('--return_txt', action='store_false', default=signat_ccs.parameters['return_txt'].default)
+    parser_calc_controls.set_defaults(func=calc_controls)
+    
+    ##################################################
+    
     from be_scan.analysis import batch_process
     signat_bp = inspect.signature(batch_process)
     parser_batch_process = subparsers.add_parser('batch_process', 
@@ -109,6 +127,8 @@ def main():
     parser_batch_process.add_argument('sample_sheet', type=str)
     parser_batch_process.add_argument('annotated_lib', type=str)
     parser_batch_process.add_argument('comparisons', type=str)
+    parser_batch_process.add_argument('neg_ctrl_col', type=str)
+    parser_batch_process.add_argument('-ncc', '--neg_ctrl_conditions', nargs='+', type=str, required=True)
     
     parser_batch_process.add_argument('--KEY_INTERVAL', type=int, nargs=2, default=signat_bp.parameters['KEY_INTERVAL'].default)
     parser_batch_process.add_argument('--KEY', type=str, default=signat_bp.parameters['KEY'].default)
@@ -122,6 +142,7 @@ def main():
     parser_batch_process.add_argument('--out_lfc', type=str, default=signat_bp.parameters['out_lfc'].default) # merge_and_norm
     parser_batch_process.add_argument('--out_conds', type=str, default=signat_bp.parameters['out_conds'].default) # average_reps
     parser_batch_process.add_argument('--out_comps', type=str, default=signat_bp.parameters['out_comps'].default) # compare_conds
+    parser_batch_process.add_argument('--out_stats', type=str, default=signat_bp.parameters['out_stats'].default) # calc_controls
     parser_batch_process.add_argument('--save', action='store_false', default=signat_bp.parameters['save'].default)
     parser_batch_process.add_argument('--return_df', action='store_true', default=signat_bp.parameters['return_df'].default)
     parser_batch_process.set_defaults(func=batch_process)

@@ -5,11 +5,7 @@ from be_scan.sgrna._genomic_ import process_PAM
 import pandas as pd
 
 # VARIABLES
-seq_col = 'sgRNA_seq'
-gene_pos_col='gene_pos'
-frame_col = 'starting_frame'
-strand_col = 'sgRNA_strand'
-col_names = frame_col, strand_col, gene_pos_col, seq_col
+col_names = 'starting_frame', 'sgRNA_strand', 'gene_pos', 'sgRNA_seq'
 
 sample = {'sgRNA_seq':      ['AGCTAGCTAGCTAGCTAGCT', 'AGCTAGCTAGCTAGCTAGCT', 
                              'AGCTAGCTAGCTAGCTAGCT', 'AGCTAGCTAGCTAGCTAGCT', 

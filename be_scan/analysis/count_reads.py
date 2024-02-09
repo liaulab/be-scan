@@ -17,8 +17,7 @@ import pandas as pd
 def count_reads(sample_sheet, annotated_lib, 
                 
     file_dir='', 
-    KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', 
-    dont_trim_G=False,
+    KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
     out_dir='', out_file='counts_library.csv',
     save=True, return_df=True, save_files=True,
     ):

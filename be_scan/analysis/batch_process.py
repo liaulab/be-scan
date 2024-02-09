@@ -6,18 +6,22 @@ Date: 231128
 {Description: Run count_reads, merge_and_norm, average_reps, compare_conds}
 """
 
+import pandas as pd
+
 from be_scan.analysis.count_reads import count_reads
 from be_scan.analysis.merge_and_norm import merge_and_norm
 from be_scan.analysis.average_reps import average_reps
 from be_scan.analysis.compare_conds import compare_conds
+from be_scan.analysis.calc_controls import calc_controls
 
 def batch_process(sample_sheet, annotated_lib, comparisons, 
+                  neg_ctrl_col, neg_ctrl_conditions, 
 
     KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTTAGA', dont_trim_G=False,
     file_dir='', controls=['t0'], 
     
     out_dir='', out_counts='counts_library.csv', out_lfc='agg_log2_t0.csv', 
-    out_conds='avg_conds.csv', out_comps='conditions.csv', 
+    out_conds='avg_conds.csv', out_comps='conditions.csv', out_stats = 'stats.txt',
     save=True, return_df=False,
     ):
     
@@ -105,4 +109,12 @@ def batch_process(sample_sheet, annotated_lib, comparisons,
         'out_dir':out_dir, 'out_file':out_comps, 'save':save, 'return_df':return_df,
     }
     compare_conds(**compare_conds_params)
-    
+
+    comps = pd.read_csv(comparisons)
+    stats_comparisons = comps.name.tolist()
+    calc_controls_params = {
+        'annotated_lib':out_dir+out_comps, 'comparisons':stats_comparisons, 
+        'neg_ctrl_col':neg_ctrl_col, 'neg_ctrl_conditions':neg_ctrl_conditions, 
+        'out_dir':out_dir, 'out_file':out_stats, 'save':save, 'return_txt':return_df,
+    }
+    calc_controls(**calc_controls_params)

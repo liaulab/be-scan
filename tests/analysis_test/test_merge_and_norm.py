@@ -9,16 +9,16 @@ from be_scan.analysis import merge_and_norm
 import os
 import pandas as pd
 
-file_dir = "tests/test_data/analysis_data/"
+file_dir = "tests/test_data/analysis/"
 
-# def test_merge_and_norm(): 
-#     merge_and_norm(sample_sheet   = file_dir + "sample_sheet_batch_count_CBE.csv", 
-#                    annotated_lib  = file_dir + "CRAF_and_cntrls_ref_lib.csv",
-#                    out_dir        = file_dir,
-#                     )
-#     df_reads = pd.read_csv(file_dir + "agg_log2_t0.csv")
-#     assert 't0' in df_reads.columns
-#     # this is only t0 so there is no new column added to agg_t0_reps
+def test_merge_and_norm(): 
+    merge_and_norm(sample_sheet   = f"{file_dir}sample_sheet.csv", 
+                   annotated_lib  = f"{file_dir}count_reads_sample_out.csv",
+                   out_dir        = file_dir, 
+                   controls       = ['counts1'],
+                  )
+    df_reads = pd.read_csv(f"{file_dir}agg_log2_t0.csv")
+    assert 'counts1_subt0' in df_reads.columns
 
-#     # clean up
-#     os.remove(file_dir + "agg_log2_t0.csv")
+    # clean up
+    os.remove(f"{file_dir}agg_log2_t0.csv")

@@ -1,8 +1,0 @@
-sample_id,fastq_file,condition,counts_file,condition,agg_conditions,noncounts_file,stats_file
-CRAF CBE d0,JW114-01_S1_L001_R1_001.fastq,t0,output/counts-1.csv,t0,t0,output/noncounts-1.csv,output/stats-1.txt
-CRAF CBE noDox 1,JW114-02_S2_L001_R1_001.fastq,d14 CBE no dox,output/counts-2.csv,nodox-1,nodox,output/noncounts-2.csv,output/stats-2.txt
-CRAF CBE noDox 2,JW114-03_S3_L001_R1_001.fastq,d14 CBE no dox,output/counts-3.csv,nodox-2,nodox,output/noncounts-3.csv,output/stats-3.txt
-CRAF CBE noDox 3,JW114-04_S4_L001_R1_001.fastq,d14 CBE no dox,output/counts-4.csv,nodox-3,nodox,output/noncounts-4.csv,output/stats-4.txt
-CRAF CBE +Dox 1,JW114-05_S5_L001_R1_001.fastq,d14 CBE dox,output/counts-5.csv,dox-1,dox,output/noncounts-5.csv,output/stats-5.txt
-CRAF CBE +Dox 2,JW114-06_S6_L001_R1_001.fastq,d14 CBE dox,output/counts-6.csv,dox-2,dox,output/noncounts-6.csv,output/stats-6.txt
-CRAF CBE +Dox 3,JW114-07_S7_L001_R1_001.fastq,d14 CBE dox,output/counts-7.csv,dox-3,dox,output/noncounts-7.csv,output/stats-7.txt
