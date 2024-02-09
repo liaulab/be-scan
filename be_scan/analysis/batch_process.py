@@ -113,7 +113,7 @@ def batch_process(sample_sheet, annotated_lib, comparisons,
     comps = pd.read_csv(comparisons)
     stats_comparisons = comps.name.tolist()
     calc_controls_params = {
-        'annotated_lib':out_dir+out_comps, 'comparisons':stats_comparisons, 
+        'annotated_lib':out_dir+out_comps, 'stats_comparisons':stats_comparisons, 
         'neg_ctrl_col':neg_ctrl_col, 'neg_ctrl_conditions':neg_ctrl_conditions, 
         'out_dir':out_dir, 'out_file':out_stats, 'save':save, 'return_txt':return_df,
     }
