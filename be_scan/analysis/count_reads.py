@@ -112,7 +112,7 @@ def count_reads(sample_sheet, annotated_lib,
             read_sequence = str.upper(str(read))
             key_region = read_sequence[KEY_START:KEY_END]
             key_index = key_region.find(KEY)
-            key_rev_index = key_region.find(KEY_REV)
+            key_rev_index = key_region.rfind(KEY_REV)
             if key_index < 0 or key_rev_index <= key_index: # if keys not found
                 num_nokey += 1
                 continue
