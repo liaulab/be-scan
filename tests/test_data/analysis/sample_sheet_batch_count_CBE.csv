@@ -1,2 +1,0 @@
-sample_id,fastq_file,condition,counts_file,condition,agg_conditions,noncounts_file,stats_file
-CRAF CBE d0,JW114-01_S1_L001_R1_001.fastq,t0,counts-1.csv,t0,t0,noncounts-1.csv,stats-1.txt
