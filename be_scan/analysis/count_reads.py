@@ -155,7 +155,6 @@ def count_reads(sample_sheet, annotated_lib,
     
         # STEP 4: CALCULATE STATS AND GENERATE STAT OUTPUT FILE
         # percentage of guides that matched perfectly
-        print(num_p_matches, num_np_matches)
         pct_p_match = round(num_p_matches/float(num_p_matches + num_np_matches) * 100, 1)
         # percentage of undetected guides (no read counts)
         vals_p = np.fromiter(dict_p.values(), dtype=int)
