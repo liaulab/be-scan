@@ -36,7 +36,7 @@ def test_corr_heatmap():
     assert b"Annotates a list of guides in a dataframe with mutational information"in out.stdout
 
 def test_corr_jointplot():
-    out = subprocess.run("python -m be_scan guides -h", shell=True, capture_output=True)
+    out = subprocess.run("python -m be_scan design_library -h", shell=True, capture_output=True)
     assert b"usage: be_scan guides"in out.stdout
     assert b"Generates a list of guides based on a gene .fasta file"in out.stdout
 
@@ -108,7 +108,7 @@ def test_reference_check_pos(guides_file, output):
                         ("SpG C T --exclude_nontargeting", f"{C}SpG_exclnontarg{suf}"), # SpG C to T
                         ])
 def test_guides_pos(query, output): 
-    out = subprocess.run(f"python3 -m be_scan guides {test_dir}{DNA} {genome} {query} --output_name {output}",
+    out = subprocess.run(f"python3 -m be_scan design_library {test_dir}{DNA} {genome} {query} --output_name {output}",
                          shell=True, capture_output=True)
     assert out.returncode == 0
     # assert filecmp.cmp(output, "{0}{1}".format(test_dir, output))

@@ -13,7 +13,7 @@ from be_scan.sgrna._guideRNA_ import filter_guide, filter_repeats
 from be_scan.sgrna._gene_ import GeneForCRISPR
 
 def generate_library(gene_filepath, 
-                       cas_type, edit_from, edit_to, 
+                     cas_type, edit_from, edit_to, 
 
     gene_name='', PAM=None, window=[4,8], 
     output_name='guides.csv', output_dir='',

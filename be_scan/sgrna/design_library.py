@@ -11,7 +11,7 @@ from be_scan.sgrna.generate_library import generate_library
 from be_scan.sgrna.reference_check import reference_check
 from be_scan.sgrna.annotate import annotate
 
-def guides(gene_filepath, genome_file, 
+def design_library(gene_filepath, genome_file, 
            cas_type, edit_from, edit_to, 
 
     protein_filepath='',

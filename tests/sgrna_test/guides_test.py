@@ -7,7 +7,7 @@ Date: 230911
 
 import os
 import pytest
-from be_scan.sgrna.guides import guides
+from be_scan.sgrna.design_library import design_library
 
 AR_filepath = "tests/test_data/sgrna/230408_AR_Input.fasta"
 genome_filepath = "tests/test_data/sgrna/hg38_short.fa" # shorter genome file to speed up tests
@@ -24,19 +24,19 @@ protein_filepath = "tests/test_data/sgrna/P10275.fasta"
 def test_guides_basic_pos(edit_from, edit_to, cas_type, window, PAM,
                           exclude_introns, exclude_nontargeting, domains
                           ):
-    df = guides(gene_filepath=AR_filepath,
-                genome_file=genome_filepath,
-                protein_filepath=protein_filepath,
-                gene_name="AR",
-                edit_from=edit_from, 
-                edit_to=edit_to, 
-                cas_type=cas_type, 
-                window=window,
-                PAM=PAM,
-                exclude_introns=exclude_introns, 
-                exclude_nontargeting=exclude_nontargeting, 
-                domains=domains,
-                )
+    df = design_library(gene_filepath=AR_filepath,
+                        genome_file=genome_filepath,
+                        protein_filepath=protein_filepath,
+                        gene_name="AR",
+                        edit_from=edit_from, 
+                        edit_to=edit_to, 
+                        cas_type=cas_type, 
+                        window=window,
+                        PAM=PAM,
+                        exclude_introns=exclude_introns, 
+                        exclude_nontargeting=exclude_nontargeting, 
+                        domains=domains,
+                        )
     pre = edit_from+"to"+edit_to+"_"
     assert all(col in df.columns for col in ["sgRNA_seq", "starting_frame", "gene_pos", "chr_pos", 
                                              "exon", "coding_seq", "sgRNA_strand", "gene_strand", "gene", 
