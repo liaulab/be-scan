@@ -13,7 +13,7 @@ file_dir = "tests/test_data/analysis/"
 
 def test_average_reps(): 
     average_reps(sample_sheet   = f"{file_dir}sample_sheet.csv", 
-                 annotated_lib  = f"{file_dir}merge_and_norm_sample_out.csv", 
+                 log2_subt0     = f"{file_dir}merge_and_norm_sample_out.csv", 
                  out_dir        = file_dir,
                 )
     df_conds = pd.read_csv(f"{file_dir}avg_conds.csv")

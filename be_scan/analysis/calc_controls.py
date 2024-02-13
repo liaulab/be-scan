@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 from be_scan.plot._annotating_ import *
 
-def calc_controls(annotated_lib, stats_comparisons, 
+def calc_controls(conditions, stats_comparisons, 
                   neg_ctrl_col, neg_ctrl_conditions,
 
     out_dir='', out_file='stats.txt', 
@@ -21,13 +21,13 @@ def calc_controls(annotated_lib, stats_comparisons,
 
     Parameters
     ----------
-    annotated_lib : str or path
+    conditions : str or path
         String or path to the csv file containing the values for comparison.
         The column headers must match the sample names in stats_comparisons
     stats_comparisons : list of str
-        a list of columns of the annotated_lib for which to calculate negative controls
+        a list of columns of the conditions for which to calculate negative controls
     neg_ctrl_col : str
-        column of annotated_lib which correspond to normalization control
+        column of conditions which correspond to normalization control
     neg_ctrl_conditions : list of str
         names of categories of neg_ctrl_col to normalize dataframe
     
@@ -40,7 +40,7 @@ def calc_controls(annotated_lib, stats_comparisons,
     """
 
     path = Path.cwd()
-    df_conds = pd.read_csv(annotated_lib)
+    df_conds = pd.read_csv(conditions)
 
     # calculate negative control stats    
     _, list_negctrlstats, _ = calc_neg_ctrls(df_conds, stats_comparisons, 

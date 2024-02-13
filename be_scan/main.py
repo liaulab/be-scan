@@ -11,21 +11,21 @@ def main():
     parser = argparse.ArgumentParser(prog="be_scan")
     subparsers = parser.add_subparsers(required=True)
 
-    from be_scan.analysis import validate_cloning
-    signat_vc = inspect.signature(validate_cloning)
-    parser_validate_cloning = subparsers.add_parser('validate_cloning',
-                                                    help=next(line for line in validate_cloning.__doc__.splitlines() if line),
-                                                    description=validate_cloning.__doc__,
-                                                    formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser_validate_cloning.add_argument('query_dir', type=str)
-    parser_validate_cloning.add_argument('spacers', type=str)
-    parser_validate_cloning.add_argument('vector', type=str)
-    parser_validate_cloning.add_argument('out_csv', type=str, help="Output CSV file name")
-    parser_validate_cloning.add_argument('--enzyme', type=str, default="Esp3I")
-    parser_validate_cloning.add_argument('--overhangs', type=str, default=('CACC', 'GTTT'), nargs=2)
-    parser_validate_cloning.add_argument('--ref_name_pattern', type=str, default=signat_vc.parameters['ref_name_pattern'].default)
-    parser_validate_cloning.add_argument('--flank_width', type=int, default=signat_vc.parameters['flank_width'].default)
-    parser_validate_cloning.set_defaults(func=validate_cloning)
+    # from be_scan.analysis import validate_cloning
+    # signat_vc = inspect.signature(validate_cloning)
+    # parser_validate_cloning = subparsers.add_parser('validate_cloning',
+    #                                                 help=next(line for line in validate_cloning.__doc__.splitlines() if line),
+    #                                                 description=validate_cloning.__doc__,
+    #                                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    # parser_validate_cloning.add_argument('query_dir', type=str)
+    # parser_validate_cloning.add_argument('spacers', type=str)
+    # parser_validate_cloning.add_argument('vector', type=str)
+    # parser_validate_cloning.add_argument('out_csv', type=str, help="Output CSV file name")
+    # parser_validate_cloning.add_argument('--enzyme', type=str, default="Esp3I")
+    # parser_validate_cloning.add_argument('--overhangs', type=str, default=('CACC', 'GTTT'), nargs=2)
+    # parser_validate_cloning.add_argument('--ref_name_pattern', type=str, default=signat_vc.parameters['ref_name_pattern'].default)
+    # parser_validate_cloning.add_argument('--flank_width', type=int, default=signat_vc.parameters['flank_width'].default)
+    # parser_validate_cloning.set_defaults(func=validate_cloning)
 
     ##################################################
 
@@ -58,7 +58,7 @@ def main():
                                                   description=merge_and_norm.__doc__,
                                                   formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_merge_and_norm.add_argument('sample_sheet', type=str)
-    parser_merge_and_norm.add_argument('annotated_lib', type=str)
+    parser_merge_and_norm.add_argument('counts_library', type=str)
     parser_merge_and_norm.add_argument('--controls', nargs='+', type=str, default=signat_man.parameters['controls'].default)
     parser_merge_and_norm.add_argument('--out_dir', type=str, default=signat_man.parameters['out_dir'].default)
     parser_merge_and_norm.add_argument('--out_file', type=str, default=signat_man.parameters['out_file'].default)
@@ -75,7 +75,7 @@ def main():
                                                 description=average_reps.__doc__,
                                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_average_reps.add_argument('sample_sheet', type=str)
-    parser_average_reps.add_argument('annotated_lib', type=str)
+    parser_average_reps.add_argument('log2_subt0', type=str)
     parser_average_reps.add_argument('--out_dir', type=str, default=signat_ar.parameters['out_dir'].default)
     parser_average_reps.add_argument('--out_file', type=str, default=signat_ar.parameters['out_file'].default)
     parser_average_reps.add_argument('--save', action='store_false', default=signat_ar.parameters['save'].default)
@@ -91,7 +91,7 @@ def main():
                                                 description=compare_conds.__doc__,
                                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_compare_conds.add_argument('comparisons', type=str)
-    parser_compare_conds.add_argument('annotated_lib', type=str)
+    parser_compare_conds.add_argument('avg_conds', type=str)
     parser_compare_conds.add_argument('--out_dir', type=str, default=signat_cc.parameters['out_dir'].default)
     parser_compare_conds.add_argument('--out_file', type=str, default=signat_cc.parameters['out_file'].default)
     parser_compare_conds.add_argument('--save', action='store_false', default=signat_cc.parameters['save'].default)
@@ -106,7 +106,7 @@ def main():
                                                 help=next(line for line in calc_controls.__doc__.splitlines() if line),
                                                 description=calc_controls.__doc__,
                                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser_calc_controls.add_argument('annotated_lib', type=str)
+    parser_calc_controls.add_argument('conditions', type=str)
     parser_calc_controls.add_argument('neg_ctrl_col', type=str)
     parser_calc_controls.add_argument('-sc', '--stats_comparisons', nargs='+', type=str, required=True)
     parser_calc_controls.add_argument('-ncc', '--neg_ctrl_conditions', nargs='+', type=str, required=True)

@@ -12,11 +12,11 @@ import pandas as pd
 file_dir = "tests/test_data/analysis/"
 
 def test_calc_controls(): 
-    calc_controls(annotated_lib  = f"{file_dir}compare_conds_sample_out.csv",
-                  stats_comparisons    = ["cond1"], 
-                  neg_ctrl_col   = "gene", 
+    calc_controls(conditions          = f"{file_dir}compare_conds_sample_out.csv",
+                  stats_comparisons   = ["cond1"], 
+                  neg_ctrl_col        = "gene", 
                   neg_ctrl_conditions = ["control"],
-                  out_dir        = file_dir,
+                  out_dir             = file_dir,
                   )
     with open(f"{file_dir}stats.txt", 'r') as file:
         data = file.read().rstrip()

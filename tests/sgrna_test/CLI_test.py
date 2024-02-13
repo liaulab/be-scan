@@ -20,24 +20,24 @@ C = "AR_CBE"
 A = "AR_ABE"
 
 
-def test_scatterplot():
+def test_generate_library():
     out = subprocess.run("python -m be_scan generate_library -h", shell=True, capture_output=True)
     assert b"usage: be_scan generate_library"in out.stdout
     assert b"Generates a list of guides based on a gene .fasta file"in out.stdout
 
-def test_boxplot():
+def test_reference_check():
     out = subprocess.run("python -m be_scan reference_check -h", shell=True, capture_output=True)
     assert b"usage: be_scan reference_check"in out.stdout
     assert b"Annotates a list of guides with a count of how many times"in out.stdout
 
-def test_corr_heatmap():
+def test_annotate():
     out = subprocess.run("python -m be_scan annotate -h", shell=True, capture_output=True)
     assert b"usage: be_scan annotate"in out.stdout
     assert b"Annotates a list of guides in a dataframe with mutational information"in out.stdout
 
-def test_corr_jointplot():
+def test_design_library():
     out = subprocess.run("python -m be_scan design_library -h", shell=True, capture_output=True)
-    assert b"usage: be_scan guides"in out.stdout
+    assert b"usage: be_scan design_library"in out.stdout
     assert b"Generates a list of guides based on a gene .fasta file"in out.stdout
 
 

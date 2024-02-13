@@ -13,7 +13,7 @@ file_dir = "tests/test_data/analysis/"
 
 def test_compare_conds(): 
     compare_conds(comparisons    = f"{file_dir}comparisons.csv", 
-                  annotated_lib  = f"{file_dir}average_reps_sample_out.csv",
+                  avg_conds      = f"{file_dir}average_reps_sample_out.csv",
                   out_dir        = file_dir, 
                   )
     df_comps = pd.read_csv(f"{file_dir}conditions.csv")

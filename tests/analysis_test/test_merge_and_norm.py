@@ -13,7 +13,7 @@ file_dir = "tests/test_data/analysis/"
 
 def test_merge_and_norm(): 
     merge_and_norm(sample_sheet   = f"{file_dir}sample_sheet.csv", 
-                   annotated_lib  = f"{file_dir}count_reads_sample_out.csv",
+                   counts_library = f"{file_dir}count_reads_sample_out.csv",
                    out_dir        = file_dir, 
                    controls       = ['counts1'],
                   )

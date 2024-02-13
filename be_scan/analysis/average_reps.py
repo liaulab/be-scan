@@ -12,7 +12,7 @@ import warnings
 import pandas as pd
 import re
 
-def average_reps(sample_sheet, annotated_lib, 
+def average_reps(sample_sheet, log2_subt0, 
                  
     out_dir='', out_file='avg_conds.csv', 
     save=True, return_df=True,
@@ -35,7 +35,7 @@ def average_reps(sample_sheet, annotated_lib,
         out_np (string or path for the output csv file with non-perfect sgRNA matches ex: 'noncounts.csv'), 
         out_stats (string or path for the output txt file with the read counting statistics ex: 'stats.txt'), 
         condition names, and condition categories
-    annotated_lib : str or path
+    log2_subt0 : str or path
         String or path to the individual replicate values csv file. The column
         headers for the replicate values must match the keys in dict_conds
 
@@ -51,7 +51,7 @@ def average_reps(sample_sheet, annotated_lib,
 
     # import files, define variables, check for requirements, etc.
     path = Path.cwd()
-    df_lfc = pd.read_csv(annotated_lib)
+    df_lfc = pd.read_csv(log2_subt0)
     # import sample_sheet and derive relevant information for conditions and aggregation
     df_samples = pd.read_csv(sample_sheet)
     dict_conds = dict(zip(df_samples.condition, df_samples.agg_conditions))

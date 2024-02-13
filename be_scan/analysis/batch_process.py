@@ -93,19 +93,19 @@ def batch_process(sample_sheet, annotated_lib, comparisons,
     count_reads(**count_reads_params)
 
     merge_and_norm_params = {
-        'sample_sheet':sample_sheet, 'annotated_lib':out_dir+out_counts, 'controls':controls, 
+        'sample_sheet':sample_sheet, 'counts_library':out_dir+out_counts, 'controls':controls, 
         'out_dir':out_dir, 'out_file':out_lfc, 'save':save, 'return_df':return_df,
     }
     merge_and_norm(**merge_and_norm_params)
     
     average_reps_params = {
-        'sample_sheet':sample_sheet, 'annotated_lib':out_dir+out_lfc, 
+        'sample_sheet':sample_sheet, 'log2_subt0':out_dir+out_lfc, 
         'out_dir':out_dir, 'out_file':out_conds, 'save':save, 'return_df':return_df,
     }
     average_reps(**average_reps_params)
     
     compare_conds_params = {
-        'comparisons':comparisons, 'annotated_lib':out_dir+out_conds, 
+        'comparisons':comparisons, 'avg_conds':out_dir+out_conds, 
         'out_dir':out_dir, 'out_file':out_comps, 'save':save, 'return_df':return_df,
     }
     compare_conds(**compare_conds_params)
@@ -113,7 +113,7 @@ def batch_process(sample_sheet, annotated_lib, comparisons,
     comps = pd.read_csv(comparisons)
     stats_comparisons = comps.name.tolist()
     calc_controls_params = {
-        'annotated_lib':out_dir+out_comps, 'stats_comparisons':stats_comparisons, 
+        'conditions':out_dir+out_comps, 'stats_comparisons':stats_comparisons, 
         'neg_ctrl_col':neg_ctrl_col, 'neg_ctrl_conditions':neg_ctrl_conditions, 
         'out_dir':out_dir, 'out_file':out_stats, 'save':save, 'return_txt':return_df,
     }

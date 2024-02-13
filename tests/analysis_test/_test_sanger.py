@@ -1,5 +1,5 @@
 from be_scan.analysis import validate_cloning
-from be_scan.analysis.sanger import _golden_gate
+from be_scan.analysis._sanger import _golden_gate
 import pandas as pd
 import pytest
 import subprocess
