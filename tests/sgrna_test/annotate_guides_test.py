@@ -2,12 +2,12 @@
 Author: Calvin XiaoYang Hu
 Date: 230911
 
-{Description: suit of unit tests for annotate_guides}
+{Description: suit of unit tests for annotate}
 """
 
 import os
 import pytest
-from be_scan.sgrna.annotate_guides import annotate_guides
+from be_scan.sgrna.annotate import annotate
 
 guides1 = "tests/test_data/sgrna/AR_ABESpG_library.csv"
 guides2 = "tests/test_data/sgrna/AR_CBESpG_library.csv"
@@ -19,8 +19,8 @@ protein_filepath = "tests/test_data/sgrna/P10275.fasta"
 @pytest.mark.parametrize("edit_to", ["A", "C", "G", "T"])
 @pytest.mark.parametrize("window", [(4,8), (3,9)]) ### amino acids being shifted over by 1 for (4, 7)
 @pytest.mark.parametrize("protein", [protein_filepath, ""])
-def test_annotate_guides_basic_pos(guides, edit_from, edit_to, window, protein): #, window):
-    df = annotate_guides(guides_file      = guides,
+def test_annotate_basic_pos(guides, edit_from, edit_to, window, protein): #, window):
+    df = annotate(guides_file      = guides,
                          gene_filepath    = gene_filepath,
                          edit_from        = edit_from,
                          edit_to          = edit_to,
@@ -38,9 +38,9 @@ def test_annotate_guides_basic_pos(guides, edit_from, edit_to, window, protein):
                                              ])
     os.remove("annotated.csv")
 
-def test_annotate_guides_colnames_neg():
+def test_annotate_colnames_neg():
     with pytest.raises(Exception): 
-        df = annotate_guides(guides_file      = guides1,
+        df = annotate(guides_file      = guides1,
                              gene_filepath    = gene_filepath,
                              edit_from        = "C",
                              edit_to          = "T",
@@ -48,16 +48,16 @@ def test_annotate_guides_colnames_neg():
                              seq_col = "sgRNA_seqs"
                              )
 
-def test_annotate_guides_edit_neg():
+def test_annotate_edit_neg():
     with pytest.raises(Exception): 
-        df = annotate_guides(guides_file      = guides1,
+        df = annotate(guides_file      = guides1,
                              gene_filepath    = gene_filepath,
                              edit_from        = "B",
                              edit_to          = "T",
                              protein_filepath = protein_filepath, 
                              )
     with pytest.raises(Exception): 
-        df = annotate_guides(guides_file      = guides1,
+        df = annotate(guides_file      = guides1,
                              gene_filepath    = gene_filepath,
                              edit_from        = "C",
                              edit_to          = "F",

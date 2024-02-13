@@ -8,26 +8,26 @@ This function takes in a dataframe from count_reads, performs normalization, and
 .. autofunction:: be_scan.plot.plot_scatterplot
 ```
 
-## plot_corr_scatterplot()
+## corr_jointplot()
 
-This function takes in a dataframe from count_reads, and plots a heatmap showing correlation between all listed conditions {py:func}`be_scan.plot.plot_corr_scatterplot`
+This function takes in a dataframe from count_reads, and plots a heatmap showing correlation between all listed conditions {py:func}`be_scan.plot.corr_jointplot`
 
 ```{eval-rst}
-.. autofunction:: be_scan.plot.plot_corr_scatterplot
+.. autofunction:: be_scan.plot.corr_jointplot
 ```
 
-## plot_corr_heatmap()
+## corr_heatmap()
 
-This function takes in a dataframe from count_reads, and plots a heatmap showing correlation between all listed conditions {py:func}`be_scan.plot.plot_corr_heatmap`
+This function takes in a dataframe from count_reads, and plots a heatmap showing correlation between all listed conditions {py:func}`be_scan.plot.corr_heatmap`
 
 ```{eval-rst}
-.. autofunction:: be_scan.plot.plot_corr_heatmap
+.. autofunction:: be_scan.plot.corr_heatmap
 ```
 
-## plot_boxes()
+## boxplot()
 
-This function takes in a dataframe from count_reads, and plots a heatmap showing correlation between all listed conditions {py:func}`be_scan.plot.plot_boxes`
+This function takes in a dataframe from count_reads, and plots a heatmap showing correlation between all listed conditions {py:func}`be_scan.plot.boxplot`
 
 ```{eval-rst}
-.. autofunction:: be_scan.plot.plot_boxes
+.. autofunction:: be_scan.plot.boxplot
 ```

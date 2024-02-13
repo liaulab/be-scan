@@ -12,7 +12,7 @@ import numpy as np
 from be_scan.sgrna._genomic_ import rev_complement, complements
 import ahocorasick # https://github.com/WojciechMula/pyahocorasick
 
-def check_guides(guides_file, genome_file, 
+def reference_check(guides_file, genome_file, 
 
     output_name="filtered.csv", output_dir='', delete=False,
     return_df=True, save_df=True, 

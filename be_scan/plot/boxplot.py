@@ -14,7 +14,7 @@ from pathlib import Path
 
 from be_scan.plot._annotating_ import *
 
-def plot_boxes(df_filepath, comparisons, # each comparison is a plot
+def boxplot(df_filepath, comparisons, # each comparison is a plot
                plot_column, plot_conditions, # each plot condition is a box in a plot
 
     filter_val=False, val_cols=[], val_min=None, # filter out unwanted quantitative params

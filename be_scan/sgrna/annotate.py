@@ -12,7 +12,7 @@ from pathlib import Path
 from be_scan.sgrna._genomic_ import *
 from be_scan.sgrna._guideRNA_ import *
 
-def annotate_guides(guides_file, edit_from, edit_to,
+def annotate(guides_file, edit_from, edit_to,
                     
     gene_filepath='', protein_filepath='', window=[4,8], 
     seq_col = 'sgRNA_seq', gene_pos_col='gene_pos',
@@ -146,7 +146,7 @@ def annotate_guides(guides_file, edit_from, edit_to,
     # calculate muttype
     guides_df[prefix+'_muttypes'] = guides_df.apply(lambda x: categorize_mutations(x, col_names, prefix), axis=1)
     # calculate muttype
-    guides_df[prefix+'_muttype'] = guides_df[prefix+'_muttypes'].apply(lambda x: None if x is None else x[0] if len(x) == 1 else 'Mixed')
+    guides_df[prefix+'_muttype'] = guides_df[prefix+'_muttypes'].apply(lambda x: None if len(x) == 0 else x[0] if len(x) == 1 else 'Mixed')
 
     print('Guides annotated')
     # save df

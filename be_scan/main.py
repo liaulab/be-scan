@@ -195,148 +195,148 @@ def main():
 
     ##################################################
 
-    from be_scan.plot import plot_boxes
-    signat_pb = inspect.signature(plot_boxes)
-    parser_plot_boxes = subparsers.add_parser('plot_boxes',
-                                              help=next(line for line in plot_boxes.__doc__.splitlines() if line),
-                                              description=plot_boxes.__doc__,
+    from be_scan.plot import boxplot
+    signat_pb = inspect.signature(boxplot)
+    parser_boxplot = subparsers.add_parser('boxplot',
+                                              help=next(line for line in boxplot.__doc__.splitlines() if line),
+                                              description=boxplot.__doc__,
                                               formatter_class=argparse.RawDescriptionHelpFormatter)
     # required args
-    parser_plot_boxes.add_argument('df_filepath', type=str)
-    parser_plot_boxes.add_argument('plot_column', type=str)
-    parser_plot_boxes.add_argument('-c', '--comparisons', nargs='+', type=str, required=True)
-    parser_plot_boxes.add_argument('-pc', '--plot_conditions', nargs='+', type=str, required=True)
+    parser_boxplot.add_argument('df_filepath', type=str)
+    parser_boxplot.add_argument('plot_column', type=str)
+    parser_boxplot.add_argument('-c', '--comparisons', nargs='+', type=str, required=True)
+    parser_boxplot.add_argument('-pc', '--plot_conditions', nargs='+', type=str, required=True)
     # optional variables
-    parser_plot_boxes.add_argument('--filter_val', action='store_true', default=signat_pb.parameters['filter_val'].default)
-    parser_plot_boxes.add_argument('--val_cols', nargs='+', type=str, default=signat_pb.parameters['val_cols'].default)
-    parser_plot_boxes.add_argument('--val_min', type=float, default=signat_pb.parameters['val_min'].default)
-    parser_plot_boxes.add_argument('--filter_params', action='store_true', default=signat_pb.parameters['filter_params'].default)
-    parser_plot_boxes.add_argument('--params_cols', nargs='+', type=str, default=signat_pb.parameters['params_cols'].default)
-    parser_plot_boxes.add_argument('--params_conditions', nargs='+', type=list, default=signat_pb.parameters['params_conditions'].default)
-    parser_plot_boxes.add_argument('--neg_ctrl', action='store_true', default=signat_pb.parameters['neg_ctrl'].default)
-    parser_plot_boxes.add_argument('--neg_ctrl_col', type=str, default=signat_pb.parameters['neg_ctrl_col'].default)
-    parser_plot_boxes.add_argument('--neg_ctrl_conditions', nargs='+', type=str, default=signat_pb.parameters['neg_ctrl_conditions'].default)
-    parser_plot_boxes.add_argument('--xlab', type=str, default=signat_pb.parameters['xlab'].default)
-    parser_plot_boxes.add_argument('--ylab', type=str, default=signat_pb.parameters['ylab'].default)
-    parser_plot_boxes.add_argument('--col_label', type=str, default=signat_pb.parameters['col_label'].default)
-    parser_plot_boxes.add_argument('--savefig', action='store_false', default=signat_pb.parameters['savefig'].default)
-    parser_plot_boxes.add_argument('--out_name', type=str, default=signat_pb.parameters['out_name'].default)
-    parser_plot_boxes.add_argument('--out_type', type=str, default=signat_pb.parameters['out_type'].default)
-    parser_plot_boxes.add_argument('--out_directory', type=str, default=signat_pb.parameters['out_directory'].default)
-    parser_plot_boxes.add_argument('--show', action='store_false', default=signat_pb.parameters['show'].default)
-    parser_plot_boxes.set_defaults(func=plot_boxes)
+    parser_boxplot.add_argument('--filter_val', action='store_true', default=signat_pb.parameters['filter_val'].default)
+    parser_boxplot.add_argument('--val_cols', nargs='+', type=str, default=signat_pb.parameters['val_cols'].default)
+    parser_boxplot.add_argument('--val_min', type=float, default=signat_pb.parameters['val_min'].default)
+    parser_boxplot.add_argument('--filter_params', action='store_true', default=signat_pb.parameters['filter_params'].default)
+    parser_boxplot.add_argument('--params_cols', nargs='+', type=str, default=signat_pb.parameters['params_cols'].default)
+    parser_boxplot.add_argument('--params_conditions', nargs='+', type=list, default=signat_pb.parameters['params_conditions'].default)
+    parser_boxplot.add_argument('--neg_ctrl', action='store_true', default=signat_pb.parameters['neg_ctrl'].default)
+    parser_boxplot.add_argument('--neg_ctrl_col', type=str, default=signat_pb.parameters['neg_ctrl_col'].default)
+    parser_boxplot.add_argument('--neg_ctrl_conditions', nargs='+', type=str, default=signat_pb.parameters['neg_ctrl_conditions'].default)
+    parser_boxplot.add_argument('--xlab', type=str, default=signat_pb.parameters['xlab'].default)
+    parser_boxplot.add_argument('--ylab', type=str, default=signat_pb.parameters['ylab'].default)
+    parser_boxplot.add_argument('--col_label', type=str, default=signat_pb.parameters['col_label'].default)
+    parser_boxplot.add_argument('--savefig', action='store_false', default=signat_pb.parameters['savefig'].default)
+    parser_boxplot.add_argument('--out_name', type=str, default=signat_pb.parameters['out_name'].default)
+    parser_boxplot.add_argument('--out_type', type=str, default=signat_pb.parameters['out_type'].default)
+    parser_boxplot.add_argument('--out_directory', type=str, default=signat_pb.parameters['out_directory'].default)
+    parser_boxplot.add_argument('--show', action='store_false', default=signat_pb.parameters['show'].default)
+    parser_boxplot.set_defaults(func=boxplot)
 
     ##################################################
 
-    from be_scan.plot import plot_corr_heatmap
-    signat_pch = inspect.signature(plot_corr_heatmap)
-    parser_plot_corr_heatmap = subparsers.add_parser('plot_corr_heatmap',
-                                                     help=next(line for line in plot_corr_heatmap.__doc__.splitlines() if line),
-                                                     description=plot_corr_heatmap.__doc__,
+    from be_scan.plot import corr_heatmap
+    signat_pch = inspect.signature(corr_heatmap)
+    parser_corr_heatmap = subparsers.add_parser('corr_heatmap',
+                                                     help=next(line for line in corr_heatmap.__doc__.splitlines() if line),
+                                                     description=corr_heatmap.__doc__,
                                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     # required args
-    parser_plot_corr_heatmap.add_argument('df_filepath', type=str)
-    parser_plot_corr_heatmap.add_argument('-c', '--comparisons', nargs='+', type=str, required=True)
+    parser_corr_heatmap.add_argument('df_filepath', type=str)
+    parser_corr_heatmap.add_argument('-c', '--comparisons', nargs='+', type=str, required=True)
     # optional args
-    parser_plot_corr_heatmap.add_argument('--corr_type', type=str, default=signat_pch.parameters['corr_type'].default)
-    parser_plot_corr_heatmap.add_argument('--filter_val', action='store_true', default=signat_pch.parameters['filter_val'].default)
-    parser_plot_corr_heatmap.add_argument('--val_cols', nargs='+', type=str, default=signat_pch.parameters['val_cols'].default)
-    parser_plot_corr_heatmap.add_argument('--val_min', type=float, default=signat_pch.parameters['val_min'].default)
-    parser_plot_corr_heatmap.add_argument('--filter_params', action='store_true', default=signat_pch.parameters['filter_params'].default)
-    parser_plot_corr_heatmap.add_argument('--params_cols', nargs='+', type=str, default=signat_pch.parameters['params_cols'].default)
-    parser_plot_corr_heatmap.add_argument('--params_conditions', nargs='+', type=list, default=signat_pch.parameters['params_conditions'].default)
-    parser_plot_corr_heatmap.add_argument('--xlab', type=str, default=signat_pch.parameters['xlab'].default)
-    parser_plot_corr_heatmap.add_argument('--ylab', type=str, default=signat_pch.parameters['ylab'].default)
-    parser_plot_corr_heatmap.add_argument('--title', type=str, default=signat_pch.parameters['title'].default)
-    parser_plot_corr_heatmap.add_argument('--out_directory', type=str, default=signat_pch.parameters['out_directory'].default)
-    parser_plot_corr_heatmap.add_argument('--out_name', type=str, default=signat_pch.parameters['out_name'].default)
-    parser_plot_corr_heatmap.add_argument('--out_type', type=str, default=signat_pch.parameters['out_type'].default)
-    parser_plot_corr_heatmap.add_argument('--savefig', action='store_false', default=signat_pch.parameters['savefig'].default)
-    parser_plot_corr_heatmap.add_argument('--show', action='store_false', default=signat_pch.parameters['show'].default)
-    parser_plot_corr_heatmap.add_argument('--heatmap_kws', type=dict, default=signat_pch.parameters['heatmap_kws'].default)
-    parser_plot_corr_heatmap.add_argument('--subplots_kws', type=dict, default=signat_pch.parameters['subplots_kws'].default)
-    parser_plot_corr_heatmap.set_defaults(func=plot_corr_heatmap)
+    parser_corr_heatmap.add_argument('--corr_type', type=str, default=signat_pch.parameters['corr_type'].default)
+    parser_corr_heatmap.add_argument('--filter_val', action='store_true', default=signat_pch.parameters['filter_val'].default)
+    parser_corr_heatmap.add_argument('--val_cols', nargs='+', type=str, default=signat_pch.parameters['val_cols'].default)
+    parser_corr_heatmap.add_argument('--val_min', type=float, default=signat_pch.parameters['val_min'].default)
+    parser_corr_heatmap.add_argument('--filter_params', action='store_true', default=signat_pch.parameters['filter_params'].default)
+    parser_corr_heatmap.add_argument('--params_cols', nargs='+', type=str, default=signat_pch.parameters['params_cols'].default)
+    parser_corr_heatmap.add_argument('--params_conditions', nargs='+', type=list, default=signat_pch.parameters['params_conditions'].default)
+    parser_corr_heatmap.add_argument('--xlab', type=str, default=signat_pch.parameters['xlab'].default)
+    parser_corr_heatmap.add_argument('--ylab', type=str, default=signat_pch.parameters['ylab'].default)
+    parser_corr_heatmap.add_argument('--title', type=str, default=signat_pch.parameters['title'].default)
+    parser_corr_heatmap.add_argument('--out_directory', type=str, default=signat_pch.parameters['out_directory'].default)
+    parser_corr_heatmap.add_argument('--out_name', type=str, default=signat_pch.parameters['out_name'].default)
+    parser_corr_heatmap.add_argument('--out_type', type=str, default=signat_pch.parameters['out_type'].default)
+    parser_corr_heatmap.add_argument('--savefig', action='store_false', default=signat_pch.parameters['savefig'].default)
+    parser_corr_heatmap.add_argument('--show', action='store_false', default=signat_pch.parameters['show'].default)
+    parser_corr_heatmap.add_argument('--heatmap_kws', type=dict, default=signat_pch.parameters['heatmap_kws'].default)
+    parser_corr_heatmap.add_argument('--subplots_kws', type=dict, default=signat_pch.parameters['subplots_kws'].default)
+    parser_corr_heatmap.set_defaults(func=corr_heatmap)
 
     ##################################################
 
-    from be_scan.plot import plot_corr_scatterplot
-    signat_pcs = inspect.signature(plot_corr_scatterplot)
+    from be_scan.plot import corr_jointplot
+    signat_pcs = inspect.signature(corr_jointplot)
     # required args
-    parser_plot_corr_scatterplot = subparsers.add_parser('plot_corr_scatterplot',
-                                                         help=next(line for line in plot_corr_scatterplot.__doc__.splitlines() if line),
-                                                         description=plot_corr_scatterplot.__doc__,
+    parser_corr_jointplot = subparsers.add_parser('corr_jointplot',
+                                                         help=next(line for line in corr_jointplot.__doc__.splitlines() if line),
+                                                         description=corr_jointplot.__doc__,
                                                          formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser_plot_corr_scatterplot.add_argument('df_filepath', type=str)
-    parser_plot_corr_scatterplot.add_argument('condition1', type=str)
-    parser_plot_corr_scatterplot.add_argument('condition2', type=str)
+    parser_corr_jointplot.add_argument('df_filepath', type=str)
+    parser_corr_jointplot.add_argument('condition1', type=str)
+    parser_corr_jointplot.add_argument('condition2', type=str)
     # optional args
-    parser_plot_corr_scatterplot.add_argument('--filter_val', action='store_true', default=signat_pcs.parameters['filter_val'].default)
-    parser_plot_corr_scatterplot.add_argument('--val_cols', nargs='+', type=str, default=signat_pcs.parameters['val_cols'].default)
-    parser_plot_corr_scatterplot.add_argument('--val_min', type=float, default=signat_pcs.parameters['val_min'].default)
-    parser_plot_corr_scatterplot.add_argument('--filter_params', action='store_true', default=signat_pcs.parameters['filter_params'].default)
-    parser_plot_corr_scatterplot.add_argument('--params_cols', nargs='+', type=str, default=signat_pcs.parameters['params_cols'].default)
-    parser_plot_corr_scatterplot.add_argument('--params_conditions', nargs='+', type=list, default=signat_pcs.parameters['params_conditions'].default)
-    parser_plot_corr_scatterplot.add_argument('--include_hue', action='store_true', default=signat_pcs.parameters['include_hue'].default)
-    parser_plot_corr_scatterplot.add_argument('--hue_col', type=str, default=signat_pcs.parameters['hue_col'].default)
-    parser_plot_corr_scatterplot.add_argument('--hue_order', nargs='+', type=str, default=signat_pcs.parameters['hue_order'].default)
-    parser_plot_corr_scatterplot.add_argument('--palette', nargs='+', type=str, default=signat_pcs.parameters['palette'].default)
-    parser_plot_corr_scatterplot.add_argument('--savefig', action='store_false', default=signat_pcs.parameters['savefig'].default)
-    parser_plot_corr_scatterplot.add_argument('--out_directory', type=str, default=signat_pcs.parameters['out_directory'].default)
-    parser_plot_corr_scatterplot.add_argument('--out_name', type=str, default=signat_pcs.parameters['out_name'].default)
-    parser_plot_corr_scatterplot.add_argument('--out_type', type=str, default=signat_pcs.parameters['out_type'].default)
-    parser_plot_corr_scatterplot.add_argument('--show', action='store_false', default=signat_pcs.parameters['show'].default)
-    parser_plot_corr_scatterplot.add_argument('--jointplot_kws', type=dict, default=signat_pcs.parameters['jointplot_kws'].default)
-    parser_plot_corr_scatterplot.set_defaults(func=plot_corr_scatterplot)
+    parser_corr_jointplot.add_argument('--filter_val', action='store_true', default=signat_pcs.parameters['filter_val'].default)
+    parser_corr_jointplot.add_argument('--val_cols', nargs='+', type=str, default=signat_pcs.parameters['val_cols'].default)
+    parser_corr_jointplot.add_argument('--val_min', type=float, default=signat_pcs.parameters['val_min'].default)
+    parser_corr_jointplot.add_argument('--filter_params', action='store_true', default=signat_pcs.parameters['filter_params'].default)
+    parser_corr_jointplot.add_argument('--params_cols', nargs='+', type=str, default=signat_pcs.parameters['params_cols'].default)
+    parser_corr_jointplot.add_argument('--params_conditions', nargs='+', type=list, default=signat_pcs.parameters['params_conditions'].default)
+    parser_corr_jointplot.add_argument('--include_hue', action='store_true', default=signat_pcs.parameters['include_hue'].default)
+    parser_corr_jointplot.add_argument('--hue_col', type=str, default=signat_pcs.parameters['hue_col'].default)
+    parser_corr_jointplot.add_argument('--hue_order', nargs='+', type=str, default=signat_pcs.parameters['hue_order'].default)
+    parser_corr_jointplot.add_argument('--palette', nargs='+', type=str, default=signat_pcs.parameters['palette'].default)
+    parser_corr_jointplot.add_argument('--savefig', action='store_false', default=signat_pcs.parameters['savefig'].default)
+    parser_corr_jointplot.add_argument('--out_directory', type=str, default=signat_pcs.parameters['out_directory'].default)
+    parser_corr_jointplot.add_argument('--out_name', type=str, default=signat_pcs.parameters['out_name'].default)
+    parser_corr_jointplot.add_argument('--out_type', type=str, default=signat_pcs.parameters['out_type'].default)
+    parser_corr_jointplot.add_argument('--show', action='store_false', default=signat_pcs.parameters['show'].default)
+    parser_corr_jointplot.add_argument('--jointplot_kws', type=dict, default=signat_pcs.parameters['jointplot_kws'].default)
+    parser_corr_jointplot.set_defaults(func=corr_jointplot)
 
     ##################################################
 
 ### sgrna ###
     
-    from be_scan.sgrna import generate_BE_guides
-    signat_gBEg = inspect.signature(generate_BE_guides)
-    parser_generate_BE_guides = subparsers.add_parser('generate_BE_guides', 
-                                                      help=next(line for line in generate_BE_guides.__doc__.splitlines() if line),
-                                                      description=generate_BE_guides.__doc__,
+    from be_scan.sgrna import generate_library
+    signat_gBEg = inspect.signature(generate_library)
+    parser_generate_library = subparsers.add_parser('generate_library', 
+                                                      help=next(line for line in generate_library.__doc__.splitlines() if line),
+                                                      description=generate_library.__doc__,
                                                       formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser_generate_BE_guides.add_argument('gene_filepath', type=str)
-    parser_generate_BE_guides.add_argument('cas_type', type=str)
-    parser_generate_BE_guides.add_argument('edit_from', type=str)
-    parser_generate_BE_guides.add_argument('edit_to', type=str)
-    parser_generate_BE_guides.add_argument('--gene_name', type=str, default=signat_gBEg.parameters['gene_name'].default)
-    parser_generate_BE_guides.add_argument('--PAM', type=str, default=signat_gBEg.parameters['PAM'].default)
-    parser_generate_BE_guides.add_argument('--window', nargs='+', type=int, default=signat_gBEg.parameters['window'].default)
-    parser_generate_BE_guides.add_argument('--output_name', type=str, default=signat_gBEg.parameters['output_name'].default)
-    parser_generate_BE_guides.add_argument('--output_dir', type=str, default=signat_gBEg.parameters['output_dir'].default)
-    parser_generate_BE_guides.add_argument('--return_df', action='store_false', default=signat_gBEg.parameters['return_df'].default)
-    parser_generate_BE_guides.add_argument('--save_df', action='store_false', default=signat_gBEg.parameters['save_df'].default)
-    parser_generate_BE_guides.add_argument('--exclude_introns', action='store_false', default=signat_gBEg.parameters['exclude_introns'].default)
-    parser_generate_BE_guides.add_argument('--exclude_nontargeting', action='store_false', default=signat_gBEg.parameters['exclude_nontargeting'].default)
-    parser_generate_BE_guides.set_defaults(func=generate_BE_guides)
+    parser_generate_library.add_argument('gene_filepath', type=str)
+    parser_generate_library.add_argument('cas_type', type=str)
+    parser_generate_library.add_argument('edit_from', type=str)
+    parser_generate_library.add_argument('edit_to', type=str)
+    parser_generate_library.add_argument('--gene_name', type=str, default=signat_gBEg.parameters['gene_name'].default)
+    parser_generate_library.add_argument('--PAM', type=str, default=signat_gBEg.parameters['PAM'].default)
+    parser_generate_library.add_argument('--window', nargs='+', type=int, default=signat_gBEg.parameters['window'].default)
+    parser_generate_library.add_argument('--output_name', type=str, default=signat_gBEg.parameters['output_name'].default)
+    parser_generate_library.add_argument('--output_dir', type=str, default=signat_gBEg.parameters['output_dir'].default)
+    parser_generate_library.add_argument('--return_df', action='store_false', default=signat_gBEg.parameters['return_df'].default)
+    parser_generate_library.add_argument('--save_df', action='store_false', default=signat_gBEg.parameters['save_df'].default)
+    parser_generate_library.add_argument('--exclude_introns', action='store_false', default=signat_gBEg.parameters['exclude_introns'].default)
+    parser_generate_library.add_argument('--exclude_nontargeting', action='store_false', default=signat_gBEg.parameters['exclude_nontargeting'].default)
+    parser_generate_library.set_defaults(func=generate_library)
 
     ##################################################
     
-    from be_scan.sgrna import check_guides
-    signat_cg = inspect.signature(check_guides)
-    parser_check_guides = subparsers.add_parser('check_guides', 
-                                                help=next(line for line in check_guides.__doc__.splitlines() if line),
-                                                description=check_guides.__doc__,
+    from be_scan.sgrna import reference_check
+    signat_cg = inspect.signature(reference_check)
+    parser_reference_check = subparsers.add_parser('reference_check', 
+                                                help=next(line for line in reference_check.__doc__.splitlines() if line),
+                                                description=reference_check.__doc__,
                                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser_check_guides.add_argument('guides_file', type=str)
-    parser_check_guides.add_argument('genome_file', type=str)
-    parser_check_guides.add_argument('--output_name', type=str, default=signat_cg.parameters['output_name'].default)
-    parser_check_guides.add_argument('--output_dir', type=str, default=signat_cg.parameters['output_dir'].default)
-    parser_check_guides.add_argument('--delete', action='store_true', default=signat_cg.parameters['delete'].default)
-    parser_check_guides.add_argument('--return_df', action='store_false', default=signat_cg.parameters['return_df'].default)
-    parser_check_guides.add_argument('--save_df', action='store_false', default=signat_cg.parameters['save_df'].default)
-    parser_check_guides.set_defaults(func=check_guides)
+    parser_reference_check.add_argument('guides_file', type=str)
+    parser_reference_check.add_argument('genome_file', type=str)
+    parser_reference_check.add_argument('--output_name', type=str, default=signat_cg.parameters['output_name'].default)
+    parser_reference_check.add_argument('--output_dir', type=str, default=signat_cg.parameters['output_dir'].default)
+    parser_reference_check.add_argument('--delete', action='store_true', default=signat_cg.parameters['delete'].default)
+    parser_reference_check.add_argument('--return_df', action='store_false', default=signat_cg.parameters['return_df'].default)
+    parser_reference_check.add_argument('--save_df', action='store_false', default=signat_cg.parameters['save_df'].default)
+    parser_reference_check.set_defaults(func=reference_check)
 
     ##################################################
     
-    from be_scan.sgrna import annotate_guides
-    signat_ag = inspect.signature(annotate_guides)
-    parser_annot_guides = subparsers.add_parser('annotate_guides', 
-                                                   help=next(line for line in annotate_guides.__doc__.splitlines() if line),
-                                                   description=annotate_guides.__doc__,
+    from be_scan.sgrna import annotate
+    signat_ag = inspect.signature(annotate)
+    parser_annot_guides = subparsers.add_parser('annotate', 
+                                                   help=next(line for line in annotate.__doc__.splitlines() if line),
+                                                   description=annotate.__doc__,
                                                    formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_annot_guides.add_argument('guides_file', type=str)
     parser_annot_guides.add_argument('edit_from', type=str)
@@ -352,7 +352,7 @@ def main():
     parser_annot_guides.add_argument('--output_dir', type=str, default=signat_ag.parameters['output_dir'].default)
     parser_annot_guides.add_argument('--return_df', action='store_false', default=signat_ag.parameters['return_df'].default)
     parser_annot_guides.add_argument('--save_df', action='store_false', default=signat_ag.parameters['save_df'].default)
-    parser_annot_guides.set_defaults(func=annotate_guides)
+    parser_annot_guides.set_defaults(func=annotate)
 
     ##################################################
     

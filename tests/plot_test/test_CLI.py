@@ -6,9 +6,9 @@ def test_entrypoint():
     out = sp.run("python -m be_scan -h", shell=True, capture_output=True)
     assert b"usage: be_scan" in out.stdout
     assert b"plot_scatterplot" in out.stdout
-    assert b"plot_boxes" in out.stdout
-    assert b"plot_corr_heatmap" in out.stdout
-    assert b"plot_corr_scatterplot" in out.stdout
+    assert b"boxplot" in out.stdout
+    assert b"corr_heatmap" in out.stdout
+    assert b"corr_jointplot" in out.stdout
 
 # plot CLI
 
@@ -17,19 +17,19 @@ def test_plot_scatterplot():
     assert b"usage: be_scan plot_scatterplot" in out.stdout
     assert b"plots the data for each condition" in out.stdout
 
-def test_plot_boxes():
-    out = sp.run("python -m be_scan plot_boxes -h", shell=True, capture_output=True)
-    assert b"usage: be_scan plot_boxes" in out.stdout
+def test_boxplot():
+    out = sp.run("python -m be_scan boxplot -h", shell=True, capture_output=True)
+    assert b"usage: be_scan boxplot" in out.stdout
     assert b"plots chosen (ex control) guides by plot_column categories" in out.stdout
 
-def test_plot_corr_heatmap():
-    out = sp.run("python -m be_scan plot_corr_heatmap -h", shell=True, capture_output=True)
-    assert b"usage: be_scan plot_corr_heatmap" in out.stdout
+def test_corr_heatmap():
+    out = sp.run("python -m be_scan corr_heatmap -h", shell=True, capture_output=True)
+    assert b"usage: be_scan corr_heatmap" in out.stdout
     assert b"scatterplot showing correlation between two given conditions" in out.stdout
 
-def test_plot_corr_scatterplot():
-    out = sp.run("python -m be_scan plot_corr_scatterplot -h", shell=True, capture_output=True)
-    assert b"usage: be_scan plot_corr_scatterplot" in out.stdout
+def test_corr_jointplot():
+    out = sp.run("python -m be_scan corr_jointplot -h", shell=True, capture_output=True)
+    assert b"usage: be_scan corr_jointplot" in out.stdout
     assert b"heatmap showing correlation between all given comparison conditions" in out.stdout
 
 # more specific tests
@@ -43,8 +43,8 @@ boxes_query2 = "--savefig --show --out_name boxes.png"
     "--neg_ctrl --neg_ctrl_col Gene --neg_ctrl_conditions NON-GENE", 
     "--filter_val --val_min 0.0 --val_cols d3-pos d6-pos d9-pos", 
     ])
-def test_plot_boxes_integration_pos(query): 
-    out = sp.run(f"python3 -m be_scan plot_boxes {plot_file} {boxes_query1} {query} {boxes_query2}",
+def test_boxplot_integration_pos(query): 
+    out = sp.run(f"python3 -m be_scan boxplot {plot_file} {boxes_query1} {query} {boxes_query2}",
                  shell=True, capture_output=True)
     assert out.returncode == 0
 
@@ -73,7 +73,7 @@ corrscatter_query2 = "--savefig --show --out_name corrscatterplot.png"
     "--filter_val --val_min 0.0 --val_cols d3-pos d6-pos d9-pos", 
     ])
 def test_plot_corrscatterplot_integration_pos(query): 
-    out = sp.run(f"python3 -m be_scan plot_corr_scatterplot {plot_file} {corrscatter_query1} {query} {corrscatter_query2}",
+    out = sp.run(f"python3 -m be_scan corr_jointplot {plot_file} {corrscatter_query1} {query} {corrscatter_query2}",
                  shell=True, capture_output=True)
     assert out.returncode == 0
 
@@ -85,6 +85,6 @@ corrheat_query2 = "--savefig --show --out_name corrheatmap.png"
     "--filter_val --val_min 0.0 --val_cols d3-pos d6-pos d9-pos", 
     ])
 def test_plot_corrheatmap_integration_pos(query): 
-    out = sp.run(f"python3 -m be_scan plot_corr_heatmap {plot_file} {corrheat_query1} {query} {corrheat_query2}",
+    out = sp.run(f"python3 -m be_scan corr_heatmap {plot_file} {corrheat_query1} {query} {corrheat_query2}",
                  shell=True, capture_output=True)
     assert out.returncode == 0

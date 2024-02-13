@@ -14,12 +14,12 @@ import scipy.stats as stats
 
 from be_scan.plot._annotating_ import list_muttypes, color_list
 
-def plot_corr_scatterplot(df_filepath, condition1, condition2, 
+def corr_jointplot(df_filepath, condition1, condition2, 
 
     filter_val=False, val_cols=[], val_min=None, # filter out unwanted quantitative params
     filter_params=False, params_cols=[], params_conditions=[], # filter out unwanted categorical params
     include_hue=False, hue_col='Mut_type', hue_order=list_muttypes, palette=color_list, # color params
-    savefig=True, out_directory='', out_name='correlation_scatterplot', out_type='png', show=True,
+    savefig=True, out_directory='', out_name='correlation_jointplot', out_type='png', show=True,
 
     jointplot_kws={'alpha':0.8, 'linewidth':1, 
                     'edgecolor':'black', 's':25}, 

@@ -1,27 +1,27 @@
 # Genomic sgRNA Library Functions: `sgrna`
 
-## generate_BE_guides()
+## generate_library()
 
-Generates a dataframe of guides based on taking a gene file and filtering conditions. {py:func}`be_scan.sgrna.generate_BE_guides`
+Generates a dataframe of guides based on taking a gene file and filtering conditions. {py:func}`be_scan.sgrna.generate_library`
 
 ```{eval-rst}
-.. autofunction:: be_scan.sgrna.generate_BE_guides
+.. autofunction:: be_scan.sgrna.generate_library
 ```
 
-## check_guides()
+## reference_check()
 
-Annotate how often a guide appears in the genome reference file. {py:func}`be_scan.sgrna.check_guides`
+Annotate how often a guide appears in the genome reference file. {py:func}`be_scan.sgrna.reference_check`
 
 ```{eval-rst}
-.. autofunction:: be_scan.sgrna.check_guides
+.. autofunction:: be_scan.sgrna.reference_check
 ```
 
-## annotate_guides()
+## annotate()
 
-Annotate window and mutation information about the guide {py:func}`be_scan.sgrna.annotate_guides`
+Annotate window and mutation information about the guide {py:func}`be_scan.sgrna.annotate`
 
 ```{eval-rst}
-.. autofunction:: be_scan.sgrna.annotate_guides
+.. autofunction:: be_scan.sgrna.annotate
 ```
 
 ## guides()

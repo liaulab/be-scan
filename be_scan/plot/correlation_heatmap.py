@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
 
-def plot_corr_heatmap(df_filepath, comparisons, 
+def corr_heatmap(df_filepath, comparisons, 
 
     corr_type='spearman', 
     filter_val=False, val_cols=[], val_min=None, # filter out unwanted quantitative params

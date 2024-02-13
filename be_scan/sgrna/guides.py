@@ -7,9 +7,9 @@ Date: 231204
 import os
 from pathlib import Path
 
-from be_scan.sgrna.generate_guides import generate_BE_guides
-from be_scan.sgrna.check_guides import check_guides
-from be_scan.sgrna.annotate_guides import annotate_guides
+from be_scan.sgrna.generate_library import generate_library
+from be_scan.sgrna.reference_check import reference_check
+from be_scan.sgrna.annotate import annotate
 
 def guides(gene_filepath, genome_file, 
            cas_type, edit_from, edit_to, 
@@ -90,24 +90,24 @@ def guides(gene_filepath, genome_file,
     """
     temp = "temp.csv"
 
-    generate_guides_params = {'gene_filepath':gene_filepath, 'gene_name':gene_name, 
+    generate_library_params = {'gene_filepath':gene_filepath, 'gene_name':gene_name, 
                               'cas_type':cas_type, 'edit_from':edit_from, 'edit_to':edit_to, 
                               'PAM':PAM, 'window':window, 'return_df':True, 'save_df':False, 
                               'exclude_introns':exclude_introns, 'exclude_nontargeting':exclude_nontargeting, 
                               'domains':domains,
     }
-    guides = generate_BE_guides(**generate_guides_params)
+    guides = generate_library(**generate_library_params)
     guides.to_csv(temp, index=False)
 
-    check_guides_params = {'guides_file':temp, 'genome_file':genome_file, 
+    reference_check_params = {'guides_file':temp, 'genome_file':genome_file, 
                             'delete':delete, 'return_df':True, 'save_df':False}
-    filtered = check_guides(**check_guides_params)
+    filtered = reference_check(**reference_check_params)
     filtered.to_csv(temp, index=False)
 
-    annotate_guides_params = {'guides_file':temp, 'gene_filepath':gene_filepath, 
+    annotate_params = {'guides_file':temp, 'gene_filepath':gene_filepath, 
                              'protein_filepath':protein_filepath, 'edit_from':edit_from, 'edit_to':edit_to,
                              'window':window, 'return_df':True, 'save_df':False}
-    annotated = annotate_guides(**annotate_guides_params)
+    annotated = annotate(**annotate_params)
 
     os.remove(temp)
     print('Complete! Library generated from', str(gene_filepath))

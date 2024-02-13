@@ -14,16 +14,16 @@ def check_comparisons():
 # positive tests
 
 def test_plot_corrheatmap_basic_pos():
-    bsplot.plot_corr_heatmap(**corr_params, )
+    bsplot.corr_heatmap(**corr_params, )
     check_comparisons()
         
 def test_plot_corrheatmap_filtervals_pos():
-    bsplot.plot_corr_heatmap(**corr_params, filter_val=True, 
+    bsplot.corr_heatmap(**corr_params, filter_val=True, 
                              val_min=0.0, val_cols=['d3-pos', 'd6-pos', 'd9-pos'], )
     check_comparisons()
 
 def test_plot_corrheatmap_filterparams_pos():
-    bsplot.plot_corr_heatmap(**corr_params, filter_params=True, 
+    bsplot.corr_heatmap(**corr_params, filter_params=True, 
                              params_cols=['sgRNA_strand'], params_conditions=[['sense']], )
     check_comparisons()
 
@@ -34,7 +34,7 @@ def test_plot_corrheatmap_filterparams_pos():
                         ])
 def test_plot_corrheatmap_filtervals_neg(params):
     with pytest.raises(AssertionError): 
-        bsplot.plot_corr_heatmap(**corr_params, filter_val=True, **params )
+        bsplot.corr_heatmap(**corr_params, filter_val=True, **params )
         check_comparisons()
 
 @pytest.mark.parametrize("params", [{'params_cols':'sgRNA_strand', 'params_conditions':[['sense']]}, # params_cols type error
@@ -42,5 +42,5 @@ def test_plot_corrheatmap_filtervals_neg(params):
                         ])
 def test_plot_corrheatmap_filterparams_neg(params):
     with pytest.raises(AssertionError): 
-        bsplot.plot_corr_heatmap(**corr_params, filter_params=True, **params )
+        bsplot.corr_heatmap(**corr_params, filter_params=True, **params )
         check_comparisons()

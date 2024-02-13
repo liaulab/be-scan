@@ -16,22 +16,22 @@ def check_comparisons():
 
 # positive tests
         
-def test_plot_boxes_basic_pos():
-    bsplot.plot_boxes(**box_params, )
+def test_boxplot_basic_pos():
+    bsplot.boxplot(**box_params, )
     check_comparisons()
 
-def test_plot_boxes_negctrl_pos():
-    bsplot.plot_boxes(**box_params, neg_ctrl=True, 
+def test_boxplot_negctrl_pos():
+    bsplot.boxplot(**box_params, neg_ctrl=True, 
                       neg_ctrl_col="Gene", neg_ctrl_conditions=["NON-GENE"], )
     check_comparisons()
         
-def test_plot_boxes_filtervals_pos():
-    bsplot.plot_boxes(**box_params, filter_val=True, 
+def test_boxplot_filtervals_pos():
+    bsplot.boxplot(**box_params, filter_val=True, 
                       val_min=0.0, val_cols=["d3-pos", "d6-pos", "d9-pos"], )
     check_comparisons()
 
-def test_plot_boxes_filterparams_pos():
-    bsplot.plot_boxes(**box_params, filter_params=True, 
+def test_boxplot_filterparams_pos():
+    bsplot.boxplot(**box_params, filter_params=True, 
                       params_cols=["sgRNA_strand"], params_conditions=[["sense"]], )
     check_comparisons()
 
@@ -41,24 +41,24 @@ def test_plot_boxes_filterparams_pos():
                                     {"neg_ctrl_col":"Gene", "neg_ctrl_conditions":"NON-GENE"}, # neg_ctrl_conditions type error
                                     {"neg_ctrl_col":"a", "neg_ctrl_conditions":["NON-GENE"]}, # neg_ctrl_col not a column
                         ])
-def test_plot_boxes_negctrl_neg(params):
+def test_boxplot_negctrl_neg(params):
     with pytest.raises(AssertionError): 
-        bsplot.plot_boxes(**box_params, neg_ctrl=True, **params )
+        bsplot.boxplot(**box_params, neg_ctrl=True, **params )
         check_comparisons()
 
 @pytest.mark.parametrize("params", [{"val_min":"string", "val_cols":["d3-pos", "d6-pos", "d9-pos"]}, # val_min type error
                                     {"val_min":0, "val_cols":"d3-pos"}, # val_cols type error
                         ])
-def test_plot_boxes_filtervals_neg(params):
+def test_boxplot_filtervals_neg(params):
     with pytest.raises(AssertionError): 
-        bsplot.plot_boxes(**box_params, filter_val=True, **params )
+        bsplot.boxplot(**box_params, filter_val=True, **params )
         check_comparisons()
 
 @pytest.mark.parametrize("params", [{"params_cols":"sgRNA_strand", "params_conditions":[["sense"]]}, # params_cols type error
                                     {"params_cols":["sgRNA_strand"], "params_conditions":"sense"}, # params_conditions type error
                         ])
-def test_plot_boxes_filterparams_neg(params):
+def test_boxplot_filterparams_neg(params):
     with pytest.raises(AssertionError): 
-        bsplot.plot_boxes(**box_params, filter_params=True, **params )
+        bsplot.boxplot(**box_params, filter_params=True, **params )
         check_comparisons()
 
