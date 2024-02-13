@@ -7,8 +7,8 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'be_scan'
-copyright = '2023, SPS, XYH, BBL'
-author = 'SPS, XYH, BBL'
+copyright = '2023, XYH, SPS, BBL'
+author = 'XYH, SPS, BBL'
 release = '1.0.0'
 
 # -- General configuration ---------------------------------------------------
