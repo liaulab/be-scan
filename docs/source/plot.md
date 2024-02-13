@@ -1,33 +1,8 @@
 # Default Plot Functions: `plot`
 
-## scatterplot()
-
-This function takes in a dataframe from count_reads, performs normalization, and then plots the data for each condition to reveal which guides are enriched {py:func}`be_scan.plot.scatterplot`
-
 ```{eval-rst}
-.. autofunction:: be_scan.plot.scatterplot
-```
-
-## corr_jointplot()
-
-This function takes in a dataframe from count_reads, and plots a heatmap showing correlation between all listed conditions {py:func}`be_scan.plot.corr_jointplot`
-
-```{eval-rst}
-.. autofunction:: be_scan.plot.corr_jointplot
-```
-
-## corr_heatmap()
-
-This function takes in a dataframe from count_reads, and plots a heatmap showing correlation between all listed conditions {py:func}`be_scan.plot.corr_heatmap`
-
-```{eval-rst}
-.. autofunction:: be_scan.plot.corr_heatmap
-```
-
-## boxplot()
-
-This function takes in a dataframe from count_reads, and plots a heatmap showing correlation between all listed conditions {py:func}`be_scan.plot.boxplot`
-
-```{eval-rst}
-.. autofunction:: be_scan.plot.boxplot
+.. automodule:: be_scan.plot
+    :members:
+    :undoc-members:
+    :imported-members:
 ```
