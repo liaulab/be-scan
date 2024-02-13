@@ -356,29 +356,29 @@ def main():
 
     ##################################################
     
-    from be_scan.sgrna import guides
-    signat_g = inspect.signature(guides)
-    parser_guides = subparsers.add_parser('guides', 
-                                          help=next(line for line in guides.__doc__.splitlines() if line),
-                                          description=guides.__doc__,
-                                          formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser_guides.add_argument('gene_filepath', type=str)
-    parser_guides.add_argument('genome_file', type=str)
-    parser_guides.add_argument('cas_type', type=str)
-    parser_guides.add_argument('edit_from', type=str)
-    parser_guides.add_argument('edit_to', type=str)
-    parser_guides.add_argument('--gene_name', type=str, default=signat_g.parameters['gene_name'].default)
-    parser_guides.add_argument('--protein_filepath', type=str, default=signat_g.parameters['protein_filepath'].default)
-    parser_guides.add_argument('--PAM', type=str, default=signat_g.parameters['PAM'].default)
-    parser_guides.add_argument('--window', nargs='+', type=int, default=signat_g.parameters['window'].default)
-    parser_guides.add_argument('--output_name', type=str, default=signat_g.parameters['output_name'].default)
-    parser_guides.add_argument('--output_dir', type=str, default=signat_g.parameters['output_dir'].default)
-    parser_guides.add_argument('--return_df', action='store_false', default=signat_g.parameters['return_df'].default)
-    parser_guides.add_argument('--delete', action='store_true', default=signat_g.parameters['delete'].default)
-    parser_guides.add_argument('--save_df', action='store_false', default=signat_g.parameters['save_df'].default)
-    parser_guides.add_argument('--exclude_introns', action='store_false', default=signat_g.parameters['exclude_introns'].default)
-    parser_guides.add_argument('--exclude_nontargeting', action='store_false', default=signat_g.parameters['exclude_nontargeting'].default)
-    parser_guides.set_defaults(func=guides)
+    from be_scan.sgrna import design_library
+    signat_g = inspect.signature(design_library)
+    parser_design_library = subparsers.add_parser('design_library', 
+                                                  help=next(line for line in design_library.__doc__.splitlines() if line),
+                                                  description=design_library.__doc__,
+                                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser_design_library.add_argument('gene_filepath', type=str)
+    parser_design_library.add_argument('genome_file', type=str)
+    parser_design_library.add_argument('cas_type', type=str)
+    parser_design_library.add_argument('edit_from', type=str)
+    parser_design_library.add_argument('edit_to', type=str)
+    parser_design_library.add_argument('--gene_name', type=str, default=signat_g.parameters['gene_name'].default)
+    parser_design_library.add_argument('--protein_filepath', type=str, default=signat_g.parameters['protein_filepath'].default)
+    parser_design_library.add_argument('--PAM', type=str, default=signat_g.parameters['PAM'].default)
+    parser_design_library.add_argument('--window', nargs='+', type=int, default=signat_g.parameters['window'].default)
+    parser_design_library.add_argument('--output_name', type=str, default=signat_g.parameters['output_name'].default)
+    parser_design_library.add_argument('--output_dir', type=str, default=signat_g.parameters['output_dir'].default)
+    parser_design_library.add_argument('--return_df', action='store_false', default=signat_g.parameters['return_df'].default)
+    parser_design_library.add_argument('--delete', action='store_true', default=signat_g.parameters['delete'].default)
+    parser_design_library.add_argument('--save_df', action='store_false', default=signat_g.parameters['save_df'].default)
+    parser_design_library.add_argument('--exclude_introns', action='store_false', default=signat_g.parameters['exclude_introns'].default)
+    parser_design_library.add_argument('--exclude_nontargeting', action='store_false', default=signat_g.parameters['exclude_nontargeting'].default)
+    parser_design_library.set_defaults(func=design_library)
 
     args = parser.parse_args()
     print(args)
