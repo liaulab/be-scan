@@ -10,35 +10,35 @@ To setup an environment with BE-SCAN:
 
 Create a conda environment with: 
 ```console
-conda create --name bescan-test python=3.9
+$ conda create --name bescan-test python=3.9
 ```
 
 Activate the environment with: 
 ```console
-conda activate bescan-test 
+$ conda activate bescan-test 
 ```
 
 Install be-scan with: 
 ```console
-python -m pip install git+https://github.com/liaulab/be-scan.git@feedback_fix
+$ python -m pip install git+https://github.com/liaulab/be-scan.git@feedback_fix
 ``````
 
 To use BE-SCAN on jupyter notebook:
 
 If you intent to use the jupyter notebook interface, install jupyter with: 
 ```console
-conda install jupyterlab
+$ conda install jupyterlab
 ```
 ```console
-pip install jupyterlab
+$ pip install jupyterlab
 ```
 
 Add conda environment to jupyter notebook:
 ```console
-python -m ipykernel install --user --name=bescan-test
+$ python -m ipykernel install --user --name=bescan-test
 ```
 Activate jupyter notebook with: 
 ```console
-jupyter notebook
+$ jupyter notebook
 ```
 Select be-scan-test as kernel
