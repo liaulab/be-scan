@@ -5,16 +5,16 @@ import os
 def test_entrypoint():
     out = sp.run("python -m be_scan -h", shell=True, capture_output=True)
     assert b"usage: be_scan" in out.stdout
-    assert b"plot_scatterplot" in out.stdout
+    assert b"scatterplot" in out.stdout
     assert b"boxplot" in out.stdout
     assert b"corr_heatmap" in out.stdout
     assert b"corr_jointplot" in out.stdout
 
 # plot CLI
 
-def test_plot_scatterplot():
-    out = sp.run("python -m be_scan plot_scatterplot -h", shell=True, capture_output=True)
-    assert b"usage: be_scan plot_scatterplot" in out.stdout
+def test_scatterplot():
+    out = sp.run("python -m be_scan scatterplot -h", shell=True, capture_output=True)
+    assert b"usage: be_scan scatterplot" in out.stdout
     assert b"plots the data for each condition" in out.stdout
 
 def test_boxplot():
@@ -59,8 +59,8 @@ scatter_query2 = "--savefig --show --out_name scatterplot.png"
     "--autoannot --autoannot_label sgRNA_ID --autoannot_top 10", 
     "--autoannot --autoannot_label sgRNA_ID --autoannot_cutoff 2.0", 
     ])
-def test_plot_scatterplot_integration_pos(query): 
-    out = sp.run(f"python3 -m be_scan plot_scatterplot {plot_file} {scatter_query1} {query} {scatter_query2}",
+def test_scatterplot_integration_pos(query): 
+    out = sp.run(f"python3 -m be_scan scatterplot {plot_file} {scatter_query1} {query} {scatter_query2}",
                  shell=True, capture_output=True)
     assert out.returncode == 0
 

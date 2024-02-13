@@ -1,0 +1,11 @@
+Number of reads processed: 381
+Number of reads where key was not found: 0
+Number of reads where length was not 20bp: 0
+Number of perfect guide matches: 381
+Number of nonperfect guide matches: 0
+Number of undetected guides: 0
+Percentage of unmapped reads (key not found): 0.0
+Percentage of guides that matched perfectly: 100.0
+Percentage of undetected guides: 0.0
+Skew ratio of top 10% to bottom 10%: 34.166666666666664
+Read coverage: 63.5

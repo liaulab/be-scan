@@ -20,7 +20,7 @@ C = "AR_CBE"
 A = "AR_ABE"
 
 
-def test_plot_scatterplot():
+def test_scatterplot():
     out = subprocess.run("python -m be_scan generate_library -h", shell=True, capture_output=True)
     assert b"usage: be_scan generate_library"in out.stdout
     assert b"Generates a list of guides based on a gene .fasta file"in out.stdout

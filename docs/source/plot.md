@@ -1,11 +1,11 @@
 # Default Plot Functions: `plot`
 
-## plot_scatterplot()
+## scatterplot()
 
-This function takes in a dataframe from count_reads, performs normalization, and then plots the data for each condition to reveal which guides are enriched {py:func}`be_scan.plot.plot_scatterplot`
+This function takes in a dataframe from count_reads, performs normalization, and then plots the data for each condition to reveal which guides are enriched {py:func}`be_scan.plot.scatterplot`
 
 ```{eval-rst}
-.. autofunction:: be_scan.plot.plot_scatterplot
+.. autofunction:: be_scan.plot.scatterplot
 ```
 
 ## corr_jointplot()
