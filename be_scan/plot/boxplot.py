@@ -14,6 +14,11 @@ from pathlib import Path
 
 from be_scan.plot._annotating_ import *
 
+mpl.rcParams.update({'font.size': 10})
+cm = 1/2.54
+fig,ax = plt.subplots()
+fig.set_size_inches(9*cm,7*cm)
+
 def boxplot(df_filepath, comparisons, # each comparison is a plot
                plot_column, plot_conditions, # each plot condition is a box in a plot
 

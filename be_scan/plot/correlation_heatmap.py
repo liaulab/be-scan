@@ -11,6 +11,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
 
+mpl.rcParams.update({'font.size': 10})
+cm = 1/2.54
+fig,ax = plt.subplots()
+fig.set_size_inches(9*cm,7*cm)
+
 def corr_heatmap(df_filepath, comparisons, 
 
     corr_type='spearman', 

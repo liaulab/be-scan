@@ -14,9 +14,14 @@ from pathlib import Path
 import pandas as pd
 from be_scan.plot._annotating_ import *
 
+mpl.rcParams.update({'font.size': 10})
+cm = 1/2.54
+fig,ax = plt.subplots()
+fig.set_size_inches(9*cm,7*cm)
+
 def scatterplot(df_filepath, # dataframe
-                     comparisons, # each comparison is a plot, and also the y axis
-                     x_column, # the x axis values
+                comparisons, # each comparison is a plot, and also the y axis
+                x_column, # the x axis values
                      
     filter_val=False, val_cols=[], val_min=None, # filter out unwanted quantitative params
     filter_params=False, params_cols=[], params_conditions=[], # filter out unwanted categorical params
