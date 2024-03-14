@@ -152,6 +152,7 @@ def count_reads(sample_sheet, annotated_lib,
             plt.xlabel('Count of sgRNA')
             plt.ylabel('Proportion of sgRNA')
             plt.savefig(outpath / out, format=plot_out_type)
+            plt.clf()
 
         # add matching counts to dataframe
         df_ref = pd.merge(df_ref, df_perfects, on='sgRNA_seq', how='outer')
@@ -202,6 +203,7 @@ def count_reads(sample_sheet, annotated_lib,
                 statfile.close()
                 print(str(in_fastq), 'processed')
 
+    plt.close()
     # export files and return dataframes if necessary
     if save: 
         outpath = path / out_dir
