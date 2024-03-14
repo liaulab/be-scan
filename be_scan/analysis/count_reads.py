@@ -145,7 +145,7 @@ def count_reads(sample_sheet, annotated_lib,
             df_perfects.to_csv(out_counts, index=False)
 
             weights = np.ones_like(df_perfects[cond]) / len(df_perfects[cond])
-            plt.hist(weights, bins=len(df_perfects[cond])//10)
+            plt.hist(df_perfects[cond], weights=weights, bins=len(df_perfects[cond])//10)
             outpath = path / out_dir
             out = stats.split('.')[0] + '_histogram.' + plot_out_type
             plt.title(f"Distributions of sgRNA in {fastq}")
