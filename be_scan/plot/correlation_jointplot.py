@@ -15,11 +15,6 @@ import scipy.stats as stats
 
 from be_scan.plot._annotating_ import list_muttypes, color_list
 
-mpl.rcParams.update({'font.size': 10})
-cm = 1/2.54
-fig,ax = plt.subplots()
-fig.set_size_inches(9*cm,7*cm)
-
 def corr_jointplot(df_filepath, condition1, condition2, 
 
     filter_val=False, val_cols=[], val_min=None, # filter out unwanted quantitative params
@@ -91,6 +86,12 @@ def corr_jointplot(df_filepath, condition1, condition2,
     ----------
     None
     """
+
+    # style
+    mpl.rcParams.update({'font.size': 10})
+    cm = 1/2.54
+    fig,ax = plt.subplots()
+    fig.set_size_inches(9*cm,7*cm)
 
     df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)

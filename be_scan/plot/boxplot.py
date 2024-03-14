@@ -11,13 +11,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
+import matplotlib as mpl
 
 from be_scan.plot._annotating_ import *
-
-mpl.rcParams.update({'font.size': 10})
-cm = 1/2.54
-fig,ax = plt.subplots()
-fig.set_size_inches(9*cm,7*cm)
 
 def boxplot(df_filepath, comparisons, # each comparison is a plot
                plot_column, plot_conditions, # each plot condition is a box in a plot
@@ -104,6 +100,12 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
     ----------
     None
     """
+
+    # style
+    mpl.rcParams.update({'font.size': 10})
+    cm = 1/2.54
+    fig,ax = plt.subplots()
+    fig.set_size_inches(9*cm,7*cm)
 
     df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)
