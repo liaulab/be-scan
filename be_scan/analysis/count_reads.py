@@ -20,7 +20,7 @@ def count_reads(sample_sheet, annotated_lib,
     file_dir='', 
     KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
     out_dir='', out_file='counts_library.csv',
-    save=True, return_df=True, save_files=True,
+    save=True, return_df=True, save_files=True, plot_out_type='pdf',
     ):
     
     """[Summary]
@@ -69,6 +69,8 @@ def count_reads(sample_sheet, annotated_lib,
         Whether or not to save the resulting dataframe
     save_files : bool, default True
         Whether or not to save individual counts, noncounts, and stats files
+    plot_out_type : str, optional, defaults to 'pdf'
+        file type of figure output
     """
     sample_filepath = Path(sample_sheet)
     sample_df = pd.read_csv(sample_filepath)
@@ -138,14 +140,17 @@ def count_reads(sample_sheet, annotated_lib,
         # STEP 3: SORT DICTIONARIES AND GENERATE OUTPUT FILES
         # sort perf matches (A-Z) with guides, counts as k,v and output to csv
         df_perfects = pd.DataFrame(data=dict_p.items(), columns=['sgRNA_seq', cond])
-        if save:
+        if save_files:
             df_perfects.sort_values(by=cond, ascending=False, inplace=True)
             df_perfects.to_csv(out_counts, index=False)
 
-            plt.hist(df_perfects[cond], density=True, bins=len(df_perfects[cond])//10)
+            plt.hist(df_perfects[cond], density=True, stacked=True, bins=len(df_perfects[cond])//10)
             outpath = path / out_dir
-            out = stats + '_histogram.' + 'pdf'
-            plt.savefig(outpath / out, format='pdf')
+            out = stats.split('.')[0] + '_histogram.' + plot_out_type
+            plt.title(f"Distributions of sgRNA in {fastq}")
+            plt.xlabel('Count of sgRNA')
+            plt.ylabel('Proportion of sgRNA')
+            plt.savefig(outpath / out, format=plot_out_type)
 
         # add matching counts to dataframe
         df_ref = pd.merge(df_ref, df_perfects, on='sgRNA_seq', how='outer')
