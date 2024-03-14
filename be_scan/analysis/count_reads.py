@@ -13,6 +13,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 def count_reads(sample_sheet, annotated_lib, 
                 
@@ -83,6 +84,7 @@ def count_reads(sample_sheet, annotated_lib,
     df_ref['sgRNA_seq'] = df_ref['sgRNA_seq'].str.upper() 
     if 'sgRNA_seq' not in df_ref.columns.tolist():
         raise Exception('annotated_lib is missing column: sgRNA_seq')
+    path = Path.cwd()
 
     for fastq, counts, nc, stats, cond in samples: 
         # fastq file of reads and paths to all output files, imported from sample_sheet
@@ -136,9 +138,15 @@ def count_reads(sample_sheet, annotated_lib,
         # STEP 3: SORT DICTIONARIES AND GENERATE OUTPUT FILES
         # sort perf matches (A-Z) with guides, counts as k,v and output to csv
         df_perfects = pd.DataFrame(data=dict_p.items(), columns=['sgRNA_seq', cond])
-        if save_files:
+        if save:
             df_perfects.sort_values(by=cond, ascending=False, inplace=True)
             df_perfects.to_csv(out_counts, index=False)
+
+            plt.hist(df_perfects[cond], density=True, bins=len(df_perfects[cond])//10)
+            outpath = path / out_dir
+            out = stats + '_histogram.' + 'pdf'
+            plt.savefig(outpath / out, format='pdf')
+
         # add matching counts to dataframe
         df_ref = pd.merge(df_ref, df_perfects, on='sgRNA_seq', how='outer')
         df_ref[cond] = df_ref[cond].fillna(0)
@@ -189,7 +197,6 @@ def count_reads(sample_sheet, annotated_lib,
                 print(str(in_fastq), 'processed')
 
     # export files and return dataframes if necessary
-    path = Path.cwd()
     if save: 
         outpath = path / out_dir
         Path.mkdir(outpath, exist_ok=True)
