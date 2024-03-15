@@ -36,8 +36,8 @@ def scatterplot(df_filepath, # dataframe
     ):
     
     """[Summary]
-    This function takes in a dataframe from count_reads, performs normalization, 
-    and then plots the data for each condition to reveal which guides are enriched
+    This function takes in a dataframe from analysis and then 
+    plots the data for each condition to reveal which guides are enriched
 
     Parameters
     ----------
