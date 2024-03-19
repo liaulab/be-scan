@@ -20,9 +20,9 @@ def sgrna_enrichment(df_filepath, comparisons,
                      
      savefig=True, out_name='scatterplot', out_type='png', out_directory='', show=True, # output params
                      
-     rugplot_kws={'height':1.0, 'color':'black', 'linewidth':2, 'alpha':0.05}, 
+     rugplot_kws={'height':0.25, 'color':'black', 'linewidth':2, 'alpha':0.05}, 
      kdeplot_kws={'color':'black', 'linewidth':1, 'alpha':0.5}, 
-     highlight_rugplot_kws={'height':1.0, 'color':'red', 'linewidth':5, 'alpha':0.5}
+     highlight_rugplot_kws={'height':0.25, 'color':'red', 'linewidth':5, 'alpha':0.6}
     ):
     
     """[Summary]
