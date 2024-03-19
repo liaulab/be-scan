@@ -28,11 +28,6 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 import statsmodels.stats.multitest as smm
 import random
 
-mpl.rcParams.update({'font.size': 10})
-cm = 1/2.54
-fig,ax = plt.subplots()
-fig.set_size_inches(9*cm,7*cm)
-
 def loess_smoothing(df_filepath, 
                     x_column, comparisons, span, 
 
@@ -105,6 +100,11 @@ def loess_smoothing(df_filepath,
     ----------
 
     """
+
+    mpl.rcParams.update({'font.size': 10})
+    cm = 1/2.54
+    fig,ax = plt.subplots()
+    fig.set_size_inches(9*cm, 7*cm)
     
     # check variable inputs
     assert interp_method in ['linear', 'nearest', 'nearest-up', 'zero', 
