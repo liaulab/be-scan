@@ -146,10 +146,11 @@ def loess_smoothing(df_filepath,
         ax[i].axhline(y=np.log10(0.05 + 10**-4)*-1,ls='--', c='k', linewidth=1) 
 
         fig.tight_layout()
+        ### title and labels
 
         if return_df: 
             return_list.append((df_loess, df_loess_rand, df_pvals))
-            
+
     path = Path.cwd()
     if savefig:
         outpath = path / out_directory

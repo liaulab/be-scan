@@ -111,6 +111,7 @@ def sgrna_enrichment(df_filepath, comparisons,
                         ax=ax[i], **highlight_rugplot_kws)
 
     plt.tight_layout()
+    ### title and labels
     
     # Save to pdf
     path = Path.cwd()
