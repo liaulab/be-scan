@@ -20,7 +20,7 @@ def count_reads(sample_sheet, annotated_lib,
     file_dir='', 
     KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
     out_dir='', out_file='counts_library.csv',
-    save=True, return_df=True, save_files=True, plot_out_type='pdf',
+    save=True, return_df=True, save_files=True, plot_out_type='pdf', 
     ):
     
     """[Summary]
@@ -145,7 +145,8 @@ def count_reads(sample_sheet, annotated_lib,
             df_perfects.to_csv(out_counts, index=False)
 
             weights = np.ones_like(df_perfects[cond]) / len(df_perfects[cond])
-            plt.hist(df_perfects[cond], weights=weights, bins=len(df_perfects[cond])//10)
+            # histogram for df_ref[cond] column
+            plt.hist(df_perfects[cond], weights=weights, bins=len(df_perfects[cond])//5)
             outpath = path / out_dir
             out = stats.split('.')[0] + '_histogram.' + plot_out_type
             plt.title(f"Distributions of sgRNA in {fastq}")
