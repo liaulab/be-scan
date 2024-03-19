@@ -65,11 +65,11 @@ def average_reps(sample_sheet, log2_subt0,
         reps = [x+'_subt0' for x in df_map.loc[df_map['condition'] == cond]['rep'].tolist()]
         # skip averaging for single replicates (otherwise breaks script)
         if len(reps) > 1:
-            df_lfc[cond+'_avg'] = df_lfc[reps].mean(axis=1)
-            df_lfc[cond+'_stdev'] = df_lfc[reps].std(axis=1)
+            df_lfc[cond+'_subctrl_avg'] = df_lfc[reps].mean(axis=1)
+            df_lfc[cond+'_subctrl_stdev'] = df_lfc[reps].std(axis=1)
         elif len(reps) == 1:
-            df_lfc[cond+'_avg'] = df_lfc[reps]
-            df_lfc[cond+'_stdev'] = 0
+            df_lfc[cond+'_subctrl_avg'] = df_lfc[reps]
+            df_lfc[cond+'_subctrl_stdev'] = 0
         else: 
             raise Exception('Error! Replicate number not valid')
 
