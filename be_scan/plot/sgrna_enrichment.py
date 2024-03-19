@@ -20,9 +20,9 @@ def sgrna_enrichment(df_filepath, comparisons,
                      
      savefig=True, out_name='scatterplot', out_type='png', out_directory='', show=True, # output params
                      
-     rugplot_kws={'height':0.25, 'color':'black', 'linewidth':2, 'alpha':0.05}, 
+     rugplot_kws={'height':1.0, 'color':'black', 'linewidth':2, 'alpha':0.05}, 
      kdeplot_kws={'color':'black', 'linewidth':1, 'alpha':0.5}, 
-     highlight_rugplot_kws={'height':0.25, 'color':'red', 'linewidth':5, 'alpha':0.6}
+     highlight_rugplot_kws={'height':1.0, 'color':'red', 'linewidth':5, 'alpha':0.5}
     ):
     
     """[Summary]
@@ -105,11 +105,11 @@ def sgrna_enrichment(df_filepath, comparisons,
     for i, val in enumerate(comparisons): 
         if len(comparisons) > 1: 
             sns.rugplot(data=df_data, x=val, 
-                        ax=ax[i], )
+                        ax=ax[i], **rugplot_kws)
             ax[i].set_title(f"sgRNA Enrichment for {val}")
         else: 
             sns.rugplot(data=df_data, x=val, 
-                        ax=ax, )
+                        ax=ax, **rugplot_kws)
         # add option to highlight certain guides
         if highlight: 
             highlight_df = df_data[df_data[highlight_col].isin(highlight_vals)]
