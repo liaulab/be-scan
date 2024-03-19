@@ -149,14 +149,15 @@ def loess_smoothing(df_filepath,
 
         if return_df: 
             return_list.append((df_loess, df_loess_rand, df_pvals))
-        path = Path.cwd()
-        if savefig:
-            outpath = path / out_directory
-            out = out_name + comp + '.' + out_type
-            plt.savefig(outpath / out, format=out_type)
-        if show: 
-            plt.show()
-        plt.close()
+            
+    path = Path.cwd()
+    if savefig:
+        outpath = path / out_directory
+        out = out_name + comp + '.' + out_type
+        plt.savefig(outpath / out, format=out_type)
+    if show: 
+        plt.show()
+    plt.close()
     
     if return_df: 
         return return_list
