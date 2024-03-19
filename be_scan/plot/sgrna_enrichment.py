@@ -94,20 +94,31 @@ def sgrna_enrichment(df_filepath, comparisons,
     
     # add a density plot
     if density: 
-        for i, val in enumerate(comparisons): 
+        if len(comparisons) > 1: 
+            for i, val in enumerate(comparisons): 
+                sns.kdeplot(data=df_data, x=val, 
+                            ax=ax[i], **kdeplot_kws)
+        else: 
             sns.kdeplot(data=df_data, x=val, 
-                        ax=ax[i], **kdeplot_kws)
+                        ax=ax, **kdeplot_kws)
     # add a rugplot to show density of guides across enrichment values
     for i, val in enumerate(comparisons): 
-        sns.rugplot(data=df_data, x=val, 
-                    ax=ax[i], )
-        ax[i].set_title(f"sgRNA Enrichment for {val}")
-        
+        if len(comparisons) > 1: 
+            sns.rugplot(data=df_data, x=val, 
+                        ax=ax[i], )
+            ax[i].set_title(f"sgRNA Enrichment for {val}")
+        else: 
+            sns.rugplot(data=df_data, x=val, 
+                        ax=ax, )
         # add option to highlight certain guides
         if highlight: 
-            highlight_df = df_data[df[highlight_col].isin(highlight_vals)]
-            sns.rugplot(data=highlight_df, x=val, 
-                        ax=ax[i], **highlight_rugplot_kws)
+            highlight_df = df_data[df_data[highlight_col].isin(highlight_vals)]
+            if len(comparisons) > 1: 
+                sns.rugplot(data=highlight_df, x=val, 
+                            ax=ax[i], **highlight_rugplot_kws)
+            else: 
+                sns.rugplot(data=highlight_df, x=val, 
+                            ax=ax, **highlight_rugplot_kws)
 
     plt.tight_layout()
     
