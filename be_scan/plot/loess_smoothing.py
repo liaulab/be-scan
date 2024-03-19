@@ -102,9 +102,8 @@ def loess_smoothing(df_filepath,
     """
 
     mpl.rcParams.update({'font.size': 10})
-    cm = 1/2.54
-    fig,ax = plt.subplots()
-    fig.set_size_inches(9*cm, 7*cm)
+    fig, ax = plt.subplots(nrows=len(comparisons), ncols=1, 
+                          figsize=(10, 5*len(comparisons)))
     
     # check variable inputs
     assert interp_method in ['linear', 'nearest', 'nearest-up', 'zero', 
@@ -123,16 +122,21 @@ def loess_smoothing(df_filepath,
 
     return_list = []
     # process columns from dataframe and input into loess_v3
-    for comp in comparisons: 
+    if len(comparisons) == 1: 
+        ax = [ax]
+    for i, comp in enumerate(comparisons): 
         x_obs, y_obs = df_filtered[x_column], df_filtered[comp]
 
         df_loess = loess_v3(x_obs=x_obs, y_obs=y_obs, span=span, 
                             x_out=x_out, interp_method=interp_method, 
-                            loess_kws=loess_kws, interp_kws=interp_kws, ) 
+                            loess_kws=loess_kws, interp_kws=interp_kws, 
+                            ax=ax[i], ) 
         df_loess_rand = randomize(x_obs=x_obs, y_obs=y_obs, span=span, 
-                                  x_out=x_out, n_repeats=n_repeats, interp_method=interp_method, )
+                                  x_out=x_out, n_repeats=n_repeats, interp_method=interp_method, 
+                                  ax=ax[i], )
         df_pvals = calculate_sig(df_loess=df_loess, df_loess_rand=df_loess_rand, 
-                                 n_repeats=n_repeats, smm_multipletests_kws=smm_multipletests_kws, )
+                                 n_repeats=n_repeats, smm_multipletests_kws=smm_multipletests_kws, 
+                                 ax=ax[i], )
 
         df_plotting = df_pvals[['corr_pval']].copy()
         # plot -log10 of p-values so that hits will be on top
