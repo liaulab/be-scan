@@ -94,13 +94,13 @@ def sgrna_enrichment(df_filepath, comparisons,
     
     # add a density plot
     if density: 
-        if len(comparisons) > 1: 
-            for i, val in enumerate(comparisons): 
+        for i, val in enumerate(comparisons): 
+            if len(comparisons) > 1: 
                 sns.kdeplot(data=df_data, x=val, 
                             ax=ax[i], **kdeplot_kws)
-        else: 
-            sns.kdeplot(data=df_data, x=val, 
-                        ax=ax, **kdeplot_kws)
+            else: 
+                sns.kdeplot(data=df_data, x=val, 
+                            ax=ax, **kdeplot_kws)
     # add a rugplot to show density of guides across enrichment values
     for i, val in enumerate(comparisons): 
         if len(comparisons) > 1: 
