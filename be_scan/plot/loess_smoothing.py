@@ -33,8 +33,8 @@ cm = 1/2.54
 fig,ax = plt.subplots()
 fig.set_size_inches(9*cm,7*cm)
 
-def cluster_1d(df_filepath, 
-               x_column, comparisons, span, 
+def loess_smoothing(df_filepath, 
+                    x_column, comparisons, span, 
 
     x_out=None, interp_method='quadratic', 
     loess_kws={'missing':'raise', 'return_sorted':False, 'it':0}, 
