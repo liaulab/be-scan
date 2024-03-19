@@ -89,9 +89,6 @@ def corr_jointplot(df_filepath, condition1, condition2,
 
     # style
     mpl.rcParams.update({'font.size': 10})
-    cm = 1/2.54
-    fig,ax = plt.subplots()
-    fig.set_size_inches(9*cm,7*cm)
 
     df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)
