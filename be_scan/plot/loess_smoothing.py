@@ -330,9 +330,3 @@ def calculate_sig(df_loess, df_loess_rand,
     df_pvals['sig'] = temp[0]
     df_pvals['corr_pval'] = temp[1]
     return df_pvals
-
-
-# x = cluster_1d(df_filepath='../../tests/test_data/plot/NZL10196_v9_comparisons.csv', 
-#            x_column='Edit_site', 
-#            comparisons=['d3-pos'], 
-#            x_out = np.arange(1, 501, 1), span=0.05, n_repeats=10000, )
