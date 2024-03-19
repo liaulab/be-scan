@@ -130,20 +130,20 @@ def loess_smoothing(df_filepath,
         df_loess = loess_v3(x_obs=x_obs, y_obs=y_obs, span=span, 
                             x_out=x_out, interp_method=interp_method, 
                             loess_kws=loess_kws, interp_kws=interp_kws, 
-                            ax=ax[i], ) 
+                            ) 
         df_loess_rand = randomize(x_obs=x_obs, y_obs=y_obs, span=span, 
                                   x_out=x_out, n_repeats=n_repeats, interp_method=interp_method, 
-                                  ax=ax[i], )
+                                  )
         df_pvals = calculate_sig(df_loess=df_loess, df_loess_rand=df_loess_rand, 
                                  n_repeats=n_repeats, smm_multipletests_kws=smm_multipletests_kws, 
-                                 ax=ax[i], )
+                                 )
 
         df_plotting = df_pvals[['corr_pval']].copy()
         # plot -log10 of p-values so that hits will be on top
         # the last part is added because some of my p-values were 0 and cannot be log-transformed
         df_plotting['-log10'] = np.log10(df_plotting['corr_pval'] + 10**-4) * -1
-        ax.plot(df_plotting.index, df_plotting['-log10'], color='gainsboro') 
-        ax.axhline(y=np.log10(0.05 + 10**-4)*-1,ls='--', c='k', linewidth=1) 
+        ax[i].plot(df_plotting.index, df_plotting['-log10'], color='gainsboro', ) 
+        ax[i].axhline(y=np.log10(0.05 + 10**-4)*-1,ls='--', c='k', linewidth=1) 
 
         fig.tight_layout()
 
