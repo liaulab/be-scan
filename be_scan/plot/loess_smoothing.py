@@ -17,10 +17,8 @@ from pathlib import Path
 import warnings
 warnings.filterwarnings("ignore")
 
-# this is mainly so that my plots are generated with words as text/in Arial
 mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams['ps.fonttype'] = 42
-mpl.rcParams['font.sans-serif'] = 'Arial'
 
 # specific to the loess function
 import scipy.interpolate as interp
