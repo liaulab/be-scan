@@ -110,14 +110,14 @@ def design_library(gene_filepath, genome_file,
     if len(genome_file) > 0: 
         reference_check_params = {'guides_file':temp, 'genome_file':genome_file, 
                                 'delete':delete, 'return_df':True, 'save_df':False}
-        filtered = reference_check(**reference_check_params)
+        annotated = reference_check(**reference_check_params)
 
     os.remove(temp)
     print('Complete! Library generated from', str(gene_filepath))
 
     if save_df: 
         out_filepath = Path(output_dir)
-        filtered.to_csv(out_filepath / output_name, index=False)
+        annotated.to_csv(out_filepath / output_name, index=False)
     if return_df: 
-        return filtered
+        return annotated
     
