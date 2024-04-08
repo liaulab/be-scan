@@ -18,7 +18,7 @@ def design_library(gene_filepath, genome_file,
     gene_name='', PAM=None, window=[4,8], 
     output_name='annotated_guides.csv', output_dir='', delete=False,
     return_df=True, save_df=True,
-    exclude_introns=True, exclude_nontargeting=True,
+    exclude_introns=True, exclude_nontargeting=True, exclude_TTTT=True,
     domains={},
     ): 
     
@@ -94,6 +94,7 @@ def design_library(gene_filepath, genome_file,
                               'cas_type':cas_type, 'edit_from':edit_from, 'edit_to':edit_to, 
                               'PAM':PAM, 'window':window, 'return_df':True, 'save_df':False, 
                               'exclude_introns':exclude_introns, 'exclude_nontargeting':exclude_nontargeting, 
+                              'exclude_TTTT':exclude_TTTT,
                               'domains':domains,
     }
     guides = generate_library(**generate_library_params)
