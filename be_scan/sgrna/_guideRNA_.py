@@ -58,6 +58,21 @@ def filter_repeats(results):
     results = [g.copy() for g in results if g[0] not in dup_seqs]
     return results
 
+def filter_TTTT(results): 
+    """
+    Delete guides with TTTT which is a stop sequence for cloning
+
+    Parameters
+    ------------
+    results : list of lists [sgRNA_seq, starting_frame, gene_pos, chr_pos, exon]
+
+    Returns
+    ------------
+    results : list of lists, shortened input results
+    """
+    results = [r for r in results if not ('TTTT' in r[0])]
+    return results
+
 def annotate_mutations(row, edit, amino_acid_seq, col_names, pre): 
     """
     Come up with list of annotations (ie F877L, F877P, F877L/F877P)

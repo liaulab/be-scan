@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 
 from be_scan.sgrna._genomic_ import *
-from be_scan.sgrna._guideRNA_ import filter_guide, filter_repeats
+from be_scan.sgrna._guideRNA_ import filter_guide, filter_repeats, filter_TTTT
 from be_scan.sgrna._gene_ import GeneForCRISPR
 
 def generate_library(gene_filepath, 
@@ -20,6 +20,7 @@ def generate_library(gene_filepath,
     return_df=True, save_df=True, 
     exclude_introns=True, 
     exclude_nontargeting=True, 
+    exclude_TTTT=True, 
     domains={}, 
     ): 
     
@@ -120,6 +121,9 @@ def generate_library(gene_filepath,
     # filter out repeating guides in fwd_results rev_results list
     fwd_results = filter_repeats(fwd_results)
     rev_results = filter_repeats(rev_results)
+    if exclude_TTTT: 
+        fwd_results = filter_TTTT(fwd_results)
+        rev_results = filter_TTTT(rev_results)
 
     # adding extra annotations for fwd and rev
     for x in fwd_results: 
