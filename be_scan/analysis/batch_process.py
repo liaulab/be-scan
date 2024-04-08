@@ -17,7 +17,7 @@ from be_scan.analysis.calc_controls import calc_controls
 def batch_process(sample_sheet, annotated_lib, comparisons, 
                   neg_ctrl_col, neg_ctrl_conditions, 
 
-    KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTTAGA', dont_trim_G=False,
+    KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
     file_dir='', controls=['t0'], 
     
     out_dir='', out_counts='counts_library.csv', out_lfc='agg_log2_t0.csv', 

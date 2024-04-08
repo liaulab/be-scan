@@ -52,7 +52,7 @@ def compare_conds(comparisons, avg_conds,
     comparisons_list = list(comparisons_df.itertuples(index=False, name=None))
     # perform treatment vs. control comparison
     for name, treatment, control in comparisons_list:
-        df_conds[name] = df_conds[treatment].sub(df_conds[control])
+        df_conds[name] = df_conds[treatment+'_subctrl_avg'].sub(df_conds[control+'_subctrl_avg'])
 
     # export files and return dataframes if necessary
     if save: 
