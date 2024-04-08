@@ -87,6 +87,7 @@ def design_library(gene_filepath, genome_file,
        'mutations'      : str,    a list of mutation (ie F877L, F877P, F877L/F877P)
        'muttypes'       : list,   Missense Nonsense Silent No_C/Exon EssentialSpliceSite Control unique list
        'muttype'        : str,    muttypes condensed down to one type
+       'genome_occurrences' : int, how many times this sequence occurs in the referecnce genome
     """
     temp = "temp.csv"
 
@@ -100,22 +101,23 @@ def design_library(gene_filepath, genome_file,
     guides = generate_library(**generate_library_params)
     guides.to_csv(temp, index=False)
 
-    reference_check_params = {'guides_file':temp, 'genome_file':genome_file, 
-                            'delete':delete, 'return_df':True, 'save_df':False}
-    filtered = reference_check(**reference_check_params)
-    filtered.to_csv(temp, index=False)
-
     annotate_params = {'guides_file':temp, 'gene_filepath':gene_filepath, 
                              'protein_filepath':protein_filepath, 'edit_from':edit_from, 'edit_to':edit_to,
                              'window':window, 'return_df':True, 'save_df':False}
     annotated = annotate(**annotate_params)
+    annotated.to_csv(temp, index=False)
+
+    if len(genome_file) > 0: 
+        reference_check_params = {'guides_file':temp, 'genome_file':genome_file, 
+                                'delete':delete, 'return_df':True, 'save_df':False}
+        filtered = reference_check(**reference_check_params)
 
     os.remove(temp)
     print('Complete! Library generated from', str(gene_filepath))
 
     if save_df: 
         out_filepath = Path(output_dir)
-        annotated.to_csv(out_filepath / output_name, index=False)
+        filtered.to_csv(out_filepath / output_name, index=False)
     if return_df: 
-        return annotated
+        return filtered
     
