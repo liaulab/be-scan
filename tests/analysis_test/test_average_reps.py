@@ -17,8 +17,8 @@ def test_average_reps():
                  out_dir        = file_dir,
                 )
     df_conds = pd.read_csv(f"{file_dir}avg_conds.csv")
-    assert 'cond1' in df_conds.columns
-    assert 'cond1_stdev' in df_conds.columns
+    assert 'cond1_subctrl_avg' in df_conds.columns
+    assert 'cond1_subctrl_stdev' in df_conds.columns
 
     # clean up
     os.remove(f"{file_dir}avg_conds.csv")

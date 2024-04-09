@@ -18,7 +18,7 @@ file_dir = "tests/test_data/analysis/"
 #                   controls       = ['counts1'],
 #                  )
 #     df_reads = pd.read_csv(f"{file_dir}agg_log2_t0.csv")
-#     assert 'counts1_subt0' in df_reads.columns
+#     assert 'counts1_subctrl_avg' in df_reads.columns
 
 #     # clean up
 #     os.remove(f"{file_dir}agg_log2_t0.csv")

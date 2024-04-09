@@ -146,7 +146,7 @@ def count_reads(sample_sheet, annotated_lib,
 
             weights = np.ones_like(df_perfects[cond]) / len(df_perfects[cond])
             # histogram for df_ref[cond] column
-            plt.hist(df_perfects[cond], weights=weights, bins=len(df_perfects[cond])//5)
+            plt.hist(df_perfects[cond], weights=weights, bins=(len(df_perfects[cond])//5)+1)
             outpath = path / out_dir
             out = stats.split('.')[0] + '_histogram.' + plot_out_type
             plt.title(f"Distributions of sgRNA in {fastq}")
