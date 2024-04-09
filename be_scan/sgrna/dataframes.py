@@ -27,6 +27,7 @@ def merge_guide_df(guide_df1_filepath, guide_df2_filepath,
     This function is based on pd.merge, for more documentation please see: 
     https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.merge.html
     """
+
     path = Path.cwd()
     guide_df1_filepath = Path(guide_df1_filepath)
     guide_df2_filepath = Path(guide_df2_filepath)
@@ -66,6 +67,7 @@ def add_guide_df(guides_df_filepath, additional_df_filepath,
     This function is based on pd.concat, for more documentation please see: 
     https://pandas.pydata.org/docs/reference/api/pandas.concat.html
     """
+    
     path = Path.cwd()
     guides_df_filepath = Path(guides_df_filepath)
     additional_df_filepath = Path(additional_df_filepath)

@@ -33,15 +33,18 @@ def test_generate_library_basic_required_pos(edit_from, edit_to, cas_type):
 @pytest.mark.parametrize("window", [[3,7], [5,8]])
 @pytest.mark.parametrize("exclude_introns", [True, False])
 @pytest.mark.parametrize("exclude_nontargeting", [True, False])
+@pytest.mark.parametrize("exclude_TTTT", [True, False])
 @pytest.mark.parametrize("domains", [{"IDR": [1, 555], "DNA Binding" : [600, 700]}])
 def test_generate_library_basic_optional_pos(edit_from, edit_to, cas_type, 
-                                               PAM, window, exclude_introns, exclude_nontargeting, domains):
+                                               PAM, window, exclude_introns, exclude_nontargeting, exclude_TTTT, 
+                                               domains):
     df = generate_library(**AR_params, 
                             edit_from=edit_from, edit_to=edit_to, cas_type=cas_type, 
                             PAM=PAM, 
                             window=window, 
                             exclude_introns=exclude_introns, 
                             exclude_nontargeting=exclude_nontargeting, 
+                            exclude_TTTT=exclude_TTTT,
                             domains=domains, 
     )
     assert all(col in df.columns for col in ["sgRNA_seq", "starting_frame", "gene_pos", "chr_pos", 
@@ -107,6 +110,16 @@ def test_generate_library_excludenontargeting_neg():
                     )
     df2 = generate_library(**AR_params, **CT_Sp_params, window=(4,8),
                              exclude_nontargeting=False, save_df=False
+                    )
+    assert df1.shape[0] <= df2.shape[0]
+
+def test_generate_library_excludeTTTT_neg(): 
+    # make sure that if you exclude nontargeting, dataframe is shorter than when you include them
+    df1 = generate_library(**AR_params, **CT_Sp_params, window=(4,8),
+                             exclude_TTTT=True, save_df=False
+                    )
+    df2 = generate_library(**AR_params, **CT_Sp_params, window=(4,8),
+                             exclude_TTTT=False, save_df=False
                     )
     assert df1.shape[0] <= df2.shape[0]
 

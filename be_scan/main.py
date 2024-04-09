@@ -311,6 +311,7 @@ def main():
     parser_generate_library.add_argument('--save_df', action='store_false', default=signat_gBEg.parameters['save_df'].default)
     parser_generate_library.add_argument('--exclude_introns', action='store_false', default=signat_gBEg.parameters['exclude_introns'].default)
     parser_generate_library.add_argument('--exclude_nontargeting', action='store_false', default=signat_gBEg.parameters['exclude_nontargeting'].default)
+    parser_generate_library.add_argument('--exclude_TTTT', action='store_false', default=signat_gBEg.parameters['exclude_TTTT'].default)
     parser_generate_library.set_defaults(func=generate_library)
 
     ##################################################
@@ -378,6 +379,7 @@ def main():
     parser_design_library.add_argument('--save_df', action='store_false', default=signat_g.parameters['save_df'].default)
     parser_design_library.add_argument('--exclude_introns', action='store_false', default=signat_g.parameters['exclude_introns'].default)
     parser_design_library.add_argument('--exclude_nontargeting', action='store_false', default=signat_g.parameters['exclude_nontargeting'].default)
+    parser_design_library.add_argument('--exclude_TTTT', action='store_false', default=signat_g.parameters['exclude_TTTT'].default)
     parser_design_library.set_defaults(func=design_library)
 
     args = parser.parse_args()

@@ -61,6 +61,8 @@ def generate_library(gene_filepath,
         Whether or not the editible base needs to be in an intron
     exclude_nontargeting : bool, default True
         Whether or not the editible base needs to be in the window
+    exclude_TTTT : bool, default True
+        Whether or not to exclude guides with 'TTTT'
 
     Returns
     ------------
@@ -121,6 +123,7 @@ def generate_library(gene_filepath,
     # filter out repeating guides in fwd_results rev_results list
     fwd_results = filter_repeats(fwd_results)
     rev_results = filter_repeats(rev_results)
+    # filter out guides with 'TTTT' in fwd_results rev_results list
     if exclude_TTTT: 
         fwd_results = filter_TTTT(fwd_results)
         rev_results = filter_TTTT(rev_results)

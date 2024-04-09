@@ -18,6 +18,7 @@ protein = "tests/test_data/sgrna/P10275.fasta"
 gene = "tests/test_data/sgrna/230408_AR_Input.fasta"
 C = "AR_CBE"
 A = "AR_ABE"
+suf = "_library.csv"
 
 
 def test_generate_library():
@@ -41,7 +42,6 @@ def test_design_library():
     assert b"Generates a list of guides based on a gene .fasta file"in out.stdout
 
 
-suf = "_library.csv"
 @pytest.mark.parametrize("query, output", 
                         [
                         ("Sp C T", f"{C}Sp{suf}"), # Sp C to T
@@ -54,6 +54,7 @@ suf = "_library.csv"
                         ("SpG C T --window 3 7", f"{C}SpG_window37{suf}"), # window
                         ("SpG C T --exclude_introns", f"{C}SpG_exclintron{suf}"), # SpG C to T
                         ("SpG C T --exclude_nontargeting", f"{C}SpG_exclnontarg{suf}"), # SpG C to T
+#                         ("SpG C T --exclude_nontargeting", f"{C}SpG_exclnontarg{suf}"), # SpG C to T
                         ])
 def test_generate_library_integration_pos(query, output): 
     out = subprocess.run(f"python3 -m be_scan generate_library {test_dir}{DNA} {query} --output_name {output}", 
@@ -65,17 +66,20 @@ def test_generate_library_integration_pos(query, output):
 
 @pytest.mark.parametrize("guides_file, query, output", 
                         [
-                        (f"{C}SpG{suf}", "C T", f"{C}SpG_annotated.csv"), # SpG C to T
-                        (f"{A}SpG{suf}", "A G", f"{A}SpG_annotated.csv"), # SpG A to G
-                        (f"{A}SpG{suf}", "A G --window 3 7", f"{A}SpG_annotated.csv"), # SpG A to G
-                        (f"{A}SpG{suf}", f"A G --gene_filepath {gene}", f"{A}SpG_annotated.csv"), # SpG A to G
-                        (f"{A}SpG{suf}", f"A G --protein_filepath {protein}", f"{A}SpG_annotated.csv"), # SpG A to G
+                        (f"{C}SpG{suf}", "C T", f"{C}SpG_annotated1.csv"), # SpG A to G
+                        (f"{C}SpG{suf}", "C T --window 3 7", f"{C}SpG_annotated2.csv"), # SpG A to G
+                        (f"{C}SpG{suf}", f"C T --gene_filepath {gene}", f"{C}SpG_annotated3.csv"), # SpG A to G
+                        (f"{C}SpG{suf}", f"C T --protein_filepath {protein}", f"{C}SpG_annotated4.csv"), # SpG A to G
+                        (f"{A}SpG{suf}", "A G", f"{A}SpG_annotated1.csv"), # SpG A to G
+                        (f"{A}SpG{suf}", "A G --window 3 7", f"{A}SpG_annotated2.csv"), # SpG A to G
+                        (f"{A}SpG{suf}", f"A G --gene_filepath {gene}", f"{A}SpG_annotated3.csv"), # SpG A to G
+                        (f"{A}SpG{suf}", f"A G --protein_filepath {protein}", f"{A}SpG_annotated4.csv"), # SpG A to G
                         ])
 def test_annotate_pos(guides_file, query, output): 
     out = subprocess.run(f"python3 -m be_scan annotate {test_dir}{guides_file} {query} --output_name {output}",
                          shell=True, capture_output=True)
     assert out.returncode == 0
-    # assert filecmp.cmp(output, "{0}{1}".format(test_dir, output))
+    assert filecmp.cmp(output, "{0}{1}".format(test_dir, output))
     os.system("rm {0}".format(output))
     
 
@@ -88,28 +92,27 @@ def test_reference_check_pos(guides_file, output):
     out = subprocess.run(f"python3 -m be_scan reference_check {test_dir}{guides_file} {genome} --output_name {output}",
                          shell=True, capture_output=True)
     assert out.returncode == 0
-    # assert filecmp.cmp(output, "{0}{1}".format(test_dir, output))
+    assert filecmp.cmp(output, "{0}{1}".format(test_dir, output))
     os.system("rm {0}".format(output))
 
 
 @pytest.mark.parametrize("query, output", 
                         [
-                        ("Sp C T", f"{C}Sp{suf}"), # Sp C to T
-                        ("Sp A G", f"{A}Sp{suf}"), # Sp A to G
-                        ("SpG C T", f"{C}SpG{suf}"), # SpG C to T
-                        ("SpG A G", f"{A}SpG{suf}"), # SpG A to G
-                        ("SpRY C T", f"{C}SpRY{suf}"), # SpRY C to T
-                        ("SpRY A G", f"{A}SpRY{suf}"), # SpRY A to G
-                        ("SpG C T --gene_name AR", f"{C}SpG_genename{suf}"), # pam
-                        (f"SpG C T --protein_filepath {protein}", f"{C}SpG_genename{suf}"), # pam
-                        ("SpG C T --PAM AGG", f"{C}SpG_PAMAGG{suf}"), # pam
-                        ("SpG C T --window 3 7", f"{C}SpG_window37{suf}"), # window
-                        ("SpG C T --exclude_introns", f"{C}SpG_exclintron{suf}"), # SpG C to T
-                        ("SpG C T --exclude_nontargeting", f"{C}SpG_exclnontarg{suf}"), # SpG C to T
+                        ("Sp C T", f"{C}Sp_design{suf}"), # Sp C to T
+                        ("Sp A G", f"{A}Sp_design{suf}"), # Sp A to G
+                        ("SpG C T", f"{C}SpG_design{suf}"), # SpG C to T
+                        ("SpG A G", f"{A}SpG_design{suf}"), # SpG A to G
+                        ("SpRY C T", f"{C}SpRY_design{suf}"), # SpRY C to T
+                        ("SpRY A G", f"{A}SpRY_design{suf}"), # SpRY A to G
+                        (f"SpG C T --protein_filepath {protein}", f"{C}SpG_genename_design{suf}"), # pam
+                        ("SpG C T --PAM AGG", f"{C}SpG_PAMAGG_design{suf}"), # pam
+                        ("SpG C T --window 3 7", f"{C}SpG_window37_design{suf}"), # window
+                        ("SpG C T --exclude_introns", f"{C}SpG_exclintron_design{suf}"), # SpG C to T
+                        ("SpG C T --exclude_nontargeting", f"{C}SpG_exclnontarg_design{suf}"), # SpG C to T
                         ])
 def test_guides_pos(query, output): 
     out = subprocess.run(f"python3 -m be_scan design_library {test_dir}{DNA} {genome} {query} --output_name {output}",
                          shell=True, capture_output=True)
     assert out.returncode == 0
-    # assert filecmp.cmp(output, "{0}{1}".format(test_dir, output))
+    assert filecmp.cmp(output, "{0}{1}".format(test_dir, output))
     os.system("rm {0}".format(output))

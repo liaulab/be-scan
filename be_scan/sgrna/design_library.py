@@ -61,6 +61,10 @@ def design_library(gene_filepath, genome_file,
         Whether or not to save the resulting dataframe
     exclude_introns : bool, default True
         Whether or not the editible base needs to be in an intron
+    exclude_nontargeting : bool, default True
+        Whether or not the editible base needs to be in the window
+    exclude_TTTT : bool, default True
+        Whether or not to exclude guides with 'TTTT'
 
     Returns
     ------------
@@ -89,6 +93,7 @@ def design_library(gene_filepath, genome_file,
        'muttype'        : str,    muttypes condensed down to one type
        'genome_occurrences' : int, how many times this sequence occurs in the referecnce genome
     """
+    
     temp = "temp.csv"
 
     generate_library_params = {'gene_filepath':gene_filepath, 'gene_name':gene_name, 
