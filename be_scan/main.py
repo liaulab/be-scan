@@ -128,15 +128,16 @@ def main():
     parser_batch_process.add_argument('sample_sheet', type=str)
     parser_batch_process.add_argument('annotated_lib', type=str)
     parser_batch_process.add_argument('comparisons', type=str)
-    parser_batch_process.add_argument('neg_ctrl_col', type=str)
-    parser_batch_process.add_argument('-ncc', '--neg_ctrl_conditions', nargs='+', type=str, required=True)
     
+    parser_batch_process.add_argument('--neg_ctrl_col', type=str, default=signat_bp.parameters['neg_ctrl_col'].default)
+    parser_batch_process.add_argument('--neg_ctrl_conditions', nargs='+', type=str, default=signat_bp.parameters['neg_ctrl_conditions'].default)
+
     parser_batch_process.add_argument('--KEY_INTERVAL', type=int, nargs=2, default=signat_bp.parameters['KEY_INTERVAL'].default)
     parser_batch_process.add_argument('--KEY', type=str, default=signat_bp.parameters['KEY'].default)
     parser_batch_process.add_argument('--KEY_REV', type=str, default=signat_bp.parameters['KEY_REV'].default)
-    parser_batch_process.add_argument('--dont_trim_G', action='store_true')
+    parser_batch_process.add_argument('--dont_trim_G', action='store_true', default=signat_bp.parameters['dont_trim_G'].default)
     parser_batch_process.add_argument('--file_dir', type=str, default=signat_bp.parameters['file_dir'].default)
-    parser_batch_process.add_argument('--controls', type=str, default=signat_bp.parameters['controls'].default)
+    parser_batch_process.add_argument('--controls', nargs='+', type=str, default=signat_bp.parameters['controls'].default)
 
     parser_batch_process.add_argument('--out_dir', type=str, default=signat_bp.parameters['out_dir'].default)
     parser_batch_process.add_argument('--out_counts', type=str, default=signat_bp.parameters['out_counts'].default) # count_reads
