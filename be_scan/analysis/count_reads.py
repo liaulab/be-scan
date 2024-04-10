@@ -72,9 +72,12 @@ def count_reads(sample_sheet, annotated_lib,
     plot_out_type : str, optional, defaults to 'pdf'
         file type of figure output
     """
+
     sample_filepath = Path(sample_sheet)
     sample_df = pd.read_csv(sample_filepath)
-    ### check all column names are present
+    for colname in ['fastq_file', 'counts_file', 'noncounts_file', 'stats_file', 'condition']: 
+        if colname not in sample_df.columns.tolist():
+            raise Exception(f"annotated_lib is missing column: {colname}")
     samples = [list(a) for a in zip(sample_df.fastq_file, sample_df.counts_file, 
                                     sample_df.noncounts_file, sample_df.stats_file, 
                                     sample_df.condition)]
@@ -83,9 +86,9 @@ def count_reads(sample_sheet, annotated_lib,
     # look for 'sgRNA_seq' column, raise Exception if missing
     annotated_lib = Path(annotated_lib)
     df_ref = pd.read_csv(annotated_lib, header=0) # explicit header = first row
-    df_ref['sgRNA_seq'] = df_ref['sgRNA_seq'].str.upper() 
     if 'sgRNA_seq' not in df_ref.columns.tolist():
         raise Exception('annotated_lib is missing column: sgRNA_seq')
+    df_ref['sgRNA_seq'] = df_ref['sgRNA_seq'].str.upper() 
     path = Path.cwd()
 
     for fastq, counts, nc, stats, cond in samples: 

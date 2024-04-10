@@ -19,6 +19,7 @@ def test_merge_and_norm():
                   )
     df_reads = pd.read_csv(f"{file_dir}agg_log2_t0.csv")
     assert 'counts1_subt0' in df_reads.columns
+    assert not ('counts1_log2' in df_reads.columns)
 
     # clean up
     os.remove(f"{file_dir}agg_log2_t0.csv")

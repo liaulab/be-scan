@@ -14,8 +14,9 @@ file_dir = "tests/test_data/analysis/"
 # def test_batch_process(): 
 #     batch_process(sample_sheet   = f"{file_dir}sample_sheet.csv", 
 #                   annotated_lib  = f"{file_dir}count_reads_sample_out.csv",
-#                   out_dir        = file_dir, 
-#                   controls       = ['counts1'],
+#                   comparisons    = f"{file_dir}comparisons.csv", 
+#                   file_dir       = file_dir, 
+#                   controls       = ['counts1_x'],
 #                  )
 #     df_reads = pd.read_csv(f"{file_dir}agg_log2_t0.csv")
 #     assert 'counts1_subctrl_avg' in df_reads.columns

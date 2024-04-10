@@ -33,10 +33,12 @@ def calc_controls(conditions, stats_comparisons,
     
     out_dir : str or path, defaults to ''
         String or path to the directory where all files are found. 
-    out_file : str or path, defaults to 'conditions.csv'
-        Name of output dataframe with guides and counts. 
+    out_file : str or path, defaults to 'stats.txt'
+        Name of output stats file
     save : bool, default True
         Whether or not to save the resulting dataframe
+    return_txt : bool, default False
+        Whether or not to print the resulting statistics
     """
 
     path = Path.cwd()

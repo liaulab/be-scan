@@ -47,6 +47,7 @@ def main():
     parser_count_reads.add_argument('--save', action='store_false', default=signat_cr.parameters['save'].default)
     parser_count_reads.add_argument('--return_df', action='store_false', default=signat_cr.parameters['return_df'].default)
     parser_count_reads.add_argument('--save_files', action='store_false', default=signat_cr.parameters['save_files'].default)
+    parser_count_reads.add_argument('--plot_out_type', type=str, default=signat_cr.parameters['plot_out_type'].default)
     parser_count_reads.set_defaults(func=count_reads)
 
     ##################################################
