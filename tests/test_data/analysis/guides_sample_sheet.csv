@@ -1,0 +1,2 @@
+sample_id,fastq_file,counts_file,condition,agg_conditions,noncounts_file,stats_file
+SPS0,guides_query.fastq,counts.csv,t0,t0,noncounts.csv,stats.txt

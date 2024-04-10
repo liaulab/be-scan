@@ -31,6 +31,111 @@ from ._utils import (
     processIFile, find_Indexes, generateSubsets, generateMutCom, get_aa, find_sgRNA_pos, rev_complement, convert_guideInput
 )
 
+# this is the main function for taking in lists of guides, 
+# then annotating all their predicted edits
+# def annotate_BE_guides(protein_filepath, fwd_guides, rev_guides, edit_from, edit_to, window=[4,8]): 
+#     ### ADD DOCS
+#     # Parameters
+#     #    protein_filepath: filepath to an amino acid sequence corresponding to gene file
+#     #    fwd_guides, rev_guides: generated from identify_guides
+#     #    edit_from: the base (ACTG) to be replaced
+#     #    edit_to: the base (ACTG) to replace with
+#     #    window: editing window, 4th to 8th bases inclusive by default
+#     # outputs: a dataframe
+    
+#     ### target_codons: list of codons that we want to make with our base edit
+
+#     # codon indices, predicted edits made
+#     amino_acid_seq = protein_to_AAseq(protein_filepath)
+#     num_aa = 3 # this is the num of amino acids we look ahead in our frame
+
+#     for g in fwd_guides: 
+#         # mutates all residues according to the mode, every combination of residue mutations
+#         original = g[0][:12] # a string
+#         guide_window = g[0][window[0]-1:window[1]] # a string
+#         mutateds = [g[0][:window[0]-1] + m + g[0][window[1]:12] for m in make_mutations(guide_window, edit_from, edit_to)] # list of strings 
+
+#         # compares the residues to find which amino acids were altered and catalogs them
+#         edits, edit_inds = [], [] # lists of lists, of all edits for all possible mutations
+#         start = (-1*g[1])+3
+#         orig = original[start:start+(num_aa*3)]
+#         for m in mutateds: 
+#             # for each possible mutation, come up with the list of amino acid changes
+#             edit, edit_ind = find_aa_edits_fwd(m, g, start, orig, num_aa, amino_acid_seq)
+#             edits.append(edit)
+#             edit_inds.append(edit_ind)
+#         # append all information to dataframe
+#         g.extend([edits, edit_inds, 'fwd'])
+#         assert(len(g)) == 7
+        
+#     for g in rev_guides: 
+#         # mutates all residues according to the mode, every combination of residue mutations
+#         original = g[0][:12] # a string
+#         guide_window = g[0][window[0]-1:window[1]] # a string
+#         mutateds = [g[0][:window[0]-1] + m + g[0][window[1]:12] for m in make_mutations(guide_window, edit_from, edit_to)] # a list of strings
+
+#         # compares the residues to find which amino acids were altered and catalogs them
+#         edits, edit_inds = [], [] # lists of lists, of all edits for all possible mutations
+#         start = g[1]+1
+#         orig = rev_complement(complements, original[start:start+(num_aa*3)])
+#         for m in mutateds: 
+#             # for each possible mutation, come up with the list of amino acid changes
+#             edit, edit_ind = find_aa_edits_rev(m, g, start, orig, num_aa, amino_acid_seq)
+#             edits.append(edit)
+#             edit_inds.append(edit_ind)
+#         # append all information to dataframe
+#         g.extend([edits, edit_inds, 'rev'])
+#         assert(len(g)) == 7
+        
+# #     print(pd.DataFrame(fwd_guides + rev_guides))
+#     return pd.DataFrame(fwd_guides + rev_guides)
+
+# # function to find all aa edit in the fwd direction
+# # given 1 mutant and information on where to start translating
+# def find_aa_edits_fwd(m, g, start, orig, num_aa, amino_acid_seq): 
+#     mutated = m[start:start+(num_aa*3)] # the mutated string that we are converting
+#     original_aa, mutated_aa = '', ''
+#     edit, edit_ind = [], []
+#     # for the next num_aa amino acids, log each translation and log the changes if there are any
+#     for i in range(num_aa): 
+#         if not orig[i*3:(i+1)*3].isupper(): # make sure bps are all coding (caps)
+#             continue
+#         # add translations to a string
+#         original_aa += DNA_AA_map[orig[i*3:(i+1)*3]]
+#         mutated_aa += DNA_AA_map[mutated[i*3:(i+1)*3]]
+#         assert amino_acid_seq[int((g[2]+1+start+(i*3))/3)+1]==original_aa[-1] # check we referenced correct aa
+#         # log all changed aa
+#         if original_aa[-1] != mutated_aa[-1]: 
+#             edit.append(original_aa[-1] + ">" + mutated_aa[-1])
+#             edit_ind.append(int((g[2]+1+start+(i*3))/3)+1) # +1 for indexing starting at 1
+            
+#     if len(edit) == 0: 
+#         edit.append('No Change')
+#     return edit, edit_ind
+    
+# # function to find all aa edit in the fwd direction
+# # given 1 mutant and information on where to start translating
+# def find_aa_edits_rev(m, g, start, orig, num_aa, amino_acid_seq): 
+#     mutated = rev_complement(complements, m[start:start+(num_aa*3)])
+#     original_aa, mutated_aa = '', ''
+#     edit, edit_ind = [], []
+#     # for the next num_aa amino acids, log each translation and log the changes if there are any
+#     for i in range(num_aa): 
+#         if not orig[i*3:(i+1)*3].isupper(): # make sure bps are all coding (caps)
+#             continue
+#         # add translations to a string
+#         original_aa += DNA_AA_map[orig[i*3:(i+1)*3]]
+#         mutated_aa += DNA_AA_map[mutated[i*3:(i+1)*3]]
+#         assert amino_acid_seq[int((g[2]-10+1+(i*3))/3)+1]==original_aa[-1] # check we referenced correct aa
+#         # log all changed aa
+#         if original_aa[-1] != mutated_aa[-1]: 
+#             edit.append(original_aa[-1] + ">" + mutated_aa[-1])
+#             edit_ind.append(int((g[2]-10+1+(i*3))/3))
+            
+#     if len(edit) == 0: 
+#         edit.append('No Change')
+#     return edit, edit_ind
+
 def annotate_df(input_df, exonDicts, exonPosDicts, cdsDict, domainDict_all, lenDict):
     # Read in guides, genomic positions, other required annotations.
     # Store in pandas data frame. Each annotation produced by this script will be

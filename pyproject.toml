@@ -23,7 +23,8 @@ dependencies = [
   "seaborn",
   "pandas",
   "scikit-learn",
-  "biopython"
+  "biopython",
+  "pyahocorasick"
 ]
 
 [project.optional-dependencies]

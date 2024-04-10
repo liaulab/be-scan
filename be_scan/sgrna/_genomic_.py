@@ -7,9 +7,9 @@ many of these would be included in bioconda etc but I'm writing these out to avo
 """
 
 import re
-from itertools import product
+from pathlib import Path
 
-# variables
+# VARIABLES
 
 # translating DNA sequence to amino acid sequence
 DNA_AA_map = {"TTT":"F", "TTC":"F", "TTA":"L", "TTG":"L",
@@ -33,6 +33,8 @@ bases = 'ACGT'
 complements = {'A':'T', 'T':'A', 'G':'C', 'C':'G', 
                    'a':'t', 't':'a', 'g':'c', 'c':'g'}
 
+
+
 ### add functionality for dual base editos and for R or Y
 
 # name of cas protein with their associated PAM
@@ -43,17 +45,22 @@ cas_key = {'Sp': 'NGG',
            'SpRY_lowefficiency': 'NYN'
            }
 
-# functions
+# FUNCTIONS
 
 # translate DNA sequence to amino acid sequence
-def DNA_to_AA(seq): 
+def DNA_to_AA(seq, upper=True): 
     assert isinstance(seq, str)
     assert all(c in 'acgtACGT' for c in seq)
     assert len(seq) % 3 == 0
-    seq = seq.upper()
     aa_seq = ''
     for i in range(len(seq)//3): 
         codon = seq[(i*3):(i*3)+3] #.replace("T", "U")
+        # if upper is False, we do not translate lowercase letters
+        if upper: 
+            codon = codon.upper()
+        if not codon.isupper(): 
+            aa_seq += '_'
+            continue
         aa_seq += DNA_AA_map[codon]
     return aa_seq
 
@@ -77,6 +84,7 @@ def complement(complements, seq):
 
 # take in a protein .fasta file and extract the protein sequence
 def protein_to_AAseq(filename): 
+    filepath = Path(filename)
     f = open(filename, "r")
     file_content = f.read().split('\n')
     seq = ''.join(file_content[1:])
@@ -101,17 +109,3 @@ def process_PAM(PAM):
     PAM = PAM.replace("R", "[aAgG]{1}")
     PAM = PAM.replace("N", "[acgtACGT]{1}")
     return re.compile("({})".format(PAM))
-
-def make_mutations(guide_window, edit_from, edit_to):
-    mutated = []
-    # Convert input string into a list so we can easily substitute letters
-    seq = list(guide_window)
-    # Find indices of key letters in seq
-    indices = [ i for i, c in enumerate(seq) if c in edit_from]
-
-    # Generate key letter combinations & place them into the list
-    for t in product(edit_from+edit_to, repeat=len(indices)):
-        for i, c in zip(indices, t):
-            seq[i] = c
-        mutated.append(''.join(seq))
-    return mutated

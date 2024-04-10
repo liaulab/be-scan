@@ -3,131 +3,245 @@ Author: Calvin XiaoYang Hu
 Adapted from: Nicholas Lue - NZL10196_Screen_Analysis_v9b.py Created on Fri May 29 03:00:39 2020
 Date: 231116
 
-{Description: some base pair to amino acid translation functions}
+{Description: This function performs normalization and then plots the data for each condition to reveal enriched guides}
 """
 
 import numpy as np
 import seaborn as sns
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 import pandas as pd
-from be_scan.plot._annotating_ import color_list, list_muttypes
-from be_scan.plot._annotating_ import norm_to_intergenic_ctrls, calc_negative_controls
+from be_scan.plot._annotating_ import *
 
-def plot_scatterplot(df_filepath, # dataframe
-                     x_column, y_column, 
-                     hue_column, # df params
-                     comparisons, 
-                     neg_ctrl_col, neg_ctrl_category,
-                     xmin=None, xmax=None,
-                     xlab='Amino Acid Position', ylab='sgRNA Score', # scatterplot labels
-                     out_name='scatterplot', out_type='pdf', out_directory='', # output params
-                     alpha=0.8, linewidth=1.0, edgecolor='black', s=25, # scatterplot params
-                     figsize=(8,4), 
-                     savefig=True,
-                     ):
+def scatterplot(df_filepath, # dataframe
+                comparisons, # each comparison is a plot, and also the y axis
+                x_column, # the x axis values
+                     
+    # filter out unwanted quantitative params
+    filter_val=False, val_cols=['CtoT_muttypes'], val_min=0.0, 
+    # filter out unwanted categorical params
+    filter_params=False, 
+    params_cols=['CtoT_muttype'], 
+    params_conditions=[['Missense', 'Silent', 'Mixed', 'Nonsense']], 
+    # color params
+    include_hue=False, hue_col='CtoT_muttype', hue_order=list_muttypes, palette=color_list, 
+    # normalization params
+    neg_ctrl=False, neg_ctrl_col='CtoT_win_overlap', neg_ctrl_conditions=['Intron', 'Control'], 
+    # autoannotate outliers
+    autoannot=False, autoannot_label='CtoT_mutations', autoannot_top=None, autoannot_cutoff=None, 
+
+    # scatterplot labels
+    xlab='Amino Acid Position', ylab='sgRNA Score', col_label='subavg', 
+    # output params
+    savefig=True, out_name='scatterplot', out_type='png', out_directory='', show=True, 
+    
+    xlim_kws={'xmin':None, 'xmax':None}, ylim_kws={'ymin':None, 'ymax':None},
+    scatterplot_kws={'alpha':0.8, 'linewidth':1.0, 
+                        'edgecolor':'black', 's':25},
+    subplots_kws={'figsize':(10,4)},
+    axhline_kws={'color':'k', 'ls':'--', 'lw':1},
+    ):
     
     """[Summary]
-    This function takes in a dataframe from count_reads, performs normalization, 
-    and then plots the data for each condition to reveal which guides are enriched
-    ...
+    This function takes in a dataframe from analysis and then 
+    plots the data for each condition to reveal which guides are enriched
 
-    :param df_filepath: filepath to .csv data generated from count_reads
-    :type df_filepath: str, required
-    :param x_column: column of .csv for x axis, typically amino acid position
-    :type x_column: str, required
-    :param y_column: column of .csv for y axis, typically the normalized log_fc change score
-    :type y_column: str, required
-    :param hue_column: column of .csv which correspond to coloring of scatterplot points
-    :type hue_column: str, required
-    :param comparisons: list of comparisons that correspond to columns of .csv data
-    :type comparisons: list of str, required
-    :param neg_ctrl_col: column of .csv which correspond to normalization control
-    :type neg_ctrl_col: str, required
-    :param neg_ctrl_category: categorical variable of neg_ctrl_col .csv which correspond to normalization control
-    :type neg_ctrl_category: str, required
+    Parameters
+    ----------
+    df_filepath : str, required
+        filepath to .csv data generated from count_reads
+    x_column : str, required
+        column of .csv, typically amino acid position
+    comparisons : list of str, required
+        list of comparisons that correspond to columns of data
 
-    :param window: inclusive window of which amino acid positions are shown in the plot
-    :type window: tuple of ints, optional, defaults to None
-    :param xlab: name of x-axis label
-    :type xlab: str, optional, defaults to 'Amino Acid Position'
-    :param ylab: name of y-axis label
-    :type ylab: str, optional, defaults to 'sgRNA Score'
-    :param out_name: name of figure output
-    :type out_name: str, optional, defaults to 'scatterplot'
-    :param out_type: file type of figure output
-    :type out_type: str, optional, defaults to 'pdf'
-    :param out_directory: path to output directory
-    :type out_directory: str, optional, defaults to ''
+    filter_val : bool, optional, defaults to False
+        whether or not to exclude a subset of data from plotting by a minimum value
+        default purpose is to filter out all intron and exon/intron guides
+    val_cols : list of str, optional, 
+        defaults to ['CtoT_muttypes']
+        names of columns to filter dataframe for plotting
+    val_min : int, optional, defaults to 0.0
+        the minimum value by which to filter rows by val_cols
+
+    filter_params : bool, optional, defaults to False
+        whether or not to exclude a subset of data from plotting by categorical params
+        default purpose is to filter to keep only Missense, Nonsense, Silent, Mixed guides
+    params_cols : list of str, optional, 
+        defaults to ['CtoT_muttype']
+        names of column to filter dataframe for plotting
+    params_conditions : list of lists of str, optional, 
+        defaults to [['Missense', 'Silent', 'Mixed', 'Nonsense']]
+        names of categories of filter_col to filter dataframe
+
+    include_hue: bool, optional, default to False
+        whether or not to color points by a variable, 
+        will also restrict points plotted to only the hue_order values listed
+    hue_col: str, optional, defaults to 'CtoT_muttype'
+        the categorial dimension of the data, name of .csv data column
+    hue_order: list of str, optional, defaults to a preset list of column names
+        a list of categorial variables in hue_col
+    palette: list of str, optional, defaults to a preset list of colors from ColorBrewer2
+        a list of colors which correspond to hue_order
+        
+    neg_ctrl : bool, optional, defaults to False
+        whether or not to calulate negative control for normalization and line drawing
+    neg_ctrl_col : str, optional, defaults to 'CtoT_win_overlap'
+        column of .csv which correspond to normalization control
+    neg_ctrl_conditions : list of str, optional, defaults to ['Intron', 'Control']
+        name of categories of neg_ctrl_col to normalize dataframe
+
+    autoannot : bool, optional, defaults to False
+        Whether or not to autoannot points
+    autoannot_label : string, optional, defaults to 'CtoT_mutations'
+        The column of the label in the dataframe
+    autoannot_top : int, optional, defaults to 10
+        The top n scoring points will be labeled
+    autoannot_cutoff : float, optional, defaults to None
+        The absolute value cutoff for which points will be labeled
     
-    :param alpha: transparency of scatterplot points
-    :type alpha: float, optional, defaults to 0.8
-    :param linewidth: linewidth of plot
-    :type linewidth: float, optional, defaults to 1.0
-    :param edgecolor: color of scatterplot edge lines
-    :type edgecolor: str, optional, defaults to 'black'
-    :param s: size of scatterplot points
-    :type s: int, optional, defaults to 25
-    :param figsize: the figsize (length, width)
-    :type figsize: tuple of ints, optional, defaults to (8,4)
-    :param savefig: option of saving figure to output or not
-    :type figsize: boolean, optional, defaults to True
-    ...
+    xlab : str, optional, defaults to 'Amino Acid Position'
+        name of x-axis label
+    ylab : str, optional, defaults to 'sgRNA Score'
+        name of y-axis label
+    col_label : str, optional, defaults to 'subavg'
+        a suffix label for point values adjusted by normalization
+    savefig: bool, optional, defaults to True
+        whether or not to save the figure
+    out_name : str, optional, defaults to 'scatterplot'
+        name of figure output
+    out_type : str, optional, defaults to 'pdf'
+        file type of figure output
+    out_directory : str, optional, defaults to ''
+        path to output directory
+    show : bool, optional, defaults to True
+        whether or not to show the plot
 
-    :return: None
-    :rtype: NoneType
+    xlim_kws: dict, optional, defaults to 
+        {'xmin':None, 'xmax':None}
+        input params for ax.set_xlim() 
+        https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlim.html
+    ylim_kws: dict, optional, defaults to 
+        {'ymin':None, 'ymax':None}
+        input params for ax.set_ylim() 
+        https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylim.html
+    scatterplot_kws: dict, optional, defaults to 
+        {'alpha':0.8, 'linewidth':1.0, 'edgecolor':'black', 's':25}
+        input params for sns.scatterplot() 
+        https://seaborn.pydata.org/generated/seaborn.scatterplot.html
+    subplots_kws: dict, optional, defaults to 
+        {'figsize':(4,4)}
+        input params for plt.subplots() 
+        https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
+    axhline_kws: dict, optional, defaults to 
+        {'color':'k', 'ls':'--', 'lw':1}
+        input params for plt.axhline() 
+        https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axhline.html
+
+    Returns
+    ----------
+    None
     """
 
-    in_dataframe = pd.read_csv(df_filepath)
-    # calculate negative control stats
-    _, list_negctrlstats, avg_dict = calc_negative_controls(in_dataframe, comparisons, neg_ctrl_col, neg_ctrl_category)
-    # calculate normalized log_fc scores for each comp condition
-    df_logfc = norm_to_intergenic_ctrls(in_dataframe, comparisons, avg_dict, y_column)
-
-    hue_order_s = list_muttypes[:3]
-    palette_s = color_list[:3]
-
-    df_filtered = df_logfc.loc[df_logfc[hue_column].isin(list_muttypes[:3])]
+    # style
+    mpl.rcParams.update({'font.size': 10})
     
-    for comp in comparisons:
-        # Make plots
-        fig, ax = plt.subplots(figsize=figsize)
+    df_filepath = Path(df_filepath)
+    df_data = pd.read_csv(df_filepath)
 
-        # name of y values is comp + y_column
-        y = comp+'_'+y_column 
-        # scatterplot
-        sns.scatterplot(ax=ax,
-                        data=df_filtered, # dataframe of edits in window, normalized
-                        x=x_column, y=y, # x and y columns plotted against each other
-                        hue=hue_column, # color scatterplot according to column
-                        hue_order=hue_order_s, palette=palette_s, 
-                        alpha=alpha, linewidth=linewidth, edgecolor=edgecolor, s=s)
+    # check conflicting params and output for user
+    if filter_val: 
+        assert isinstance(val_min, float), "check param: val_min"
+        assert isinstance(val_cols, list) and len(val_cols) > 0, "check param: val_cols"
+    if filter_params: 
+        assert isinstance(params_cols, list), "check param: params_cols"
+        assert isinstance(params_conditions, list), "check param: params_conditions"
+    if include_hue: 
+        assert hue_col in df_data.columns.tolist(), "check param: hue_col"
+        assert isinstance(hue_order, list) and len(hue_order) > 0, "check param: hue_order"
+        assert isinstance(palette, list) and len(palette) > 0, "check param: palette"
+    if neg_ctrl: 
+        assert isinstance(neg_ctrl_col, str), "check param: params_cols"
+        assert isinstance(neg_ctrl_conditions, list), "check param: params_conditions"
+        assert neg_ctrl_col in df_data.columns.tolist(), "check param: val_cols"
+    if autoannot: 
+        assert isinstance(autoannot_label, str), "check param: autoannot_label"
+        assert autoannot_label in df_data.columns.tolist(), "check param: autoannot_label"
+        autoannot_bool = isinstance(autoannot_top, int) or isinstance(autoannot_cutoff, float)
+        assert autoannot_bool, "check param: autoannot_top autoannot_cutoff"
+    assert isinstance(xlim_kws, dict), "check param: xlim_kws"
+    assert isinstance(ylim_kws, dict), "check param: ylim_kws"
+    assert isinstance(scatterplot_kws, dict), "check param: scatterplot_kws"
+    assert isinstance(subplots_kws, dict), "check param: subplots_kws"
+    assert isinstance(axhline_kws, dict), "check param: axhline_kws"
+
+    # normalize data to intergenic controls if neg_ctrl is provided
+    if neg_ctrl: 
+        # calculate negative control stats
+        _, list_negctrlstats, avg_dict = calc_neg_ctrls(df_data, comparisons, 
+                                                        neg_ctrl_col, neg_ctrl_conditions)
+        # calculate normalized log_fc scores for each comp condition
+        df_data = norm_to_intergenic_ctrls(df_data, comparisons, avg_dict, col_label)
+    # filter out subset of data if filters are provided
+    if filter_params: 
+        for col, conds in zip(params_cols, params_conditions): 
+            df_data = df_data.loc[df_data[col].isin(conds)]
+    if filter_val: 
+        for col in val_cols: 
+            df_data = df_data[df_data[col] > val_min]
+
+    for comp in comparisons:
+        # make plots
+        _, ax = plt.subplots(**subplots_kws)
+        y = comp+'_'+col_label if neg_ctrl else comp
+        baseline_params = {'data':df_data, 'ax':ax, 'x':x_column, 'y':y}
+        if include_hue: 
+            baseline_params = {**baseline_params, 'hue':hue_col, 'palette':palette}
+        sns.scatterplot(**baseline_params, **scatterplot_kws)
         
         # Overlay neg ctrl avg +/- 2 sd as black dashed line
-        tup_comp_stdev = [tup for tup in list_negctrlstats if tup[0] == comp][0][2]
-        ax.axhline(y=2*tup_comp_stdev, color=edgecolor, ls='--', lw=linewidth) # top baseline
-        ax.axhline(y=-2*tup_comp_stdev, color=edgecolor, ls='--', lw=linewidth) # bottom baseline
+        if neg_ctrl and list_negctrlstats != None:
+            tup_comp_stdev = [tup for tup in list_negctrlstats if tup[0] == comp][0][2]
+            plt.axhline(y=2*tup_comp_stdev, **axhline_kws) # top baseline
+            plt.axhline(y=-2*tup_comp_stdev, **axhline_kws) # bottom baseline
+
+        # autoannot the screen hits
+        if autoannot: 
+            if autoannot_cutoff: # annotate according to a cutoff where all values above are annotated
+                for _, row in df_data[df_data[y].abs() > autoannot_cutoff].iterrows():
+                    if row[autoannot_label] != "nan": 
+                        plt.text(row[x_column], row[y], row[autoannot_label], 
+                                 ha='right', va='bottom', fontsize=6)
+            elif autoannot_top: # annotate according to the top n scoring
+                sorted_df = df_data.assign(yabs=df_data[y].abs()).sort_values(by='yabs', ascending=False)
+                toprows_df = sorted_df.head(autoannot_top)
+                for _, row in toprows_df.iterrows(): ###
+                    plt.text(row[x_column], row[y], row[autoannot_label], 
+                             ha='right', va='bottom', fontsize=6)
+            else: 
+                print("Please include a cutoff or top value")
         
         # Adjust x and y axis limits
-        ax.set_xlim(df_filtered[x_column].min()-10, df_filtered[x_column].max()+10)
-        bound = max(abs(np.floor(df_filtered[y].min())), 
-                    abs(np.ceil(df_filtered[y].max())))
+        ax.set_xlim(df_data[x_column].min()-10, df_data[x_column].max()+10)
+        bound = max(abs(np.floor(df_data[y].min())), 
+                    abs(np.ceil(df_data[y].max())))
         ax.set_ylim(-1*bound, bound)
         # Set title and axes labels
+        ax.legend(loc='center left', bbox_to_anchor=(1.1, 0.5))
         ax.set_title(comp)
-        ax.set_xlim(xmin,xmax)
-        ax.set_xlabel(xlab)
-        ax.set_ylabel(ylab)
-
+        ax.set_xlim(**xlim_kws) ; ax.set_ylim(**ylim_kws) ### set_xlim repeated
+        ax.set_xlabel(xlab) ; ax.set_ylabel(ylab)
         # Adjust figsize
         plt.tight_layout()
-        # Save to pdf
-        if savefig:
-            output_path = out_directory + out_name + comp + '.' + out_type
-            plt.savefig(output_path, format=out_type)
-        plt.show()
-        plt.close()
 
-# python3 -m be_scan plot_scatterplot -df '../../../Downloads/NZL10196_v9_comparisons.csv' 
-#         -x 'Edit_site_3A1' -y 'log2_fc' -c 'd3-pos' -hue 'Mut_type' -pt 'comparison' 
-#         -ncol 'Gene' -ncat 'NON-GENE' -win 224 912 -c 'd3-pos' 'd3-neg' 'd6-pos' 'd6-neg' 'd9-pos' 'd9-neg'
+        # Save to pdf
+        path = Path.cwd()
+        if savefig:
+            outpath = path / out_directory
+            out = out_name + comp + '.' + out_type
+            plt.savefig(outpath / out, format=out_type)
+        if show: 
+            plt.show()
+        plt.close()
