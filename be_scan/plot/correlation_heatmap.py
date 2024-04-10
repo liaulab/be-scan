@@ -15,8 +15,13 @@ from pathlib import Path
 def corr_heatmap(df_filepath, comparisons, 
 
     corr_type='spearman', 
-    filter_val=False, val_cols=[], val_min=None, # filter out unwanted quantitative params
-    filter_params=False, params_cols=[], params_conditions=[], # filter out unwanted categorical params
+    # filter out unwanted quantitative params
+    filter_val=False, val_cols=['CtoT_muttypes'], val_min=0, 
+    # filter out unwanted categorical params
+    filter_params=False, 
+    params_cols=['CtoT_muttype'], 
+    params_conditions=[['Missense', 'Silent', 'Mixed', 'Nonsense']], 
+    
     xlab='', ylab='', title='Spearman Correlation Heatmap', # figure related params
     savefig=True, out_directory='', out_name='correlation_heatmap', out_type='png', show=True, # output related params
 
@@ -38,25 +43,32 @@ def corr_heatmap(df_filepath, comparisons,
 
     corr_type : str, optional, defaults to 'spearman'
         type of correlation, refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.corr.html
+
     filter_val : bool, optional, defaults to False
         whether or not to exclude a subset of data from plotting by a minimum value
-    val_cols : list of str, optional, defaults to []
+        default purpose is to filter out all intron and exon/intron guides
+    val_cols : list of str, optional, 
+        defaults to ['CtoT_muttypes']
         names of columns to filter dataframe for plotting
-    val_min : list of str, optional, defaults to None
+    val_min : int, optional, defaults to 0
         the minimum value by which to filter rows by val_cols
+
     filter_params : bool, optional, defaults to False
         whether or not to exclude a subset of data from plotting by categorical params
-    params_cols : list of str, optional, defaults to []
+        default purpose is to filter to keep only Missense, Nonsense, Silent, Mixed guides
+    params_cols : list of str, optional, 
+        defaults to ['CtoT_muttype']
         names of column to filter dataframe for plotting
-    params_conditions : list of lists of str, optional, defaults to []
+    params_conditions : list of lists of str, optional, 
+        defaults to [['Missense', 'Silent', 'Mixed', 'Nonsense']]
         names of categories of filter_col to filter dataframe
+
     xlab : str, optional, defaults to ''
         name of the x-axis label
     ylab : str, optional, defaults to ''
         name of the y-axis label
     title : str, optional, defaults to 'Spearman Correlation Heatmap'
         name of title label
-
     savefig: bool, optional, defaults to True
         whether or not to save the figure
     out_directory : str, optional, defaults to ''

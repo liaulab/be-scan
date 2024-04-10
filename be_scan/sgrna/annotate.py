@@ -61,6 +61,7 @@ def annotate(guides_file, edit_from, edit_to,
     ------------
     df : pandas dataframe
     Dataframe contains
+       'sgRNA_ID'       : str,    the ID code for the guide
        'coding_seq'     : str,    the sense strand sequence of the guide, always fwd
        'editing_window' : tuple,  the gene positions of the editing windows bounds inclusive
        'win_overlap'    : str,    where the window sits (Exon, Exon/Intron, Intron)
@@ -147,6 +148,8 @@ def annotate(guides_file, edit_from, edit_to,
     guides_df[prefix+'_muttypes'] = guides_df.apply(lambda x: categorize_mutations(x, col_names, prefix), axis=1)
     # calculate muttype
     guides_df[prefix+'_muttype'] = guides_df[prefix+'_muttypes'].apply(lambda x: "None" if (x is None or len(x) == 0) else x[0] if len(x) == 1 else 'Mixed')
+
+    guides_df.insert(loc=0, column='sgRNA_ID', value=['sgRNA_'+str(i) for i in range(len(guides_df))])
 
     print('Guides annotated')
     # save df

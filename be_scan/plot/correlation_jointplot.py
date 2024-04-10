@@ -17,9 +17,15 @@ from be_scan.plot._annotating_ import list_muttypes, color_list
 
 def corr_jointplot(df_filepath, condition1, condition2, 
 
-    filter_val=False, val_cols=[], val_min=None, # filter out unwanted quantitative params
-    filter_params=False, params_cols=[], params_conditions=[], # filter out unwanted categorical params
-    include_hue=False, hue_col='Mut_type', hue_order=list_muttypes, palette=color_list, # color params
+    # filter out unwanted quantitative params
+    filter_val=False, val_cols=['CtoT_muttypes'], val_min=0, 
+    # filter out unwanted categorical params
+    filter_params=False, 
+    params_cols=['CtoT_muttype'], 
+    params_conditions=[['Missense', 'Silent', 'Mixed', 'Nonsense']], 
+    # color params
+    include_hue=False, hue_col='CtoT_muttype', hue_order=list_muttypes, palette=color_list, 
+
     savefig=True, out_directory='', out_name='correlation_jointplot', out_type='png', show=True,
 
     jointplot_kws={'alpha':0.8, 'linewidth':1, 
@@ -41,30 +47,37 @@ def corr_jointplot(df_filepath, condition1, condition2,
 
     filter_val : bool, optional, defaults to False
         whether or not to exclude a subset of data from plotting by a minimum value
-    val_cols : list of str, optional, defaults to []
+        default purpose is to filter out all intron and exon/intron guides
+    val_cols : list of str, optional, 
+        defaults to ['CtoT_muttypes']
         names of columns to filter dataframe for plotting
-    val_min : list of str, optional, defaults to None
+    val_min : int, optional, defaults to 0
         the minimum value by which to filter rows by val_cols
+
     filter_params : bool, optional, defaults to False
         whether or not to exclude a subset of data from plotting by categorical params
-    params_cols : list of str, optional, defaults to []
+        default purpose is to filter to keep only Missense, Nonsense, Silent, Mixed guides
+    params_cols : list of str, optional, 
+        defaults to ['CtoT_muttype']
         names of column to filter dataframe for plotting
-    params_conditions : list of lists of str, optional, defaults to []
+    params_conditions : list of lists of str, optional, 
+        defaults to [['Missense', 'Silent', 'Mixed', 'Nonsense']]
         names of categories of filter_col to filter dataframe
+
     include_hue: bool, optional, default to False
         whether or not to color points by a variable, 
         will also restrict points plotted to only the hue_order values listed
-    hue_col: str, optional, defaults to 'Mut_type'
+    hue_col: str, optional, defaults to 'CtoT_muttype'
         the categorial dimension of the data, name of .csv data column
     hue_order: list of str, optional, defaults to a preset list of column names
         a list of categorial variables in hue_col
     palette: list of str, optional, defaults to a preset list of colors from ColorBrewer2
         a list of colors which correspond to hue_order
+
     xlab: str, optional, defaults to 'cond1 score'
         x-axis label
     ylab: str, optional, defaults to 'cond2 score'
         y-axis label
-        
     savefig: bool, optional, defaults to True
         whether or not to save the figure
     out_name: str, optional, defaults to 'scatterplot'

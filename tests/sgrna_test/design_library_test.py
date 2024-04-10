@@ -20,9 +20,10 @@ protein_filepath = "tests/test_data/sgrna/P10275.fasta"
 @pytest.mark.parametrize("PAM", ["NGG", "NGN", "NRN"])
 @pytest.mark.parametrize("exclude_introns", [True, False])
 @pytest.mark.parametrize("exclude_nontargeting", [True, False])
+@pytest.mark.parametrize("exclude_TTTT", [True, False])
 @pytest.mark.parametrize("domains", [{"IDR": [1, 555], "DNA Binding" : [600, 700]}])
 def test_guides_basic_pos(edit_from, edit_to, cas_type, window, PAM,
-                          exclude_introns, exclude_nontargeting, domains
+                          exclude_introns, exclude_nontargeting, exclude_TTTT, domains
                           ):
     df = design_library(gene_filepath=AR_filepath,
                         genome_file=genome_filepath,
@@ -35,6 +36,7 @@ def test_guides_basic_pos(edit_from, edit_to, cas_type, window, PAM,
                         PAM=PAM,
                         exclude_introns=exclude_introns, 
                         exclude_nontargeting=exclude_nontargeting, 
+                        exclude_TTTT=exclude_TTTT,
                         domains=domains,
                         )
     pre = edit_from+"to"+edit_to+"_"
@@ -46,3 +48,4 @@ def test_guides_basic_pos(edit_from, edit_to, cas_type, window, PAM,
                                              f"{pre}mutations", f"{pre}muttypes", f"{pre}muttype", 
                                              ])
     os.remove("annotated_guides.csv")
+

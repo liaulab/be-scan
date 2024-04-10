@@ -95,7 +95,7 @@ def test_scatterplot_autoannot1_neg(params):
 
 @pytest.mark.parametrize("params", [{"autoannot_label":10, "autoannot_cutoff":1.0}, # autoannot_label type error
                                     {"autoannot_label":"a", "autoannot_cutoff":1.0}, # autoannot_label not a column error
-                                    {"autoannot_label":"sgRNA_ID", "autoannot_cutoff":1}, # autoannot_cutoff type error
+                                    {"autoannot_label":"sgRNA_ID", "autoannot_cutoff":'x'}, # autoannot_cutoff type error
                         ])
 def test_scatterplot_autoannot2_neg(params):
     with pytest.raises(AssertionError): 

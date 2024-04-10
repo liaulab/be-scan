@@ -19,15 +19,24 @@ def scatterplot(df_filepath, # dataframe
                 comparisons, # each comparison is a plot, and also the y axis
                 x_column, # the x axis values
                      
-    filter_val=False, val_cols=[], val_min=None, # filter out unwanted quantitative params
-    filter_params=False, params_cols=[], params_conditions=[], # filter out unwanted categorical params
-    include_hue=False, hue_col='Mut_type', hue_order=list_muttypes, palette=color_list, # color params
-    neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # normalization params
+    # filter out unwanted quantitative params
+    filter_val=False, val_cols=['CtoT_muttypes'], val_min=0.0, 
+    # filter out unwanted categorical params
+    filter_params=False, 
+    params_cols=['CtoT_muttype'], 
+    params_conditions=[['Missense', 'Silent', 'Mixed', 'Nonsense']], 
+    # color params
+    include_hue=False, hue_col='CtoT_muttype', hue_order=list_muttypes, palette=color_list, 
+    # normalization params
+    neg_ctrl=False, neg_ctrl_col='CtoT_win_overlap', neg_ctrl_conditions=['Intron', 'Control'], 
+    # autoannotate outliers
+    autoannot=False, autoannot_label='CtoT_mutations', autoannot_top=None, autoannot_cutoff=None, 
 
-    autoannot=False, autoannot_label=None, autoannot_top=None, autoannot_cutoff=None, # autoannotate outliers
-    xlab='Amino Acid Position', ylab='sgRNA Score', col_label='subavg', # scatterplot labels
-    savefig=True, out_name='scatterplot', out_type='png', out_directory='', show=True, # output params
-
+    # scatterplot labels
+    xlab='Amino Acid Position', ylab='sgRNA Score', col_label='subavg', 
+    # output params
+    savefig=True, out_name='scatterplot', out_type='png', out_directory='', show=True, 
+    
     xlim_kws={'xmin':None, 'xmax':None}, ylim_kws={'ymin':None, 'ymax':None},
     scatterplot_kws={'alpha':0.8, 'linewidth':1.0, 
                         'edgecolor':'black', 's':25},
@@ -50,39 +59,47 @@ def scatterplot(df_filepath, # dataframe
 
     filter_val : bool, optional, defaults to False
         whether or not to exclude a subset of data from plotting by a minimum value
-    val_cols : list of str, optional, defaults to []
+        default purpose is to filter out all intron and exon/intron guides
+    val_cols : list of str, optional, 
+        defaults to ['CtoT_muttypes']
         names of columns to filter dataframe for plotting
-    val_min : list of str, optional, defaults to None
+    val_min : int, optional, defaults to 0.0
         the minimum value by which to filter rows by val_cols
+
     filter_params : bool, optional, defaults to False
         whether or not to exclude a subset of data from plotting by categorical params
-    params_cols : list of str, optional, defaults to []
+        default purpose is to filter to keep only Missense, Nonsense, Silent, Mixed guides
+    params_cols : list of str, optional, 
+        defaults to ['CtoT_muttype']
         names of column to filter dataframe for plotting
-    params_conditions : list of lists of str, optional, defaults to []
+    params_conditions : list of lists of str, optional, 
+        defaults to [['Missense', 'Silent', 'Mixed', 'Nonsense']]
         names of categories of filter_col to filter dataframe
+
     include_hue: bool, optional, default to False
         whether or not to color points by a variable, 
         will also restrict points plotted to only the hue_order values listed
-    hue_col: str, optional, defaults to 'Mut_type'
+    hue_col: str, optional, defaults to 'CtoT_muttype'
         the categorial dimension of the data, name of .csv data column
     hue_order: list of str, optional, defaults to a preset list of column names
         a list of categorial variables in hue_col
     palette: list of str, optional, defaults to a preset list of colors from ColorBrewer2
         a list of colors which correspond to hue_order
+        
     neg_ctrl : bool, optional, defaults to False
         whether or not to calulate negative control for normalization and line drawing
-    neg_ctrl_col : str, optional, defaults to ''
+    neg_ctrl_col : str, optional, defaults to 'CtoT_win_overlap'
         column of .csv which correspond to normalization control
-    neg_ctrl_conditions : list of str, optional, defaults to []
+    neg_ctrl_conditions : list of str, optional, defaults to ['Intron', 'Control']
         name of categories of neg_ctrl_col to normalize dataframe
 
-    autoannot : bool, False
+    autoannot : bool, optional, defaults to False
         Whether or not to autoannot points
-    autoannot_label : string, None
+    autoannot_label : string, optional, defaults to 'CtoT_mutations'
         The column of the label in the dataframe
-    autoannot_top : int, None
+    autoannot_top : int, optional, defaults to 10
         The top n scoring points will be labeled
-    autoannot_cutoff : float, None
+    autoannot_cutoff : float, optional, defaults to None
         The absolute value cutoff for which points will be labeled
     
     xlab : str, optional, defaults to 'Amino Acid Position'

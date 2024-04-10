@@ -69,18 +69,31 @@ class GeneForCRISPR():
         # identify all n length sequences in exons
         for e, exon_extra in enumerate(self.exons_extra): 
             for i in range(len(exon_extra)-self.n-1): 
+                seq = exon_extra[i:i+self.n]
                 # the number 20 is due to 20 intron bps assumed to be present
                 frame = (i+prev_frame-self.intron_len)%3
                 ind_gene = i-self.intron_len+prev_ind
                 ind_chr = i+self.starts[e]
                 # add to instance variable
-                seq = exon_extra[i:i+self.n]
                 fwd_guides.append([seq, seq[:20], seq[20:], frame, ind_gene, ind_chr, e])
             prev_frame = (prev_frame+len(exon_extra)-(2*self.intron_len))%3
             prev_ind += len(exon_extra)-(2*self.intron_len)
         # change instance variables
-        self.fwd_guides = [g[1:] for g in fwd_guides]
-        self.rev_guides = [[rev_complement(complements, g[0][3:]), rev_complement(complements, g[0][:3]), (g[3]+1)%3, g[4]+self.n-1, g[5]+self.n-1, g[6]] for g in fwd_guides]
+        # based on original list, if guide part not pam has lowercase, then doon't count the index
+        self.fwd_guides = [g[1:4]+[-1]+g[5:]
+                           if any(c.islower() for c in g[1]) 
+                           else g[1:] for g in fwd_guides]
+        print(len(self.fwd_guides[0]))
+        self.rev_guides = [ [rev_complement(complements, g[0][3:]), 
+                            rev_complement(complements, g[0][:3]), 
+                            (g[3]+1)%3, -1, g[5]+self.n-1, g[6]]
+                            if any(c.islower() for c in rev_complement(complements, g[0][3:])) else 
+                            [rev_complement(complements, g[0][3:]), 
+                            rev_complement(complements, g[0][:3]), 
+                            (g[3]+1)%3, g[4]+self.n-1, g[5]+self.n-1, g[6]] 
+                            for g in fwd_guides
+                            ]
+        print(len(self.rev_guides[0]))
 
     def extract_metadata(self): 
         with open(self.filepath) as f:

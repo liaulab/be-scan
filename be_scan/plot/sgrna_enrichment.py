@@ -15,9 +15,9 @@ from pathlib import Path
 
 def sgrna_enrichment(df_filepath, comparisons, 
                      
-     highlight=False, highlight_col='', highlight_vals=[], 
+     highlight=False, highlight_col='sgRNA_ID', highlight_vals=['sgRNA_0'], 
      density=True, 
-                     
+     
      savefig=True, out_name='scatterplot', out_type='png', out_directory='', show=True, # output params
                      
      rugplot_kws={'height':0.25, 'color':'black', 'linewidth':2, 'alpha':0.05}, 

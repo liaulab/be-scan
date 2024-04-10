@@ -70,3 +70,4 @@ def test_calc_controls_integration_pos():
                          shell=True, capture_output=True)
     assert out.returncode == 0
     os.system("rm {0}".format(f"{file_dir}stats.txt"))
+    

@@ -70,7 +70,7 @@ def filter_TTTT(results):
     ------------
     results : list of lists, shortened input results
     """
-    results = [r for r in results if not ('TTTT' in r[0])]
+    results = [r for r in results if not ('TTTT' in r[0].upper())]
     return results
 
 def annotate_mutations(row, edit, amino_acid_seq, col_names, pre): 
@@ -377,8 +377,8 @@ def parse_position_frames(guides_df, seq_col, gene_filepath,
             # guide matches multiple positions in sense OR antisense, use first match from either
             elif len(pos_fwd) > 1 or len(pos_rev) > 1: 
                 print('The guide', guide, 'has many occurrences.')
-            else: 
-                print('The guide', guide, 'couldn\'t be matched.')
+            # else: 
+            #     print('The guide', guide, 'couldn\'t be matched.')
             pos = -1
             stran = 'unknown'
             frame = -1
