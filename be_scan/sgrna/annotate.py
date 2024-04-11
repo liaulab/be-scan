@@ -149,7 +149,7 @@ def annotate(guides_file, edit_from, edit_to,
     # calculate muttype
     guides_df[prefix+'_muttype'] = guides_df[prefix+'_muttypes'].apply(lambda x: "None" if (x is None or len(x) == 0) else x[0] if len(x) == 1 else 'Mixed')
 
-    if !('sgRNA_ID' in guides_df.columns):
+    if not ('sgRNA_ID' in guides_df.columns):
         guides_df.insert(loc=0, column='sgRNA_ID', value=['sgRNA_'+str(i) for i in range(len(guides_df))])
 
     print('Guides annotated')
