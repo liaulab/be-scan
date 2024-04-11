@@ -83,7 +83,6 @@ class GeneForCRISPR():
         self.fwd_guides = [g[1:4]+[-1]+g[5:]
                            if any(c.islower() for c in g[1]) 
                            else g[1:] for g in fwd_guides]
-        print(len(self.fwd_guides[0]))
         self.rev_guides = [ [rev_complement(complements, g[0][3:]), 
                             rev_complement(complements, g[0][:3]), 
                             (g[3]+1)%3, -1, g[5]+self.n-1, g[6]]
@@ -93,7 +92,6 @@ class GeneForCRISPR():
                             (g[3]+1)%3, g[4]+self.n-1, g[5]+self.n-1, g[6]] 
                             for g in fwd_guides
                             ]
-        print(len(self.rev_guides[0]))
 
     def extract_metadata(self): 
         with open(self.filepath) as f:
