@@ -7,6 +7,7 @@ Date: 230906
 
 from pathlib import Path
 import pandas as pd
+import warnings
 
 from be_scan.sgrna._genomic_ import *
 from be_scan.sgrna._guideRNA_ import filter_guide, filter_repeats, filter_TTTT
@@ -21,7 +22,6 @@ def generate_library(gene_filepath,
     exclude_introns=True, 
     exclude_nontargeting=True, 
     exclude_TTTT=True, 
-    domains={}, 
     ): 
     
     """[Summary]
@@ -72,47 +72,42 @@ def generate_library(gene_filepath,
        'PAM_seq'        : str,    the sequence of the PAM 3 bps fwd if on sense strand and rev if on antisense
        'starting_frame' : int,    (0, 1, 2) coding position of the first bp in fwd sgRNA or last bp in rev sgRNA
        'chr_pos'        : int,    the genome position of the first bp in a fwd sgRNA or last bp of a rev sgRNA
-       'gene_pos'       : int,    the gene position of the first bp in a fwd sgRNA or last bp of a rev sgRNA
        'exon'           : int,    the exon number according to the input gene_file
        'sgRNA_strand'   : str,    (ie sense or antisense)
        'gene_strand'    : str,    (ie plus or minus)
        'gene'           : str,    name of the gene
-       'domain'         : str,    name of the domain according to input ranges, defulats to 'No Domain'
     """
+
+    # PREPROCESS cas_type #
+    if cas_type not in list(cas_key.keys()): 
+        raise Exception('Improper cas type input, the options are '+str(list(cas_key.keys())))
+    # PREPROCESS edit_from edit_to #
+    assert edit_from in bases and edit_to in bases
+    if edit_from == edit_to: 
+        warnings.warn('')
+    edit = edit_from, edit_to
+    # PREPROCESS pam, pam OVERRIDES cas_type #
+    if PAM is None: 
+        PAM = cas_key[cas_type]
+    PAM_regex = process_PAM(PAM)
+    # PREPROCESS WINDOW #
+    assert window[1] >= window[0] and window[0] >= 0, "Input a valid window ie [4,8]"
+    assert window[1] <= 20, "Input a valid window ie [4,8]"
     
     path = Path.cwd()
-    # create gene object and parses all guides as preprocessing
+    # CREATE GENE OBJECT #
     gene = GeneForCRISPR(filepath=gene_filepath)
     print('Create gene object from', gene_filepath)
     gene.parse_exons()
     print('Parsing exons:', len(gene.exons), 'exons found')
     gene.extract_metadata()
+    # PARSE ALL GUIDES #
     gene.find_all_guides()
-    print('Preprocessing sucessful')
-
-    # process cas_type
-    if cas_type not in list(cas_key.keys()): 
-        raise Exception('Improper cas type input, the options are '+str(list(cas_key.keys())))
+    print('Preprocessing sucessful!')
     
-    # checks editing information is correct
-    assert edit_from in bases and edit_to in bases
-    edit = edit_from, edit_to
-    
-    # process PAM, PAM input overrides cas_type
-    if PAM is None: 
-        PAM = cas_key[cas_type]
-    PAM_regex = process_PAM(PAM)
-
-    # process window
-    assert window[1] >= window[0] and window[0] >= 0 
-    assert window[1] <= len(gene.fwd_guides[0][0])
-
-    assert isinstance(domains, dict)
-
-    # set column names for outputing dataframe
-    column_names = ['sgRNA_seq', 'PAM_seq', 'starting_frame', 'gene_pos', 'chr_pos', 'exon', 
-                    'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', 'domain', 
-                    ]
+    # SET COLUMN NAMES FOR OUTPUT #
+    column_names = ['sgRNA_seq', 'PAM_seq', 'starting_frame', 'chr_pos', 'exon', 
+                    'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', 'domain', ]
 
     # filter for PAM, options to filter for containing editable base in window and intron targeting
     #    (seq, PAMseq, frame012 of first base, index of first base, exon number)
@@ -134,29 +129,11 @@ def generate_library(gene_filepath,
         x.append('sense')
         x.append(gene.strand)
         x.append(gene_name)
-        if domains: 
-            for name, range in domains.items(): 
-                assert isinstance(name, str)
-                assert isinstance(range[0], int) and isinstance(range[0], int)
-                if range[0] <= x[3] <= range[1]: 
-                    x.append(name)
-                    break
-        if len(x) == 10: 
-            x.append('No Domain')
     for x in rev_results: 
         x.append(rev_complement(complements, x[0]))
         x.append('antisense')
         x.append(gene.strand)
         x.append(gene_name)
-        if domains: 
-            for name, range in domains.items(): 
-                assert isinstance(name, str)
-                assert isinstance(range[0], int) and isinstance(range[0], int)
-                if range[0] <= x[3] <= range[1]: 
-                    x.append(name)
-                    break
-        if len(x) == 10: 
-            x.append('No Domain')
 
     # delete entries with duplicates between fwd, between rev, and across fwd and rev
     df = pd.DataFrame(fwd_results + rev_results, columns=column_names)

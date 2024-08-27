@@ -11,11 +11,12 @@ from be_scan.sgrna.generate_library import generate_library
 from be_scan.sgrna.reference_check import reference_check
 from be_scan.sgrna.annotate import annotate
 
-def design_library(gene_filepath, genome_file, 
-           cas_type, edit_from, edit_to, 
+def design_library(gene_filepath, 
+                   cas_type, edit_from, edit_to, 
 
-    protein_filepath='',
+    genome_file='', protein_filepath='', 
     gene_name='', PAM=None, window=[4,8], 
+
     output_name='annotated_guides.csv', output_dir='', delete=False,
     return_df=True, save_df=True,
     exclude_introns=True, exclude_nontargeting=True, exclude_TTTT=True,
@@ -30,9 +31,7 @@ def design_library(gene_filepath, genome_file,
     Parameters
     ------------
     gene_filepath: str or path
-        The file with the gene .fasta sequence
-    genome_file: str or path
-        The file with the genome .fasta sequence
+        The file with the gene sequence
     cas_type: str
         A type of predetermined Cas (ie Sp, SpG, SpRY, etc)
         This variable is superceded by PAM
@@ -41,10 +40,12 @@ def design_library(gene_filepath, genome_file,
     edit_to: char
         The base (ACTG) to replace with
 
-    gene_name: str, default ''
-        The name of the gene, can be any string
     protein_filepath: str or path, default ''
         The file with the protein .fasta sequence for double checking the mutations annotated
+    genome_file: str or path
+        The file with the genome sequence. If no path is provided, the reference will not be checked. 
+    gene_name: str, default ''
+        The name of the gene, can be any string
     PAM: str, default None
         Optional field to input a custom PAM or a known PAM
         This field supercedes cas_type
@@ -96,6 +97,7 @@ def design_library(gene_filepath, genome_file,
     
     temp = "temp.csv"
 
+    # GENERATE LIBRARY #
     generate_library_params = {
         'gene_filepath':gene_filepath, 'gene_name':gene_name, 
         'cas_type':cas_type, 'edit_from':edit_from, 'edit_to':edit_to, 
@@ -107,6 +109,7 @@ def design_library(gene_filepath, genome_file,
     guides = generate_library(**generate_library_params)
     guides.to_csv(temp, index=False)
 
+    # ANNOTATE LIBRARY #
     annotate_params = {
         'guides_file':temp, 'gene_filepath':gene_filepath, 
         'protein_filepath':protein_filepath, 'edit_from':edit_from, 'edit_to':edit_to,
@@ -115,6 +118,7 @@ def design_library(gene_filepath, genome_file,
     annotated = annotate(**annotate_params)
     annotated.to_csv(temp, index=False)
 
+    # IF GENOME FILE IS PROVIDED, CHECK GUIDES GAIANST THIS REFERENCE SEQUENCE
     if len(genome_file) > 0: 
         reference_check_params = {
             'guides_file':temp, 'genome_file':genome_file, 
@@ -131,3 +135,9 @@ def design_library(gene_filepath, genome_file,
     if return_df: 
         return annotated
     
+design_library(
+    gene_filepath='tests/test_data/sgrna/230408_AR_Input.fasta', 
+    cas_type='SpG', 
+    edit_from='C', 
+    edit_to='T', 
+)
