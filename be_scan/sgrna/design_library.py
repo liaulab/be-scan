@@ -96,25 +96,30 @@ def design_library(gene_filepath, genome_file,
     
     temp = "temp.csv"
 
-    generate_library_params = {'gene_filepath':gene_filepath, 'gene_name':gene_name, 
-                              'cas_type':cas_type, 'edit_from':edit_from, 'edit_to':edit_to, 
-                              'PAM':PAM, 'window':window, 'return_df':True, 'save_df':False, 
-                              'exclude_introns':exclude_introns, 'exclude_nontargeting':exclude_nontargeting, 
-                              'exclude_TTTT':exclude_TTTT,
-                              'domains':domains,
-    }
+    generate_library_params = {
+        'gene_filepath':gene_filepath, 'gene_name':gene_name, 
+        'cas_type':cas_type, 'edit_from':edit_from, 'edit_to':edit_to, 
+        'PAM':PAM, 'window':window, 'return_df':True, 'save_df':False, 
+        'exclude_introns':exclude_introns, 'exclude_nontargeting':exclude_nontargeting, 
+        'exclude_TTTT':exclude_TTTT,
+        'domains':domains,
+        }
     guides = generate_library(**generate_library_params)
     guides.to_csv(temp, index=False)
 
-    annotate_params = {'guides_file':temp, 'gene_filepath':gene_filepath, 
-                             'protein_filepath':protein_filepath, 'edit_from':edit_from, 'edit_to':edit_to,
-                             'window':window, 'return_df':True, 'save_df':False}
+    annotate_params = {
+        'guides_file':temp, 'gene_filepath':gene_filepath, 
+        'protein_filepath':protein_filepath, 'edit_from':edit_from, 'edit_to':edit_to,
+        'window':window, 'return_df':True, 'save_df':False
+        }
     annotated = annotate(**annotate_params)
     annotated.to_csv(temp, index=False)
 
     if len(genome_file) > 0: 
-        reference_check_params = {'guides_file':temp, 'genome_file':genome_file, 
-                                'delete':delete, 'return_df':True, 'save_df':False}
+        reference_check_params = {
+            'guides_file':temp, 'genome_file':genome_file, 
+            'delete':delete, 'return_df':True, 'save_df':False
+            }
         annotated = reference_check(**reference_check_params)
 
     os.remove(temp)

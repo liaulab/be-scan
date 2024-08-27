@@ -208,14 +208,14 @@ def format_mutation(aa, new_aa, start, amino_acid_seq, x):
     result = []
     for i in range(len(aa)): 
         # if there is an edit made from base editing
-        if aa[i] != new_aa[i]: 
-            mut = aa[i] + str(start+i) + new_aa[i]
-            # checks mutation against the protein sequence
-            if amino_acid_seq is not None: 
-                assert amino_acid_seq[start+i] == aa[i], f"Error: guide {x}"
-            # add edit to a list
-            if mut not in result: 
-                result.append(mut)
+
+        mut = aa[i] + str(start+i) + new_aa[i]
+        # checks mutation against the protein sequence
+        if amino_acid_seq is not None: 
+            assert amino_acid_seq[start+i] == aa[i], f"Error: guide {x}"
+        # add edit to a list
+        if mut not in result: 
+            result.append(mut)
     mutation = '/'.join(result)
     return mutation
 
@@ -236,7 +236,7 @@ def categorize_mutations(row, col_names, pre):
     
     types = []
     for mut in row[pre+'_mutations']: 
-        if len(mut) == 0 and 'Silent' not in types: 
+        if mut[0] == mut[-1] and 'Silent' not in types: 
             types.append('Silent')
         elif '.' in mut and 'Nonsense' not in types: 
             types.append('Nonsense')

@@ -43,7 +43,7 @@ def calc_controls(conditions, stats_comparisons,
 
     path = Path.cwd()
     df_conds = pd.read_csv(conditions)
-    stats_comparisons = [x+'_subctrl_avg' for x in stats_comparisons]
+    # stats_comparisons = [x+'_subctrl_avg' for x in stats_comparisons]
 
     # calculate negative control stats
     _, list_negctrlstats, _ = calc_neg_ctrls(df_conds, stats_comparisons, 

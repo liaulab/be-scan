@@ -167,6 +167,13 @@ def loess_v3(x_obs, y_obs, span,
              
     x_out=None, interp_method='quadratic', 
     loess_kws={}, interp_kws={}, 
+
+    # filter out unwanted quantitative params
+    filter_val=False, val_cols=['CtoT_muttypes'], val_min=0.0, 
+    # filter out unwanted categorical params
+    filter_params=False, 
+    params_cols=['CtoT_muttype'], 
+    params_conditions=[['Missense', 'Silent', 'Mixed', 'Nonsense']], 
     ):
 
     """[Summary]
@@ -191,6 +198,25 @@ def loess_v3(x_obs, y_obs, span,
         'slinear', 'quadratic', 'cubic', 'previous', or 'next'
         from https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
 
+    filter_val : bool, optional, defaults to False
+        whether or not to exclude a subset of data from plotting by a minimum value
+        default purpose is to filter out all intron and exon/intron guides
+    val_cols : list of str, optional, 
+        defaults to ['CtoT_muttypes']
+        names of columns to filter dataframe for plotting
+    val_min : int, optional, defaults to 0.0
+        the minimum value by which to filter rows by val_cols
+
+    filter_params : bool, optional, defaults to False
+        whether or not to exclude a subset of data from plotting by categorical params
+        default purpose is to filter to keep only Missense, Nonsense, Silent, Mixed guides
+    params_cols : list of str, optional, 
+        defaults to ['CtoT_muttype']
+        names of column to filter dataframe for plotting
+    params_conditions : list of lists of str, optional, 
+        defaults to [['Missense', 'Silent', 'Mixed', 'Nonsense']]
+        names of categories of filter_col to filter dataframe
+
     loess_kws: dict, optional, defaults to
         {'missing':'raise', 'return_sorted':False, 'it':0}
         input params for statsmodels.nonparametric.smoothers_lowess.lowess()
@@ -213,6 +239,22 @@ def loess_v3(x_obs, y_obs, span,
     df_loess = pd.DataFrame()
     df_loess['x_vals'] = np.arange(x_obs.min(), x_obs.max()+1, 1)
     # df_loess = df_loess.reset_index(drop=True)
+
+    # check conflicting params and output for user
+    if filter_val: 
+        assert isinstance(val_min, float), "check param: val_min"
+        assert isinstance(val_cols, list) and len(val_cols) > 0, "check param: val_cols"
+    if filter_params: 
+        assert isinstance(params_cols, list), "check param: params_cols"
+        assert isinstance(params_conditions, list), "check param: params_conditions"
+
+    # filter out subset of data if filters are provided
+    if filter_params: 
+        for col, conds in zip(params_cols, params_conditions): 
+            df_loess = df_loess.loc[df_loess[col].isin(conds)]
+    if filter_val: 
+        for col in val_cols: 
+            df_loess = df_loess[df_loess[col] > val_min]
 
     if interp_method == 'statsmodels':
         df_loess['y_loess'] = lowess(endog=y_obs, exog=x_obs, 
