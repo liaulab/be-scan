@@ -10,84 +10,38 @@ from itertools import product
 from be_scan.sgrna._genomic_ import complements, rev_complement, DNA_to_AA
 from be_scan.sgrna._gene_ import GeneForCRISPR
 
-# evaluates if guide has PAM and has a residue in window
-# returns TRUE or FALSE
-def filter_guide(g, PAM_regex, edit, window, exclude_introns, exclude_nontargeting): 
+# FUNCTIONS FOR generate_library #
+
+def filter_guide(g, PAM_regex, edit, window, excl_introns, excl_nonediting): 
     """
     Evaluates if a guide has a PAM and target residue within its window. 
 
     Parameters
     ------------
-    g : str, guide sequence
-    PAM_regex : regex str, regez string constructued from PAM
-    PAM : str, PAM sequence
-    edit : tuple, (edit_from edit_to)
-    window : tuple, inclusive range for editing
-    exclude_introns : bool, whether or not the editible base needs to be in an intron
-    exclude_nontargeting : bool, whether or not the editible base needs to be in the window
-
-    Returns
-    ------------
-    bool True or False
+    excl_introns : bool, whether or not the editible base needs to be in an exon
+    excl_nonediting : bool, whether or not the editible base needs to be present in the window
     """
-    seq = g[0]
-    window = seq[window[0]-1:window[1]]
-    if not exclude_nontargeting: 
+    window_seq = g[0][window[0]-1:window[1]]
+    if not excl_nonediting: 
         edit_in_window = True
-    elif exclude_introns: 
-        edit_in_window = (edit[0] in window)
+    elif excl_introns: 
+        edit_in_window = (edit[0] in window_seq)
     else: 
-        edit_in_window = (edit[0].upper() in window) or (edit[0].lower() in window)
+        edit_in_window = (edit[0].upper() in window_seq.upper())
     return (True if PAM_regex.match(g[1]) else False) and edit_in_window
 
-def filter_repeats(results): 
-    """
-    Delete duplicate guides
-    Duplicate guides are difficult to deconvolute
-
-    Parameters
-    ------------
-    results : list of lists [sgRNA_seq, starting_frame, gene_pos, chr_pos, exon]
-
-    Returns
-    ------------
-    results : list of lists, shortened input results
-    """
-    seqs = [g[0] for g in results]
-    dup_seqs = set([x for x in seqs if seqs.count(x) > 1])
-    results = [g.copy() for g in results if g[0] not in dup_seqs]
-    return results
-
-def filter_TTTT(results): 
+def filter_sequence(results, sequence): 
     """
     Delete guides with TTTT which is a stop sequence for cloning
-
-    Parameters
-    ------------
-    results : list of lists [sgRNA_seq, starting_frame, gene_pos, chr_pos, exon]
-
-    Returns
-    ------------
-    results : list of lists, shortened input results
     """
-    results = [r for r in results if not ('TTTT' in r[0].upper())]
+    results = [r for r in results if not (sequence in r[0].upper())]
     return results
+
+# FUNCTIONS FOR annotate #
 
 def annotate_mutations(row, edit, amino_acid_seq, col_names, pre): 
     """
-    Come up with list of annotations (ie F877L, F877P, F877L/F877P)
-    for each guide. 
-
-    Parameters
-    ------------
-    row : row of input df
-    edit : tuple, (edit_from edit_to) each are one character
-    amino_acid_seq : dict, amino acid with {index : amino acid}
-    col_names : tuple, (starting_frame, sgRNA_strand, gene_pos, seq_col)
-
-    Returns
-    ------------
-    mutation_details : list, a list of mutations
+    Come up with list of annotations (ie F877L, F877P) for each guide. 
     """
     assert len(edit[0]) == 1 and len(edit[1]) == 1
     # if guide position is unannotated

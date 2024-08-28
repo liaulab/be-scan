@@ -9,19 +9,16 @@ from pathlib import Path
 import pandas as pd
 import warnings
 
-from be_scan.sgrna._genomic_ import *
-from be_scan.sgrna._guideRNA_ import filter_guide, filter_repeats, filter_TTTT
-from be_scan.sgrna._gene_ import GeneForCRISPR
+from _genomic_ import *
+from _guideRNA_ import filter_guide, filter_sequence
+from _gene_ import GeneForCRISPR
 
 def generate_library(gene_filepath, 
                      cas_type, edit_from, edit_to, 
 
     gene_name='', PAM=None, window=[4,8], 
-    output_name='guides.csv', output_dir='',
-    return_df=True, save_df=True, 
-    exclude_introns=True, 
-    exclude_nontargeting=True, 
-    exclude_TTTT=True, 
+    output_name='guides.csv', output_dir='', return_df=True, save_df=True, 
+    exclude_introns=False, exclude_nonediting=False, exclude_sequences=['TTTT']
     ): 
     
     """[Summary]
@@ -59,10 +56,10 @@ def generate_library(gene_filepath,
         Whether or not to save the resulting dataframe
     exclude_introns : bool, default True
         Whether or not the editible base needs to be in an intron
-    exclude_nontargeting : bool, default True
+    exclude_nonediting : bool, default True
         Whether or not the editible base needs to be in the window
-    exclude_TTTT : bool, default True
-        Whether or not to exclude guides with 'TTTT'
+    exclude_sequences : list of strings, defailt ['TTTT']
+        Exclude guides with sequences in this list
 
     Returns
     ------------
@@ -107,47 +104,40 @@ def generate_library(gene_filepath,
     
     # SET COLUMN NAMES FOR OUTPUT #
     column_names = ['sgRNA_seq', 'PAM_seq', 'starting_frame', 'chr_pos', 'exon', 
-                    'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', 'domain', ]
+                    'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', ]
 
-    # filter for PAM, options to filter for containing editable base in window and intron targeting
-    #    (seq, PAMseq, frame012 of first base, index of first base, exon number)
-    fwd_results = [g.copy() for g in gene.fwd_guides if 
-                   filter_guide(g, PAM_regex, edit, window, exclude_introns, exclude_nontargeting)]
-    rev_results = [g.copy() for g in gene.rev_guides if 
-                   filter_guide(g, PAM_regex, edit, window, exclude_introns, exclude_nontargeting)]
-    # filter out repeating guides in fwd_results rev_results list
-    fwd_results = filter_repeats(fwd_results)
-    rev_results = filter_repeats(rev_results)
-    # filter out guides with 'TTTT' in fwd_results rev_results list
-    if exclude_TTTT: 
-        fwd_results = filter_TTTT(fwd_results)
-        rev_results = filter_TTTT(rev_results)
+    # FILTER LIBRARY ACCORDING TO SPECIFICATIONS FOR NONEDITING, INTRONIC, PAM #
+    filter_guide_input = {'PAM_regex':PAM_regex, 'edit':edit, 'window':window, 
+                          'excl_introns':exclude_introns, 'excl_nonediting':exclude_nonediting}
+    fwd_results = [g.copy() for g in gene.fwd_guides if filter_guide(g, **filter_guide_input)]
+    rev_results = [g.copy() for g in gene.rev_guides if filter_guide(g, **filter_guide_input)]
+    # FILTER OUT UNWANTED SEQUENCES #
+    for sequence in exclude_sequences: 
+        fwd_results = filter_sequence(fwd_results, sequence)
+        rev_results = filter_sequence(rev_results, sequence)
 
-    # adding extra annotations for fwd and rev
+    # ADD EXTRA ANNOTATIONS AND COMBINE #
     for x in fwd_results: 
         x.append(x[0])
         x.append('sense')
-        x.append(gene.strand)
-        x.append(gene_name)
     for x in rev_results: 
         x.append(rev_complement(complements, x[0]))
         x.append('antisense')
+    results = fwd_results + rev_results
+    for x in results: 
         x.append(gene.strand)
         x.append(gene_name)
 
-    # delete entries with duplicates between fwd, between rev, and across fwd and rev
-    df = pd.DataFrame(fwd_results + rev_results, columns=column_names)
+    # DELETE DUPLICATES BETWEEN FWD, BETWEEN REV, BETWEEN FWD AND REV #
+    df = pd.DataFrame(results, columns=column_names)
     dupl_rows = df.duplicated(subset='sgRNA_seq', keep=False)
-    df = df[~dupl_rows]
-    # dupl_rows = df.duplicated(subset='coding_seq', keep=False)
-    # df = df[~dupl_rows]
+    df_noduplicates = df[~dupl_rows]
 
     print('Guides generated and duplicates removed')
-    print(df.shape[0], 'guides were generated')
-    # output df
+    print(df_noduplicates.shape[0], 'guides were generated')
+    # SAVE AND OUTPUT #
     if save_df: 
-        outpath = path / output_dir
-        Path.mkdir(outpath, exist_ok=True)
-        df.to_csv(outpath / output_name, index=False)
+        Path.mkdir(path / output_dir, exist_ok=True)
+        df_noduplicates.to_csv(path / output_dir / output_name, index=False)
     if return_df: 
-        return df
+        return df_noduplicates

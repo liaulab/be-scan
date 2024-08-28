@@ -43,11 +43,11 @@ class GeneForCRISPR():
         exons, introns = [], []
         for exon in exons_extra: 
             exons.append(''.join([base for base in exon if base.isupper()]))
-            introns.append((''.join([base for base in exon[:len(exon)//2] if base.isupper()]), 
-                            ''.join([base for base in exon[len(exon)//2:] if base.isupper()])))
+            introns.append((''.join([base for base in exon[:len(exon)//2] if base.islower()]), 
+                            ''.join([base for base in exon[len(exon)//2:] if base.islower()])))
 
         # CHECK INTRON LENGTHS CONSISTENT ACROSS FASTA FILE #
-        assert all([len(x)-len(y)==0 for x, y in introns]), "Make sure all flanking introns are the same length"
+        assert all([len(x)-len(y)==0 for x, y in introns]), [(len(x), len(y)) for x, y in introns]
         assert all([len(x) == len(y) for x, y in introns]), "Make sure 5' and 3' intron sequences are the same length" ###
         self.intron_len = len(introns[0][0])
         
@@ -60,8 +60,7 @@ class GeneForCRISPR():
     
     # GENERATE ALL FWD AND REV GUIDES AND METADATA #
     # OUTPUT: NONE #
-    # effect: saves guide sequences, the index of the first bp of the guide in the gene and in the chromosome, 
-    #         the frame (0, 1, 2) of the first bp, and the exon # of guide
+    # SAVES GUIDE SEQ, INDEX OF FIRST BP IN CHROMOSOME, STARTING FRAME (0,1,2), EXON #
     ### conditional on introns being lowercase and exons being uppercase
     def find_all_guides(self, n=23): 
         self.n = n
@@ -79,7 +78,7 @@ class GeneForCRISPR():
         # UPDATE INSTANCE VARIABLE #
         self.fwd_guides = [g[1:] for g in fwd_guides]
         self.rev_guides = [[rev_complement(complements, g[0][3:]), rev_complement(complements, g[0][:3]), 
-                           (g[3]+1)%3, g[5]+self.n-1, g[6]] for g in fwd_guides]
+                           (g[3]+1)%3, g[4]+self.n-1, g[5]] for g in fwd_guides]
 
     # EXTRACT METADATA ABOUT CHROMOSOME POSITION, STRAND #
     def extract_metadata(self): 

@@ -7,9 +7,9 @@ Date: 231204
 import os
 from pathlib import Path
 
-from be_scan.sgrna.generate_library import generate_library
-from be_scan.sgrna.reference_check import reference_check
-from be_scan.sgrna.annotate import annotate
+from generate_library import generate_library
+from reference_check import reference_check
+from annotate import annotate
 
 def design_library(gene_filepath, 
                    cas_type, edit_from, edit_to, 
@@ -19,8 +19,6 @@ def design_library(gene_filepath,
 
     output_name='annotated_guides.csv', output_dir='', delete=False,
     return_df=True, save_df=True,
-    exclude_introns=True, exclude_nontargeting=True, exclude_TTTT=True,
-    domains={},
     ): 
     
     """[Summary]
@@ -60,12 +58,6 @@ def design_library(gene_filepath,
         Whether or not to return the resulting dataframe
     save_df : bool, default True
         Whether or not to save the resulting dataframe
-    exclude_introns : bool, default True
-        Whether or not the editible base needs to be in an intron
-    exclude_nontargeting : bool, default True
-        Whether or not the editible base needs to be in the window
-    exclude_TTTT : bool, default True
-        Whether or not to exclude guides with 'TTTT'
 
     Returns
     ------------
@@ -102,9 +94,6 @@ def design_library(gene_filepath,
         'gene_filepath':gene_filepath, 'gene_name':gene_name, 
         'cas_type':cas_type, 'edit_from':edit_from, 'edit_to':edit_to, 
         'PAM':PAM, 'window':window, 'return_df':True, 'save_df':False, 
-        'exclude_introns':exclude_introns, 'exclude_nontargeting':exclude_nontargeting, 
-        'exclude_TTTT':exclude_TTTT,
-        'domains':domains,
         }
     guides = generate_library(**generate_library_params)
     guides.to_csv(temp, index=False)
