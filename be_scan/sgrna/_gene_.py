@@ -62,23 +62,47 @@ class GeneForCRISPR():
     # OUTPUT: NONE #
     # SAVES GUIDE SEQ, INDEX OF FIRST BP IN CHROMOSOME, STARTING FRAME (0,1,2), EXON #
     ### conditional on introns being lowercase and exons being uppercase
-    def find_all_guides(self, n=23): 
+    def find_all_guides(self, window, n=23): 
         self.n = n
         fwd_guides = []
-        prev_frame = 0
-        # IDENTIFY ALL N LENGTH SEQUENCES #
+        prev_frame, prev_ind = 0, 0
+        # IDENTIFY ALL N LENGTH SEQUENCES IN ALL EXONS #
         for e, exon_extra in enumerate(self.exons_extra): 
             for i in range(len(exon_extra)-self.n-1): 
                 seq = exon_extra[i:i+self.n]
                 frame = (i+prev_frame-self.intron_len)%3
                 ind_chr = i+self.exons_start[e]
-                fwd_guides.append([seq, seq[:self.guide_len], seq[self.guide_len:], frame, ind_chr, e])
+                if seq[0].islower(): ind_gene = -1
+                else: ind_gene = i-self.intron_len+prev_ind
+
+                # if (e==0 and i < self.intron_len-window[1]-1) or (e==len(self.exons_extra) and i > len(exon_extra)-self.intron_len+1): ind_gene = -2 # OUTSIDE GENE UTR -2
+                if seq[window[0]-1].islower(): window_pos1 = -1
+                else: window_pos1 = i-self.intron_len+prev_ind+window[0]-1
+                if seq[window[1]].islower(): window_pos2 = -1
+                else: window_pos2 = i-self.intron_len+prev_ind+window[1]-1
+
+                calc_pos = i-self.intron_len+prev_ind # USED TO CALC FOR REV GUIDES #
+                fwd_guides.append([seq, seq[:self.guide_len], seq[self.guide_len:], 
+                                   frame, ind_gene, ind_chr, e, window_pos1, window_pos2, calc_pos])
             prev_frame = (prev_frame+len(exon_extra)-(2*self.intron_len))%3
+            prev_ind += len(exon_extra)-(2*self.intron_len)
 
         # UPDATE INSTANCE VARIABLE #
-        self.fwd_guides = [g[1:] for g in fwd_guides]
-        self.rev_guides = [[rev_complement(complements, g[0][3:]), rev_complement(complements, g[0][:3]), 
-                           (g[3]+1)%3, g[4]+self.n-1, g[5]] for g in fwd_guides]
+        self.fwd_guides = [g[1:9] for g in fwd_guides]
+        # CALCULATE REV GUIDES FROM FWD GUIDES #
+        self.rev_guides = []
+        for g in fwd_guides: 
+            g_rev = [rev_complement(complements, g[0][3:]), rev_complement(complements, g[0][:3]), (g[3]+1)%3]
+            if g_rev[0][0].islower(): g_rev.append(-1)
+            else: g_rev.append(g[9]+self.n-1)
+            g_rev.append(g[5]+self.n-1)
+            g_rev.append(g[6])
+
+            if g_rev[0][window[0]-1].islower(): g_rev.append(-1)
+            else: g_rev.append((g[9]+self.n-1)-(window[0]-1))
+            if g_rev[0][window[1]].islower(): g_rev.append(-1)
+            else: g_rev.append((g[9]+self.n-1)-(window[1]-1))
+            self.rev_guides.append(g_rev)
 
     # EXTRACT METADATA ABOUT CHROMOSOME POSITION, STRAND #
     def extract_metadata(self): 

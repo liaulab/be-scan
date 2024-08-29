@@ -5,10 +5,8 @@ Date: 231102
 {Description: helper functions for processing guides and library data}
 """
 
-import re
 from itertools import product
-from be_scan.sgrna._genomic_ import complements, rev_complement, DNA_to_AA
-from be_scan.sgrna._gene_ import GeneForCRISPR
+from _genomic_ import complements, rev_complement, DNA_to_AA
 
 # FUNCTIONS FOR generate_library #
 
@@ -38,318 +36,187 @@ def filter_sequence(results, sequence):
     return results
 
 # FUNCTIONS FOR annotate #
-
-def annotate_mutations(row, edit, amino_acid_seq, col_names, pre): 
-    """
-    Come up with list of annotations (ie F877L, F877P) for each guide. 
-    """
-    assert len(edit[0]) == 1 and len(edit[1]) == 1
-    # if guide position is unannotated
-    if row[col_names[2]] == -1: 
-        return None
-    
-    # extract relevant data from dataframe
-    frame, dir, pos = row[col_names[0]], row[col_names[1]], row[col_names[2]]
-    dna_window, dna, aa = row[pre+'_target_CDS'], row[pre+'_codon_window'], row[pre+'_residue_window']
-
-    # starting index of amino acid is different for sense vs anti
-    if dir == 'sense': 
-        start = int((pos+(-1*frame))/3)+2 # indexed at 1, for index at 0 +3 instead of +6
-    else: 
-        start = int((pos+(-1*frame)+1)/3)-2
-
-    # add to a list of mutations for each row
-    mutation_details = []
-    for m in mutation_combos(dna_window, edit, dir): 
-        # construct new dna and new aa sequence from one potential mutation
-        new_dna = dna.replace(dna_window, m)
-        new_aa = DNA_to_AA(new_dna, upper=False)
-        # write out which mutations are changed
-        mutations = format_mutation(aa, new_aa, start, amino_acid_seq, row[col_names[3]])
-        mutation_details.append(mutations)
-    return mutation_details[1:]
-
-### only works for dual editor for now
-def annotate_dual_mutations(row, edit, amino_acid_seq, col_names, pre): 
-    """
-    Come up with list of annotations (ie F877L, F877P, F877L/F877P)
-    for each guide for multiple possible bp edits. 
-
-    Parameters
-    ------------
-    row : row of input df
-    edit : tuple, (edit_from edit_to) each are multiple characters
-    amino_acid_seq : dict, amino acid with {index : amino acid}
-    col_names : tuple, (starting_frame, sgRNA_strand, gene_pos, seq_col)
-
-    Returns
-    ------------
-    mutation_details : list, a list of mutations
-    """
-    assert len(edit[0]) > 1 and len(edit[1]) > 1
-    # if guide position is unannotated
-    if row[col_names[2]] == -1: 
-        return None
-    
-    # extract relevant data from dataframe
-    frame, dir, pos = row[col_names[0]], row[col_names[1]], row[col_names[2]]
-    dna_window, dna, aa = row[pre+'_target_CDS'], row[pre+'_codon_window'], row[pre+'_residue_window']
-
-    # starting index of amino acid is different for sense vs anti
-    if dir == 'sense': 
-        start = int((pos+(-1*frame))/3)+2 # indexed at 1, for index at 0 +3 instead of +6
-    else: 
-        start = int((pos+(-1*frame)+1)/3)-2
-
-    # add to a list of mutations for each row
-    mutation_details = []
-    edit1 = (edit[0][0], edit[1][0])
-    edit2 = (edit[0][1], edit[1][1])
-    for m1 in mutation_combos(dna_window, edit1, dir): 
-        for m2 in mutation_combos(m1, edit2, dir): 
-            # construct new dna and new aa sequence from one potential mutation
-            new_dna = dna.replace(dna_window, m2)
-            new_aa = DNA_to_AA(new_dna, upper=False)
-            # write out which mutations are changed
-            mutations = format_mutation(aa, new_aa, start, amino_acid_seq, row[col_names[3]])
-            mutation_details.append(mutations)
-    return mutation_details[1:]
-
-def mutation_combos(guide_window, edit, dir):
-    """
-    Generates a list of all possible mutations of the guide_window
-    
-    Parameters
-    ------------
-    guide_window : str, part of a guide that has length divisible by 3
-    edit : tuple, (edit_from edit_to)
-    dir : str, (sense or antisense)
-
-    Returns
-    ------------
-    mutated : list, each item is a mutated guide_window
-    """
-    if dir == 'antisense': 
-        edit = (complements[edit[0]], complements[edit[1]])
-    mutated = []
-    # Convert input string into a list so we can easily substitute letters
-    seq = list(guide_window)
-    # Find indices of key letters in seq
-    indices = [ i for i, c in enumerate(seq) if c in edit[0]]
-
-    # Generate key letter combinations & place them into the list
-    for t in product(edit[0]+edit[1], repeat=len(indices)):
-        for i, c in zip(indices, t):
-            seq[i] = c
-        mutated.append(''.join(seq))
-    return mutated
-
-def format_mutation(aa, new_aa, start, amino_acid_seq, x): 
-    """
-    Translates and formats the mutation with unedited-position-edited
-    
-    Parameters
-    ------------
-    aa : str, nonedited amino acid seq
-    new_aa : str, edited amino acid seq
-    start : start position of the first amino acid in the codon_window
-    amino_acid_seq : dict, amino acid with {index : amino acid}
-
-    Returns
-    ------------
-    mutation : str, translated formated mutation
-    """
-    result = []
-    for i in range(len(aa)): 
-        # if there is an edit made from base editing
-
-        mut = aa[i] + str(start+i) + new_aa[i]
-        # checks mutation against the protein sequence
-        if amino_acid_seq is not None: 
-            assert amino_acid_seq[start+i] == aa[i], f"Error: guide {x}"
-        # add edit to a list
-        if mut not in result: 
-            result.append(mut)
-    mutation = '/'.join(result)
-    return mutation
-
-def categorize_mutations(row, col_names, pre): 
-    """
-    Categorizes mutations by Missense, Nonsense, Silent, etc
-    
-    Parameters
-    ------------
-    mut_list : list, a list of mutations the guide can access
-
-    Returns
-    ------------
-    types : a list of unique mutations, sorted
-    """
-    if row[col_names[2]] == -1: 
-        return None
-    
-    types = []
-    for mut in row[pre+'_mutations']: 
-        if mut[0] == mut[-1] and 'Silent' not in types: 
-            types.append('Silent')
-        elif '.' in mut and 'Nonsense' not in types: 
-            types.append('Nonsense')
-        elif 'Missense' not in types: 
-            types.append('Missense')
-    return sorted(types)
-
-def calc_target(row, window, mode, col_names): 
+def calc_target(row, window, col_names): 
     """
     Finds the string of the bps in codons that may be edited
-    Finds the string of the aa that may be edited
-
-    Parameters
-    ------------
-    row : row of input df
-    window : tuple, inclusive range for editing
-    mode : str, 'DNA' or 'AA'
-    col_names : tuple, (starting_frame, sgRNA_strand, gene_pos, seq_col)
-
-    Returns
-    ------------
-    DNA or AA : str, DNA sequence of AA sequence that may be edited
+    or Finds the string of the aa that may be edited
     """
-    if row[col_names[2]] == -1: 
-        return None
+    frame_col, strand_col, gene_pos_col, seq_col, window_start_col, window_end_col = col_names
+
+    if row[window_start_col] == -1 and row[window_end_col] == -1: # NO CODING DNA IN WINDOW
+        return None, None
     
-    frame = row[col_names[0]]
-    guide = row[col_names[3]]
-    num_aa = int(2+((window[1]-window[0]-1)//3))
-    if row[col_names[1]] == 'sense': 
+    frame = row[frame_col]
+    guide = row[seq_col]
+    num_aa = int(2+((window[1]-window[0]-1)//3)) # pretty sure this works
+    if row[strand_col] == 'sense': 
         start = (-1*frame)+3
         dna = guide[start:start+(num_aa*3)]
     else: 
         start = frame+1
         dna = rev_complement(complements, guide[start:start+(num_aa*3)])
 
-    if mode == 'DNA': 
-        return dna
-    else: 
-        return DNA_to_AA(dna, upper=False)
+    ### this does not catch when a codon spans an exon/intron junction and can be edited
+    return dna, DNA_to_AA(dna, upper=False) 
     
 def calc_coding_window(row, window, col_names): 
     """
-    Finds the string of the bps that may be edited
-    
-    Parameters
-    ------------
-    row : row of input df
-    window : tuple, inclusive range for editing
-    col_names : tuple, (starting_frame, sgRNA_strand, gene_pos, seq_col)
-
-    Returns
-    ------------
-    seq : str, bps in codons that may be edited
+    Finds the fwd window of the bps that may be edited, whether it is exon or intron
     """
-    if row[col_names[2]] == -1: 
+    frame_col, strand_col, gene_pos_col, seq_col, window_start_col, window_end_col = col_names
+
+    if row[window_start_col] == -1 and row[window_end_col] == -1: # NO CODING DNA IN WINDOW
         return None
 
-    if row[col_names[1]] == 'sense': 
-        seq = row[col_names[3]][window[0]-1:window[1]]
-    else: 
-        seq = rev_complement(complements, row[col_names[3]][window[0]-1:window[1]])
-    return seq
+    # RETURN EVEN IF THERE IS PARTIAL CODING DNA IN WINDOW #
+    if row[strand_col] == 'sense': 
+        return row[seq_col][window[0]-1:window[1]]
+    return rev_complement(complements, row[seq_col][window[0]-1:window[1]])
 
-def calc_editing_window(row, window, col_names): 
+def annotate_muts(row, edit, amino_acid_seq, col_names, pre): 
     """
-    Calculates the gene position of the window where an edit may occur
-    
-    Parameters
-    ------------
-    row : row of input df
-    window : tuple, inclusive range for editing
-    col_names : tuple, (starting_frame, sgRNA_strand, gene_pos, seq_col)
+    Come up with list of annotations (ie F877L;F877P) for each guide
+    """
+    frame_col, strand_col, gene_pos_col, seq_col, window_start_col, window_end_col = col_names
 
-    Returns
-    ------------
-    gene_pos_window : tuple, gene position of window
-    """
-    if row[col_names[2]] == -1: 
+    if row[window_start_col] == -1 and row[window_end_col] == -1: # NO CODING DNA IN WINDOW
         return None
     
-    if row[col_names[1]] == 'sense': 
-        gene_pos_window = (row[col_names[2]]+window[0]-1, row[col_names[2]]+window[1]-1)
-    else: 
-        gene_pos_window = (row[col_names[2]]-window[0]+1, row[col_names[2]]-window[1]+1)
-    return gene_pos_window
-    
-def parse_position_frames(guides_df, seq_col, gene_filepath, 
-                          frame_col, strand_col, gene_pos_col): 
+    # EXTRACT DATA FROM ROW #
+    frame, dir, pos, seq = row[frame_col], row[strand_col], row[gene_pos_col], row[seq_col]
+    dna_window, dna, aa = row[f'{pre}_target_CDS'], row[f'{pre}_codon_window'], row[f'{pre}_residue_window']
+
+    # USE POS TO CALCULATE WHICH AMINO ACID #
+    if dir == 'sense': start = int((pos+(-1*frame))/3)+2 # index at 1
+    else: start = int((pos+(-1*frame)+1)/3)-2
+
+    # LIST OF MUTATIONS FOR EACH ROW #
+    mutation_details = []
+    for m in mutation_combos(dna_window, edit, dir): 
+        # COMPARE MUTATED DNA/AA WITH OLD DNA/AA #
+        new_dna = dna.replace(dna_window, m)
+        new_aa = DNA_to_AA(new_dna, upper=False)
+        # FORMAT MUTATIONS AS LETTER-NUMBER-LETTER #
+        if dna != new_dna: 
+            mutations = format_mutation(aa, new_aa, start, amino_acid_seq, dna, new_dna, seq)
+            mutation_details.append(mutations)
+    return ';'.join(mutation_details)
+
+def annotate_dual_muts(row, edit, amino_acid_seq, col_names, pre): 
     """
-    Populates input df with the start position of the guide, the 
-    codon frame of the starting guide, and the strand direction. 
-    This information is necessary for downstream annotation. 
-    
-    Parameters
-    ------------
-    guides_df : pandas df, only needs to contain a column seq_col
-    seq_col : str, name of column with sgRNA sequence
-    gene_filepath : str or path, filepath to the gene
-    frame_col : str, name of column with codon frame
-    strand_col : str, name of column with direction
-    gene_pos_col : str, name of column with position on the gene
-    
-    Returns
-    ------------
-    guides_df : populated with seq_col, frame_col, strand_col, gene_pos_col
+    Come up with list of annotations (ie F877L;F877P) for each guide for a dual editor
     """
-    # extract guides, this is the only required column
-    guides = guides_df[seq_col]
+    frame_col, strand_col, gene_pos_col, seq_col, window_start_col, window_end_col = col_names
 
-    # make gene object to string match against
-    gene = GeneForCRISPR(filepath=gene_filepath)
-    gene.parse_exons()
-    gene_seq = ''.join(gene.exons)
+    if row[window_start_col] == -1 and row[window_end_col] == -1: # NO CODING DNA IN WINDOW
+        return None
+    
+    # EXTRACT DATA FROM ROW #
+    frame, dir, pos, seq = row[frame_col], row[strand_col], row[gene_pos_col], row[seq_col]
+    dna_window, dna, aa = row[f'{pre}_target_CDS'], row[f'{pre}_codon_window'], row[f'{pre}_residue_window']
 
-    frames, positions, strands = [], [], []
-    for guide in guides: 
-        # find if coding region fwd or rev matches any part of the gene
-        coding_guide_fwd = extract_uppercase_letters(guide)
-        coding_guide_rev = rev_complement(complements, coding_guide_fwd)
-        pos_fwd = list(re.finditer(coding_guide_fwd, gene_seq))
-        pos_rev = list(re.finditer(coding_guide_rev, gene_seq))
-        fwd_ind = find_first_uppercase_index(guide) # only need fwd bc rev_complement was taken
+    # USE POS TO CALCULATE WHICH AMINO ACID #
+    if dir == 'sense': start = int((pos+(-1*frame))/3)+2 # index at 1
+    else: start = int((pos+(-1*frame)+1)/3)-2
 
-        # guide only matches one position in sense OR antisense (ideal)
-        if len(pos_fwd) == 1 and len(pos_rev) == 0: 
-            pos = pos_fwd[0].start()-fwd_ind
-            stran = 'sense'
-            frame = pos%3
-        elif len(pos_fwd) == 0 and len(pos_rev) == 1: 
-            pos = pos_rev[0].end()+fwd_ind-1
-            stran = 'antisense'
-            frame = (pos)%3
-        else: 
-            # guide matches sequences sense AND antisense, use first sense match
-            if len(pos_fwd) > 0 and len(pos_rev) > 0: 
-                print('The guide', guide, 'match sense and antisense strands.')
-            # guide matches multiple positions in sense OR antisense, use first match from either
-            elif len(pos_fwd) > 1 or len(pos_rev) > 1: 
-                print('The guide', guide, 'has many occurrences.')
-            # else: 
-            #     print('The guide', guide, 'couldn\'t be matched.')
-            pos = -1
-            stran = 'unknown'
-            frame = -1
+    # LIST OF MUTATIONS FOR EACH ROW #
+    mutation_details = []
+    edit1 = edit[0][0], edit[1][0]
+    edit2 = edit[0][1], edit[1][1]
+    for m1 in mutation_combos(dna_window, edit1, dir): 
+        for m2 in mutation_combos(m1, edit2, dir): 
+            # COMPARE MUTATED DNA/AA WITH OLD DNA/AA #
+            new_dna = dna.replace(dna_window, m2)
+            new_aa = DNA_to_AA(new_dna, upper=False)
+            # FORMAT MUTATIONS AS LETTER-NUMBER-LETTER #
+            if dna != new_dna: 
+                mutations = format_mutation(aa, new_aa, start, amino_acid_seq, dna, new_dna, seq)
+                mutation_details.append(mutations)
+    return ';'.join(mutation_details)
 
-        # add information to lists
-        positions.append(pos)
-        strands.append(stran)
-        frames.append(frame)
 
-    # set new columns and return df
-    if gene_pos_col not in guides_df.columns: 
-        guides_df[gene_pos_col] = positions
-    if frame_col not in guides_df.columns: 
-        guides_df[frame_col] = frames
-    if strand_col not in guides_df.columns: 
-        guides_df[strand_col] = strands
-    return guides_df
+def mutation_combos(guide_window, edit, dir):
+    """
+    Generates a list of all possible mutations of the guide_window
+    """
+    if dir == 'antisense': edit = complements[edit[0]], complements[edit[1]]
+    mutated = []
+    # CONVERT INPUT STRING TO A LIST #
+    seq = list(guide_window)
+    # FIND INDICES OF MUTATABLE BP IN SEQ #
+    indices = [i for i, c in enumerate(seq) if c in edit[0]]
+
+    # GENERATE KEY LETTER COMBOS AND INSERT INTO LIST #
+    for t in product(edit[0]+edit[1], repeat=len(indices)):
+        for i, c in zip(indices, t):
+            seq[i] = c
+        mutated.append(''.join(seq))
+    return mutated
+
+def format_mutation(aa, new_aa, start, amino_acid_seq, dna, new_dna, guide): 
+    """
+    Translates and formats the mutation with unedited-position-edited
+    """
+    result = []
+    for i in range(len(aa)): 
+        if dna[i*3:(i*3)+3] == new_dna[i*3:(i*3)+3]: 
+            continue
+        mut = aa[i] + str(start+i) + new_aa[i]
+        # CHECK MUT AGAINST PROTEIN SEQ #
+        if amino_acid_seq is not None: 
+            assert amino_acid_seq[start+i] == aa[i], f"Error: guide {guide}"
+        # ADD EDIT TO LIST #
+        if mut not in result: 
+            result.append(mut)
+    mutation = '/'.join(result)
+    return mutation
+
+def determine_mutations(row, col_names, pre): 
+    """
+    Determine mutations based on predicted edits ie only Missense, Nonsense, Silent
+    """
+    frame_col, strand_col, gene_pos_col, seq_col, window_start_col, window_end_col = col_names
+
+    if row[window_start_col] == -1 and row[window_end_col] == -1: # NO CODING DNA IN WINDOW
+        return None
+    
+    types = []
+    for muts in row[f'{pre}_mutations'].split(','): 
+        type = []
+        muts_list = muts.split('/')
+        for mut in muts_list: 
+            if len(mut) == 0: 
+                continue
+            elif mut[0] == mut[-1]: type.append('Silent')
+            elif '.' in mut: type.append('Nonsense')
+            else: type.append('Missense')
+        types.append('/'.join(type))
+    return ';'.join(types)
+
+def categorize_mutations(row, pre): 
+    """
+    Categorizes mutations by predicted mutations and context metadata. 
+    Based on a priority of: 
+    1. Nonsense, 2. Splice Site, 3. Missense, 4. Intron, 5. Silent, 6. UTR, 7. Flank, 8. No Mutation
+    """
+    if not row[f'{pre}_muttypes']: 
+        return 'No Mutation'
+
+    if 'Nonsense' in row[f'{pre}_muttypes']: 
+        return 'Nonsense'
+    elif row[f'{pre}_win_overlap'] == 'Exon/Intron': 
+        seq = row['sgRNA_seq']
+        if seq[0].islower() and seq[-1].isupper(): 
+            return 'Splice-acceptor'
+        elif seq[0].isupper() and seq[-1].islower(): 
+            return 'Splice-donor'
+    elif 'Missense' in row[f'{pre}_muttypes']: 
+        return 'Missense'
+    elif row[f'{pre}_win_overlap'] == 'Intron': 
+        return 'Intron'
+    elif 'Silent' in row[f'{pre}_muttypes']: 
+        return 'Silent'
+    return 'No Mutation'
 
 def extract_uppercase_letters(input):
     """
@@ -367,9 +234,6 @@ def find_first_uppercase_index(input_string):
         
 def annotate_intron_exon(x, window): 
     coding = x[window[0]-1: window[1]]
-    if coding.isupper(): 
-        return "Exon"
-    elif coding.islower(): 
-        return "Intron"
-    else: 
-        return "Exon/Intron"
+    if coding.isupper(): return "Exon"
+    elif coding.islower(): return "Intron"
+    else: return "Exon/Intron"

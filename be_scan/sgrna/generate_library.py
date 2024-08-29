@@ -69,7 +69,10 @@ def generate_library(gene_filepath,
        'PAM_seq'        : str,    the sequence of the PAM 3 bps fwd if on sense strand and rev if on antisense
        'starting_frame' : int,    (0, 1, 2) coding position of the first bp in fwd sgRNA or last bp in rev sgRNA
        'chr_pos'        : int,    the genome position of the first bp in a fwd sgRNA or last bp of a rev sgRNA
+       'gene_pos'       : int,    the gene position of the first bp in a fwd sgRNA or last bp of a rev sgRNA
        'exon'           : int,    the exon number according to the input gene_file
+       'windowstart_pos': int,    the gene position of the first bp in the window
+       'windowend_pos'  : int,    the gene position of the last bp in the window
        'sgRNA_strand'   : str,    (ie sense or antisense)
        'gene_strand'    : str,    (ie plus or minus)
        'gene'           : str,    name of the gene
@@ -78,10 +81,12 @@ def generate_library(gene_filepath,
     # PREPROCESS cas_type #
     if cas_type not in list(cas_key.keys()): 
         raise Exception('Improper cas type input, the options are '+str(list(cas_key.keys())))
-    # PREPROCESS edit_from edit_to #
-    assert edit_from in bases and edit_to in bases
-    if edit_from == edit_to: 
-        warnings.warn('')
+    # PREPROCESS edit_from edit_to, 2 CHARS INDICATES DUAL EDITOR #
+    assert len(edit_from) == len(edit_to)
+    for i in range(len(edit_from)): 
+        assert edit_from[i] in bases and edit_to[i] in bases
+        if edit_from[i] == edit_to[i]: 
+            warnings.warn(f'You are mutating from {edit_from[i]} to {edit_to[i]}')
     edit = edit_from, edit_to
     # PREPROCESS pam, pam OVERRIDES cas_type #
     if PAM is None: 
@@ -99,12 +104,12 @@ def generate_library(gene_filepath,
     print('Parsing exons:', len(gene.exons), 'exons found')
     gene.extract_metadata()
     # PARSE ALL GUIDES #
-    gene.find_all_guides()
+    gene.find_all_guides(window=window)
     print('Preprocessing sucessful!')
     
     # SET COLUMN NAMES FOR OUTPUT #
-    column_names = ['sgRNA_seq', 'PAM_seq', 'starting_frame', 'chr_pos', 'exon', 
-                    'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', ]
+    column_names = ['sgRNA_seq', 'PAM_seq', 'starting_frame', 'gene_pos', 'chr_pos', 'exon', 
+                    'windowstart_pos', 'windowend_pos', 'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', ]
 
     # FILTER LIBRARY ACCORDING TO SPECIFICATIONS FOR NONEDITING, INTRONIC, PAM #
     filter_guide_input = {'PAM_regex':PAM_regex, 'edit':edit, 'window':window, 
