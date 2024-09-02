@@ -131,7 +131,7 @@ def design_library(gene_filepath, cas_type='SpG',
     if return_df: 
         return annotated
     
-# design_library(
-#     gene_filepath='tests/test_data/sgrna/230408_AR_Input.fasta', 
-#     protein_filepath='tests/test_data/sgrna/P10275.fasta'
-# )
+design_library(
+    gene_filepath='tests/test_data/sgrna/230408_AR_Input.fasta', 
+    protein_filepath='tests/test_data/sgrna/P10275.fasta'
+)

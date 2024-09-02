@@ -8,7 +8,6 @@ Date: 240314
 
 import numpy as np
 import seaborn as sns
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
@@ -16,6 +15,14 @@ import re
 
 from _genomic_ import *
 from _guideRNA_ import *
+
+aa_list = ['R', 'H', 'K', # POS CHARGED
+            'D', 'E', # NEG CHARGED
+            'S', 'N', 'T', 'Q', # UNCHARGED
+            'A', 'V', 'I', 'L', 'M', 'F', 'Y', 'W', # HYDROPHOBIC
+            'C', 'G', 'P', # SPECIAL
+            '.' # TERMINATION
+            ] # Y AXIS
 
 def coverage_plots(
     annotated_guides, edit_from, edit_to, protein_filepath, 
@@ -81,29 +88,19 @@ def coverage_plots(
         plt.savefig(path / output_dir / f'{pre}_{output_name.split('.')[0]}_barplot.png', dpi=400)
 
     # COUNT HOW MANY MUTATIONS ARE ACCESSIBLE PER RESIDUE #
-    aa_list = ['R', 'H', 'K', # POS CHARGED
-               'D', 'E', # NEG CHARGED
-               'S', 'N', 'T', 'Q', # UNCHARGED
-               'A', 'V', 'I', 'L', 'M', 'F', 'Y', 'W', # HYDROPHOBIC
-               'C', 'G', 'P', # SPECIAL
-               '.' # TERMINATION
-               ] # Y AXIS
     df_heatmap = pd.DataFrame(columns=aa_list)
     for i, (muts, aai) in enumerate(zip(mut_results, amino_acid_seq.values())): 
         muts_dict = {aa:0 for aa in aa_list}
         muts_dict[aai] = -1
-        # IF THERES NO MUTATIONS #
-        if len(muts) == 0: 
-            df_heatmap.loc[-1] = muts_dict.values()
-            continue
         # IF THERE ARE MUTATIONS #
-        for mut in muts.split(';'): 
-            muts_dict[mut[-1]] = 1+(2*muts_dict[mut[-1]]) # -1 STAYS -1, 0 BECOMES 1
+        if len(muts) != 0: 
+            for mut in muts.split(';'): 
+                muts_dict[mut[-1]] = 1+(2*muts_dict[mut[-1]]) # -1 STAYS -1, 0 BECOMES 1
         df_heatmap.loc[i] = muts_dict.values()
-    ### its hard to distinguish between silent mutations, and when the original mutation is just there
+    ### cannot distinguish between silent mutations vs when the original mutation
 
     # SHOW WHICH MUTATIONS ARE ACCESSIBLE WITH A HEATMAP #
-    plt.figure(figsize=(len(df_aa)/20, 3))
+    plt.figure(figsize=(len(df_aa)/10, 3))
     ax2 = sns.heatmap(df_heatmap.T, cmap="vlag")
     ax2.set_xticks(range(df_heatmap.shape[0]))
     ax2.set_yticks(range(df_heatmap.shape[1]))
