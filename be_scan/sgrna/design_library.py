@@ -10,10 +10,11 @@ from pathlib import Path
 from generate_library import generate_library
 from reference_check import reference_check
 from annotate import annotate
+from coverage import coverage_plots
 
-def design_library(gene_filepath, 
-                   cas_type, edit_from, edit_to, 
+def design_library(gene_filepath, cas_type='SpG', 
 
+    edit_from_list=['A', 'C', 'AC'], edit_to_list=['G', 'T', 'GT'], 
     genome_file='', protein_filepath='', 
     gene_name='', PAM=None, window=[4,8], 
 
@@ -86,34 +87,40 @@ def design_library(gene_filepath,
        'muttype'        : str,    muttypes condensed down to one type
        'genome_occurrences' : int, how many times this sequence occurs in the referecnce genome
     """
-    
     temp = "temp.csv"
 
     # GENERATE LIBRARY #
     generate_library_params = {
         'gene_filepath':gene_filepath, 'gene_name':gene_name, 
-        'cas_type':cas_type, 'edit_from':edit_from, 'edit_to':edit_to, 
-        'PAM':PAM, 'window':window, 'return_df':True, 'save_df':False, 
-        }
+        'cas_type':cas_type, 'edit_from':edit_from_list[0], 'edit_to':edit_to_list[0], 
+        'PAM':PAM, 'window':window, 'return_df':True, 'save_df':False, }
     guides = generate_library(**generate_library_params)
     guides.to_csv(temp, index=False)
 
-    # ANNOTATE LIBRARY #
-    annotate_params = {
-        'guides_file':temp, 'gene_filepath':gene_filepath, 
-        'protein_filepath':protein_filepath, 'edit_from':edit_from, 'edit_to':edit_to,
-        'window':window, 'return_df':True, 'save_df':False
-        }
-    annotated = annotate(**annotate_params)
-    annotated.to_csv(temp, index=False)
+    # ANNOTATE LIBRARY FOR ALL THREE TYPES #
+    for edit_from, edit_to in zip(edit_from_list, edit_to_list): 
+        annotate_params = {
+            'guides_file':temp, 'edit_from':edit_from, 'edit_to':edit_to,
+            'protein_filepath':protein_filepath, 'window':window, 
+            'return_df':True, 'save_df':False, }
+        annotated = annotate(**annotate_params)
+        annotated.to_csv(temp, index=False)
+    
+    # ORGANIZE BY AMINO ACID AND CHECK COVERAGE FOR ALL THREE TYPES #
+    if len(protein_filepath) > 0: 
+        for edit_from, edit_to in zip(edit_from_list, edit_to_list): 
+            coverage_params = {
+                'annotated_guides':temp, 'edit_from':edit_from, 'edit_to':edit_to, 
+                'protein_filepath':protein_filepath, 
+                'return_df':True, 'save_df':True, }
+            annotated_by_aa, plots = coverage_plots(**coverage_params)
 
     # IF GENOME FILE IS PROVIDED, CHECK GUIDES GAIANST THIS REFERENCE SEQUENCE
     if len(genome_file) > 0: 
-        reference_check_params = {
+        ref_check_params = {
             'guides_file':temp, 'genome_file':genome_file, 
-            'delete':delete, 'return_df':True, 'save_df':False
-            }
-        annotated = reference_check(**reference_check_params)
+            'delete':delete, 'return_df':True, 'save_df':False, }
+        annotated = reference_check(**ref_check_params)
 
     os.remove(temp)
     print('Complete! Library generated from', str(gene_filepath))
@@ -124,9 +131,7 @@ def design_library(gene_filepath,
     if return_df: 
         return annotated
     
-design_library(
-    gene_filepath='tests/test_data/sgrna/230408_AR_Input.fasta', 
-    cas_type='SpG', 
-    edit_from='C', 
-    edit_to='T', 
-)
+# design_library(
+#     gene_filepath='tests/test_data/sgrna/230408_AR_Input.fasta', 
+#     protein_filepath='tests/test_data/sgrna/P10275.fasta'
+# )

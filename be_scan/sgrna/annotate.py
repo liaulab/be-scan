@@ -90,7 +90,8 @@ def annotate(guides_file, edit_from, edit_to,
     else: amino_acid_seq = None
 
     # sgRNA_ID #
-    df.insert(loc=0, column='sgRNA_ID', value=['sgRNA_'+str(i) for i in range(len(df))])
+    if 'sgRNA_ID' not in df: 
+        df.insert(loc=0, column='sgRNA_ID', value=['sgRNA_'+str(i) for i in range(len(df))])
 
     edit = edit_from, edit_to
     pre = edit_from + 'to' + edit_to
@@ -112,14 +113,17 @@ def annotate(guides_file, edit_from, edit_to,
     # df[f'{pre}_edit_site'] = df[f'{pre}_editing_window'].apply(lambda x: None if x is None else ((x[0]+x[1])/2)//3)
 
     # PREDICT POSSIBLE MUTATIONS #
-    if len(edit_from) > 1: df[f'{pre}_mutations'] = df.apply(lambda x : annotate_dual_muts(x, edit, amino_acid_seq, col_names, pre), axis=1)
-    elif len(edit_from) == 1: df[f'{pre}_mutations'] = df.apply(lambda x : annotate_muts(x, edit, amino_acid_seq, col_names, pre), axis=1)
+    if len(edit_from) > 1: df[f'{pre}_mutations'] = df.apply(lambda x : annotate_dual_muts(x, edit, amino_acid_seq, col_names, pre, window), axis=1)
+    elif len(edit_from) == 1: df[f'{pre}_mutations'] = df.apply(lambda x : annotate_muts(x, edit, amino_acid_seq, col_names, pre, window), axis=1)
 
     # CALC muttypes LIST AND SINGLE muttype #
     df[f'{pre}_muttypes'] = df.apply(lambda x: determine_mutations(x, col_names, pre), axis=1)
     df[f'{pre}_muttype'] = df.apply(lambda x: categorize_mutations(x, pre), axis=1)
 
-    print('Guides annotated.')
+    # DROP UNNECESSARY COLUMNS #
+    df = df.drop([f'{pre}_target_CDS', f'{pre}_codon_window', f'{pre}_residue_window'], axis=1)
+
+    print(f'Guides annotated for {edit_from} to {edit_to}.')
     if save_df: 
         Path.mkdir(path / output_dir, exist_ok=True)
         df.to_csv(path / output_dir / output_name, index=False)

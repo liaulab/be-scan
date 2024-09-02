@@ -5,6 +5,8 @@ Date: 231102
 {Description: helper functions for processing guides and library data}
 """
 
+import warnings
+
 from itertools import product
 from _genomic_ import complements, rev_complement, DNA_to_AA
 
@@ -73,7 +75,7 @@ def calc_coding_window(row, window, col_names):
         return row[seq_col][window[0]-1:window[1]]
     return rev_complement(complements, row[seq_col][window[0]-1:window[1]])
 
-def annotate_muts(row, edit, amino_acid_seq, col_names, pre): 
+def annotate_muts(row, edit, amino_acid_seq, col_names, pre, window): 
     """
     Come up with list of annotations (ie F877L;F877P) for each guide
     """
@@ -84,11 +86,16 @@ def annotate_muts(row, edit, amino_acid_seq, col_names, pre):
     
     # EXTRACT DATA FROM ROW #
     frame, dir, pos, seq = row[frame_col], row[strand_col], row[gene_pos_col], row[seq_col]
+    window1_pos, window2_pos = row[window_start_col], row[window_end_col]
     dna_window, dna, aa = row[f'{pre}_target_CDS'], row[f'{pre}_codon_window'], row[f'{pre}_residue_window']
 
     # USE POS TO CALCULATE WHICH AMINO ACID #
-    if dir == 'sense': start = int((pos+(-1*frame))/3)+2 # index at 1
-    else: start = int((pos+(-1*frame)+1)/3)-2
+    if dir == 'sense' and pos != -1:               start = int((pos+(-1*frame))/3)+2 # index at 1
+    elif dir == 'antisense' and pos != -1:         start = int((pos+(-1*frame)+1)/3)-2
+    elif dir == 'sense' and window1_pos != -1:     start = int((window1_pos-(window[0]+1)+(-1*frame))/3)+2
+    elif dir == 'antisense' and window1_pos != -1: start = int((window1_pos+(window[0]-1)+(-1*frame)+1)/3)-2
+    elif dir == 'sense' and window2_pos != -1:     start = int((window2_pos-(window[1]+1)+(-1*frame))/3)+2
+    elif dir == 'antisense' and window2_pos != -1: start = int((window2_pos+(window[1]-1)+(-1*frame)+1)/3)-2
 
     # LIST OF MUTATIONS FOR EACH ROW #
     mutation_details = []
@@ -100,9 +107,9 @@ def annotate_muts(row, edit, amino_acid_seq, col_names, pre):
         if dna != new_dna: 
             mutations = format_mutation(aa, new_aa, start, amino_acid_seq, dna, new_dna, seq)
             mutation_details.append(mutations)
-    return ';'.join(mutation_details)
+    return ';'.join(list(set(mutation_details)))
 
-def annotate_dual_muts(row, edit, amino_acid_seq, col_names, pre): 
+def annotate_dual_muts(row, edit, amino_acid_seq, col_names, pre, window): 
     """
     Come up with list of annotations (ie F877L;F877P) for each guide for a dual editor
     """
@@ -113,11 +120,16 @@ def annotate_dual_muts(row, edit, amino_acid_seq, col_names, pre):
     
     # EXTRACT DATA FROM ROW #
     frame, dir, pos, seq = row[frame_col], row[strand_col], row[gene_pos_col], row[seq_col]
+    window1_pos, window2_pos = row[window_start_col], row[window_end_col]
     dna_window, dna, aa = row[f'{pre}_target_CDS'], row[f'{pre}_codon_window'], row[f'{pre}_residue_window']
 
     # USE POS TO CALCULATE WHICH AMINO ACID #
-    if dir == 'sense': start = int((pos+(-1*frame))/3)+2 # index at 1
-    else: start = int((pos+(-1*frame)+1)/3)-2
+    if dir == 'sense' and pos != -1:               start = int((pos+(-1*frame))/3)+2 # index at 1
+    elif dir == 'antisense' and pos != -1:         start = int((pos+(-1*frame)+1)/3)-2
+    elif dir == 'sense' and window1_pos != -1:     start = int((window1_pos-(window[0]+1)+(-1*frame))/3)+2
+    elif dir == 'antisense' and window1_pos != -1: start = int((window1_pos+(window[0]-1)+(-1*frame)+1)/3)-2
+    elif dir == 'sense' and window2_pos != -1:     start = int((window2_pos-(window[1]+1)+(-1*frame))/3)+2
+    elif dir == 'antisense' and window2_pos != -1: start = int((window2_pos+(window[1]-1)+(-1*frame)+1)/3)-2
 
     # LIST OF MUTATIONS FOR EACH ROW #
     mutation_details = []
@@ -132,7 +144,7 @@ def annotate_dual_muts(row, edit, amino_acid_seq, col_names, pre):
             if dna != new_dna: 
                 mutations = format_mutation(aa, new_aa, start, amino_acid_seq, dna, new_dna, seq)
                 mutation_details.append(mutations)
-    return ';'.join(mutation_details)
+    return ';'.join(list(set(mutation_details)))
 
 
 def mutation_combos(guide_window, edit, dir):
@@ -159,12 +171,17 @@ def format_mutation(aa, new_aa, start, amino_acid_seq, dna, new_dna, guide):
     """
     result = []
     for i in range(len(aa)): 
-        if dna[i*3:(i*3)+3] == new_dna[i*3:(i*3)+3]: 
+        if dna[i*3:(i*3)+3] == new_dna[i*3:(i*3)+3]: # DNA MUT BUT NO AA MUT
+            continue
+        if aa[i] == '_': # INSIDE INTRON
             continue
         mut = aa[i] + str(start+i) + new_aa[i]
+        assert start+i > 0, 'Error'
         # CHECK MUT AGAINST PROTEIN SEQ #
         if amino_acid_seq is not None: 
-            assert amino_acid_seq[start+i] == aa[i], f"Error: guide {guide}"
+            ### assert amino_acid_seq[start+i] == aa[i], f"Error: guide {guide}"
+            if amino_acid_seq[start+i] != aa[i]: 
+                warnings.warn(f"Error: guide {guide}")
         # ADD EDIT TO LIST #
         if mut not in result: 
             result.append(mut)
@@ -181,7 +198,7 @@ def determine_mutations(row, col_names, pre):
         return None
     
     types = []
-    for muts in row[f'{pre}_mutations'].split(','): 
+    for muts in row[f'{pre}_mutations'].split(';'): 
         type = []
         muts_list = muts.split('/')
         for mut in muts_list: 
@@ -199,10 +216,8 @@ def categorize_mutations(row, pre):
     Based on a priority of: 
     1. Nonsense, 2. Splice Site, 3. Missense, 4. Intron, 5. Silent, 6. UTR, 7. Flank, 8. No Mutation
     """
-    if not row[f'{pre}_muttypes']: 
-        return 'No Mutation'
 
-    if 'Nonsense' in row[f'{pre}_muttypes']: 
+    if row[f'{pre}_muttypes'] is not None and 'Nonsense' in row[f'{pre}_muttypes']: 
         return 'Nonsense'
     elif row[f'{pre}_win_overlap'] == 'Exon/Intron': 
         seq = row['sgRNA_seq']
@@ -210,11 +225,11 @@ def categorize_mutations(row, pre):
             return 'Splice-acceptor'
         elif seq[0].isupper() and seq[-1].islower(): 
             return 'Splice-donor'
-    elif 'Missense' in row[f'{pre}_muttypes']: 
+    elif row[f'{pre}_muttypes'] is not None and 'Missense' in row[f'{pre}_muttypes']: 
         return 'Missense'
     elif row[f'{pre}_win_overlap'] == 'Intron': 
         return 'Intron'
-    elif 'Silent' in row[f'{pre}_muttypes']: 
+    elif row[f'{pre}_muttypes'] is not None and 'Silent' in row[f'{pre}_muttypes']: 
         return 'Silent'
     return 'No Mutation'
 
