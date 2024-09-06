@@ -7,12 +7,12 @@ Date: 231128
 
 from pathlib import Path
 import pandas as pd
-from be_scan.plot._annotating_ import *
+from _controls_ import *
 
 def calc_controls(conditions, stats_comparisons, 
                   neg_ctrl_col, neg_ctrl_conditions,
 
-    out_dir='', out_file='stats.txt', 
+    in_dir='', out_dir='', out_file='stats.txt', 
     save=True, return_txt=False,
     ):
 
@@ -40,28 +40,26 @@ def calc_controls(conditions, stats_comparisons,
     return_txt : bool, default False
         Whether or not to print the resulting statistics
     """
-
-    path = Path.cwd()
-    df_conds = pd.read_csv(conditions)
-    # stats_comparisons = [x+'_subctrl_avg' for x in stats_comparisons]
+    in_path = Path(in_dir)
+    out_path = Path(out_dir)
+    
+    df_conds = pd.read_csv(in_path / conditions)
+    stats_comparisons = [x+'_LFCminusControl_avg' for x in stats_comparisons]
 
     # calculate negative control stats
     _, list_negctrlstats, _ = calc_neg_ctrls(df_conds, stats_comparisons, 
                                              neg_ctrl_col, neg_ctrl_conditions)
 
-    # write and export files
-    outpath = path / out_dir
-    Path.mkdir(outpath, exist_ok=True)
-
+    Path.mkdir(out_path, exist_ok=True)
     if save: 
-        f = open(outpath / out_file, "w")
+        f = open(out_path / out_file, "w")
         for comp, mean, stdev, top, bottom in list_negctrlstats: 
             f.write("For comparison {0}\n".format(comp))
             f.write("Mean is {0}\n".format(mean))
             f.write("Standard deviation is {0}\n".format(stdev))
             f.write("Mean +- 2 standard deviations {0} {1}\n".format(top, bottom))
         f.close()
-        print('calc_controls outputed to', str(outpath / out_file))
+        print('calc_controls outputed to', str(out_path / out_file))
     if return_txt: 
         for comp, mean, stdev, top, bottom in list_negctrlstats: 
             print("For comparison {0}\n".format(comp))

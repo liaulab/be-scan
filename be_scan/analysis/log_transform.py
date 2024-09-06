@@ -12,9 +12,10 @@ import warnings
 import numpy as np
 import pandas as pd
 
-def merge_and_norm(sample_sheet, counts_library, 
+def log_transform(sample_sheet, library_counts, 
                    
-    controls=['t0'], out_dir='', out_file='agg_log2_t0.csv', 
+    controls=['t0'], 
+    in_dir='', out_dir='', out_file='library_LFC.csv', 
     save=True, return_df=True,
     ):
     
@@ -49,41 +50,52 @@ def merge_and_norm(sample_sheet, counts_library,
     save : bool, default True
         Whether or not to save the resulting dataframe
     """
+    in_path = Path(in_dir)
+    out_path = Path(out_dir)
 
-    # import reference file, define variables, check for requirements
-    path = Path.cwd()
-    df_ref = pd.read_csv(counts_library)
-    # import sample_sheet and extract information for conditions and associated files
-    df_samples = pd.read_csv(sample_sheet)
+    # IMPORT FILES, CHECK FOR REQUIREMENTS #
+    df_ref = pd.read_csv(in_path / library_counts)
+    df_samples = pd.read_csv(in_path / sample_sheet)
     dict_counts = dict(zip(df_samples.condition, df_samples.counts_file))
+    dict_conds = dict(zip(df_samples.condition, df_samples.agg_conditions))
+    df_map = pd.DataFrame(data=dict_conds.items(), columns=['rep','condition'])
 
-    if 'sgRNA_seq' not in df_ref.columns.tolist():
-        raise Exception('counts_library is missing column: sgRNA_seq')
-    for t0 in controls: 
-        if t0 not in dict_counts.keys(): 
-            raise Exception ("sample sheet is missing the {0} sample".format(t0))
-        # rearrange the dict samples to place t0 first (for order purposes later)
-        list_samples = [t0] + [samp for samp in dict_counts.keys() if samp != t0]
-        # aggregate read counts from all samples into df_rawreads
-        # also perform log2 norm (brian/broad method; log2(rpm + 1 / total reads))
-        df_reads = df_ref.copy()
-        for sample in list_samples:
-            # log2 normalization
-            total_reads = pd.to_numeric(df_reads[sample]).sum()
-            df_reads[sample+'_log2'] = df_reads[sample].apply(lambda x: np.log2((x * 1000000 / total_reads) + 1))
+    # CHECK CONTROLS IN DF AND AVERAGE IF NECESSARY #
+    for control in controls: 
+        if control not in dict_counts.keys(): 
+            raise Exception (f"{sample_sheet} is missing the {control} sample")
+    df_ref['control_avg'] = df_ref[controls].mean(axis=1)
+    
+    # CALCULATE LFC AND CONTROLS #
+    for sample in ['control_avg'] + df_samples.condition.tolist(): 
+        # log2 normalization
+        total_reads = pd.to_numeric(df_ref[sample]).sum()
+        df_ref[sample+'_LFC'] = df_ref[sample].apply(lambda x: np.log2((x * 1000000 / total_reads) + 1))
+        if sample not in controls: 
             # t0 normalization
-            df_reads[sample+'_subt0'] = df_reads[sample+'_log2'].sub(df_reads[t0+'_log2'])
-        # drop the t0 column since it will be 0
-        df_reads.drop(columns=t0+'_log2', inplace=True)
+            df_ref[sample+'_LFCminusControl'] = df_ref[sample+'_LFC'].sub(df_ref['control_avg_LFC'])
 
-    # export files and return dataframes if necessary
+    # AVERAGE LFC #
+    for cond in df_map['condition'].unique().tolist(): 
+        if cond not in controls: 
+            # for each unique condition, find the reps
+            reps = [x+'_LFCminusControl' for x in df_map.loc[df_map['condition'] == cond]['rep'].tolist()]
+            # skip averaging for single replicates (otherwise breaks script)
+            if len(reps) > 1: 
+                df_ref[cond+'_LFCminusControl_avg'] = df_ref[reps].mean(axis=1)
+                df_ref[cond+'_LFCminusControl_stdev'] = df_ref[reps].std(axis=1)
+            elif len(reps) == 1: 
+                df_ref[cond+'_LFCminusControl_avg'] = df_ref[reps]
+                df_ref[cond+'_LFCminusControl_stdev'] = 0
+            else: 
+                raise Exception('Error! Replicate number not valid')
+
+    # SAVE DF AND RETURN #
     if save == True: 
-        outpath = path / out_dir
-        Path.mkdir(outpath, exist_ok=True)
-        df_reads.to_csv(outpath / out_file, index=False)
-        print('merge_and_norm outputed to', str(outpath / out_file))
-    # determine df to return
+        Path.mkdir(out_path, exist_ok=True)
+        df_ref.to_csv(out_path / out_file, index=False)
+        print('merge_and_norm output to', str(out_path / out_file))
     print('Merge and normalize completed')
     if return_df: 
-        return df_reads
+        return df_ref
     

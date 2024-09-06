@@ -8,20 +8,21 @@ Date: 231128
 
 import pandas as pd
 
-from be_scan.analysis.count_reads import count_reads
-from be_scan.analysis.merge_and_norm import merge_and_norm
-from be_scan.analysis.average_reps import average_reps
-from be_scan.analysis.compare_conds import compare_conds
-from be_scan.analysis.calc_controls import calc_controls
+from count_reads import count_reads
+from log_transform import log_transform
+from compare_conds import compare_conds
+from calc_controls import calc_controls
 
-def batch_process(sample_sheet, annotated_lib, comparisons, 
-    neg_ctrl_col='', neg_ctrl_conditions=[], 
+def batch_process(sample_sheet, annotated_lib, 
 
-    KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
-    file_dir='', controls=['t0'], 
+    file_dir='', 
+    out_counts='counts_library.csv', KEY_INTERVAL=(10,80), 
+    KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
+    out_lfc='library_LFC.csv', controls=['t0'], 
     
-    out_dir='', out_counts='counts_library.csv', out_lfc='agg_log2_t0.csv', 
-    out_conds='avg_conds.csv', out_comps='conditions.csv', out_stats = 'stats.txt',
+    compare=True, comparisons='', 
+    ctrl=True, neg_ctrl_col='', neg_ctrl_conditions=[], stats_comparisons=[], 
+    out_comps='conditions.csv', out_stats = 'stats.txt',
     plot_out_type='pdf', save=True, return_df=False,
     ):
     
@@ -94,40 +95,38 @@ def batch_process(sample_sheet, annotated_lib, comparisons,
     """
 
     count_reads_params = {
-        'sample_sheet':sample_sheet, 'annotated_lib':annotated_lib, 'file_dir':file_dir, 
+        'sample_sheet':sample_sheet, 'annotated_lib':annotated_lib, 'in_dir':file_dir, 
         'KEY_INTERVAL':KEY_INTERVAL, 'KEY':KEY, 'KEY_REV':KEY_REV, 'dont_trim_G':dont_trim_G, 
-        'out_dir':out_dir, 'out_file':out_counts, 'save':save, 'return_df':return_df, 
-        'plot_out_type':plot_out_type, 'save_files':save, 
-    }
+        'out_dir':file_dir, 'out_file':out_counts, 'return_df':return_df, 'plot_out_type':plot_out_type, 'save_files':save, }
     count_reads(**count_reads_params)
 
-    merge_and_norm_params = {
-        'sample_sheet':sample_sheet, 'counts_library':out_dir+out_counts, 'controls':controls, 
-        'out_dir':out_dir, 'out_file':out_lfc, 'save':save, 'return_df':return_df,
+    log_transform_params = {
+        'sample_sheet':sample_sheet, 'library_counts':out_counts, 'controls':controls, 
+        'in_dir':file_dir, 'out_dir':file_dir, 'out_file':out_lfc, 'save':save, 'return_df':return_df,
     }
-    merge_and_norm(**merge_and_norm_params)
+    result = log_transform(**log_transform_params)
     
-    average_reps_params = {
-        'sample_sheet':sample_sheet, 'log2_subt0':out_dir+out_lfc, 
-        'out_dir':out_dir, 'out_file':out_conds, 'save':save, 'return_df':return_df,
-    }
-    average_reps(**average_reps_params)
-    
-    compare_conds_params = {
-        'comparisons':comparisons, 'avg_conds':out_dir+out_conds, 
-        'out_dir':out_dir, 'out_file':out_comps, 'save':save, 'return_df':return_df,
-    }
-    result = compare_conds(**compare_conds_params)
+    if len(comparisons) > 1: 
+        compare_conds_params = {
+            'comparisons':comparisons, 'avg_conds':out_lfc, 'out_file':out_comps, 
+            'in_dir':file_dir, 'out_dir':file_dir, 'save':save, 'return_df':return_df, }
+        result = compare_conds(**compare_conds_params)
 
-    comps = pd.read_csv(comparisons)
-    if len(neg_ctrl_col) > 0:
-        stats_comparisons = comps.name.tolist()
+    if len(neg_ctrl_col) > 0 and len(neg_ctrl_conditions) > 0 and len(stats_comparisons) > 0: 
         calc_controls_params = {
-            'conditions':out_dir+out_comps, 'stats_comparisons':stats_comparisons, 
+            'conditions':out_comps, 'stats_comparisons':stats_comparisons, 
             'neg_ctrl_col':neg_ctrl_col, 'neg_ctrl_conditions':neg_ctrl_conditions, 
-            'out_dir':out_dir, 'out_file':out_stats, 'save':save, 'return_txt':return_df,
-        }
+            'in_dir':file_dir, 'out_dir':file_dir, 'out_file':out_stats, 'save':save, 'return_txt':return_df, }
         calc_controls(**calc_controls_params)
 
     if return_df: 
         return result
+
+batch_process(
+    sample_sheet='sample_sheet.csv', 
+    annotated_lib='annotated_lib_sample_in.csv', 
+    comparisons='comparisons.csv', 
+    file_dir='tests/test_data/analysis', 
+    KEY_INTERVAL=(0, 60), KEY='ABCDEFG', KEY_REV='GHIJKL', 
+    neg_ctrl_col='gene', neg_ctrl_conditions=['control'], stats_comparisons=['cond1'], 
+)
