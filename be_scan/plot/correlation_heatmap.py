@@ -15,16 +15,10 @@ from pathlib import Path
 def corr_heatmap(df_filepath, comparisons, 
 
     corr_type='spearman', 
-    # filter out unwanted quantitative params
-    filter_val=False, val_cols=['CtoT_muttypes'], val_min=0, 
-    # filter out unwanted categorical params
-    filter_params=False, 
-    params_cols=['CtoT_muttype'], 
-    params_conditions=[['Missense', 'Silent', 'Mixed', 'Nonsense']], 
-    
     xlab='', ylab='', title='Spearman Correlation Heatmap', # figure related params
-    savefig=True, out_directory='', out_name='correlation_heatmap', out_type='png', show=True, # output related params
+    savefig=True, show=True, out_dir='', out_name='correlation_heatmap', out_type='png', # output related params
 
+    # style params
     heatmap_kws={'center':0, 'linewidth':0.5, 'cmap':'coolwarm', 
                  'square':True, 'cbar_kws':{"shrink": 0.5}, 'annot':True},
     subplots_kws = {'figsize':(4,4)}, 
@@ -43,26 +37,6 @@ def corr_heatmap(df_filepath, comparisons,
 
     corr_type : str, optional, defaults to 'spearman'
         type of correlation, refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.corr.html
-
-    filter_val : bool, optional, defaults to False
-        whether or not to exclude a subset of data from plotting by a minimum value
-        default purpose is to filter out all intron and exon/intron guides
-    val_cols : list of str, optional, 
-        defaults to ['CtoT_muttypes']
-        names of columns to filter dataframe for plotting
-    val_min : int, optional, defaults to 0
-        the minimum value by which to filter rows by val_cols
-
-    filter_params : bool, optional, defaults to False
-        whether or not to exclude a subset of data from plotting by categorical params
-        default purpose is to filter to keep only Missense, Nonsense, Silent, Mixed guides
-    params_cols : list of str, optional, 
-        defaults to ['CtoT_muttype']
-        names of column to filter dataframe for plotting
-    params_conditions : list of lists of str, optional, 
-        defaults to [['Missense', 'Silent', 'Mixed', 'Nonsense']]
-        names of categories of filter_col to filter dataframe
-
     xlab : str, optional, defaults to ''
         name of the x-axis label
     ylab : str, optional, defaults to ''
@@ -71,14 +45,14 @@ def corr_heatmap(df_filepath, comparisons,
         name of title label
     savefig: bool, optional, defaults to True
         whether or not to save the figure
-    out_directory : str, optional, defaults to ''
+    show : bool, optional, defaults to True
+        whether or not to show the plot
+    out_dir : str, optional, defaults to ''
         path to output directory
     out_name : str, optional, defaults to 'scatterplot'
         name of figure output
     out_type : str, optional, defaults to 'pdf'
         file type of figure output
-    show : bool, optional, defaults to True
-        whether or not to show the plot
     
     heatmap_kws: dict, optional, defaults to 
         {'center':0, 'linewidth':0.5, 'cmap':'coolwarm', 
@@ -95,36 +69,11 @@ def corr_heatmap(df_filepath, comparisons,
     None
     """
 
-    # style
-    mpl.rcParams.update({'font.size': 10})
-
     df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)
 
-    # check conflicting params and output for user
-    if filter_val: 
-        assert isinstance(val_min, float), "check param: val_min"
-        assert isinstance(val_cols, list) and len(val_cols) > 0, "check param: val_cols"
-        for vc in val_cols: 
-            assert vc in df_data.columns.tolist(), "check param: val_cols"
-    if filter_params: 
-        assert isinstance(params_cols, list), "check param: params_cols"
-        for pc in params_cols: 
-            assert pc in df_data.columns.tolist(), "check param: val_cols"
-        assert isinstance(params_conditions, list), "check param: params_conditions"
-    assert isinstance(heatmap_kws, dict), "check param: heatmap_kws"
-    assert isinstance(subplots_kws, dict), "check param: subplots_kws"
-    assert corr_type in ["pearson", "kendall", "spearman"], "check param: corr_type"
-    
-    # apply 2 layers of filters
-    if filter_params: 
-        for col, conds in zip(params_cols, params_conditions): 
-            df_data = df_data.loc[df_data[col].isin(conds)]
-    if filter_val: 
-        for col in val_cols: 
-            df_data = df_data[df_data[col] > val_min]
-
-    # Plotting parameters and variables
+    # style
+    mpl.rcParams.update({'font.size': 10})
     sns.set_style('ticks')
 
     # Compute correlation matrix
@@ -148,10 +97,9 @@ def corr_heatmap(df_filepath, comparisons,
     plt.tight_layout()
 
     # save pdf and close everything
-    path = Path.cwd()
+    outpath = Path(out_dir)
     if savefig: 
-        outpath = path / out_directory
-        out_name = out_name + '.' + out_type
+        out_name = f'{out_name}.{out_type}'
         plt.savefig(outpath / out_name, format=out_type)
     if show: 
         plt.show()

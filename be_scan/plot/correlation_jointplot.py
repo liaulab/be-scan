@@ -13,23 +13,13 @@ import pandas as pd
 from pathlib import Path
 import scipy.stats as stats
 
-from be_scan.plot._annotating_ import list_muttypes, color_list
-
 def corr_jointplot(df_filepath, condition1, condition2, 
 
-    # filter out unwanted quantitative params
-    filter_val=False, val_cols=['CtoT_muttypes'], val_min=0, 
-    # filter out unwanted categorical params
-    filter_params=False, 
-    params_cols=['CtoT_muttype'], 
-    params_conditions=[['Missense', 'Silent', 'Mixed', 'Nonsense']], 
-    # color params
-    include_hue=False, hue_col='CtoT_muttype', hue_order=list_muttypes, palette=color_list, 
+    include_hue=False, hue_col='CtoT_muttype', pal='pastel', # color params
+    savefig=True, show=True, out_dir='', out_name='correlation_jointplot', out_type='png', 
 
-    savefig=True, out_directory='', out_name='correlation_jointplot', out_type='png', show=True,
-
-    jointplot_kws={'alpha':0.8, 'linewidth':1, 
-                    'edgecolor':'black', 's':25}, 
+    # style params
+    jointplot_kws={'alpha':0.8, 'linewidth':1, 'edgecolor':'black', 's':25}, 
     ):
     
     """[Summary]
@@ -44,25 +34,6 @@ def corr_jointplot(df_filepath, condition1, condition2,
         comparison condition 1, name of .csv data column
     condition2: str, required
         comparison condition 2, name of .csv data column
-
-    filter_val : bool, optional, defaults to False
-        whether or not to exclude a subset of data from plotting by a minimum value
-        default purpose is to filter out all intron and exon/intron guides
-    val_cols : list of str, optional, 
-        defaults to ['CtoT_muttypes']
-        names of columns to filter dataframe for plotting
-    val_min : int, optional, defaults to 0
-        the minimum value by which to filter rows by val_cols
-
-    filter_params : bool, optional, defaults to False
-        whether or not to exclude a subset of data from plotting by categorical params
-        default purpose is to filter to keep only Missense, Nonsense, Silent, Mixed guides
-    params_cols : list of str, optional, 
-        defaults to ['CtoT_muttype']
-        names of column to filter dataframe for plotting
-    params_conditions : list of lists of str, optional, 
-        defaults to [['Missense', 'Silent', 'Mixed', 'Nonsense']]
-        names of categories of filter_col to filter dataframe
 
     include_hue: bool, optional, default to False
         whether or not to color points by a variable, 
@@ -99,62 +70,32 @@ def corr_jointplot(df_filepath, condition1, condition2,
     ----------
     None
     """
-
-    # style
-    mpl.rcParams.update({'font.size': 10})
-
     df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)
 
-    # check conflicting params and output for user
-    if filter_val: 
-        assert isinstance(val_min, float), "check param: val_min"
-        assert isinstance(val_cols, list) and len(val_cols) > 0, "check param: val_cols"
-    if filter_params: 
-        assert isinstance(params_cols, list), "check param: params_cols"
-        assert isinstance(params_conditions, list), "check param: params_conditions"
-    if include_hue: 
-        assert hue_col in df_data.columns.tolist(), "check param: hue_col"
-        assert isinstance(hue_order, list) and len(hue_order) > 0, "check param: hue_order"
-        assert isinstance(palette, list) and len(palette) > 0, "check param: palette"
-    assert isinstance(jointplot_kws, dict), "check param: jointplot_kws"
-    
-    # apply 2 layers of filters
-    if filter_params: 
-        for col, conds in zip(params_cols, params_conditions): 
-            df_data = df_data.loc[df_data[col].isin(conds)]
-    if filter_val: 
-        for col in val_cols: 
-            df_data = df_data[df_data[col] > val_min]
-            
     # set plot params, if there is hue add params for plotting
     baseline_params = {'data':df_data, 'x':condition1, 'y':condition2}
     if include_hue: 
-        df_data = df_data.loc[df_data[hue_col].isin(hue_order)]
-        baseline_params = {**baseline_params, 
-                           **{'hue':hue_col, 'hue_order':hue_order, 'palette':palette}}
+        unique_types_sorted = sorted(df_data[hue_col].unique())
+        baseline_params.update({'hue':hue_col, 'hue_order':unique_types_sorted})
+        sns.set_palette(pal, len(unique_types_sorted))
     
-    # plot with params as input
-    sns.jointplot(**baseline_params,
-                  **jointplot_kws,
-                 )
+    mpl.rcParams.update({'font.size': 10}) # STYLE #
+    sns.jointplot(**baseline_params, **jointplot_kws, ) # PLOT #
     plt.tight_layout()
-    # set legend on the far right
     ax = plt.gca()
-    ax.legend(loc='center left', bbox_to_anchor=(1.3, 0.5))
+    ax.legend(loc='center left', bbox_to_anchor=(1.25, 0.5)) # LEGEND #
 
-    # calculate some stats and output them
-    slope, intercept, r_value, p_value, std_err = stats.linregress(df_data[condition1], 
-                                                                   df_data[condition2])
+    # calculate R2 stats and output them
+    m, b, r_value, p_value, std_err = stats.linregress(df_data[condition1], df_data[condition2])
     print("R: {0} (p-value {1})".format(r_value, p_value))
     print("R2: {0}".format(r_value**2))
 
     # save to pdf and close
-    path = Path.cwd()
+    outpath = Path(out_dir)
     if savefig: 
-        outpath = path / out_directory
-        out = condition1 + condition2 + '_' + out_name + '.' + out_type
-        plt.savefig(outpath / out, format=out_type)
+        out_name = f'{condition1}{condition2}_{out_name}.{out_type}'
+        plt.savefig(outpath / out_name, format=out_type)
     if show: 
         plt.show()
     plt.close()
