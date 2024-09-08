@@ -119,10 +119,10 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
     
     # Adjust dimensions
     plt.tight_layout()
-    # Save to pdf
+    # Save file
     outpath = Path(out_dir)
     if savefig: 
-        out = out_name + comp + '.' + out_type
+        out = f'{out_name}.{out_type}'
         plt.savefig(outpath / out, format=out_type)
     if show: 
         plt.show()

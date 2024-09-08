@@ -185,21 +185,21 @@ def scatterplot(df_filepath, # dataframe
         ax.spines['right'].set_visible(False)
 
     plt.tight_layout() # ADJUST DIMENSIONS #
-    # Save to pdf
+    # Save file
     outpath = Path(out_dir)
     if savefig: 
-        out = out_name + comp + '.' + out_type
+        out = f'{out_name}.{out_type}'
         plt.savefig(outpath / out, format=out_type)
     if show: 
         plt.show()
     plt.close()
 
-scatterplot(
-    df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
-    comparisons=["d3-pos", "d3-neg"], 
-    x_column='Edit_site_3A1', 
-    include_hue=True, hue_col='Mut_type', 
-    neg_ctrl=True, neg_ctrl_col='Gene', neg_ctrl_conditions=['NON-GENE'], # neg control params
-    xlim={'left':200, 'right':920}, 
-    annot=True, annot_label='sgRNA_ID', annot_abs=10, # annot_cutoff=0.5 annot_top=10
-)
+# scatterplot(
+#     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
+#     comparisons=["d3-pos", "d3-neg"], 
+#     x_column='Edit_site_3A1', 
+#     include_hue=True, hue_col='Mut_type', 
+#     neg_ctrl=True, neg_ctrl_col='Gene', neg_ctrl_conditions=['NON-GENE'], # neg control params
+#     xlim={'left':200, 'right':920}, 
+#     annot=True, annot_label='sgRNA_ID', annot_abs=10, # annot_cutoff=0.5 annot_top=10
+# )
