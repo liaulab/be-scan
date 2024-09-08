@@ -88,9 +88,7 @@ def corr_heatmap(df_filepath, comparisons,
     for _, spine in ax.spines.items():
         spine.set_visible(True)
     # adjustments and labels
-    plt.title(title)
-    plt.ylabel(xlab)
-    plt.xlabel(ylab)
+    plt.title(title) ; plt.ylabel(xlab) ; plt.xlabel(ylab)
     # rotate axis labels
     plt.xticks(rotation=45, horizontalalignment='right')
     plt.yticks(rotation=0, horizontalalignment='right')
