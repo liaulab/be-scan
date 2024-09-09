@@ -99,7 +99,7 @@ def annotate(guides_file, edit_from, edit_to,
     df['coding_seq'] = np.where(df[strand_col]=='sense', df[seq_col], 
                                 df[seq_col].apply(lambda x: rev_complement(complements, x)) )
     # DELETE ENTRIES WITH THE SAME CODING SEQUENCE #
-    dupl_rows = df.duplicated(subset='coding_seq', keep=False)
+    dupl_rows = df.duplicated(subset='sgRNA_seq', keep=False)
     df = df[~dupl_rows]
 
     # win_overlap #
