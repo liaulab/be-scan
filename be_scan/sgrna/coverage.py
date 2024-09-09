@@ -85,7 +85,8 @@ def coverage_plots(
 
     if save_df: 
         Path.mkdir(path / output_dir, exist_ok=True)
-        plt.savefig(path / output_dir / f'{pre}_{output_name.split('.')[0]}_barplot.png', dpi=400)
+        outname = output_name.split('.')[0]
+        plt.savefig(path / output_dir / f'{pre}_{outname}_barplot.png', dpi=400)
 
     # COUNT HOW MANY MUTATIONS ARE ACCESSIBLE PER RESIDUE #
     df_heatmap = pd.DataFrame(columns=aa_list)
@@ -111,6 +112,7 @@ def coverage_plots(
 
     if save_df: 
         Path.mkdir(path / output_dir, exist_ok=True)
-        plt.savefig(path / output_dir / f'{pre}_{output_name.split('.')[0]}_heatmap.png', dpi=400)
+        outname = output_name.split('.')[0]
+        plt.savefig(path / output_dir / f'{pre}_{outname}_heatmap.png', dpi=400)
 
     if return_df: return df_aa, (ax1, ax2)
