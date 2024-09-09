@@ -13,7 +13,7 @@ import pandas as pd
 from pathlib import Path
 import matplotlib as mpl
 
-from _annotating_ import *
+from be_scan.plot._annotating_ import *
 
 def boxplot(df_filepath, comparisons, # each comparison is a plot
             plot_column, plot_conditions, # each plot condition is a box in a plot

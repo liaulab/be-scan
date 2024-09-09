@@ -8,7 +8,6 @@ Date: 231128
 
 from collections import Counter
 import gzip
-import warnings
 from pathlib import Path
 
 import numpy as np

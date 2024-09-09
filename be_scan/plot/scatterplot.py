@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import pandas as pd
 
-from _annotating_ import *
+from be_scan.plot._annotating_ import *
 
 def scatterplot(df_filepath, # dataframe
                 comparisons, # each comparison is a plot, and also the y axis

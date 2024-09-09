@@ -8,10 +8,10 @@ Date: 231128
 
 import pandas as pd
 
-from count_reads import count_reads
-from log_transform import log_transform
-from compare_conds import compare_conds
-from calc_controls import calc_controls
+from be_scan.analysis.count_reads import count_reads
+from be_scan.analysis.log_transform import log_transform
+from be_scan.analysis.compare_conds import compare_conds
+from be_scan.analysis.calc_controls import calc_controls
 
 def batch_process(sample_sheet, annotated_lib, 
 

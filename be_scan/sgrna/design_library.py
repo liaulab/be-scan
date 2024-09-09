@@ -7,10 +7,10 @@ Date: 231204
 import os
 from pathlib import Path
 
-from generate_library import generate_library
-from reference_check import reference_check
-from annotate import annotate
-from coverage import coverage_plots
+from be_scan.sgrna.generate_library import generate_library
+from be_scan.sgrna.reference_check import reference_check
+from be_scan.sgrna.annotate import annotate
+from be_scan.sgrna.coverage import coverage_plots
 
 def design_library(gene_filepath, cas_type='SpG', 
 

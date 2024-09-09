@@ -8,7 +8,7 @@ Date: 231102
 import warnings
 
 from itertools import product
-from _genomic_ import complements, rev_complement, DNA_to_AA
+from be_scan.sgrna._genomic_ import complements, rev_complement, DNA_to_AA
 
 # FUNCTIONS FOR generate_library #
 

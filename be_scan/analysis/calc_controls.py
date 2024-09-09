@@ -7,7 +7,7 @@ Date: 231128
 
 from pathlib import Path
 import pandas as pd
-from _controls_ import *
+from be_scan.analysis._controls_ import *
 
 def calc_controls(conditions, stats_comparisons, 
                   neg_ctrl_col, neg_ctrl_conditions,
