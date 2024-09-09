@@ -122,11 +122,11 @@ def batch_process(sample_sheet, annotated_lib,
     if return_df: 
         return result
 
-batch_process(
-    sample_sheet='sample_sheet.csv', 
-    annotated_lib='annotated_lib_sample_in.csv', 
-    comparisons='comparisons.csv', 
-    file_dir='tests/test_data/analysis', 
-    KEY_INTERVAL=(0, 60), KEY='ABCDEFG', KEY_REV='GHIJKL', 
-    neg_ctrl_col='gene', neg_ctrl_conditions=['control'], stats_comparisons=['cond1'], 
-)
+# batch_process(
+#     sample_sheet='sample_sheet.csv', 
+#     annotated_lib='annotated_lib_sample_in.csv', 
+#     comparisons='comparisons.csv', 
+#     file_dir='tests/test_data/analysis', 
+#     KEY_INTERVAL=(0, 60), KEY='ABCDEFG', KEY_REV='GHIJKL', 
+#     neg_ctrl_col='gene', neg_ctrl_conditions=['control'], stats_comparisons=['cond1'], 
+# )
