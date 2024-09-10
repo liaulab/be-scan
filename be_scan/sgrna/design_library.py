@@ -130,8 +130,18 @@ def design_library(gene_filepath, cas_type='SpG',
         annotated.to_csv(out_filepath / output_name, index=False)
     if return_df: 
         return annotated
-    
-# design_library(
-#     gene_filepath='tests/test_data/sgrna/230408_AR_Input.fasta', 
-#     protein_filepath='tests/test_data/sgrna/P10275.fasta'
-# )
+
+
+
+#Changing filepath based on file structure of current repo
+gene_filepath='../../tests/test_data/sgrna/230408_AR_Input.fasta'
+protein_filepath='../../tests/test_data/sgrna/P10275.fasta'
+print(os.path.abspath(gene_filepath), "\n\n\n\n\n\n")
+
+#Create output directory if does not exist
+if(not os.path.exists("../../outputs")):
+    os.makedirs("../../outputs")
+
+design_library(
+    gene_filepath=gene_filepath, protein_filepath=protein_filepath, output_dir = "../../outputs"
+)

@@ -5,7 +5,7 @@
 To install BE-SCAN:
 
 ```console
-$ pip install git+https://github.com/liaulab/be-scan.git@feedback_fix
+$ pip install git+https://github.com/liaulab/be-scan.git@simple_version
 ```
 
 ## Conda Environment
@@ -24,7 +24,7 @@ $ conda activate bescan-test
 
 Install be-scan with: 
 ```console
-$ python -m pip install git+https://github.com/liaulab/be-scan.git@feedback_fix
+$ python -m pip install git+https://github.com/liaulab/be-scan.git@simple_version
 ``````
 
 ## Using Jupyter Notebook
