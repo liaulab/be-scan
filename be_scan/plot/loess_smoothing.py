@@ -25,7 +25,7 @@ from concurrent.futures import ThreadPoolExecutor  # or ProcessPoolExecutor
 def loess_smoothing(df_filepath, 
                     x_column, comparisons, span, 
 
-    interp_method='quadratic', n_repeats=10000, 
+    interp_method='quadratic', n_repeats=1000, 
     savefig=True, show=True, out_name='loesssmoothing', out_type='png', out_dir='', return_df=True, # output params
 
     subplots_kws={}, 
@@ -66,7 +66,7 @@ def loess_smoothing(df_filepath,
 
     n_repeats: int, optional, defaults to 10,000
         the number of times you want to shuffle
-        10000x is recommended for final data but for preliminaty sample 4000x is the recommended minimum
+        1000x is recommended for final data
     smm_multipletests_kws: dict, optional, defaults to 
         {'alpha':0.05, 'method':'fdr_bh', 'is_sorted':False, 'returnsorted':False}
         input params for smm.multipletests()
@@ -113,6 +113,12 @@ def loess_smoothing(df_filepath,
     for ax, comp in zip(axes, comparisons): 
         x_obs, y_obs = df_filtered[x_column], df_filtered[comp]
 
+        # ADJUSTING SPAN #
+        x_min, x_max = df_filtered[x_column].min(), df_filtered[x_column].max()
+        if span > 1: 
+            assert span < (x_max-x_min), 'Please enter a span less than the length of your protein.'
+            span = span / (x_max-x_min) ### assumming continuous scanning
+
         # LOESS SMOOTHES ACROSS LENGTH OF PROTEIN FOR SIGNAL #
         df_loess = loess_v3(x_obs=x_obs, y_obs=y_obs, span=span, 
                             interp_method=interp_method, loess_kws=loess_kws, interp_kws=interp_kws, )
@@ -151,29 +157,6 @@ def loess_v3(x_obs, y_obs, span, interp_method,
     """[Summary]
     this function calculates the smoothed arbitrary values for each value 
     in your x_out for the enrichment profile of your POI
-    
-    Parameters
-    ----------
-    x_obs: list or numpy array, required
-        the "x-axis" positions of your data, usually some summarized aa number of edited window
-    y_obs: list or numpy array, required
-        the "y-axis" values of your data, usually normalized lfc of gRNA enrichment
-    span: float, required (recommended range to start is ~0.05-0.10)
-        hyperparameter for the span that you want to smooth over, requires optimization
-    interp_method: str, optional, defaults to 'quadratic'
-        method should 'statsmodels' or on be one of 
-        'linear', 'nearest', 'nearest-up', 'zero', 
-        'slinear', 'quadratic', 'cubic', 'previous', or 'next'
-        from https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
-
-    loess_kws: dict, optional, defaults to
-        {'missing':'raise', 'return_sorted':False, 'it':0}
-        input params for statsmodels.nonparametric.smoothers_lowess.lowess()
-        https://www.statsmodels.org/devel/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html
-    interp_kws: dict, optional, defaults to
-        {'fill_value':'extrapolate'}
-        input params for scipy.interpolate.interp1d()
-        https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
 
     Returns
     ----------
@@ -211,32 +194,14 @@ def loess_v3(x_obs, y_obs, span, interp_method,
     return df_loess
 
 def randomize(x_obs, y_obs, span, 
-    n_repeats=10000, interp_method='quadratic', 
+    n_repeats=1000, interp_method='quadratic', 
     ): 
 
     """[Summary]
     this function provides the null distribution to compare your actual loess again; 
     it calculates the smoothed arbitrary values for each value 
     in your x_out (see below) for the shuffled enrichment profile of your POI
-    
-    Parameters
-    ----------
-    x_obs: str, required
-        the "x-axis" position of your data, usually some summarized aa number of edited window
-    y_obs: str, required
-        the "y-axis" value of your data, usually normalized lfc of gRNA enrichment
-    span: float, required (recommended range to start is ~0.05-0.10)
-        hyperparameter for the span that you want to smooth over, requires optimization
 
-    n_repeats: int, optional, defaults to 10,000
-        the number of times you want to shuffle
-        10000x is recommended for final data but for preliminaty sample 4000x is the recommended minimum
-    interp_method: str, optional, defaults to 'quadratic'
-        method should 'statsmodels' or on be one of 
-        'linear', 'nearest', 'nearest-up', 'zero', 
-        'slinear', 'quadratic', 'cubic', 'previous', or 'next'
-        from https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
-        
     Returns
     ----------
     df_rand: pandas dataframe
@@ -257,27 +222,12 @@ def randomize(x_obs, y_obs, span,
     return df_rand
 
 def calculate_sig(df_loess, df_rand, 
-    n_repeats=10000, smm_multipletests_kws={}
+    n_repeats=1000, smm_multipletests_kws={}
     ):
 
     """[Summary]
     this function calculates the significance of a "spike" in your loess-ed enrichment profile
     by calculating if it's > 95% of null distribution
-    
-    Parameters
-    ----------
-    df_loess: pandas df, required
-        output from loess_v3()
-    df_rand: pandas df, required
-        output from randomize()
-
-    n_repeats: int, optional, defaults to 10,000
-        the number of times you want to shuffle
-        10000x is recommended for final data but for preliminaty sample 4000x is the recommended minimum
-    smm_multipletests_kws: dict, optional, defaults to 
-        {'alpha':0.05, 'method':'fdr_bh', 'is_sorted':False, 'returnsorted':False}
-        input params for smm.multipletests()
-        https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html
 
     Returns
     ----------
@@ -290,9 +240,10 @@ def calculate_sig(df_loess, df_rand,
                              'y_loess': list(df_loess.y_loess)}, 
                             columns=['x_vals', 'y_loess'])
     # get num of values greater than y_loess
-    df_pvals['obs_gt'] = df_rand[df_rand.columns[1:-1]].gt(df_pvals['y_loess'], axis=0).sum(axis=1) 
+    # df_pvals['obs_gt'] = df_rand[df_rand.columns[1:-1]].gt(df_pvals['y_loess'], axis=0).sum(axis=1)
+    gt_counts = np.sum(df_rand[df_rand.columns[1:-1]] > df_loess['y_loess'].values[:, None], axis=1)
     # divide "rank" of obs val by N to get empirical p-val
-    df_pvals['1t_pval'] = df_pvals['obs_gt'] / n_repeats 
+    df_pvals['1t_pval'] = gt_counts / n_repeats 
 
     # apply benjamini-hochberg FDR correction
     temp = smm.multipletests(df_pvals['1t_pval'], **smm_multipletests_kws)
@@ -304,6 +255,6 @@ def calculate_sig(df_loess, df_rand,
 #     df_filepath='tests/test_data/plot/NZL10196_v9_comparisons.csv', 
 #     x_column='Edit_site_3A1', 
 #     comparisons=["d3-pos", "d3-neg", "d6-pos", ], 
-#     span=0.05, 
-#     n_repeats=10000, 
+#     span=10, 
+#     n_repeats=1000, 
 # )
