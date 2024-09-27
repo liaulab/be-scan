@@ -151,6 +151,23 @@ def main():
     
     ##################################################
 
+    from be_scan.analysis import align_nanopore_reads
+    parser_align_nanopore_reads = subparsers.add_parser('align_nanopore_reads',
+                                                        help=next(line for line in align_nanopore_reads.__doc__.splitlines() if line),
+                                                        description=align_nanopore_reads.__doc__,
+                                                        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser_align_nanopore_reads.add_argument('output_tsv', type=str)
+    parser_align_nanopore_reads.add_argument('ref_fasta', type=str)
+    parser_align_nanopore_reads.add_argument('input_fastq', type=str)
+    parser_align_nanopore_reads.add_argument('edit_from', type=str)
+    parser_align_nanopore_reads.add_argument('edit_to', type=str)
+    parser_align_nanopore_reads.add_argument('--plot_fname', type=str)
+    parser_align_nanopore_reads.add_argument('--guides', type=str)
+    parser_align_nanopore_reads.add_argument('--freq_table_fname', type=str)
+    parser_align_nanopore_reads.set_defaults(func=align_nanopore_reads)
+
+    ##################################################
+
 ### plot ###
 
     from be_scan.plot import scatterplot

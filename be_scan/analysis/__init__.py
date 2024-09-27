@@ -5,3 +5,4 @@ from be_scan.analysis.average_reps import average_reps
 from be_scan.analysis.compare_conds import compare_conds
 from be_scan.analysis.batch_process import batch_process
 from be_scan.analysis.calc_controls import calc_controls
+from be_scan.analysis._nanopore import align_reads as align_nanopore_reads
