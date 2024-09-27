@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import Bio.SeqIO
 import numpy as np
 import matplotlib.ticker
+import pandas as pd
 
 def align_helper(args):
     reads_batch, ref_fasta_fname, edit_from_keep, edit_to_keep = args
@@ -90,7 +91,7 @@ def align_reads(output_tsv: str, ref_fasta: str, input_fastq: str, edit_from: st
     :param edit_from: Check for edits from this base
     :param edit_to: Check for edits to this base
     :param plot_fname: Path to save plot. If None, no plot is saved.
-    :param guides: Comma-separated list of guides to plot. If None, no guides are plotted.
+    :param guides: Path to CSV file with guides. Will look for guides under header "spacer". Or directly input a string that's a comma-separated list of guides to plot. If None, no guides are plotted.
     """
 
     edit_from, edit_to = edit_from.upper(), edit_to.upper()
@@ -120,8 +121,12 @@ def align_reads(output_tsv: str, ref_fasta: str, input_fastq: str, edit_from: st
                     edit_pos_hist[ref_name][edit] += 1
         cutsites = {name: [] for name in ref_seqs}
         if guides is not None:
+            if os.path.isfile(guides):
+                guides = pd.read_csv(guides)["spacer"].tolist()
+            else:
+                guides = guides.split(",")
             # Read guides
-            for guide in guides.split(","):
+            for guide in guides:
                 for name, seq in ref_seqs.items():
                     if (cutsite := find_cutsite(seq, guide)) is not None:
                         cutsites[name].append(cutsite)

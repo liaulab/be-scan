@@ -14,8 +14,14 @@ ref = """TAGTTATTTAGCCACATATTTCAAGTTTAGTCTGATATCACCCTTTAAACACTGCCACTCAACCTAAAACA
     ("A", [1272], "G"),
     ("A", [1272, 2187, 2188], "G"),
     ])
-@pytest.mark.parametrize("guides", [None, "ATGTATTAATAAAGCCTGAT"])
-def test_align_nanopore_reads(edit_from, edit_pos, edit_to, guides):
+@pytest.mark.parametrize("guides,guides_as_csv", [
+    (None, None),
+    (["ATGTATTAATAAAGCCTGAT"], False),
+    (["ATGTATTAATAAAGCCTGAT"], True),
+    (["ATGTATTAATAAAGCCTGAT", "ACTGACCCCGACAGGGGCCT"], False),
+    (["ATGTATTAATAAAGCCTGAT", "ACTGACCCCGACAGGGGCCT"], True),
+    ])
+def test_align_nanopore_reads(edit_from, edit_pos, edit_to, guides, guides_as_csv):
     with tempfile.TemporaryDirectory() as tempdir, tempfile.NamedTemporaryFile("wt", suffix=".fastq") as input_fastq, tempfile.NamedTemporaryFile("wt", suffix=".fasta") as ref_fasta:
         query = ref
         for _edit_pos in edit_pos:
@@ -27,7 +33,11 @@ def test_align_nanopore_reads(edit_from, edit_pos, edit_to, guides):
         ref_fasta.flush()
         guides_arg = []
         if guides:
-            guides_arg = ["--guides", guides]
+            if guides_as_csv:
+                guides_fname = os.path.join(tempdir, "guides.csv")
+                pd.Series(guides).rename("spacer").to_csv(guides_fname)
+            else:
+                guides_arg = ["--guides", ",".join(guides)]
         subprocess.run([
             "python", "-m", "be_scan", "align_nanopore_reads",
             os.path.join(tempdir, "output.tsv"),
