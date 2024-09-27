@@ -82,7 +82,7 @@ def find_cutsite(ref_seq: str, guide: str) -> int | None:
         return cutsite + 3
     return None
 
-def align_reads(output_tsv: str, ref_fasta: str, input_fastq: str, edit_from: str, edit_to: str, plot_fname: str | None = None, guides: str | None = None):
+def align_reads(output_tsv: str, ref_fasta: str, input_fastq: str, edit_from: str, edit_to: str, plot_fname: str | None = None, guides: str | None = None, freq_table_fname: str | None = None):
     """
     Uses minimap to align fastq reads to reference fasta. Output TSV file contains read ID, name of reference sequence, start and end positions of alignment, and a comma-separated list of positions of edits. Positions are zero-indexed. Start position is inclusive, end position is exclusive.
     :param output_tsv: Path to output TSV file
@@ -91,6 +91,7 @@ def align_reads(output_tsv: str, ref_fasta: str, input_fastq: str, edit_from: st
     :param edit_from: Check for edits from this base
     :param edit_to: Check for edits to this base
     :param plot_fname: Path to save plot. If None, no plot is saved.
+    :param freq_table_fname: Path to save editing frequency TSV. If None, no table is saved. In this table, each row is a position in the reference sequence, and each column is a reference sequence. The value is the number of reads with an edit at that position.
     :param guides: Path to CSV file with guides. Will look for guides under header "spacer". Or directly input a string that's a comma-separated list of guides to plot. If None, no guides are plotted.
     """
 
@@ -105,7 +106,7 @@ def align_reads(output_tsv: str, ref_fasta: str, input_fastq: str, edit_from: st
             if out is not None:
                 aln_file.write(out)
 
-    if plot_fname is not None:
+    if plot_fname is not None or freq_table_fname is not None:
         # Read in reference sequences
         ref_seqs = {record.id: str(record.seq) for record in Bio.SeqIO.parse(ref_fasta, "fasta")}
         # Count edits per position
@@ -131,16 +132,20 @@ def align_reads(output_tsv: str, ref_fasta: str, input_fastq: str, edit_from: st
                     if (cutsite := find_cutsite(seq, guide)) is not None:
                         cutsites[name].append(cutsite)
 
-        fig, axes = plt.subplots(figsize=(12, 4 * len(edit_pos_hist)))
-        if len(edit_pos_hist) == 1:
-            axes = [axes]
-        for ax, (name, _edit_pos_hist) in zip(axes, edit_pos_hist.items()):
-            ax.set_title(name)
-            ax.plot(_edit_pos_hist)
-            for cut_site in cutsites[name]:
-                ax.axvline(x=cut_site, color="red", linestyle="dashed")
-            ax.set_ylabel("Edit coverage")
-            ax.set_xlabel("Position in the locus")
-            ax.yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(xmax=max(_edit_pos_hist.sum(), 1)))
-        fig.savefig(plot_fname, bbox_inches="tight", dpi=300)
-        plt.close(fig)
+        if plot_fname is not None:
+            fig, axes = plt.subplots(figsize=(12, 4 * len(edit_pos_hist)))
+            if len(edit_pos_hist) == 1:
+                axes = [axes]
+            for ax, (name, _edit_pos_hist) in zip(axes, edit_pos_hist.items()):
+                ax.set_title(name)
+                ax.plot(_edit_pos_hist)
+                for cut_site in cutsites[name]:
+                    ax.axvline(x=cut_site, color="red", linestyle="dashed")
+                ax.set_ylabel("Edit coverage")
+                ax.set_xlabel("Position in the locus")
+                ax.yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(xmax=max(_edit_pos_hist.sum(), 1)))
+            fig.savefig(plot_fname, bbox_inches="tight", dpi=300)
+            plt.close(fig)
+
+        if freq_table_fname is not None:
+            pd.concat([pd.Series(_edit_pos_hist, name=name, dtype=pd.Int64Dtype()) for name, _edit_pos_hist in edit_pos_hist.items()], axis=1).rename_axis(index="position").to_csv(freq_table_fname, sep="\t", index=True)

@@ -163,6 +163,7 @@ def main():
     parser_align_nanopore_reads.add_argument('edit_to', type=str)
     parser_align_nanopore_reads.add_argument('--plot_fname', type=str)
     parser_align_nanopore_reads.add_argument('--guides', type=str)
+    parser_align_nanopore_reads.add_argument('--freq_table_fname', type=str)
     parser_align_nanopore_reads.set_defaults(func=align_nanopore_reads)
 
     ##################################################

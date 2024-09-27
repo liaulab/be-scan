@@ -23,6 +23,7 @@ ref = """TAGTTATTTAGCCACATATTTCAAGTTTAGTCTGATATCACCCTTTAAACACTGCCACTCAACCTAAAACA
     ])
 def test_align_nanopore_reads(edit_from, edit_pos, edit_to, guides, guides_as_csv):
     with tempfile.TemporaryDirectory() as tempdir, tempfile.NamedTemporaryFile("wt", suffix=".fastq") as input_fastq, tempfile.NamedTemporaryFile("wt", suffix=".fasta") as ref_fasta:
+        # prepare input files
         query = ref
         for _edit_pos in edit_pos:
             assert query[_edit_pos] == edit_from
@@ -38,6 +39,7 @@ def test_align_nanopore_reads(edit_from, edit_pos, edit_to, guides, guides_as_cs
                 pd.Series(guides).rename("spacer").to_csv(guides_fname)
             else:
                 guides_arg = ["--guides", ",".join(guides)]
+        freq_table_fname = os.path.join(tempdir, "freq_table.tsv")
         subprocess.run([
             "python", "-m", "be_scan", "align_nanopore_reads",
             os.path.join(tempdir, "output.tsv"),
@@ -45,8 +47,10 @@ def test_align_nanopore_reads(edit_from, edit_pos, edit_to, guides, guides_as_cs
             input_fastq.name,
             edit_from, edit_to,
             "--plot_fname", os.path.join(tempdir, "output.png"),
+            "--freq_table_fname", freq_table_fname,
             *guides_arg
             ], check=True)
+        # check alignment output
         df = pd.read_csv(os.path.join(tempdir, "output.tsv"), sep="\t", header=0, keep_default_na=False, dtype={"read_id": str, "ref_name": str, "start": int, "end": int, "edit_pos": str})
         assert len(df) == 1
         assert df.iloc[0].read_id == "1"
@@ -54,3 +58,10 @@ def test_align_nanopore_reads(edit_from, edit_pos, edit_to, guides, guides_as_cs
         assert df.iloc[0].start == 0
         assert df.iloc[0].end == len(ref)
         assert set(map(int, filter(lambda x: x != "", df.iloc[0].edit_pos.split(',')))) == set(edit_pos)
+        # check frequency table
+        df_freq = pd.read_csv(freq_table_fname, sep="\t", header=0, index_col="position", dtype=pd.Int64Dtype())
+        assert df_freq.columns == ["A"]
+        df_freq = df_freq["A"]
+        assert df_freq.index.name == "position"
+        assert all(df_freq[df_freq.index.isin(edit_pos)] == 1)
+        assert all(df_freq[~df_freq.index.isin(edit_pos)] == 0)
