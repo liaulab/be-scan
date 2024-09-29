@@ -154,6 +154,8 @@ def scatterplot(df_filepath, # dataframe
                 for _, row in df_cutoff.iterrows():
                     if row[annot_label] != "nan": 
                         ax.text(row[x_column], row[comp], row[annot_label], **label_text_kwargs)
+                toprows_df = df_cutoff.sort_values(by=comp, ascending=False)
+                print(toprows_df)
             elif annot_abs: # annotate the top scoring abs value
                 sorted_df = df_data.assign(yabs=df_data[comp].abs()).sort_values(by='yabs', ascending=False)
                 toprows_df = sorted_df.head(annot_abs)
