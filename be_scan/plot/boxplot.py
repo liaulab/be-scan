@@ -123,9 +123,8 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
     outpath = Path(out_dir)
     if savefig: 
         out = f'{out_name}.{out_type}'
-        plt.savefig(outpath / out, format=out_type)
-    if show: 
-        plt.show()
+        plt.savefig(outpath / out, format=out_type, dpi=300)
+    if show: plt.show()
     plt.close()
 
 # boxplot(

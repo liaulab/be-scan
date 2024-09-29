@@ -95,7 +95,6 @@ def corr_jointplot(df_filepath, condition1, condition2,
     outpath = Path(out_dir)
     if savefig: 
         out_name = f'{condition1}{condition2}_{out_name}.{out_type}'
-        plt.savefig(outpath / out_name, format=out_type)
-    if show: 
-        plt.show()
+        plt.savefig(outpath / out_name, format=out_type, dpi=300)
+    if show: plt.show()
     plt.close()

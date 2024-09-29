@@ -27,6 +27,7 @@ def loess_smoothing(df_filepath,
 
     interp_method='quadratic', n_repeats=1000, 
     savefig=True, show=True, out_name='loesssmoothing', out_type='png', out_dir='', return_df=True, # output params
+    domains=[], domains_alpha=0.25, domains_color='lightblue', # draw domains
 
     subplots_kws={}, 
     loess_kws={'missing':'raise', 'return_sorted':False, 'it':0}, 
@@ -71,6 +72,9 @@ def loess_smoothing(df_filepath,
         {'alpha':0.05, 'method':'fdr_bh', 'is_sorted':False, 'returnsorted':False}
         input params for smm.multipletests()
         https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html
+
+    domains: 
+        [{'start': 1, 'end': 2}, ]
     
     savefig: bool, optional, defaults to True
         whether or not to save the figure
@@ -107,7 +111,7 @@ def loess_smoothing(df_filepath,
 
     mpl.rcParams.update({'font.size': 10})
     fig, axes = plt.subplots(nrows=len(comparisons), ncols=1, 
-                             figsize=(10, 3*len(comparisons)), **subplots_kws)
+                             figsize=(10, 2.5*len(comparisons)), **subplots_kws)
     if len(comparisons) == 1: axes = [axes]
     # process columns from dataframe and input into loess_v3
     for ax, comp in zip(axes, comparisons): 
@@ -134,6 +138,8 @@ def loess_smoothing(df_filepath,
         ax.plot(df_plotting.index, df_plotting['-log10'], color='steelblue', markersize=3)
         ax.axhline(y=np.log10(0.05 + 10**-4)*-1,ls='--', c='k', linewidth=1)
         ax.set_title(comp)
+        for d in domains:
+            ax.axvspan(d['start'], d['end'], alpha=domains_alpha, facecolor=domains_color)
         output_clusters(comp, df_plotting.index, df_plotting['-log10'])
 
         if return_df: result[comp] = {'loess':df_loess, 'rand':df_rand, 'pvals':df_pvals}
@@ -143,7 +149,7 @@ def loess_smoothing(df_filepath,
     outpath = Path(out_dir)
     if savefig: 
         out = f'{out_name}.{out_type}'
-        plt.savefig(outpath / out, format=out_type)
+        plt.savefig(outpath / out, format=out_type, dpi=300)
     if show: plt.show()
     plt.close()
 
@@ -253,17 +259,17 @@ def calculate_sig(df_loess, df_rand,
     return df_pvals
 
 def output_clusters(name, xvals, yvals): 
-    print()
     clusters_x = []
     for x, y in zip(xvals, yvals): 
         if y > 1.30103: 
             clusters_x.append(x)
-    diffs = np.diff(clusters_x)
-    discontinuities = np.where(diffs > 1)[0]
-    breaks = np.concatenate(([0], discontinuities + 1, [len(clusters_x)]))
-    ranges = [f"{clusters_x[start]}-{clusters_x[end-1]}" if start != end-1 else f"{clusters_x[start]}" 
-              for start, end in zip(breaks[:-1], breaks[1:])]
-    print(name, ':', ranges)
+    if len(clusters_x) > 0: 
+        diffs = np.diff(clusters_x)
+        discontinuities = np.where(diffs > 1)[0]
+        breaks = np.concatenate(([0], discontinuities + 1, [len(clusters_x)]))
+        ranges = [f"{clusters_x[start]}-{clusters_x[end-1]}" if start != end-1 else f"{clusters_x[start]}" 
+                for start, end in zip(breaks[:-1], breaks[1:])]
+        print(name, ':', ranges)
 
 # loess_smoothing(
 #     df_filepath='tests/test_data/plot/NZL10196_v9_comparisons.csv', 
@@ -271,4 +277,5 @@ def output_clusters(name, xvals, yvals):
 #     comparisons=["d3-pos", "d3-neg", "d6-pos", ], 
 #     span=0.05, 
 #     n_repeats=1000, 
+#     domains=[{'start':300, 'end':350}], 
 # )

@@ -24,6 +24,7 @@ def scatterplot(df_filepath, # dataframe
     neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # neg control params
     annot=False, annot_label='', annot_top=None, annot_cutoff=None, annot_abs=None, # annotate outliers
     savefig=True, show=True, out_name='scatterplot', out_type='png', out_dir='', # output params
+    domains=[], domains_alpha=0.25, domains_color='lightblue', # draw domains
     
     # style params
     subplots_kws={}, xlim={}, ylim={}, 
@@ -185,15 +186,16 @@ def scatterplot(df_filepath, # dataframe
         ax.set_xlim(**xlim_kws) ; ax.set_ylim(**ylim_kws)
         ax.spines['top'].set_visible(False) ; ax.spines['bottom'].set_visible(False)
         ax.spines['right'].set_visible(False)
+        for d in domains:
+            ax.axvspan(d['start'], d['end'], alpha=domains_alpha, facecolor=domains_color)
 
     plt.tight_layout() # ADJUST DIMENSIONS #
     # Save file
     outpath = Path(out_dir)
     if savefig: 
         out = f'{out_name}.{out_type}'
-        plt.savefig(outpath / out, format=out_type)
-    if show: 
-        plt.show()
+        plt.savefig(outpath / out, format=out_type, dpi=300)
+    if show: plt.show()
     plt.close()
 
 # scatterplot(
@@ -204,4 +206,5 @@ def scatterplot(df_filepath, # dataframe
 #     neg_ctrl=True, neg_ctrl_col='Gene', neg_ctrl_conditions=['NON-GENE'], # neg control params
 #     xlim={'left':200, 'right':920}, 
 #     annot=True, annot_label='sgRNA_ID', annot_abs=10, # annot_cutoff=0.5 annot_top=10
+#     # domains=[{'start':300, 'end':400}], 
 # )

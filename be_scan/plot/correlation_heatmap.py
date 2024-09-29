@@ -98,7 +98,6 @@ def corr_heatmap(df_filepath, comparisons,
     outpath = Path(out_dir)
     if savefig: 
         out_name = f'{out_name}.{out_type}'
-        plt.savefig(outpath / out_name, format=out_type)
-    if show: 
-        plt.show()
+        plt.savefig(outpath / out_name, format=out_type, dpi=300)
+    if show: plt.show()
     plt.close()
