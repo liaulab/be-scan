@@ -1,0 +1,1566 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE eSummaryResult PUBLIC "-//NLM//DTD esummary clinvar 20240612//EN" "https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20240612/esummary_clinvar.dtd">
+<eSummaryResult>
+<DocumentSummarySet status="OK">
+<DbBuild>Build241104-0210.1</DbBuild>
+
+<DocumentSummary uid="2635380">
+	<obj_type>single nucleotide variant</obj_type>
+	<accession>VCV002635380</accession>
+	<accession_version>VCV002635380.1</accession_version>
+	<title>NM_004456.5(EZH2):c.446T&gt;C (p.Leu149Pro)</title>
+	<variation_set>
+		<variation>
+			<measure_id>2799385</measure_id>
+			<variation_xrefs>
+			</variation_xrefs>
+			<variation_name>NM_004456.5(EZH2):c.446T&gt;C (p.Leu149Pro)</variation_name>
+			<cdna_change>c.446T&gt;C</cdna_change>
+			<aliases>
+			</aliases>
+			<variation_loc>
+				<assembly_set>
+					<status>current</status>
+					<assembly_name>GRCh38</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148829766</start>
+					<stop>148829766</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148829766</display_start>
+					<display_stop>148829766</display_stop>
+					<assembly_acc_ver>GCF_000001405.38</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+				<assembly_set>
+					<status>previous</status>
+					<assembly_name>GRCh37</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148526858</start>
+					<stop>148526858</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148526858</display_start>
+					<display_stop>148526858</display_stop>
+					<assembly_acc_ver>GCF_000001405.25</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+			</variation_loc>
+			<allele_freq_set>
+			</allele_freq_set>
+			<variant_type>single nucleotide variant</variant_type>
+			<canonical_spdi>NC_000007.14:148829765:A:G</canonical_spdi>
+		</variation>
+	</variation_set>
+	<supporting_submissions>
+		<scv>
+			<string>SCV004112864</string>
+		</scv>
+		<rcv>
+			<string>RCV004534263</string>
+		</rcv>
+	</supporting_submissions>
+	<germline_classification>
+		<description>Uncertain significance</description>
+		<last_evaluated>2023/02/06 00:00</last_evaluated>
+		<review_status>criteria provided, single submitter</review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+			<trait>
+				<trait_xrefs>
+				</trait_xrefs>
+				<trait_name>EZH2-related disorder</trait_name>
+			</trait>
+		</trait_set>
+	</germline_classification>
+	<clinical_impact_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</clinical_impact_classification>
+	<oncogenicity_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</oncogenicity_classification>
+	<record_status></record_status>
+	<gene_sort>EZH2</gene_sort>
+	<chr_sort>07</chr_sort>
+	<location_sort>00000000000148829766</location_sort>
+	<variation_set_name></variation_set_name>
+	<variation_set_id></variation_set_id>
+	<genes>
+		<gene>
+			<symbol>EZH2</symbol>
+			<GeneID>2146</GeneID>
+			<strand>-</strand>
+			<source>submitted</source>
+		</gene>
+	</genes>
+	<molecular_consequence_list>
+		<string>missense variant</string>
+	</molecular_consequence_list>
+	<protein_change>L110P, L140P, L149P</protein_change>
+	<fda_recognized_database></fda_recognized_database>
+</DocumentSummary>
+
+<DocumentSummary uid="998249">
+	<obj_type>single nucleotide variant</obj_type>
+	<accession>VCV000998249</accession>
+	<accession_version>VCV000998249.4</accession_version>
+	<title>NM_004456.5(EZH2):c.688A&gt;G (p.Met230Val)</title>
+	<variation_set>
+		<variation>
+			<measure_id>985977</measure_id>
+			<variation_xrefs>
+				<variation_xref>
+					<db_source>dbSNP</db_source>
+					<db_id>779951996</db_id>
+				</variation_xref>
+			</variation_xrefs>
+			<variation_name>NM_004456.5(EZH2):c.688A&gt;G (p.Met230Val)</variation_name>
+			<cdna_change>c.688A&gt;G</cdna_change>
+			<aliases>
+			</aliases>
+			<variation_loc>
+				<assembly_set>
+					<status>current</status>
+					<assembly_name>GRCh38</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148827204</start>
+					<stop>148827204</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148827204</display_start>
+					<display_stop>148827204</display_stop>
+					<assembly_acc_ver>GCF_000001405.38</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+				<assembly_set>
+					<status>previous</status>
+					<assembly_name>GRCh37</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148524296</start>
+					<stop>148524296</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148524296</display_start>
+					<display_stop>148524296</display_stop>
+					<assembly_acc_ver>GCF_000001405.25</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+			</variation_loc>
+			<allele_freq_set>
+				<allele_freq>
+					<source>Exome Aggregation Consortium (ExAC)</source>
+					<value>0.00001</value>
+					<minor_allele></minor_allele>
+				</allele_freq>
+				<allele_freq>
+					<source>The Genome Aggregation Database (gnomAD)</source>
+					<value>0.00001</value>
+					<minor_allele></minor_allele>
+				</allele_freq>
+				<allele_freq>
+					<source>Trans-Omics for Precision Medicine (TOPMed)</source>
+					<value>0.00002</value>
+					<minor_allele></minor_allele>
+				</allele_freq>
+			</allele_freq_set>
+			<variant_type>single nucleotide variant</variant_type>
+			<canonical_spdi>NC_000007.14:148827203:T:C</canonical_spdi>
+		</variation>
+	</variation_set>
+	<supporting_submissions>
+		<scv>
+			<string>SCV001482760</string>
+			<string>SCV003305402</string>
+		</scv>
+		<rcv>
+			<string>RCV001294009</string>
+		</rcv>
+	</supporting_submissions>
+	<germline_classification>
+		<description>Uncertain significance</description>
+		<last_evaluated>2023/10/10 00:00</last_evaluated>
+		<review_status>criteria provided, multiple submitters, no conflicts</review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+			<trait>
+				<trait_xrefs>
+					<trait_xref>
+						<db_source>Orphanet</db_source>
+						<db_id>3447</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MedGen</db_source>
+						<db_id>C0265210</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MONDO</db_source>
+						<db_id>MONDO:0010193</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>OMIM</db_source>
+						<db_id>277590</db_id>
+					</trait_xref>
+				</trait_xrefs>
+				<trait_name>Weaver syndrome</trait_name>
+			</trait>
+		</trait_set>
+	</germline_classification>
+	<clinical_impact_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</clinical_impact_classification>
+	<oncogenicity_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</oncogenicity_classification>
+	<record_status></record_status>
+	<gene_sort>EZH2</gene_sort>
+	<chr_sort>07</chr_sort>
+	<location_sort>00000000000148827204</location_sort>
+	<variation_set_name></variation_set_name>
+	<variation_set_id></variation_set_id>
+	<genes>
+		<gene>
+			<symbol>EZH2</symbol>
+			<GeneID>2146</GeneID>
+			<strand>-</strand>
+			<source>submitted</source>
+		</gene>
+	</genes>
+	<molecular_consequence_list>
+		<string>missense variant</string>
+	</molecular_consequence_list>
+	<protein_change>M191V, M221V, M230V</protein_change>
+	<fda_recognized_database></fda_recognized_database>
+</DocumentSummary>
+
+<DocumentSummary uid="1988734">
+	<obj_type>single nucleotide variant</obj_type>
+	<accession>VCV001988734</accession>
+	<accession_version>VCV001988734.2</accession_version>
+	<title>NM_004456.5(EZH2):c.2026A&gt;G (p.Asn676Asp)</title>
+	<variation_set>
+		<variation>
+			<measure_id>2043974</measure_id>
+			<variation_xrefs>
+			</variation_xrefs>
+			<variation_name>NM_004456.5(EZH2):c.2026A&gt;G (p.Asn676Asp)</variation_name>
+			<cdna_change>c.2026A&gt;G</cdna_change>
+			<aliases>
+			</aliases>
+			<variation_loc>
+				<assembly_set>
+					<status>current</status>
+					<assembly_name>GRCh38</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148810336</start>
+					<stop>148810336</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148810336</display_start>
+					<display_stop>148810336</display_stop>
+					<assembly_acc_ver>GCF_000001405.38</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+				<assembly_set>
+					<status>previous</status>
+					<assembly_name>GRCh37</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148507428</start>
+					<stop>148507428</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148507428</display_start>
+					<display_stop>148507428</display_stop>
+					<assembly_acc_ver>GCF_000001405.25</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+			</variation_loc>
+			<allele_freq_set>
+			</allele_freq_set>
+			<variant_type>single nucleotide variant</variant_type>
+			<canonical_spdi>NC_000007.14:148810335:T:C</canonical_spdi>
+		</variation>
+	</variation_set>
+	<supporting_submissions>
+		<scv>
+			<string>SCV003035138</string>
+		</scv>
+		<rcv>
+			<string>RCV002781448</string>
+		</rcv>
+	</supporting_submissions>
+	<germline_classification>
+		<description>Uncertain significance</description>
+		<last_evaluated>2022/08/05 00:00</last_evaluated>
+		<review_status>criteria provided, single submitter</review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+			<trait>
+				<trait_xrefs>
+					<trait_xref>
+						<db_source>Orphanet</db_source>
+						<db_id>3447</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MedGen</db_source>
+						<db_id>C0265210</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MONDO</db_source>
+						<db_id>MONDO:0010193</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>OMIM</db_source>
+						<db_id>277590</db_id>
+					</trait_xref>
+				</trait_xrefs>
+				<trait_name>Weaver syndrome</trait_name>
+			</trait>
+		</trait_set>
+	</germline_classification>
+	<clinical_impact_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</clinical_impact_classification>
+	<oncogenicity_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</oncogenicity_classification>
+	<record_status></record_status>
+	<gene_sort>EZH2</gene_sort>
+	<chr_sort>07</chr_sort>
+	<location_sort>00000000000148810336</location_sort>
+	<variation_set_name></variation_set_name>
+	<variation_set_id></variation_set_id>
+	<genes>
+		<gene>
+			<symbol>EZH2</symbol>
+			<GeneID>2146</GeneID>
+			<strand>-</strand>
+			<source>submitted</source>
+		</gene>
+	</genes>
+	<molecular_consequence_list>
+		<string>missense variant</string>
+	</molecular_consequence_list>
+	<protein_change>N620D, N632D, N671D, N676D, N662D</protein_change>
+	<fda_recognized_database></fda_recognized_database>
+</DocumentSummary>
+
+<DocumentSummary uid="944116">
+	<obj_type>single nucleotide variant</obj_type>
+	<accession>VCV000944116</accession>
+	<accession_version>VCV000944116.8</accession_version>
+	<title>NM_004456.5(EZH2):c.1030A&gt;G (p.Thr344Ala)</title>
+	<variation_set>
+		<variation>
+			<measure_id>924747</measure_id>
+			<variation_xrefs>
+				<variation_xref>
+					<db_source>dbSNP</db_source>
+					<db_id>1309469934</db_id>
+				</variation_xref>
+			</variation_xrefs>
+			<variation_name>NM_004456.5(EZH2):c.1030A&gt;G (p.Thr344Ala)</variation_name>
+			<cdna_change>c.1030A&gt;G</cdna_change>
+			<aliases>
+			</aliases>
+			<variation_loc>
+				<assembly_set>
+					<status>current</status>
+					<assembly_name>GRCh38</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148818087</start>
+					<stop>148818087</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148818087</display_start>
+					<display_stop>148818087</display_stop>
+					<assembly_acc_ver>GCF_000001405.38</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+				<assembly_set>
+					<status>previous</status>
+					<assembly_name>GRCh37</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148515179</start>
+					<stop>148515179</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148515179</display_start>
+					<display_stop>148515179</display_stop>
+					<assembly_acc_ver>GCF_000001405.25</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+			</variation_loc>
+			<allele_freq_set>
+				<allele_freq>
+					<source>The Genome Aggregation Database (gnomAD), exomes</source>
+					<value>0.00000</value>
+					<minor_allele></minor_allele>
+				</allele_freq>
+			</allele_freq_set>
+			<variant_type>single nucleotide variant</variant_type>
+			<canonical_spdi>NC_000007.14:148818086:T:C</canonical_spdi>
+		</variation>
+	</variation_set>
+	<supporting_submissions>
+		<scv>
+			<string>SCV001386128</string>
+		</scv>
+		<rcv>
+			<string>RCV001214446</string>
+		</rcv>
+	</supporting_submissions>
+	<germline_classification>
+		<description>Likely benign</description>
+		<last_evaluated>2023/12/11 00:00</last_evaluated>
+		<review_status>criteria provided, single submitter</review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+			<trait>
+				<trait_xrefs>
+					<trait_xref>
+						<db_source>Orphanet</db_source>
+						<db_id>3447</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MedGen</db_source>
+						<db_id>C0265210</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MONDO</db_source>
+						<db_id>MONDO:0010193</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>OMIM</db_source>
+						<db_id>277590</db_id>
+					</trait_xref>
+				</trait_xrefs>
+				<trait_name>Weaver syndrome</trait_name>
+			</trait>
+		</trait_set>
+	</germline_classification>
+	<clinical_impact_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</clinical_impact_classification>
+	<oncogenicity_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</oncogenicity_classification>
+	<record_status></record_status>
+	<gene_sort>EZH2</gene_sort>
+	<chr_sort>07</chr_sort>
+	<location_sort>00000000000148818087</location_sort>
+	<variation_set_name></variation_set_name>
+	<variation_set_id></variation_set_id>
+	<genes>
+		<gene>
+			<symbol>EZH2</symbol>
+			<GeneID>2146</GeneID>
+			<strand>-</strand>
+			<source>submitted</source>
+		</gene>
+	</genes>
+	<molecular_consequence_list>
+		<string>missense variant</string>
+	</molecular_consequence_list>
+	<protein_change>T330A, T300A, T339A, T344A</protein_change>
+	<fda_recognized_database></fda_recognized_database>
+</DocumentSummary>
+
+<DocumentSummary uid="2441316">
+	<obj_type>single nucleotide variant</obj_type>
+	<accession>VCV002441316</accession>
+	<accession_version>VCV002441316.2</accession_version>
+	<title>NM_004456.5(EZH2):c.2105C&gt;T (p.Ala702Val)</title>
+	<variation_set>
+		<variation>
+			<measure_id>2409971</measure_id>
+			<variation_xrefs>
+			</variation_xrefs>
+			<variation_name>NM_004456.5(EZH2):c.2105C&gt;T (p.Ala702Val)</variation_name>
+			<cdna_change>c.2105C&gt;T</cdna_change>
+			<aliases>
+			</aliases>
+			<variation_loc>
+				<assembly_set>
+					<status>current</status>
+					<assembly_name>GRCh38</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148809315</start>
+					<stop>148809315</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148809315</display_start>
+					<display_stop>148809315</display_stop>
+					<assembly_acc_ver>GCF_000001405.38</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+				<assembly_set>
+					<status>previous</status>
+					<assembly_name>GRCh37</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148506407</start>
+					<stop>148506407</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148506407</display_start>
+					<display_stop>148506407</display_stop>
+					<assembly_acc_ver>GCF_000001405.25</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+			</variation_loc>
+			<allele_freq_set>
+			</allele_freq_set>
+			<variant_type>single nucleotide variant</variant_type>
+			<canonical_spdi>NC_000007.14:148809314:G:A</canonical_spdi>
+		</variation>
+	</variation_set>
+	<supporting_submissions>
+		<scv>
+			<string>SCV003832316</string>
+		</scv>
+		<rcv>
+			<string>RCV003147145</string>
+		</rcv>
+	</supporting_submissions>
+	<germline_classification>
+		<description>Uncertain significance</description>
+		<last_evaluated>2019/04/18 00:00</last_evaluated>
+		<review_status>criteria provided, single submitter</review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+			<trait>
+				<trait_xrefs>
+					<trait_xref>
+						<db_source>Orphanet</db_source>
+						<db_id>3447</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MedGen</db_source>
+						<db_id>C0265210</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MONDO</db_source>
+						<db_id>MONDO:0010193</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>OMIM</db_source>
+						<db_id>277590</db_id>
+					</trait_xref>
+				</trait_xrefs>
+				<trait_name>Weaver syndrome</trait_name>
+			</trait>
+		</trait_set>
+	</germline_classification>
+	<clinical_impact_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</clinical_impact_classification>
+	<oncogenicity_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</oncogenicity_classification>
+	<record_status></record_status>
+	<gene_sort>EZH2</gene_sort>
+	<chr_sort>07</chr_sort>
+	<location_sort>00000000000148809315</location_sort>
+	<variation_set_name></variation_set_name>
+	<variation_set_id></variation_set_id>
+	<genes>
+		<gene>
+			<symbol>EZH2</symbol>
+			<GeneID>2146</GeneID>
+			<strand>-</strand>
+			<source>submitted</source>
+		</gene>
+	</genes>
+	<molecular_consequence_list>
+		<string>missense variant</string>
+	</molecular_consequence_list>
+	<protein_change>A646V, A658V, A688V, A697V, A702V</protein_change>
+	<fda_recognized_database></fda_recognized_database>
+</DocumentSummary>
+
+<DocumentSummary uid="2441314">
+	<obj_type>single nucleotide variant</obj_type>
+	<accession>VCV002441314</accession>
+	<accession_version>VCV002441314.2</accession_version>
+	<title>NM_004456.5(EZH2):c.1097A&gt;G (p.Asn366Ser)</title>
+	<variation_set>
+		<variation>
+			<measure_id>2409969</measure_id>
+			<variation_xrefs>
+			</variation_xrefs>
+			<variation_name>NM_004456.5(EZH2):c.1097A&gt;G (p.Asn366Ser)</variation_name>
+			<cdna_change>c.1097A&gt;G</cdna_change>
+			<aliases>
+			</aliases>
+			<variation_loc>
+				<assembly_set>
+					<status>current</status>
+					<assembly_name>GRCh38</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148818020</start>
+					<stop>148818020</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148818020</display_start>
+					<display_stop>148818020</display_stop>
+					<assembly_acc_ver>GCF_000001405.38</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+				<assembly_set>
+					<status>previous</status>
+					<assembly_name>GRCh37</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148515112</start>
+					<stop>148515112</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148515112</display_start>
+					<display_stop>148515112</display_stop>
+					<assembly_acc_ver>GCF_000001405.25</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+			</variation_loc>
+			<allele_freq_set>
+			</allele_freq_set>
+			<variant_type>single nucleotide variant</variant_type>
+			<canonical_spdi>NC_000007.14:148818019:T:C</canonical_spdi>
+		</variation>
+	</variation_set>
+	<supporting_submissions>
+		<scv>
+			<string>SCV003832313</string>
+		</scv>
+		<rcv>
+			<string>RCV003147143</string>
+		</rcv>
+	</supporting_submissions>
+	<germline_classification>
+		<description>Uncertain significance</description>
+		<last_evaluated>2021/03/26 00:00</last_evaluated>
+		<review_status>criteria provided, single submitter</review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+			<trait>
+				<trait_xrefs>
+					<trait_xref>
+						<db_source>Orphanet</db_source>
+						<db_id>3447</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MedGen</db_source>
+						<db_id>C0265210</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MONDO</db_source>
+						<db_id>MONDO:0010193</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>OMIM</db_source>
+						<db_id>277590</db_id>
+					</trait_xref>
+				</trait_xrefs>
+				<trait_name>Weaver syndrome</trait_name>
+			</trait>
+		</trait_set>
+	</germline_classification>
+	<clinical_impact_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</clinical_impact_classification>
+	<oncogenicity_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</oncogenicity_classification>
+	<record_status></record_status>
+	<gene_sort>EZH2</gene_sort>
+	<chr_sort>07</chr_sort>
+	<location_sort>00000000000148818020</location_sort>
+	<variation_set_name></variation_set_name>
+	<variation_set_id></variation_set_id>
+	<genes>
+		<gene>
+			<symbol>EZH2</symbol>
+			<GeneID>2146</GeneID>
+			<strand>-</strand>
+			<source>submitted</source>
+		</gene>
+	</genes>
+	<molecular_consequence_list>
+		<string>missense variant</string>
+	</molecular_consequence_list>
+	<protein_change>N322S, N352S, N361S, N366S</protein_change>
+	<fda_recognized_database></fda_recognized_database>
+</DocumentSummary>
+
+<DocumentSummary uid="2143970">
+	<obj_type>single nucleotide variant</obj_type>
+	<accession>VCV002143970</accession>
+	<accession_version>VCV002143970.2</accession_version>
+	<title>NM_004456.5(EZH2):c.2173G&gt;A (p.Glu725Lys)</title>
+	<variation_set>
+		<variation>
+			<measure_id>1879750</measure_id>
+			<variation_xrefs>
+			</variation_xrefs>
+			<variation_name>NM_004456.5(EZH2):c.2173G&gt;A (p.Glu725Lys)</variation_name>
+			<cdna_change>c.2173G&gt;A</cdna_change>
+			<aliases>
+			</aliases>
+			<variation_loc>
+				<assembly_set>
+					<status>current</status>
+					<assembly_name>GRCh38</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148809093</start>
+					<stop>148809093</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148809093</display_start>
+					<display_stop>148809093</display_stop>
+					<assembly_acc_ver>GCF_000001405.38</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+				<assembly_set>
+					<status>previous</status>
+					<assembly_name>GRCh37</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148506185</start>
+					<stop>148506185</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148506185</display_start>
+					<display_stop>148506185</display_stop>
+					<assembly_acc_ver>GCF_000001405.25</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+			</variation_loc>
+			<allele_freq_set>
+			</allele_freq_set>
+			<variant_type>single nucleotide variant</variant_type>
+			<canonical_spdi>NC_000007.14:148809092:C:T</canonical_spdi>
+		</variation>
+	</variation_set>
+	<supporting_submissions>
+		<scv>
+			<string>SCV003451786</string>
+		</scv>
+		<rcv>
+			<string>RCV003068152</string>
+		</rcv>
+	</supporting_submissions>
+	<germline_classification>
+		<description>Uncertain significance</description>
+		<last_evaluated>2022/06/12 00:00</last_evaluated>
+		<review_status>criteria provided, single submitter</review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+			<trait>
+				<trait_xrefs>
+					<trait_xref>
+						<db_source>Orphanet</db_source>
+						<db_id>3447</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MedGen</db_source>
+						<db_id>C0265210</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MONDO</db_source>
+						<db_id>MONDO:0010193</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>OMIM</db_source>
+						<db_id>277590</db_id>
+					</trait_xref>
+				</trait_xrefs>
+				<trait_name>Weaver syndrome</trait_name>
+			</trait>
+		</trait_set>
+	</germline_classification>
+	<clinical_impact_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</clinical_impact_classification>
+	<oncogenicity_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</oncogenicity_classification>
+	<record_status></record_status>
+	<gene_sort>EZH2</gene_sort>
+	<chr_sort>07</chr_sort>
+	<location_sort>00000000000148809093</location_sort>
+	<variation_set_name></variation_set_name>
+	<variation_set_id></variation_set_id>
+	<genes>
+		<gene>
+			<symbol>EZH2</symbol>
+			<GeneID>2146</GeneID>
+			<strand>-</strand>
+			<source>submitted</source>
+		</gene>
+	</genes>
+	<molecular_consequence_list>
+		<string>missense variant</string>
+	</molecular_consequence_list>
+	<protein_change>E725K, E669K, E681K, E711K, E720K</protein_change>
+	<fda_recognized_database></fda_recognized_database>
+</DocumentSummary>
+
+<DocumentSummary uid="1313078">
+	<obj_type>single nucleotide variant</obj_type>
+	<accession>VCV001313078</accession>
+	<accession_version>VCV001313078.2</accession_version>
+	<title>NM_004456.5(EZH2):c.892C&gt;T (p.Arg298Cys)</title>
+	<variation_set>
+		<variation>
+			<measure_id>1303339</measure_id>
+			<variation_xrefs>
+				<variation_xref>
+					<db_source>dbSNP</db_source>
+					<db_id>2129475479</db_id>
+				</variation_xref>
+			</variation_xrefs>
+			<variation_name>NM_004456.5(EZH2):c.892C&gt;T (p.Arg298Cys)</variation_name>
+			<cdna_change>c.892C&gt;T</cdna_change>
+			<aliases>
+			</aliases>
+			<variation_loc>
+				<assembly_set>
+					<status>current</status>
+					<assembly_name>GRCh38</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148826469</start>
+					<stop>148826469</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148826469</display_start>
+					<display_stop>148826469</display_stop>
+					<assembly_acc_ver>GCF_000001405.38</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+				<assembly_set>
+					<status>previous</status>
+					<assembly_name>GRCh37</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148523561</start>
+					<stop>148523561</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148523561</display_start>
+					<display_stop>148523561</display_stop>
+					<assembly_acc_ver>GCF_000001405.25</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+			</variation_loc>
+			<allele_freq_set>
+			</allele_freq_set>
+			<variant_type>single nucleotide variant</variant_type>
+			<canonical_spdi>NC_000007.14:148826468:G:A</canonical_spdi>
+		</variation>
+	</variation_set>
+	<supporting_submissions>
+		<scv>
+			<string>SCV002002405</string>
+		</scv>
+		<rcv>
+			<string>RCV001769029</string>
+		</rcv>
+	</supporting_submissions>
+	<germline_classification>
+		<description>Uncertain significance</description>
+		<last_evaluated>2020/07/21 00:00</last_evaluated>
+		<review_status>criteria provided, single submitter</review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+			<trait>
+				<trait_xrefs>
+					<trait_xref>
+						<db_source>MedGen</db_source>
+						<db_id>C3661900</db_id>
+					</trait_xref>
+				</trait_xrefs>
+				<trait_name>not provided</trait_name>
+			</trait>
+		</trait_set>
+	</germline_classification>
+	<clinical_impact_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</clinical_impact_classification>
+	<oncogenicity_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</oncogenicity_classification>
+	<record_status></record_status>
+	<gene_sort>EZH2</gene_sort>
+	<chr_sort>07</chr_sort>
+	<location_sort>00000000000148826469</location_sort>
+	<variation_set_name></variation_set_name>
+	<variation_set_id></variation_set_id>
+	<genes>
+		<gene>
+			<symbol>EZH2</symbol>
+			<GeneID>2146</GeneID>
+			<strand>-</strand>
+			<source>submitted</source>
+		</gene>
+	</genes>
+	<molecular_consequence_list>
+		<string>missense variant</string>
+	</molecular_consequence_list>
+	<protein_change>P259S, P289S, P298S, R298C</protein_change>
+	<fda_recognized_database></fda_recognized_database>
+</DocumentSummary>
+
+<DocumentSummary uid="1308899">
+	<obj_type>single nucleotide variant</obj_type>
+	<accession>VCV001308899</accession>
+	<accession_version>VCV001308899.2</accession_version>
+	<title>NM_004456.5(EZH2):c.1744G&gt;A (p.Val582Ile)</title>
+	<variation_set>
+		<variation>
+			<measure_id>1300927</measure_id>
+			<variation_xrefs>
+				<variation_xref>
+					<db_source>dbSNP</db_source>
+					<db_id>2129469817</db_id>
+				</variation_xref>
+			</variation_xrefs>
+			<variation_name>NM_004456.5(EZH2):c.1744G&gt;A (p.Val582Ile)</variation_name>
+			<cdna_change>c.1744G&gt;A</cdna_change>
+			<aliases>
+			</aliases>
+			<variation_loc>
+				<assembly_set>
+					<status>current</status>
+					<assembly_name>GRCh38</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148814066</start>
+					<stop>148814066</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148814066</display_start>
+					<display_stop>148814066</display_stop>
+					<assembly_acc_ver>GCF_000001405.38</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+				<assembly_set>
+					<status>previous</status>
+					<assembly_name>GRCh37</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148511158</start>
+					<stop>148511158</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148511158</display_start>
+					<display_stop>148511158</display_stop>
+					<assembly_acc_ver>GCF_000001405.25</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+			</variation_loc>
+			<allele_freq_set>
+			</allele_freq_set>
+			<variant_type>single nucleotide variant</variant_type>
+			<canonical_spdi>NC_000007.14:148814065:C:T</canonical_spdi>
+		</variation>
+	</variation_set>
+	<supporting_submissions>
+		<scv>
+			<string>SCV001996394</string>
+		</scv>
+		<rcv>
+			<string>RCV001754787</string>
+		</rcv>
+	</supporting_submissions>
+	<germline_classification>
+		<description>Uncertain significance</description>
+		<last_evaluated>2019/10/02 00:00</last_evaluated>
+		<review_status>criteria provided, single submitter</review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+			<trait>
+				<trait_xrefs>
+					<trait_xref>
+						<db_source>MedGen</db_source>
+						<db_id>C3661900</db_id>
+					</trait_xref>
+				</trait_xrefs>
+				<trait_name>not provided</trait_name>
+			</trait>
+		</trait_set>
+	</germline_classification>
+	<clinical_impact_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</clinical_impact_classification>
+	<oncogenicity_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</oncogenicity_classification>
+	<record_status></record_status>
+	<gene_sort>EZH2</gene_sort>
+	<chr_sort>07</chr_sort>
+	<location_sort>00000000000148814066</location_sort>
+	<variation_set_name></variation_set_name>
+	<variation_set_id></variation_set_id>
+	<genes>
+		<gene>
+			<symbol>EZH2</symbol>
+			<GeneID>2146</GeneID>
+			<strand>-</strand>
+			<source>submitted</source>
+		</gene>
+	</genes>
+	<molecular_consequence_list>
+		<string>missense variant</string>
+	</molecular_consequence_list>
+	<protein_change>V526I, V538I, V568I, V577I, V582I</protein_change>
+	<fda_recognized_database></fda_recognized_database>
+</DocumentSummary>
+
+<DocumentSummary uid="2888755">
+	<obj_type>single nucleotide variant</obj_type>
+	<accession>VCV002888755</accession>
+	<accession_version>VCV002888755.1</accession_version>
+	<title>NM_004456.5(EZH2):c.1033G&gt;A (p.Ala345Thr)</title>
+	<variation_set>
+		<variation>
+			<measure_id>3047613</measure_id>
+			<variation_xrefs>
+			</variation_xrefs>
+			<variation_name>NM_004456.5(EZH2):c.1033G&gt;A (p.Ala345Thr)</variation_name>
+			<cdna_change>c.1033G&gt;A</cdna_change>
+			<aliases>
+			</aliases>
+			<variation_loc>
+				<assembly_set>
+					<status>current</status>
+					<assembly_name>GRCh38</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148818084</start>
+					<stop>148818084</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148818084</display_start>
+					<display_stop>148818084</display_stop>
+					<assembly_acc_ver>GCF_000001405.38</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+				<assembly_set>
+					<status>previous</status>
+					<assembly_name>GRCh37</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148515176</start>
+					<stop>148515176</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148515176</display_start>
+					<display_stop>148515176</display_stop>
+					<assembly_acc_ver>GCF_000001405.25</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+			</variation_loc>
+			<allele_freq_set>
+			</allele_freq_set>
+			<variant_type>single nucleotide variant</variant_type>
+			<canonical_spdi>NC_000007.14:148818083:C:T</canonical_spdi>
+		</variation>
+	</variation_set>
+	<supporting_submissions>
+		<scv>
+			<string>SCV004513872</string>
+		</scv>
+		<rcv>
+			<string>RCV003611413</string>
+		</rcv>
+	</supporting_submissions>
+	<germline_classification>
+		<description>Likely benign</description>
+		<last_evaluated>2023/06/20 00:00</last_evaluated>
+		<review_status>criteria provided, single submitter</review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+			<trait>
+				<trait_xrefs>
+					<trait_xref>
+						<db_source>Orphanet</db_source>
+						<db_id>3447</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MedGen</db_source>
+						<db_id>C0265210</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MONDO</db_source>
+						<db_id>MONDO:0010193</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>OMIM</db_source>
+						<db_id>277590</db_id>
+					</trait_xref>
+				</trait_xrefs>
+				<trait_name>Weaver syndrome</trait_name>
+			</trait>
+		</trait_set>
+	</germline_classification>
+	<clinical_impact_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</clinical_impact_classification>
+	<oncogenicity_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</oncogenicity_classification>
+	<record_status></record_status>
+	<gene_sort>EZH2</gene_sort>
+	<chr_sort>07</chr_sort>
+	<location_sort>00000000000148818084</location_sort>
+	<variation_set_name></variation_set_name>
+	<variation_set_id></variation_set_id>
+	<genes>
+		<gene>
+			<symbol>EZH2</symbol>
+			<GeneID>2146</GeneID>
+			<strand>-</strand>
+			<source>submitted</source>
+		</gene>
+	</genes>
+	<molecular_consequence_list>
+		<string>missense variant</string>
+	</molecular_consequence_list>
+	<protein_change>A340T, A301T, A331T, A345T</protein_change>
+	<fda_recognized_database></fda_recognized_database>
+</DocumentSummary>
+
+<DocumentSummary uid="946034">
+	<obj_type>single nucleotide variant</obj_type>
+	<accession>VCV000946034</accession>
+	<accession_version>VCV000946034.8</accession_version>
+	<title>NM_004456.5(EZH2):c.574G&gt;A (p.Asp192Asn)</title>
+	<variation_set>
+		<variation>
+			<measure_id>924748</measure_id>
+			<variation_xrefs>
+				<variation_xref>
+					<db_source>dbSNP</db_source>
+					<db_id>778968366</db_id>
+				</variation_xref>
+			</variation_xrefs>
+			<variation_name>NM_004456.5(EZH2):c.574G&gt;A (p.Asp192Asn)</variation_name>
+			<cdna_change>c.574G&gt;A</cdna_change>
+			<aliases>
+			</aliases>
+			<variation_loc>
+				<assembly_set>
+					<status>current</status>
+					<assembly_name>GRCh38</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148828791</start>
+					<stop>148828791</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148828791</display_start>
+					<display_stop>148828791</display_stop>
+					<assembly_acc_ver>GCF_000001405.38</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+				<assembly_set>
+					<status>previous</status>
+					<assembly_name>GRCh37</assembly_name>
+					<chr>7</chr>
+					<band>7q36.1</band>
+					<start>148525883</start>
+					<stop>148525883</stop>
+					<inner_start></inner_start>
+					<inner_stop></inner_stop>
+					<outer_start></outer_start>
+					<outer_stop></outer_stop>
+					<display_start>148525883</display_start>
+					<display_stop>148525883</display_stop>
+					<assembly_acc_ver>GCF_000001405.25</assembly_acc_ver>
+					<annotation_release></annotation_release>
+					<alt></alt>
+					<ref></ref>
+				</assembly_set>
+			</variation_loc>
+			<allele_freq_set>
+				<allele_freq>
+					<source>Exome Aggregation Consortium (ExAC)</source>
+					<value>0.00001</value>
+					<minor_allele></minor_allele>
+				</allele_freq>
+				<allele_freq>
+					<source>The Genome Aggregation Database (gnomAD)</source>
+					<value>0.00002</value>
+					<minor_allele></minor_allele>
+				</allele_freq>
+				<allele_freq>
+					<source>The Genome Aggregation Database (gnomAD), exomes</source>
+					<value>0.00002</value>
+					<minor_allele></minor_allele>
+				</allele_freq>
+				<allele_freq>
+					<source>Trans-Omics for Precision Medicine (TOPMed)</source>
+					<value>0.00002</value>
+					<minor_allele></minor_allele>
+				</allele_freq>
+			</allele_freq_set>
+			<variant_type>single nucleotide variant</variant_type>
+			<canonical_spdi>NC_000007.14:148828790:C:T</canonical_spdi>
+		</variation>
+	</variation_set>
+	<supporting_submissions>
+		<scv>
+			<string>SCV001388627</string>
+		</scv>
+		<rcv>
+			<string>RCV001216815</string>
+		</rcv>
+	</supporting_submissions>
+	<germline_classification>
+		<description>Likely benign</description>
+		<last_evaluated>2023/09/06 00:00</last_evaluated>
+		<review_status>criteria provided, single submitter</review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+			<trait>
+				<trait_xrefs>
+					<trait_xref>
+						<db_source>Orphanet</db_source>
+						<db_id>3447</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MedGen</db_source>
+						<db_id>C0265210</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>MONDO</db_source>
+						<db_id>MONDO:0010193</db_id>
+					</trait_xref>
+					<trait_xref>
+						<db_source>OMIM</db_source>
+						<db_id>277590</db_id>
+					</trait_xref>
+				</trait_xrefs>
+				<trait_name>Weaver syndrome</trait_name>
+			</trait>
+		</trait_set>
+	</germline_classification>
+	<clinical_impact_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</clinical_impact_classification>
+	<oncogenicity_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</oncogenicity_classification>
+	<record_status></record_status>
+	<gene_sort>EZH2</gene_sort>
+	<chr_sort>07</chr_sort>
+	<location_sort>00000000000148828791</location_sort>
+	<variation_set_name></variation_set_name>
+	<variation_set_id></variation_set_id>
+	<genes>
+		<gene>
+			<symbol>EZH2</symbol>
+			<GeneID>2146</GeneID>
+			<strand>-</strand>
+			<source>submitted</source>
+		</gene>
+	</genes>
+	<molecular_consequence_list>
+		<string>missense variant</string>
+	</molecular_consequence_list>
+	<protein_change>D192N, D183N, D153N</protein_change>
+	<fda_recognized_database></fda_recognized_database>
+</DocumentSummary>
+
+<DocumentSummary uid="3362004">
+	<obj_type>single nucleotide variant</obj_type>
+	<accession>VCV003362004</accession>
+	<accession_version>VCV003362004.1</accession_version>
+	<title>NM_004456.5(EZH2):c.1580C&gt;T (p.Pro527Leu)</title>
+	<variation_set>
+		<variation>
+			<measure_id>3521214</measure_id>
+			<variation_xrefs>
+			</variation_xrefs>
+			<variation_name>NM_004456.5(EZH2):c.1580C&gt;T (p.Pro527Leu)</variation_name>
+			<cdna_change>c.1580C&gt;T</cdna_change>
+			<aliases>
+			</aliases>
+			<variation_loc>
+			</variation_loc>
+			<allele_freq_set>
+			</allele_freq_set>
+			<variant_type>single nucleotide variant</variant_type>
+			<canonical_spdi></canonical_spdi>
+		</variation>
+	</variation_set>
+	<supporting_submissions>
+		<scv>
+			<string>SCV005373421</string>
+		</scv>
+		<rcv>
+			<string>RCV004763036</string>
+		</rcv>
+	</supporting_submissions>
+	<germline_classification>
+		<description>Uncertain significance</description>
+		<last_evaluated>2023/05/30 00:00</last_evaluated>
+		<review_status>criteria provided, single submitter</review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+			<trait>
+				<trait_xrefs>
+					<trait_xref>
+						<db_source>MedGen</db_source>
+						<db_id>C3661900</db_id>
+					</trait_xref>
+				</trait_xrefs>
+				<trait_name>not provided</trait_name>
+			</trait>
+		</trait_set>
+	</germline_classification>
+	<clinical_impact_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</clinical_impact_classification>
+	<oncogenicity_classification>
+		<description></description>
+		<last_evaluated>1/01/01 00:00</last_evaluated>
+		<review_status></review_status>
+		<fda_recognized_database></fda_recognized_database>
+		<trait_set>
+		</trait_set>
+	</oncogenicity_classification>
+	<record_status></record_status>
+	<gene_sort>EZH2</gene_sort>
+	<chr_sort>ZZZ</chr_sort>
+	<location_sort>99999999999999999999</location_sort>
+	<variation_set_name></variation_set_name>
+	<variation_set_id></variation_set_id>
+	<genes>
+		<gene>
+			<symbol>EZH2</symbol>
+			<GeneID>2146</GeneID>
+			<strand>-</strand>
+			<source>submitted</source>
+		</gene>
+	</genes>
+	<molecular_consequence_list>
+		<string>missense variant</string>
+		<string>intron variant</string>
+	</molecular_consequence_list>
+	<protein_change>P483L, P513L, P522L, P527L</protein_change>
+	<fda_recognized_database></fda_recognized_database>
+</DocumentSummary>
+
+</DocumentSummarySet>
+</eSummaryResult>

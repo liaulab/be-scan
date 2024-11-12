@@ -12,11 +12,14 @@ from be_scan.sgrna.reference_check import reference_check
 from be_scan.sgrna.annotate import annotate
 from be_scan.sgrna.coverage import coverage_plots
 
+
 def design_library(gene_filepath, cas_type='SpG', 
 
     edit_from_list=['A', 'C', 'AC'], edit_to_list=['G', 'T', 'GT'], 
     genome_file='', protein_filepath='', 
     gene_name='', PAM=None, window=[4,8], 
+
+    email = '',
 
     output_name='annotated_guides.csv', output_dir='', delete=False,
     return_df=True, save_df=True,
@@ -50,6 +53,9 @@ def design_library(gene_filepath, cas_type='SpG',
         This field supercedes cas_type
     window: tuple or list, default = [4,8]
         Editing window, 4th to 8th bases inclusive by default
+
+    email: str, default ''
+        Email to use for Entrez search. If not provided, will not search ClinVar
 
     output_name : str or path, default 'guides.csv'
         Name of the output .csv guides file
@@ -101,7 +107,7 @@ def design_library(gene_filepath, cas_type='SpG',
     for edit_from, edit_to in zip(edit_from_list, edit_to_list): 
         annotate_params = {
             'guides_file':temp, 'edit_from':edit_from, 'edit_to':edit_to,
-            'protein_filepath':protein_filepath, 'window':window, 
+            'protein_filepath':protein_filepath, 'window':window, 'gene': gene_name,
             'return_df':True, 'save_df':False, }
         annotated = annotate(**annotate_params)
         annotated.to_csv(temp, index=False)
@@ -115,7 +121,22 @@ def design_library(gene_filepath, cas_type='SpG',
                 'return_df':True, 'save_df':True, }
             annotated_by_aa, plots = coverage_plots(**coverage_params)
 
-    # IF GENOME FILE IS PROVIDED, CHECK GUIDES GAIANST THIS REFERENCE SEQUENCE
+    '''
+    # ADD CLINICAL MUTATIONS #
+    if(gene_name != ''):
+        if(email == ''):
+            print('No email provided, skipping ClinVar search')
+        else:
+            clin_mut_params = {
+                'df': annotated, 
+                'cols': ["AtoG_mutations", "CtoT_mutations", "ACtoGT_mutations"],
+                'gene':gene_name, 'email':email, 
+                }
+            mutations = get_clin_muts(**clin_mut_params)
+            annotated = annotated.merge(mutations, how='left', on='mutations')
+    '''     
+
+    # IF GENOME FILE IS PROVIDED, CHECK GUIDES AGAINST THIS REFERENCE SEQUENCE
     if len(genome_file) > 0: 
         ref_check_params = {
             'guides_file':temp, 'genome_file':genome_file, 
@@ -125,6 +146,7 @@ def design_library(gene_filepath, cas_type='SpG',
     os.remove(temp)
     print('Complete! Library generated from', str(gene_filepath))
 
+
     if save_df: 
         out_filepath = Path(output_dir)
         annotated.to_csv(out_filepath / output_name, index=False)
@@ -133,6 +155,7 @@ def design_library(gene_filepath, cas_type='SpG',
 
 
 
+#Test the function
 #Changing filepath based on file structure of current repo
 gene_filepath='../../tests/test_data/sgrna/230408_AR_Input.fasta'
 protein_filepath='../../tests/test_data/sgrna/P10275.fasta'
@@ -143,5 +166,8 @@ if(not os.path.exists("../../outputs")):
     os.makedirs("../../outputs")
 
 design_library(
-    gene_filepath=gene_filepath, protein_filepath=protein_filepath, output_dir = "../../outputs"
+    gene_filepath=gene_filepath, 
+    protein_filepath=protein_filepath, 
+    output_dir = "../../outputs",
+    gene_name='AR'
 )

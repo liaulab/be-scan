@@ -11,8 +11,9 @@ from pathlib import Path
 
 from be_scan.sgrna._genomic_ import *
 from be_scan.sgrna._guideRNA_ import *
+from be_scan.sgrna._clinMut_ import *
 
-def annotate(guides_file, edit_from, edit_to,
+def annotate(guides_file, edit_from, edit_to, gene = '',
 
     protein_filepath='', window=[4,8], 
     seq_col = 'sgRNA_seq', gene_pos_col='gene_pos', frame_col = 'starting_frame', 
@@ -73,6 +74,7 @@ def annotate(guides_file, edit_from, edit_to,
        'mutations'      : str,    a list of mutation (ie F877L, F877P, F877L/F877P)
        'muttypes'       : list,   Missense Nonsense Silent No_C/Exon EssentialSpliceSite Control unique list
        'muttype'        : str,    muttypes condensed down to one type
+       'clinvar_mut'    : str,    mutations found in ClinVar
     """
 
     path = Path.cwd()
@@ -115,6 +117,14 @@ def annotate(guides_file, edit_from, edit_to,
     # PREDICT POSSIBLE MUTATIONS #
     if len(edit_from) > 1: df[f'{pre}_mutations'] = df.apply(lambda x : annotate_dual_muts(x, edit, amino_acid_seq, col_names, pre, window), axis=1)
     elif len(edit_from) == 1: df[f'{pre}_mutations'] = df.apply(lambda x : annotate_muts(x, edit, amino_acid_seq, col_names, pre, window), axis=1)
+
+    #ADD CLINVAR MUTATIONS #
+    mut_dict = get_clin_muts(df, [f'{pre}_mutations'], gene)
+    df = insert_muts(df, f'{pre}_mutations', mut_dict)
+
+    #ok this is patchy, try to figure out how to do this line by line because
+    #this just adds to the end lol
+
 
     # CALC muttypes LIST AND SINGLE muttype #
     df[f'{pre}_muttypes'] = df.apply(lambda x: determine_mutations(x, col_names, pre), axis=1)
