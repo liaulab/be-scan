@@ -39,8 +39,10 @@ def find_muts(df, cols):
         mutations.update((set([mut for lst in lsts for mut in lst.split(";")])))
     mut_list = list(mutations)
     #Clean up
-    mut_list.remove("nan")
-    mut_list.remove("")
+    if "nan" in mut_list: 
+        mut_list.remove("nan")
+    if "" in mut_list:
+        mut_list.remove("")
     
     return mut_list
 
@@ -212,7 +214,7 @@ def parse_clinvar_XML(xmls, gene):
     return(parsed_dict)
 
 
-def get_clin_muts(df, cols, gene, email):
+def get_clin_muts(df, cols, gene, email = 'christinelee@fas.harvard.edu'):
     #Run method
     mut_list = find_muts(df, cols)
     ids = fetch_clinvar_query(gene, mut_list, email)

@@ -11,7 +11,7 @@ from pathlib import Path
 
 from be_scan.sgrna._genomic_ import *
 from be_scan.sgrna._guideRNA_ import *
-from be_scan.sgrna._clinMut_ import *
+from be_scan.sgrna.clinMut import *
 
 def annotate(guides_file, edit_from, edit_to, gene = '',
 
