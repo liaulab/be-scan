@@ -17,7 +17,7 @@ def annotate(guides_file, edit_from, edit_to,
     protein_filepath='', window=[4,8], 
     seq_col = 'sgRNA_seq', gene_pos_col='gene_pos', frame_col = 'starting_frame', 
     strand_col = 'sgRNA_strand', window_start_col='windowstart_pos', window_end_col='windowend_pos', 
-    output_name="annotated.csv", output_dir='',
+    output_name="annotated.csv", output_dir='', exclude_duplicates=True, 
     return_df=True, save_df=True,
     ): 
     
@@ -99,8 +99,9 @@ def annotate(guides_file, edit_from, edit_to,
     df['coding_seq'] = np.where(df[strand_col]=='sense', df[seq_col], 
                                 df[seq_col].apply(lambda x: rev_complement(complements, x)) )
     # DELETE ENTRIES WITH THE SAME CODING SEQUENCE #
-    dupl_rows = df.duplicated(subset='sgRNA_seq', keep=False)
-    df = df[~dupl_rows]
+    if exclude_duplicates: 
+        dupl_rows = df.duplicated(subset='sgRNA_seq', keep=False)
+        df = df[~dupl_rows]
 
     # win_overlap #
     df[f'{pre}_win_overlap'] = df['coding_seq'].apply(lambda x: annotate_intron_exon(x, window))

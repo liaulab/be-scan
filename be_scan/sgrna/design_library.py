@@ -105,7 +105,7 @@ def design_library(gene_filepath, cas_type='SpG',
         annotate_params = {
             'guides_file':temp, 'edit_from':edit_from, 'edit_to':edit_to,
             'protein_filepath':protein_filepath, 'window':window, 
-            'return_df':True, 'save_df':False, }
+            'exclude_duplicates':exclude_duplicates, 'return_df':True, 'save_df':False, }
         annotated = annotate(**annotate_params)
         annotated.to_csv(temp, index=False)
     
