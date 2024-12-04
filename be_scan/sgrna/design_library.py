@@ -17,6 +17,7 @@ def design_library(gene_filepath, cas_type='SpG',
     edit_from_list=['A', 'C', 'AC'], edit_to_list=['G', 'T', 'GT'], 
     genome_file='', protein_filepath='', 
     gene_name='', PAM=None, window=[4,8], 
+    exclude_introns=False, exclude_nonediting=False, exclude_duplicates=True, exclude_sequences=['TTTT'], 
 
     output_name='annotated_guides.csv', output_dir='', delete=False,
     return_df=True, save_df=True,
@@ -93,7 +94,9 @@ def design_library(gene_filepath, cas_type='SpG',
     generate_library_params = {
         'gene_filepath':gene_filepath, 'gene_name':gene_name, 
         'cas_type':cas_type, 'edit_from':edit_from_list[0], 'edit_to':edit_to_list[0], 
-        'PAM':PAM, 'window':window, 'return_df':True, 'save_df':False, }
+        'PAM':PAM, 'window':window, 'return_df':True, 'save_df':False, 
+        'exclude_introns':exclude_introns, 'exclude_nonediting':exclude_nonediting, 
+        'exclude_duplicates':exclude_duplicates, 'exclude_sequences':exclude_sequences, }
     guides = generate_library(**generate_library_params)
     guides.to_csv(temp, index=False)
 
@@ -111,7 +114,7 @@ def design_library(gene_filepath, cas_type='SpG',
         for edit_from, edit_to in zip(edit_from_list, edit_to_list): 
             coverage_params = {
                 'annotated_guides':temp, 'edit_from':edit_from, 'edit_to':edit_to, 
-                'protein_filepath':protein_filepath, 
+                'protein_filepath':protein_filepath, 'output_dir':output_dir, 
                 'return_df':True, 'save_df':True, }
             annotated_by_aa, plots = coverage_plots(**coverage_params)
 

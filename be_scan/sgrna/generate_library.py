@@ -18,7 +18,7 @@ def generate_library(gene_filepath,
 
     gene_name='', PAM=None, window=[4,8], 
     output_name='guides.csv', output_dir='', return_df=True, save_df=True, 
-    exclude_introns=False, exclude_nonediting=False, exclude_sequences=['TTTT']
+    exclude_introns=False, exclude_nonediting=False, exclude_duplicates=True, exclude_sequences=['TTTT']
     ): 
     
     """[Summary]
@@ -134,15 +134,16 @@ def generate_library(gene_filepath,
         x.append(gene_name)
 
     # DELETE DUPLICATES BETWEEN FWD, BETWEEN REV, BETWEEN FWD AND REV #
-    df = pd.DataFrame(results, columns=column_names)
-    dupl_rows = df.duplicated(subset='sgRNA_seq', keep=False)
-    df_noduplicates = df[~dupl_rows]
+    if exclude_duplicates: 
+        df = pd.DataFrame(results, columns=column_names)
+        dupl_rows = df.duplicated(subset='sgRNA_seq', keep=False)
+        df = df[~dupl_rows]
 
     print('Guides generated and duplicates removed')
-    print(df_noduplicates.shape[0], 'guides were generated')
+    print(df.shape[0], 'guides were generated')
     # SAVE AND OUTPUT #
     if save_df: 
         Path.mkdir(path / output_dir, exist_ok=True)
-        df_noduplicates.to_csv(path / output_dir / output_name, index=False)
+        df.to_csv(path / output_dir / output_name, index=False)
     if return_df: 
-        return df_noduplicates
+        return df
