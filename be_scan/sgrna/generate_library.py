@@ -134,8 +134,8 @@ def generate_library(gene_filepath,
         x.append(gene_name)
 
     # DELETE DUPLICATES BETWEEN FWD, BETWEEN REV, BETWEEN FWD AND REV #
+    df = pd.DataFrame(results, columns=column_names)
     if exclude_duplicates: 
-        df = pd.DataFrame(results, columns=column_names)
         dupl_rows = df.duplicated(subset='sgRNA_seq', keep=False)
         df = df[~dupl_rows]
 
