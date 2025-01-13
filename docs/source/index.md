@@ -7,18 +7,18 @@
 
 ## be_scan (Base-Editing Screening Computational ANalysis)
 
-For further info on how to start, check out {doc}`notebooks/tutorial_intro` and read installation instructions in {doc}`install`
+For further info on how to start, check out {doc}`notebooks/tutorial` and read installation instructions in {doc}`install`
 
 ```{toctree}
 :caption: 'Contents:'
 :maxdepth: 2
 
 install
+notebooks/tutorial_intro
+notebooks/tutorial
 sgrna
 analysis
 plot
-notebooks/tutorial_intro
-notebooks/tutorial
 ```
 
 # Indices and tables
