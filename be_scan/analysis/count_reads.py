@@ -158,9 +158,7 @@ def count_reads(sample_sheet, annotated_lib,
             plt.close()
 
         # ADD MATCHING COUNTS TO LIBRARY DF #
-        print(df_ref)
         df_ref = pd.merge(df_ref, df_perfects, on=sgRNA_seq_col, how='outer')
-        print(df_ref)
         df_ref[cond] = df_ref[cond].fillna(0)
 
         # SORT NON-PERFECT MATCHES BY FREQUENCY AND OUTPUT #
