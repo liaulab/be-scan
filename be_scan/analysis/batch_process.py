@@ -126,10 +126,10 @@ def batch_process(sample_sheet, annotated_lib,
 #     neg_ctrl_col='gene', neg_ctrl_conditions=['control'], stats_comparisons=['cond1'], 
 # )
 
-batch_process(
-    sample_sheet='sample_sheet_Ind.csv',
-    annotated_lib='conditions_cleaned_wlabel.csv',
-    comparisons='comparisons_Ind.csv',
-    KEY_REV='GTTTGAGA', 
-    file_dir='../../liau/5.CSN/COP9-analysis241010'
-)
+# batch_process(
+#     sample_sheet='sample_sheet_Ind.csv',
+#     annotated_lib='conditions_cleaned_wlabel.csv',
+#     comparisons='comparisons_Ind.csv',
+#     KEY_REV='GTTTGAGA', 
+#     file_dir='../../liau/5.CSN/COP9-analysis241010'
+# )
