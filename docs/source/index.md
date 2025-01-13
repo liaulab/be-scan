@@ -19,7 +19,6 @@ analysis
 plot
 notebooks/tutorial_intro
 notebooks/tutorial
-notebooks/tutorial_CLI
 ```
 
 # Indices and tables
