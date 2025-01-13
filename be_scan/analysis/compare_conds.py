@@ -25,7 +25,7 @@ def compare_conds(comparisons, avg_conds,
     can be applied to any format of values, not just averaged condition reps.
 
     Parameters
-    ----------
+    ------------
     comparisons : comparisons .csv in format (name, treatment, control)
         A dataframe denoting the comparisons to make, with the comparison
         being treatment - control. The output column
@@ -44,6 +44,9 @@ def compare_conds(comparisons, avg_conds,
         Whether or not to return the resulting dataframe
     save : bool, default True
         Whether or not to save the resulting dataframe
+
+    Returns
+    ------------
     """
 
     # import files, define variables, check for requirements

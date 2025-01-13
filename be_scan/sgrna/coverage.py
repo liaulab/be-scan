@@ -52,6 +52,9 @@ def coverage_plots(
         Whether or not to return the resulting dataframe
     save_df : bool, default True
         Whether or not to save the resulting dataframe
+        
+    Returns
+    ------------
     """
     path = Path.cwd()
     # READ GUIDES FILE #

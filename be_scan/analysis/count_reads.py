@@ -31,7 +31,7 @@ def count_reads(sample_sheet, annotated_lib,
     the subsequences for KEY and KEY_REV within the KEY_INTERVAL. These counts are then recorded.
 
     Parameters
-    ----------
+    ------------
     sample_sheet : str or path
         REQUIRED COLS: 'fastq_file', 'counts_file', 'noncounts_file', 'stats_file'
         a sheet with information on sequence id, 
@@ -70,6 +70,9 @@ def count_reads(sample_sheet, annotated_lib,
         Whether or not to save individual counts, noncounts, and stats files
     plot_out_type : str, optional, defaults to 'pdf'
         file type of figure output
+
+    Returns
+    ------------
     """
     path = Path.cwd()
     inpath = Path(in_dir)

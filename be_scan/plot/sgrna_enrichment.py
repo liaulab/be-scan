@@ -29,7 +29,7 @@ def sgrna_enrichment(df_filepath, comparisons,
     plots the data for each condition to highlight specifically enriched guides
 
     Parameters
-    ----------
+    ------------
     df_filepath : str, required
         filepath to .csv data generated from count_reads
     comparisons : list of str, required
@@ -70,8 +70,7 @@ def sgrna_enrichment(df_filepath, comparisons,
         https://seaborn.pydata.org/generated/seaborn.rugplot.html
 
     Returns
-    ----------
-    None
+    ------------
     """
     
     # style

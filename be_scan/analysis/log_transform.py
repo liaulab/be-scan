@@ -25,7 +25,7 @@ def log_transform(sample_sheet, library_counts,
     log2 transformed values, and t0 normalized values can be saved to csv.
 
     Parameters
-    ----------
+    ------------
     sample_sheet : str or path
         REQUIRED COLS: 'condition', 'counts_file'
         a sheet with information on sequence id, 
@@ -50,6 +50,9 @@ def log_transform(sample_sheet, library_counts,
         Whether or not to return the resulting dataframe
     save : bool, default True
         Whether or not to save the resulting dataframe
+
+    Returns
+    ------------
     """
     in_path = Path(in_dir)
     out_path = Path(out_dir)

@@ -29,7 +29,7 @@ def corr_heatmap(df_filepath, comparisons,
     a scatterplot showing correlation between two given conditions
     
     Parameters
-    ----------
+    ------------
     df_filepath : str, required
         filepath to .csv data generated from count_reads
     comparisons : list of str, required
@@ -66,8 +66,7 @@ def corr_heatmap(df_filepath, comparisons,
         https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
 
     Returns
-    ----------
-    None
+    ------------
     """
 
     df_filepath = Path(df_filepath)

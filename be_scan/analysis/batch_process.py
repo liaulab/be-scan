@@ -29,7 +29,7 @@ def batch_process(sample_sheet, annotated_lib,
     complete count_reads, merge_and_norm, average_reps, compare_conds runs.
 
     Parameters
-    ----------
+    ------------
     sample_sheet : str or path
         REQUIRED COLS: 'fastq_file', 'counts_file', 'noncounts_file', 'stats_file'
         a sheet with information on sequence id, 
@@ -87,6 +87,9 @@ def batch_process(sample_sheet, annotated_lib,
         Whether or not to return the resulting dataframe and statistics
     save : bool, default True
         Whether or not to save the resulting dataframe
+
+    Returns
+    ------------
     """
 
     count_reads_params = {
@@ -116,20 +119,3 @@ def batch_process(sample_sheet, annotated_lib,
 
     if return_df: 
         return result
-
-# batch_process(
-#     sample_sheet='sample_sheet.csv', 
-#     annotated_lib='annotated_lib_sample_in.csv', 
-#     comparisons='comparisons.csv', 
-#     file_dir='tests/test_data/analysis', 
-#     KEY_INTERVAL=(0, 60), KEY='ABCDEFG', KEY_REV='GHIJKL', 
-#     neg_ctrl_col='gene', neg_ctrl_conditions=['control'], stats_comparisons=['cond1'], 
-# )
-
-# batch_process(
-#     sample_sheet='sample_sheet_Ind.csv',
-#     annotated_lib='conditions_cleaned_wlabel.csv',
-#     comparisons='comparisons_Ind.csv',
-#     KEY_REV='GTTTGAGA', 
-#     file_dir='../../liau/5.CSN/COP9-analysis241010'
-# )
