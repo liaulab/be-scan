@@ -11,6 +11,12 @@ copyright = '2023, XYH, SPS, BBL'
 author = 'XYH, SPS, BBL'
 release = '1.0.0'
 
+from unittest.mock import Mock
+import sys
+
+MOCK_MODULES = ['statsmodels']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
