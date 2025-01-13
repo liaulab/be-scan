@@ -34,6 +34,8 @@ def compare_conds(comparisons, avg_conds,
         String or path to the csv file containing the values for comparison.
         The column headers must match the sample names in comparisons
 
+    in_dir : str or path, defaults to ''
+        String or path to the directory where library_counts and sample_sheet is found. 
     out_dir : str or path, defaults to ''
         String or path to the directory where all files are found. 
     out_file : str or path, defaults to 'conditions.csv'

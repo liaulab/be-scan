@@ -49,29 +49,33 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
         name of x-axis label
     ylab : str, optional, defaults to 'Log2 Fold Change'
         name of y-axis label
-    col_label : str, optional, defaults to 'subavg'
-        a suffix label for point values adjusted by normalization
+    neg_ctrl : bool, optional, defaults to False
+        whether or not to calulate negative control for normalization and line drawing
+    neg_ctrl_col : str, optional, defaults to 'CtoT_win_overlap'
+        column of .csv which correspond to normalization control
+    neg_ctrl_conditions : list of str, optional, defaults to ['Intron', 'Control']
+        name of categories of neg_ctrl_col to normalize dataframe
     savefig : boolean, optional, defaults to True
         option of saving figure to output or not
+    show : bool, optional, defaults to True
+        whether or not to show the plot
     out_name : str, optional, defaults to 'scatterplot'
         name of figure output
     out_type : str, optional, defaults to 'pdf'
         file type of figure output
     out_directory : str, optional, defaults to ''
         path to output directory
-    show : bool, optional, defaults to True
-        whether or not to show the plot
 
-    subplots_kws: dict, optional, defaults to 
+    subplots_kws : dict, optional, defaults to 
         {'figsize':(5,4)}
         input params for plt.subplots() 
         https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
-    boxplot_kws: dict, optional, defaults to 
+    boxplot_kws : dict, optional, defaults to 
         {'saturation':1, 'fliersize':4, 'width':0.4, 
         'flierprops':{'marker':'o', 'mec':'black', 'lw':1, 'alpha':0.8}}
         input params for sns.boxplot() 
         https://seaborn.pydata.org/generated/seaborn.boxplot.html
-    axhline_kws: dict, optional, defaults to 
+    axhline_kws : dict, optional, defaults to 
         {'color':'k', 'ls':'--', 'lw':1}
         input params for plt.axhline() 
         https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axhline.html

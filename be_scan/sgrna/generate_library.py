@@ -58,6 +58,8 @@ def generate_library(gene_filepath,
         Whether or not the editible base needs to be in an intron
     exclude_nonediting : bool, default True
         Whether or not the editible base needs to be in the window
+    exclude_duplicates : bool, default True
+        Whether or not duplicate guides should be removed from the pool
     exclude_sequences : list of strings, defailt ['TTTT']
         Exclude guides with sequences in this list
 

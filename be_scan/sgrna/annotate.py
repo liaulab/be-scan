@@ -15,8 +15,8 @@ from be_scan.sgrna._guideRNA_ import *
 def annotate(guides_file, edit_from, edit_to,
 
     protein_filepath='', window=[4,8], 
-    seq_col = 'sgRNA_seq', gene_pos_col='gene_pos', frame_col = 'starting_frame', 
-    strand_col = 'sgRNA_strand', window_start_col='windowstart_pos', window_end_col='windowend_pos', 
+    seq_col = 'sgRNA_seq', frame_col = 'starting_frame', strand_col = 'sgRNA_strand', 
+    gene_pos_col='gene_pos', window_start_col='windowstart_pos', window_end_col='windowend_pos', 
     output_name="annotated.csv", output_dir='', exclude_duplicates=True, 
     return_df=True, save_df=True,
     ): 
@@ -33,8 +33,6 @@ def annotate(guides_file, edit_from, edit_to,
     edit_to: str
         The base (ACTG) to replace with, can be a string of multiple bases
 
-    gene_filepath: str or path, default ''
-        The file with the gene .fasta sequence
     protein_filepath: str or path, default ''
         The file with the protein .fasta sequence for double checking the mutations annotated
     window: tuple or list, default = [4,8]
@@ -48,10 +46,18 @@ def annotate(guides_file, edit_from, edit_to,
         first nucleotide of the guide (0, 1, 2)
     strand_col : str, default 'sgRNA_strand'
         column name of the dataframe with the strand direction (sense, antisense)
+    gene_pos_col : str, default 'gene_pos'
+        column name of the dataframe with the numeric value of where the gene starts
+    window_start_col : str, default 'windowstart_pos'
+        column name of the dataframe with the numeric value of where the window starts
+    window_end_col : str, default 'window_end_col'
+        column name of the dataframe with the numeric value of where the window ends
     output_name : str or path, default 'annotated.csv'
         Name of the output .csv guides file
     output_dir : str or path, default ''
         Directory path of the output .cs guides file
+    exclude_duplicates : bool, default True
+        Whether or not duplicate guides should be removed from the pool
     return_df : bool, default True
         Whether or not to return the resulting dataframe
     save_df : bool, default True

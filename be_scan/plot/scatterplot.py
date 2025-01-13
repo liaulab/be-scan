@@ -47,6 +47,10 @@ def scatterplot(df_filepath, # dataframe
     comparisons : list of str, required
         list of comparisons that correspond to columns of data
 
+    xlab : str, optional, defaults to 'Amino Acid Position'
+        name of x-axis label
+    ylab : str, optional, defaults to 'sgRNA Score'
+        name of y-axis label
     include_hue: bool, optional, default to False
         whether or not to color points by a variable, 
         will also restrict points plotted to only the hue_order values listed
@@ -71,11 +75,7 @@ def scatterplot(df_filepath, # dataframe
     annot_cutoff : float, optional, defaults to None
         The absolute value cutoff for which points will be labeled
     
-    xlab : str, optional, defaults to 'Amino Acid Position'
-        name of x-axis label
-    ylab : str, optional, defaults to 'sgRNA Score'
-        name of y-axis label
-    savefig: bool, optional, defaults to True
+    savefig : bool, optional, defaults to True
         whether or not to save the figure
     show : bool, optional, defaults to True
         whether or not to show the plot
@@ -86,23 +86,23 @@ def scatterplot(df_filepath, # dataframe
     out_directory : str, optional, defaults to ''
         path to output directory
 
-    xlim_kws: dict, optional, defaults to 
+    xlim_kws : dict, optional, defaults to 
         {'xmin':None, 'xmax':None}
         input params for ax.set_xlim() 
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xlim.html
-    ylim_kws: dict, optional, defaults to 
+    ylim_kws : dict, optional, defaults to 
         {'ymin':None, 'ymax':None}
         input params for ax.set_ylim() 
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylim.html
-    scatterplot_kws: dict, optional, defaults to 
+    scatterplot_kws : dict, optional, defaults to 
         {'alpha':0.8, 'linewidth':1.0, 'edgecolor':'black', 's':25}
         input params for sns.scatterplot() 
         https://seaborn.pydata.org/generated/seaborn.scatterplot.html
-    subplots_kws: dict, optional, defaults to 
+    subplots_kws : dict, optional, defaults to 
         {'figsize':(4,4)}
         input params for plt.subplots() 
         https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
-    axhline_kws: dict, optional, defaults to 
+    axhline_kws : dict, optional, defaults to 
         {'color':'k', 'ls':'--', 'lw':1}
         input params for plt.axhline() 
         https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axhline.html

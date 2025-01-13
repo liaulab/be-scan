@@ -30,9 +30,9 @@ def corr_heatmap(df_filepath, comparisons,
     
     Parameters
     ----------
-    df_filepath: str, required
+    df_filepath : str, required
         filepath to .csv data generated from count_reads
-    comparisons: list of str, required
+    comparisons : list of str, required
         list of comparisons that correspond to columns of .csv data
 
     corr_type : str, optional, defaults to 'spearman'
@@ -43,7 +43,8 @@ def corr_heatmap(df_filepath, comparisons,
         name of the y-axis label
     title : str, optional, defaults to 'Spearman Correlation Heatmap'
         name of title label
-    savefig: bool, optional, defaults to True
+        
+    savefig : bool, optional, defaults to True
         whether or not to save the figure
     show : bool, optional, defaults to True
         whether or not to show the plot
@@ -54,12 +55,12 @@ def corr_heatmap(df_filepath, comparisons,
     out_type : str, optional, defaults to 'pdf'
         file type of figure output
     
-    heatmap_kws: dict, optional, defaults to 
+    heatmap_kws : dict, optional, defaults to 
         {'center':0, 'linewidth':0.5, 'cmap':'coolwarm', 
         'square':True, 'cbar_kws':{"shrink": 0.5}, 'annot':True}
         input params for sns.heatmap() 
         https://seaborn.pydata.org/generated/seaborn.heatmap.html
-    subplots_kws: dict, optional, defaults to 
+    subplots_kws : dict, optional, defaults to 
         {'figsize':(4,4)}
         input params for plt.subplots() 
         https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html

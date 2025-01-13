@@ -31,12 +31,12 @@ def reference_check(guides_file, genome_file,
     genome_file: str or path
         The file with the genome .fasta sequence
 
-    delete : bool, default False
-        Whether or not to delete guides with multiple genomic occurrences
     output_name : str or path, default 'guides.csv'
         Name of the output .csv guides file
     output_dir : str or path, default ''
         Directory path of the output .cs guides file
+    delete : bool, default False
+        Whether or not to delete guides with multiple genomic occurrences
     return_df : bool, default True
         Whether or not to return the resulting dataframe
     save_df : bool, default True

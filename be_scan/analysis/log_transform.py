@@ -34,12 +34,14 @@ def log_transform(sample_sheet, library_counts,
         out_np (string or path for the output csv file with non-perfect sgRNA matches ex: 'noncounts.csv'), 
         out_stats (string or path for the output txt file with the read counting statistics ex: 'stats.txt'), 
         condition names, and condition categories
-    counts_library : str or path
-        String or path to the reference file. counts_library must have column headers,
+    library_counts : str or path
+        String or path to the reference file. library_counts must have column headers,
         with 'sgRNA_seq' as the header for the column with the sgRNA sequences.
 
     controls : str, default ['t0']
         Name of the control condition samples in sample_sheet. 
+    in_dir : str or path, defaults to ''
+        String or path to the directory where library_counts and sample_sheet is found. 
     out_dir : str or path, defaults to ''
         String or path to the directory where all files are found. 
     out_file : str or path, defaults to 'agg_log2_t0.csv'

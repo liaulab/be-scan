@@ -20,8 +20,6 @@ import scipy.interpolate as interp
 from statsmodels.nonparametric.smoothers_lowess import lowess
 import statsmodels.stats.multitest as smm
 
-from concurrent.futures import ThreadPoolExecutor  # or ProcessPoolExecutor
-
 def loess_smoothing(df_filepath, 
                     x_column, comparisons, span, 
 
@@ -36,7 +34,7 @@ def loess_smoothing(df_filepath,
     ): 
 
     """[Summary]
-    this function calculates the smoothed arbitrary values for each value 
+    This function calculates the smoothed arbitrary values for each value 
     in your x_out for the enrichment profile of your POI
     
     Parameters
@@ -47,7 +45,7 @@ def loess_smoothing(df_filepath,
         column of .csv, typically amino acid position
     comparisons : list of str, required
         list of comparisons that correspond to columns of data
-    span: float, required (recommended range to start is ~0.05-0.10)
+    span : float, required (recommended range to start is ~0.05-0.10)
         hyperparameter for the span that you want to smooth over, requires optimization
 
     interp_method: str, optional, defaults to 'quadratic'
@@ -55,7 +53,33 @@ def loess_smoothing(df_filepath,
         'linear', 'nearest', 'nearest-up', 'zero', 
         'slinear', 'quadratic', 'cubic', 'previous', or 'next'
         from https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
+    n_repeats: int, optional, defaults to 10,000
+        the number of times you want to shuffle
+        1000x is recommended for final data
 
+    savefig : bool, optional, defaults to True
+        whether or not to save the figure
+    show : bool, optional, defaults to True
+        whether or not to show the plot
+    out_name : str, optional, defaults to 'loess_smoothed'
+        name of figure output
+    out_type : str, optional, defaults to 'pdf'
+        file type of figure output
+    out_directory : str, optional, defaults to ''
+        path to output directory
+    return_df: bool, optional, defaults to True
+        whether or not to return the dataframes
+
+    domains : dict, optional, defaults to {}
+        a list of start dicts of start and end for each domain annotation ie [{'start': 1, 'end': 2}, ]
+    domains_alpha : float, optional, defaults to 0.25
+        The level of transparency for the domains
+    domains_color : str, optional, defaults to 'lightblue'
+        The color for the domains
+
+    subplots_kws : dict, optional, defaults to {}
+`       input params for plt.subplots
+        https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
     loess_kws: dict, optional, defaults to
         {'missing':'raise', 'return_sorted':False, 'it':0}
         input params for statsmodels.nonparametric.smoothers_lowess.lowess()
@@ -64,30 +88,10 @@ def loess_smoothing(df_filepath,
         {'fill_value':'extrapolate'}
         input params for scipy.interpolate.interp1d()
         https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
-
-    n_repeats: int, optional, defaults to 10,000
-        the number of times you want to shuffle
-        1000x is recommended for final data
     smm_multipletests_kws: dict, optional, defaults to 
         {'alpha':0.05, 'method':'fdr_bh', 'is_sorted':False, 'returnsorted':False}
         input params for smm.multipletests()
         https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html
-
-    domains: 
-        [{'start': 1, 'end': 2}, ]
-    
-    savefig: bool, optional, defaults to True
-        whether or not to save the figure
-    out_name : str, optional, defaults to 'loess_smoothed'
-        name of figure output
-    out_type : str, optional, defaults to 'pdf'
-        file type of figure output
-    out_directory : str, optional, defaults to ''
-        path to output directory
-    show : bool, optional, defaults to True
-        whether or not to show the plot
-    return_df: bool, optional, defaults to True
-        whether or not to return the dataframes
 
     Returns
     ----------
@@ -129,7 +133,7 @@ def loess_smoothing(df_filepath,
         # RANDOMIZES TO OBTAIN A BACKGROUND SIGNAL #
         df_rand = randomize(x_obs=x_obs, y_obs=y_obs, span=span, 
                             n_repeats=n_repeats, interp_method=interp_method, )
-        # COMPARES SIGNAL AGAINST BCKGROUND SIGNAL #
+        # COMPARES SIGNAL AGAINST BACKGROUND SIGNAL #
         df_pvals = calculate_sig(df_loess=df_loess, df_rand=df_rand, 
                                  n_repeats=n_repeats, smm_multipletests_kws=smm_multipletests_kws, )
 

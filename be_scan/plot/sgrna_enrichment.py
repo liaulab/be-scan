@@ -6,7 +6,6 @@ Date: 240314
               and shows the distribution of logFC values}
 """
 
-import numpy as np
 import seaborn as sns
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -18,7 +17,7 @@ def sgrna_enrichment(df_filepath, comparisons,
      highlight=False, highlight_col='sgRNA_ID', highlight_vals=['sgRNA_0'], 
      density=True, 
      
-     savefig=True, out_name='scatterplot', out_type='png', out_directory='', show=True, # output params
+     savefig=True, show=True, out_name='scatterplot', out_type='png', out_directory='', # output params
 
      rugplot_kws={'height':0.25, 'color':'black', 'linewidth':2, 'alpha':0.05}, 
      kdeplot_kws={'color':'black', 'linewidth':1, 'alpha':0.5}, 
@@ -46,16 +45,16 @@ def sgrna_enrichment(df_filepath, comparisons,
     density: bool, optional, defaults to True
         whether or not to include density portion of the rugplot
         
-    savefig: bool, optional, defaults to True
+    savefig : bool, optional, defaults to True
         whether or not to save the figure
+    show : bool, optional, defaults to True
+        whether or not to show the plot
     out_name : str, optional, defaults to 'scatterplot'
         name of figure output
     out_type : str, optional, defaults to 'pdf'
         file type of figure output
     out_directory : str, optional, defaults to ''
         path to output directory
-    show : bool, optional, defaults to True
-        whether or not to show the plot
         
     rugplot_kws: dict, optional, defaults to
         {'height':0.25, 'color':'black', 'linewidth':2, 'alpha':0.05}

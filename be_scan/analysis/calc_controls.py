@@ -7,7 +7,7 @@ Date: 231128
 
 from pathlib import Path
 import pandas as pd
-from be_scan.analysis._controls_ import *
+from _controls_ import *
 
 def calc_controls(conditions, stats_comparisons, 
                   neg_ctrl_col, neg_ctrl_conditions,
@@ -31,6 +31,8 @@ def calc_controls(conditions, stats_comparisons,
     neg_ctrl_conditions : list of str
         names of categories of neg_ctrl_col to normalize dataframe
     
+    in_dir : str or path, defaults to ''
+        String or path to the directory where library_counts and sample_sheet is found. 
     out_dir : str or path, defaults to ''
         String or path to the directory where all files are found. 
     out_file : str or path, defaults to 'stats.txt'

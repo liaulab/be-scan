@@ -8,21 +8,19 @@ Date: 231128
 
 import pandas as pd
 
-from be_scan.analysis.count_reads import count_reads
-from be_scan.analysis.log_transform import log_transform
-from be_scan.analysis.compare_conds import compare_conds
-from be_scan.analysis.calc_controls import calc_controls
+from count_reads import count_reads
+from log_transform import log_transform
+from compare_conds import compare_conds
+from calc_controls import calc_controls
 
 def batch_process(sample_sheet, annotated_lib, 
 
-    file_dir='', 
-    out_counts='counts_library.csv', KEY_INTERVAL=(10,80), 
-    KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
-    out_lfc='library_LFC.csv', controls=['t0'], 
+    comparisons='', neg_ctrl_col='', neg_ctrl_conditions=[], 
+    file_dir='', controls=['t0'], 
+    KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
+    out_counts='counts_library.csv', out_lfc='library_LFC.csv', out_comps='conditions.csv', out_stats = 'stats.txt',
     
-    compare=True, comparisons='', 
-    ctrl=True, neg_ctrl_col='', neg_ctrl_conditions=[], stats_comparisons=[], 
-    out_comps='conditions.csv', out_stats = 'stats.txt',
+    stats_comparisons=[], 
     plot_out_type='pdf', save=True, return_df=False,
     ):
     
@@ -69,25 +67,22 @@ def batch_process(sample_sheet, annotated_lib,
     dont_trim_G : bool, default False
         Whether to trim the first G from 21-nt sgRNA sequences to make them 20-nt.
 
+    stats_comparisons : list of str
+        a list of columns of the conditions for which to calculate negative controls
     out_dir : str, default ''
         Name of the subfolder to find the read count csv files. The default is
         the current working directory.
-    out_reads : str, default 'agg_reads.csv'
+    out_counts : str, default 'counts_library.csv'
         Name of the aggregated raw reads csv output file.
-    out_log2 : str, default 'agg_log2.csv'
+    out_lfc : str, default 'library_LFC.csv'
         Name of the aggregated log2 normalized values csv output file.
-    out_t0 : str, default 'agg_t0_reps.csv'
-        Name of the aggregated t0 normalized values csv output file.
-    out_conds : str, default 'agg_t0_conds.csv'
-        Name of the averaged replicate values csv output file.
-    out_stats : str or path, defaults to 'stats.csv'
-        Name of output dataframe with guides and counts. 
-    out_comps : str, default 'agg_comps.csv'
+    out_comps : str, default 'conditions.csv'
         Name of the comparisons csv output file.
+    out_stats : str or path, defaults to 'stats.txt'
+        Name of output dataframe with guides and counts. 
 
     plot_out_type : str, optional, defaults to 'pdf'
         file type of figure output for count_reads
-
     return_df : bool, default True
         Whether or not to return the resulting dataframe and statistics
     save : bool, default True
@@ -130,3 +125,11 @@ def batch_process(sample_sheet, annotated_lib,
 #     KEY_INTERVAL=(0, 60), KEY='ABCDEFG', KEY_REV='GHIJKL', 
 #     neg_ctrl_col='gene', neg_ctrl_conditions=['control'], stats_comparisons=['cond1'], 
 # )
+
+batch_process(
+    sample_sheet='sample_sheet_Ind.csv',
+    annotated_lib='conditions_cleaned_wlabel.csv',
+    comparisons='comparisons_Ind.csv',
+    KEY_REV='GTTTGAGA', 
+    file_dir='../../liau/5.CSN/COP9-analysis241010'
+)

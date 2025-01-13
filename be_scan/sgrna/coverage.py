@@ -30,6 +30,29 @@ def coverage_plots(
     output_name="guides_by_aa.csv", output_dir='',
     return_df=True, save_df=True,
 ): 
+    """[Summary]
+    Plots the coverage and mutational space of an annotated library.
+
+    Parameters
+    ------------
+    annotated_guides: str or path
+        The file with the list of guide sequences and annotations
+    edit_from: char
+        The base (ACTG) to be replaced
+    edit_to: char
+        The base (ACTG) to replace with
+    protein_filepath: str or path, default ''
+        The file with the protein .fasta sequence for double checking the mutations annotated
+    
+    output_name : str or path, default 'annotated.csv'
+        Name of the output .csv guides file
+    output_dir : str or path, default ''
+        Directory path of the output .cs guides file
+    return_df : bool, default True
+        Whether or not to return the resulting dataframe
+    save_df : bool, default True
+        Whether or not to save the resulting dataframe
+    """
     path = Path.cwd()
     # READ GUIDES FILE #
     guides_filepath = Path(annotated_guides)

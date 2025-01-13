@@ -15,11 +15,11 @@ from be_scan.sgrna.coverage import coverage_plots
 def design_library(gene_filepath, cas_type='SpG', 
 
     edit_from_list=['A', 'C', 'AC'], edit_to_list=['G', 'T', 'GT'], 
-    genome_file='', protein_filepath='', 
+    genome_file='', protein_filepath='', delete=False, 
     gene_name='', PAM=None, window=[4,8], 
     exclude_introns=False, exclude_nonediting=False, exclude_duplicates=True, exclude_sequences=['TTTT'], 
 
-    output_name='annotated_guides.csv', output_dir='', delete=False,
+    output_name='annotated_guides.csv', output_dir='', 
     return_df=True, save_df=True,
     ): 
     
@@ -35,15 +35,18 @@ def design_library(gene_filepath, cas_type='SpG',
     cas_type: str
         A type of predetermined Cas (ie Sp, SpG, SpRY, etc)
         This variable is superceded by PAM
-    edit_from: char
-        The base (ACTG) to be replaced
-    edit_to: char
-        The base (ACTG) to replace with
+    edit_from_list: list of str
+        The bases (ACTG) to be replaced
+    edit_to_list: list of str
+        The bases (ACTG) to replace with
 
-    protein_filepath: str or path, default ''
-        The file with the protein .fasta sequence for double checking the mutations annotated
     genome_file: str or path
         The file with the genome sequence. If no path is provided, the reference will not be checked. 
+    protein_filepath: str or path, default ''
+        The file with the protein .fasta sequence for double checking the mutations annotated
+    delete: bool, default False
+        Whether or not to delete a guide if it appears more than once in a reference genome
+        Temporary stand-in for a more quanitifed measure of a guide's off target editing
     gene_name: str, default ''
         The name of the gene, can be any string
     PAM: str, default None
@@ -51,6 +54,15 @@ def design_library(gene_filepath, cas_type='SpG',
         This field supercedes cas_type
     window: tuple or list, default = [4,8]
         Editing window, 4th to 8th bases inclusive by default
+
+    exclude_introns : bool, default True
+        Whether or not the editible base needs to be in an intron
+    exclude_nonediting : bool, default True
+        Whether or not the editible base needs to be in the window
+    exclude_duplicates : bool, default True
+        Whether or not duplicate guides should be removed from the pool
+    exclude_sequences : list of strings, defailt ['TTTT']
+        Exclude guides with sequences in this list
 
     output_name : str or path, default 'guides.csv'
         Name of the output .csv guides file

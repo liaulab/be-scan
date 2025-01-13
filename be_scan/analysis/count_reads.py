@@ -17,8 +17,8 @@ import matplotlib.pyplot as plt
 def count_reads(sample_sheet, annotated_lib, 
     
     KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
-    in_dir='', out_dir='', out_file='library_counts.csv', 
     sgRNA_seq_col = 'sgRNA_seq', 
+    in_dir='', out_dir='', out_file='library_counts.csv', 
     return_df=True, save_files=True, plot_out_type='pdf', 
     ): 
     
@@ -55,7 +55,11 @@ def count_reads(sample_sheet, annotated_lib,
         default is the start of the sgRNA scaffold sequence.
     dont_trim_G : bool, default False
         Whether to trim the first G from 21-nt sgRNA sequences to make them 20-nt.
+    sgRNA_seq_col : str, defaults to 'sgRNA_seq'
+        The column of annotated_lib with the sequence of the sgRNA
 
+    in_dir : str or path, defaults to ''
+        String or path to the directory where annotated_lib is found. 
     out_dir : str or path, defaults to ''
         String or path to the directory where all files are found. 
     out_file : str or path, defaults to 'counts_library.csv'
@@ -154,7 +158,9 @@ def count_reads(sample_sheet, annotated_lib,
             plt.close()
 
         # ADD MATCHING COUNTS TO LIBRARY DF #
+        print(df_ref)
         df_ref = pd.merge(df_ref, df_perfects, on=sgRNA_seq_col, how='outer')
+        print(df_ref)
         df_ref[cond] = df_ref[cond].fillna(0)
 
         # SORT NON-PERFECT MATCHES BY FREQUENCY AND OUTPUT #

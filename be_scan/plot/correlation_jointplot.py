@@ -40,27 +40,21 @@ def corr_jointplot(df_filepath, condition1, condition2,
         will also restrict points plotted to only the hue_order values listed
     hue_col: str, optional, defaults to 'CtoT_muttype'
         the categorial dimension of the data, name of .csv data column
-    hue_order: list of str, optional, defaults to a preset list of column names
-        a list of categorial variables in hue_col
     palette: list of str, optional, defaults to a preset list of colors from ColorBrewer2
         a list of colors which correspond to hue_order
 
-    xlab: str, optional, defaults to 'cond1 score'
-        x-axis label
-    ylab: str, optional, defaults to 'cond2 score'
-        y-axis label
-    savefig: bool, optional, defaults to True
+    savefig : bool, optional, defaults to True
         whether or not to save the figure
-    out_name: str, optional, defaults to 'scatterplot'
-        name of the output plot
-    out_type: str, optional, defaults to 'pdf'
-        type of the output plot
-    out_directory: str, optional, defaults to ''
-        directory path of the output plot
     show : bool, optional, defaults to True
         whether or not to show the plot
+    out_name : str, optional, defaults to 'scatterplot'
+        name of the output plot
+    out_type : str, optional, defaults to 'pdf'
+        type of the output plot
+    out_directory : str, optional, defaults to ''
+        directory path of the output plot
 
-    jointplot_kws: dict, optional, defaults to 
+    jointplot_kws : dict, optional, defaults to 
         {'alpha':0.8, 'linewidth':1, 
         'edgecolor':'black', 's':25}
         input params for sns.jointplot() 
