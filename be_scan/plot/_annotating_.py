@@ -13,7 +13,7 @@ color_list = ['#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5',
 list_muttypes = ['Nonsense', 'Missense', 'Silent', 'Non-exon', 'Splice', 
                 'No_C/Exon', 'No_C/Non-exon', 'Control']
 
-def norm_to_intergenic_ctrls(in_dataframe, comparisons, avg_dict, col_label): 
+def norm_to_intergenic_ctrls(in_dataframe, comparisons, avg_dict): 
     """[Summary]
     This function normalizes data in in_dataframe to a 
     set of controls calculated from calc_negative_control, 
@@ -26,14 +26,14 @@ def norm_to_intergenic_ctrls(in_dataframe, comparisons, avg_dict, col_label):
     ----------
     df_logfc : pandas dataframe
     """
-    # perform normalization
+    # perform normalization for each cond individually
     for comp in comparisons:
         in_dataframe[comp] = in_dataframe[comp].sub(avg_dict[comp])
 
     # tidy data by comparisons for each guide
     df_logfc = in_dataframe.copy()
     for comp in comparisons: 
-        df_logfc[comp+'_'+col_label] = in_dataframe[comp]
+        df_logfc[comp] = in_dataframe[comp]
 
     return df_logfc
 

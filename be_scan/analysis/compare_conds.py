@@ -11,7 +11,7 @@ import pandas as pd
 
 def compare_conds(comparisons, avg_conds, 
                   
-    out_dir='', out_file='conditions.csv', 
+    in_dir='', out_dir='', out_file='conditions.csv', 
     save=True, return_df=True, 
     ):
     
@@ -34,6 +34,8 @@ def compare_conds(comparisons, avg_conds,
         String or path to the csv file containing the values for comparison.
         The column headers must match the sample names in comparisons
 
+    in_dir : str or path, defaults to ''
+        String or path to the directory where library_counts and sample_sheet is found. 
     out_dir : str or path, defaults to ''
         String or path to the directory where all files are found. 
     out_file : str or path, defaults to 'conditions.csv'
@@ -45,21 +47,21 @@ def compare_conds(comparisons, avg_conds,
     """
 
     # import files, define variables, check for requirements
-    path = Path.cwd()
-    df_conds = pd.read_csv(avg_conds)
+    in_path = Path(in_dir)
+    out_path = Path(out_dir)
+    df_conds = pd.read_csv(in_path / avg_conds)
 
-    comparisons_df = pd.read_csv(comparisons)
+    comparisons_df = pd.read_csv(in_path / comparisons)
     comparisons_list = list(comparisons_df.itertuples(index=False, name=None))
     # perform treatment vs. control comparison
     for name, treatment, control in comparisons_list:
-        df_conds[name] = df_conds[treatment+'_subctrl_avg'].sub(df_conds[control+'_subctrl_avg'])
+        df_conds[name] = df_conds[treatment+'_LFCminusControl_avg'].sub(df_conds[control+'_LFCminusControl_avg'])
 
     # export files and return dataframes if necessary
     if save: 
-        outpath = path / out_dir
-        Path.mkdir(outpath, exist_ok=True)
-        df_conds.to_csv(outpath / out_file, index=False)
-        print('compare_conds outputed to', str(outpath / out_file))
+        Path.mkdir(out_path, exist_ok=True)
+        df_conds.to_csv(out_path / out_file, index=False)
+        print('compare_conds outputed to', str(out_path / out_file))
     print('Compare conditions completed')
     if return_df:
         return df_conds

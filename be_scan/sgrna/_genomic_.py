@@ -84,7 +84,6 @@ def complement(complements, seq):
 
 # take in a protein .fasta file and extract the protein sequence
 def protein_to_AAseq(filename): 
-    filepath = Path(filename)
     f = open(filename, "r")
     file_content = f.read().split('\n')
     seq = ''.join(file_content[1:])

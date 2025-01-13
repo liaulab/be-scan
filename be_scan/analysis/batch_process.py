@@ -9,19 +9,18 @@ Date: 231128
 import pandas as pd
 
 from be_scan.analysis.count_reads import count_reads
-from be_scan.analysis.merge_and_norm import merge_and_norm
-from be_scan.analysis.average_reps import average_reps
+from be_scan.analysis.log_transform import log_transform
 from be_scan.analysis.compare_conds import compare_conds
 from be_scan.analysis.calc_controls import calc_controls
 
-def batch_process(sample_sheet, annotated_lib, comparisons, 
-    neg_ctrl_col='', neg_ctrl_conditions=[], 
+def batch_process(sample_sheet, annotated_lib, 
 
-    KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
+    comparisons='', neg_ctrl_col='', neg_ctrl_conditions=[], 
     file_dir='', controls=['t0'], 
+    KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
+    out_counts='counts_library.csv', out_lfc='library_LFC.csv', out_comps='conditions.csv', out_stats = 'stats.txt',
     
-    out_dir='', out_counts='counts_library.csv', out_lfc='agg_log2_t0.csv', 
-    out_conds='avg_conds.csv', out_comps='conditions.csv', out_stats = 'stats.txt',
+    stats_comparisons=[], 
     plot_out_type='pdf', save=True, return_df=False,
     ):
     
@@ -68,66 +67,69 @@ def batch_process(sample_sheet, annotated_lib, comparisons,
     dont_trim_G : bool, default False
         Whether to trim the first G from 21-nt sgRNA sequences to make them 20-nt.
 
+    stats_comparisons : list of str
+        a list of columns of the conditions for which to calculate negative controls
     out_dir : str, default ''
         Name of the subfolder to find the read count csv files. The default is
         the current working directory.
-    out_reads : str, default 'agg_reads.csv'
+    out_counts : str, default 'counts_library.csv'
         Name of the aggregated raw reads csv output file.
-    out_log2 : str, default 'agg_log2.csv'
+    out_lfc : str, default 'library_LFC.csv'
         Name of the aggregated log2 normalized values csv output file.
-    out_t0 : str, default 'agg_t0_reps.csv'
-        Name of the aggregated t0 normalized values csv output file.
-    out_conds : str, default 'agg_t0_conds.csv'
-        Name of the averaged replicate values csv output file.
-    out_stats : str or path, defaults to 'stats.csv'
-        Name of output dataframe with guides and counts. 
-    out_comps : str, default 'agg_comps.csv'
+    out_comps : str, default 'conditions.csv'
         Name of the comparisons csv output file.
+    out_stats : str or path, defaults to 'stats.txt'
+        Name of output dataframe with guides and counts. 
 
     plot_out_type : str, optional, defaults to 'pdf'
         file type of figure output for count_reads
-
-    return_df : bool, default True
+    return_df : bool, default False
         Whether or not to return the resulting dataframe and statistics
     save : bool, default True
         Whether or not to save the resulting dataframe
     """
 
     count_reads_params = {
-        'sample_sheet':sample_sheet, 'annotated_lib':annotated_lib, 'file_dir':file_dir, 
+        'sample_sheet':sample_sheet, 'annotated_lib':annotated_lib, 'in_dir':file_dir, 
         'KEY_INTERVAL':KEY_INTERVAL, 'KEY':KEY, 'KEY_REV':KEY_REV, 'dont_trim_G':dont_trim_G, 
-        'out_dir':out_dir, 'out_file':out_counts, 'save':save, 'return_df':return_df, 
-        'plot_out_type':plot_out_type, 'save_files':save, 
-    }
+        'out_dir':file_dir, 'out_file':out_counts, 'return_df':return_df, 'plot_out_type':plot_out_type, 'save_files':save, }
     count_reads(**count_reads_params)
 
-    merge_and_norm_params = {
-        'sample_sheet':sample_sheet, 'counts_library':out_dir+out_counts, 'controls':controls, 
-        'out_dir':out_dir, 'out_file':out_lfc, 'save':save, 'return_df':return_df,
+    log_transform_params = {
+        'sample_sheet':sample_sheet, 'library_counts':out_counts, 'controls':controls, 
+        'in_dir':file_dir, 'out_dir':file_dir, 'out_file':out_lfc, 'save':save, 'return_df':return_df,
     }
-    merge_and_norm(**merge_and_norm_params)
+    result = log_transform(**log_transform_params)
     
-    average_reps_params = {
-        'sample_sheet':sample_sheet, 'log2_subt0':out_dir+out_lfc, 
-        'out_dir':out_dir, 'out_file':out_conds, 'save':save, 'return_df':return_df,
-    }
-    average_reps(**average_reps_params)
-    
-    compare_conds_params = {
-        'comparisons':comparisons, 'avg_conds':out_dir+out_conds, 
-        'out_dir':out_dir, 'out_file':out_comps, 'save':save, 'return_df':return_df,
-    }
-    result = compare_conds(**compare_conds_params)
+    if len(comparisons) > 1: 
+        compare_conds_params = {
+            'comparisons':comparisons, 'avg_conds':out_lfc, 'out_file':out_comps, 
+            'in_dir':file_dir, 'out_dir':file_dir, 'save':save, 'return_df':return_df, }
+        result = compare_conds(**compare_conds_params)
 
-    comps = pd.read_csv(comparisons)
-    if len(neg_ctrl_col) > 0:
-        stats_comparisons = comps.name.tolist()
+    if len(neg_ctrl_col) > 0 and len(neg_ctrl_conditions) > 0 and len(stats_comparisons) > 0: 
         calc_controls_params = {
-            'conditions':out_dir+out_comps, 'stats_comparisons':stats_comparisons, 
+            'conditions':out_comps, 'stats_comparisons':stats_comparisons, 
             'neg_ctrl_col':neg_ctrl_col, 'neg_ctrl_conditions':neg_ctrl_conditions, 
-            'out_dir':out_dir, 'out_file':out_stats, 'save':save, 'return_txt':return_df,
-        }
+            'in_dir':file_dir, 'out_dir':file_dir, 'out_file':out_stats, 'save':save, 'return_txt':return_df, }
         calc_controls(**calc_controls_params)
 
     if return_df: 
         return result
+
+# batch_process(
+#     sample_sheet='sample_sheet.csv', 
+#     annotated_lib='annotated_lib_sample_in.csv', 
+#     comparisons='comparisons.csv', 
+#     file_dir='tests/test_data/analysis', 
+#     KEY_INTERVAL=(0, 60), KEY='ABCDEFG', KEY_REV='GHIJKL', 
+#     neg_ctrl_col='gene', neg_ctrl_conditions=['control'], stats_comparisons=['cond1'], 
+# )
+
+# batch_process(
+#     sample_sheet='sample_sheet_Ind.csv',
+#     annotated_lib='conditions_cleaned_wlabel.csv',
+#     comparisons='comparisons_Ind.csv',
+#     KEY_REV='GTTTGAGA', 
+#     file_dir='../../liau/5.CSN/COP9-analysis241010'
+# )
