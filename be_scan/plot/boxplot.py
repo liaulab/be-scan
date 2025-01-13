@@ -35,7 +35,7 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
     to show the distribution of categories of guides
     
     Parameters
-    ----------
+    ------------
     df_filepath : str, required
         filepath to .csv data generated from count_reads
     comparisons : list of str, required
@@ -81,8 +81,7 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
         https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axhline.html
 
     Returns
-    ----------
-    None
+    ------------
     """
     df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)

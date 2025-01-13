@@ -27,7 +27,7 @@ def corr_jointplot(df_filepath, condition1, condition2,
     a heatmap showing correlation between all given comparison conditions
     
     Parameters
-    ----------
+    ------------
     df_filepath: str, required
         filepath to .csv data generated from count_reads
     condition1: str, required
@@ -61,8 +61,7 @@ def corr_jointplot(df_filepath, condition1, condition2,
         https://seaborn.pydata.org/generated/seaborn.jointplot.html
 
     Returns
-    ----------
-    None
+    ------------
     """
     df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)

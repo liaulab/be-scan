@@ -38,7 +38,7 @@ def loess_smoothing(df_filepath,
     in your x_out for the enrichment profile of your POI
     
     Parameters
-    ----------
+    ------------
     df_filepath : str, required
         filepath to .csv data
     x_column : str, required
@@ -94,8 +94,7 @@ def loess_smoothing(df_filepath,
         https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html
 
     Returns
-    ----------
-
+    ------------
     """
     df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)

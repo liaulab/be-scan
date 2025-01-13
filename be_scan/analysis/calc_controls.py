@@ -20,7 +20,7 @@ def calc_controls(conditions, stats_comparisons,
     Calculate and output the normalization controls of the dataframe conditions. 
 
     Parameters
-    ----------
+    ------------
     conditions : str or path
         String or path to the csv file containing the values for comparison.
         The column headers must match the sample names in stats_comparisons
@@ -41,6 +41,9 @@ def calc_controls(conditions, stats_comparisons,
         Whether or not to save the resulting dataframe
     return_txt : bool, default False
         Whether or not to print the resulting statistics
+
+    Returns
+    ------------
     """
     in_path = Path(in_dir)
     out_path = Path(out_dir)

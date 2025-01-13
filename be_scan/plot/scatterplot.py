@@ -39,7 +39,7 @@ def scatterplot(df_filepath, # dataframe
     plots the data for each condition to reveal which guides are enriched
 
     Parameters
-    ----------
+    ------------
     df_filepath : str, required
         filepath to .csv data generated from count_reads
     x_column : str, required
@@ -108,8 +108,7 @@ def scatterplot(df_filepath, # dataframe
         https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axhline.html
 
     Returns
-    ----------
-    None
+    ------------
     """
     df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)

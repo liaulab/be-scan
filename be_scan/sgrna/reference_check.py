@@ -42,7 +42,7 @@ def reference_check(guides_file, genome_file,
     save_df : bool, default True
         Whether or not to save the resulting dataframe
 
-    Returns: 
+    Returns
     ------------
     merged_df : pandas dataframe
         Contains fwd and rev guides in 'sgRNA_seq', 'sgRNA_strand', 'coding_seq'
