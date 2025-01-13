@@ -83,7 +83,7 @@ def batch_process(sample_sheet, annotated_lib,
 
     plot_out_type : str, optional, defaults to 'pdf'
         file type of figure output for count_reads
-    return_df : bool, default True
+    return_df : bool, default False
         Whether or not to return the resulting dataframe and statistics
     save : bool, default True
         Whether or not to save the resulting dataframe
