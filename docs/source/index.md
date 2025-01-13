@@ -7,7 +7,7 @@
 
 ## be_scan (Base-Editing Screening Computational ANalysis)
 
-For further info on how to start, check out {doc}`notebooks/tutorial` {doc}`notebooks/tutorial_CLI` and read installation instructions in {doc}`install`
+For further info on how to start, check out {doc}`notebooks/tutorial_intro` and read installation instructions in {doc}`install`
 
 ```{toctree}
 :caption: 'Contents:'
