@@ -130,7 +130,7 @@ def design_library(gene_filepath, cas_type='SpG',
                 'return_df':True, 'save_df':True, }
             annotated_by_aa, plots = coverage_plots(**coverage_params)
 
-    # IF GENOME FILE IS PROVIDED, CHECK GUIDES GAIANST THIS REFERENCE SEQUENCE
+    # IF GENOME FILE IS PROVIDED, CHECK GUIDES AGAINST THIS REFERENCE SEQUENCE
     if len(genome_file) > 0: 
         ref_check_params = {
             'guides_file':temp, 'genome_file':genome_file, 
