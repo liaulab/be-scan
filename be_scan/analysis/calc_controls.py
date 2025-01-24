@@ -12,6 +12,7 @@ from be_scan.analysis._controls_ import *
 def calc_controls(conditions, stats_comparisons, 
                   neg_ctrl_col, neg_ctrl_conditions,
 
+    controls=['t0'], 
     in_dir='', out_dir='', out_file='stats.txt', 
     save=True, return_txt=False,
     ):
@@ -47,9 +48,12 @@ def calc_controls(conditions, stats_comparisons,
     """
     in_path = Path(in_dir)
     out_path = Path(out_dir)
+
+    if len(controls) > 0: suffix = '_LFCminusControl'
+    else: suffix = '_LFC'
     
     df_conds = pd.read_csv(in_path / conditions)
-    stats_comparisons = [x+'_LFCminusControl_avg' for x in stats_comparisons]
+    stats_comparisons = [x+suffix+'_avg' for x in stats_comparisons]
 
     # calculate negative control stats
     _, list_negctrlstats, _ = calc_neg_ctrls(df_conds, stats_comparisons, 

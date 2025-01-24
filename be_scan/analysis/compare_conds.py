@@ -11,6 +11,7 @@ import pandas as pd
 
 def compare_conds(comparisons, avg_conds, 
                   
+    controls=['t0'], 
     in_dir='', out_dir='', out_file='conditions.csv', 
     save=True, return_df=True, 
     ):
@@ -54,11 +55,14 @@ def compare_conds(comparisons, avg_conds,
     out_path = Path(out_dir)
     df_conds = pd.read_csv(in_path / avg_conds)
 
+    if len(controls) > 0: suffix = '_LFCminusControl'
+    else: suffix = '_LFC'
+
     comparisons_df = pd.read_csv(in_path / comparisons)
     comparisons_list = list(comparisons_df.itertuples(index=False, name=None))
     # perform treatment vs. control comparison
     for name, treatment, control in comparisons_list:
-        df_conds[name] = df_conds[treatment+'_LFCminusControl_avg'].sub(df_conds[control+'_LFCminusControl_avg'])
+        df_conds[name] = df_conds[treatment+suffix+'_avg'].sub(df_conds[control+suffix+'_avg'])
 
     # export files and return dataframes if necessary
     if save: 
