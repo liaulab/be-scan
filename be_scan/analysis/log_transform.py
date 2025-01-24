@@ -65,32 +65,37 @@ def log_transform(sample_sheet, library_counts,
     df_map = pd.DataFrame(data=dict_conds.items(), columns=['rep','condition'])
 
     # CHECK CONTROLS IN DF AND AVERAGE IF NECESSARY #
+    conditions = df_samples.condition.tolist()
     for control in controls: 
         if control not in dict_counts.keys(): 
             raise Exception (f"{sample_sheet} is missing the {control} sample")
-    df_ref['control_avg'] = df_ref[controls].mean(axis=1)
+    if len(controls) > 0: 
+        df_ref['control_avg'] = df_ref[controls].mean(axis=1)
+        conditions = ['control_avg'] + conditions
     
     # CALCULATE LFC AND CONTROLS #
-    for sample in ['control_avg'] + df_samples.condition.tolist(): 
+    for sample in conditions: 
         # log2 normalization
         total_reads = pd.to_numeric(df_ref[sample]).sum()
-        df_ref[sample+'_LFC'] = df_ref[sample].apply(lambda x: np.log2((x * 1000000 / total_reads) + 1))
-        if sample not in controls: 
+        suffix = '_LFC'
+        df_ref[sample+suffix] = df_ref[sample].apply(lambda x: np.log2((x * 1000000 / total_reads) + 1))
+        if sample not in controls and len(controls) > 0: 
             # t0 normalization
-            df_ref[sample+'_LFCminusControl'] = df_ref[sample+'_LFC'].sub(df_ref['control_avg_LFC'])
+            suffix = '_LFCminusControl'
+            df_ref[sample+suffix] = df_ref[sample+'_LFC'].sub(df_ref['control_avg_LFC'])
 
     # AVERAGE LFC #
     for cond in df_map['condition'].unique().tolist(): 
         if cond not in controls: 
             # for each unique condition, find the reps
-            reps = [x+'_LFCminusControl' for x in df_map.loc[df_map['condition'] == cond]['rep'].tolist()]
+            reps = [x+suffix for x in df_map.loc[df_map['condition'] == cond]['rep'].tolist()]
             # skip averaging for single replicates (otherwise breaks script)
             if len(reps) > 1: 
-                df_ref[cond+'_LFCminusControl_avg'] = df_ref[reps].mean(axis=1)
-                df_ref[cond+'_LFCminusControl_stdev'] = df_ref[reps].std(axis=1)
+                df_ref[cond+suffix+'_avg'] = df_ref[reps].mean(axis=1)
+                df_ref[cond+suffix+'_stdev'] = df_ref[reps].std(axis=1)
             elif len(reps) == 1: 
-                df_ref[cond+'_LFCminusControl_avg'] = df_ref[reps]
-                df_ref[cond+'_LFCminusControl_stdev'] = 0
+                df_ref[cond+suffix+'_avg'] = df_ref[reps]
+                df_ref[cond+suffix+'_stdev'] = 0
             else: 
                 raise Exception('Error! Replicate number not valid')
 
