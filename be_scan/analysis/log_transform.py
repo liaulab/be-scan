@@ -65,14 +65,16 @@ def log_transform(sample_sheet, library_counts,
     df_map = pd.DataFrame(data=dict_conds.items(), columns=['rep','condition'])
 
     # CHECK CONTROLS IN DF AND AVERAGE IF NECESSARY #
+    conditions = df_samples.condition.tolist()
     for control in controls: 
         if control not in dict_counts.keys(): 
             raise Exception (f"{sample_sheet} is missing the {control} sample")
     if len(controls) > 0: 
         df_ref['control_avg'] = df_ref[controls].mean(axis=1)
+        conditions = ['control_avg'] + conditions
     
     # CALCULATE LFC AND CONTROLS #
-    for sample in ['control_avg'] + df_samples.condition.tolist(): 
+    for sample in conditions: 
         # log2 normalization
         total_reads = pd.to_numeric(df_ref[sample]).sum()
         suffix = '_LFC'
