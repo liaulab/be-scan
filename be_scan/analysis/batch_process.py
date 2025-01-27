@@ -100,21 +100,23 @@ def batch_process(sample_sheet, annotated_lib,
 
     log_transform_params = {
         'sample_sheet':sample_sheet, 'library_counts':out_counts, 'controls':controls, 
-        'in_dir':file_dir, 'out_dir':file_dir, 'out_file':out_lfc, 'save':save, 'return_df':return_df,
+        'in_dir':file_dir, 'out_dir':file_dir, 'out_file':out_lfc, 'save':save, 'return_df':return_df, 
     }
     result = log_transform(**log_transform_params)
     
     if len(comparisons) > 1: 
         compare_conds_params = {
             'comparisons':comparisons, 'avg_conds':out_lfc, 'out_file':out_comps, 
-            'in_dir':file_dir, 'out_dir':file_dir, 'save':save, 'return_df':return_df, }
+            'in_dir':file_dir, 'out_dir':file_dir, 'save':save, 'return_df':return_df, 
+            'controls':controls, }
         result = compare_conds(**compare_conds_params)
 
     if len(neg_ctrl_col) > 0 and len(neg_ctrl_conditions) > 0 and len(stats_comparisons) > 0: 
         calc_controls_params = {
             'conditions':out_comps, 'stats_comparisons':stats_comparisons, 
             'neg_ctrl_col':neg_ctrl_col, 'neg_ctrl_conditions':neg_ctrl_conditions, 
-            'in_dir':file_dir, 'out_dir':file_dir, 'out_file':out_stats, 'save':save, 'return_txt':return_df, }
+            'in_dir':file_dir, 'out_dir':file_dir, 'out_file':out_stats, 'save':save, 'return_txt':return_df, 
+            'controls':controls, }
         calc_controls(**calc_controls_params)
 
     if return_df: 
