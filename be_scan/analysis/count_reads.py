@@ -13,11 +13,13 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import warnings
 
 def count_reads(sample_sheet, annotated_lib, 
     
     KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
     sgRNA_seq_col = 'sgRNA_seq', 
+    lower_cutoff=0, lower_cutoff_cols=[], 
     in_dir='', out_dir='', out_file='library_counts.csv', 
     return_df=True, save_files=True, plot_out_type='pdf', 
     ): 
@@ -57,6 +59,10 @@ def count_reads(sample_sheet, annotated_lib,
         Whether to trim the first G from 21-nt sgRNA sequences to make them 20-nt.
     sgRNA_seq_col : str, defaults to 'sgRNA_seq'
         The column of annotated_lib with the sequence of the sgRNA
+    lower_cutoff : float, default 0
+        The cutoff for values which do not go into the final dataframe
+    lower_cutoff_cols : list of str, default []
+        The column names on which to filter for the lower_cutoff
 
     in_dir : str or path, defaults to ''
         String or path to the directory where annotated_lib is found. 
@@ -208,6 +214,14 @@ def count_reads(sample_sheet, annotated_lib,
                 ]
                 statfile.write('\n'.join(stats_list))
                 print(f'{str(in_fastq)} processed')
+
+    # FILTER OUT LOW COUNT GUIDES #
+    missing_columns = [col for col in lower_cutoff_cols if col not in df_ref.columns]
+    if missing_columns:
+        warnings.warn(f"Warning: Missing columns in DataFrame: {missing_columns}. Skipping filtering execution.", UserWarning)
+    else:
+        mask = (df_ref[lower_cutoff_cols] > lower_cutoff).all(axis=1)
+        df_ref = df_ref[mask]
 
     # SAVE DF AND RETURN #
     if save_files: 

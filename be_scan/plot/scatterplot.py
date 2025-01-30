@@ -12,6 +12,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from pathlib import Path
 import pandas as pd
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from be_scan.plot._annotating_ import *
 
@@ -22,16 +24,15 @@ def scatterplot(df_filepath, # dataframe
     xlab='Amino Acid Position', ylab='sgRNA Score', # scatterplot labels
     include_hue=False, hue_col='', pal='pastel', # color params
     neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # neg control params
-    annot=False, annot_label='', annot_top=None, annot_cutoff=None, annot_abs=None, # annotate outliers
     savefig=True, show=True, out_name='scatterplot', out_type='png', out_dir='', # output params
     domains=[], domains_alpha=0.25, domains_color='lightblue', # draw domains
+    x_window=[], interactive=False, 
     
     # style params
     subplots_kws={}, xlim={}, ylim={}, 
     xlim_kws={'xmin':None, 'xmax':None}, ylim_kws={'ymin':None, 'ymax':None},
     scatterplot_kws={'alpha': 0.85, 'linewidth': 0.8, 's': 50},
     axhline_kws={'color':'k', 'ls':'--', 'lw':1},
-    label_text_kwargs={'ha':'right', 'va':'bottom', 'fontsize':6}, 
     ):
     
     """[Summary]
@@ -65,15 +66,6 @@ def scatterplot(df_filepath, # dataframe
         column of .csv which correspond to normalization control
     neg_ctrl_conditions : list of str, optional, defaults to ['Intron', 'Control']
         name of categories of neg_ctrl_col to normalize dataframe
-
-    annot : bool, optional, defaults to False
-        Whether or not to automatically annotate points
-    annot_label : string, optional, defaults to 'CtoT_mutations'
-        The column of the label in the dataframe
-    annot_top : int, optional, defaults to 10
-        The top n scoring points will be labeled
-    annot_cutoff : float, optional, defaults to None
-        The absolute value cutoff for which points will be labeled
     
     savefig : bool, optional, defaults to True
         whether or not to save the figure
@@ -129,73 +121,102 @@ def scatterplot(df_filepath, # dataframe
         # calculate normalized log_fc scores for each comp condition
         df_data = norm_to_intergenic_ctrls(df_data, comparisons, avg_dict)
 
-    if annot: # annot the screen hits #
-        assert isinstance(annot_label, str) and annot_label in df_data.columns.tolist(), "check param: annot_label"
-        assert isinstance(annot_top, int) or isinstance(annot_cutoff, float) or isinstance(annot_abs, int), "check param: annot_top annot_cutoff"
+    df_data = df_data[(df_data[xlab] >= x_window[0]) & (df_data[xlab] <= x_window[1])] # FILTER X WINDOW #
 
-    mpl.rcParams.update({'font.size': 10}) # STYLE #
-    fig, axes = plt.subplots(nrows=len(comparisons), ncols=1, figsize=(10, 3*len(comparisons)), 
-                             **subplots_kws) # SETUP SUBPLOTS #
-    if len(comparisons) == 1: axes = [axes]
-
-    for ax, comp in zip(axes, comparisons):
-        # make plots for every comparison
-        sns.scatterplot(ax=ax, y=comp, **baseline_params, **scatterplot_kws)
+    if interactive: 
+        num_plots = len(comparisons)
+        fig = make_subplots(rows=num_plots, cols=1, subplot_titles=comparisons, shared_xaxes=True)
         
-        # Overlay neg ctrl avg +/- 2 sd as black dashed line
-        if neg_ctrl and list_ctrlstats != None:
-            tup_comp_stdev = [tup for tup in list_ctrlstats if tup[0] == comp][0][2]
-            ax.axhline(y=2*tup_comp_stdev, **axhline_kws) # top baseline
-            ax.axhline(y=-2*tup_comp_stdev, **axhline_kws) # bottom baseline
+        # Iterate through comparisons to create each subplot
+        for idx, comp in enumerate(comparisons):            
+            # Scatter Plot
+            fig.add_trace(
+                go.Scatter(
+                    x=df_data[x_column], y=df_data[comp], mode='markers',
+                    name=comp, **scatterplot_kws), row=idx + 1, col=1 )
+            
+            # Overlay neg ctrl avg +/- 2 SD as black dashed lines
+            if neg_ctrl and list_ctrlstats is not None:
+                try:
+                    tup_comp_stdev = next(tup[2] for tup in list_ctrlstats if tup[0] == comp)
+                    fig.add_shape(
+                        dict(type="line", x0=df_data[x_column].min(), x1=df_data[x_column].max(),
+                            y0=2*tup_comp_stdev, y1=2*tup_comp_stdev, line=dict(color="black", dash="dash")),
+                        row=idx + 1, col=1 )
+                    fig.add_shape(
+                        dict(type="line", x0=df_data[x_column].min(), x1=df_data[x_column].max(),
+                            y0=-2*tup_comp_stdev, y1=-2*tup_comp_stdev, line=dict(color="black", dash="dash")),
+                        row=idx + 1, col=1 )
+                except StopIteration:
+                    pass  # Handle missing control stats gracefully
 
-        if annot: # annot the screen hits #
-            if annot_cutoff: # annotate by a cutoff where all values outside are annotated
-                df_cutoff = df_data[df_data[comp].abs() > annot_cutoff]
-                for _, row in df_cutoff.iterrows():
-                    if row[annot_label] != "nan": 
-                        ax.text(row[x_column], row[comp], row[annot_label], **label_text_kwargs)
-                toprows_df = df_cutoff.sort_values(by=comp, ascending=False)
-                print(toprows_df)
-            elif annot_abs: # annotate the top scoring abs value
-                sorted_df = df_data.assign(yabs=df_data[comp].abs()).sort_values(by='yabs', ascending=False)
-                toprows_df = sorted_df.head(annot_abs)
-                for _, row in toprows_df.iterrows(): 
-                    t = ax.text(row[x_column], row[comp]-0.2, row[annot_label], **label_text_kwargs)
-                print(toprows_df)
-            elif annot_top: # annotate by the top or bottom n
-                sign = np.sign(annot_top)
-                ascen = True if sign==-1 else False
-                sorted_df = df_data.assign(yabs=df_data[comp]).sort_values(by='yabs', ascending=ascen)
-                toprows_df = sorted_df.head(sign*annot_top)
-                for _, row in toprows_df.iterrows():
-                    t = ax.text(row[x_column], row[comp]-0.2, row[annot_label],
-                                **label_text_kwargs)
-                print(toprows_df)
+            # Adjust x and y axis limits
+            fig.update_xaxes(range=[df_data[x_column].min()-10, df_data[x_column].max()+10] if not xlim else xlim, row=row, col=1)
+            if not ylim:
+                bound = max(abs(np.floor(df_data[comp].min())), abs(np.ceil(df_data[comp].max())))
+                fig.update_yaxes(range=[-bound, bound], row=idx + 1, col=1)
+            else:
+                fig.update_yaxes(range=ylim, row=idx + 1, col=1)
+            
+            # Add domain highlighting
+            for d in domains:
+                fig.add_shape(
+                    dict(type="rect", x0=d['start'], x1=d['end'], y0=ylim[0] if ylim else -bound, 
+                        y1=ylim[1] if ylim else bound, fillcolor=domains_color, opacity=domains_alpha, layer="below"),
+                    row=idx + 1, col=1 )
 
-        # Adjust x and y axis limits
-        if xlim == {}: ax.set_xlim(df_data[x_column].min()-10, df_data[x_column].max()+10)
-        else: ax.set_xlim(**xlim)
-        if ylim == {}: 
-            bound = max(abs(np.floor(df_data[comp].min())), abs(np.ceil(df_data[comp].max())))
-            ax.set_ylim(-1*bound, bound)
-        else: ax.set_ylim(**ylim)
-        # Set title and axes labels
-        ax.legend(loc='center left', bbox_to_anchor=(1.1, 0.5))
-        ax.set_title(comp) ; ax.set_xlabel(xlab) ; ax.set_ylabel(ylab)
-        ax.set_xlim(**xlim_kws) ; ax.set_ylim(**ylim_kws)
-        ax.spines['top'].set_visible(False) ; ax.spines['bottom'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        for d in domains:
-            ax.axvspan(d['start'], d['end'], alpha=domains_alpha, facecolor=domains_color)
+        # Update layout
+        fig.update_layout(
+            height=300*num_plots, width=900, title_text="Scatter Plots", showlegend=True,
+            xaxis_title=xlab, yaxis_title=ylab )
 
-    plt.tight_layout() # ADJUST DIMENSIONS #
-    # Save file
-    outpath = Path(out_dir)
-    if savefig: 
-        out = f'{out_name}.{out_type}'
-        plt.savefig(outpath / out, format=out_type, dpi=300)
-    if show: plt.show()
-    plt.close()
+        # Save file
+        if show: fig.show()
+        if savefig:
+            outpath = Path(out_dir)
+            fig.write_image(str(outpath / f"{out_name}.{out_type}"))
+
+    else: 
+
+        mpl.rcParams.update({'font.size': 10}) # STYLE #
+        fig, axes = plt.subplots(nrows=len(comparisons), ncols=1, figsize=(10, 3*len(comparisons)), 
+                                **subplots_kws) # SETUP SUBPLOTS #
+        if len(comparisons) == 1: axes = [axes]
+
+        for ax, comp in zip(axes, comparisons):
+            # make plots for every comparison
+            sns.scatterplot(ax=ax, y=comp, **baseline_params, **scatterplot_kws)
+            
+            # Overlay neg ctrl avg +/- 2 sd as black dashed line
+            if neg_ctrl and list_ctrlstats != None:
+                tup_comp_stdev = [tup for tup in list_ctrlstats if tup[0] == comp][0][2]
+                ax.axhline(y=2*tup_comp_stdev, **axhline_kws) # top baseline
+                ax.axhline(y=-2*tup_comp_stdev, **axhline_kws) # bottom baseline
+
+            # Adjust x and y axis limits
+            if xlim == {}: ax.set_xlim(df_data[x_column].min()-10, df_data[x_column].max()+10)
+            else: ax.set_xlim(**xlim)
+            if ylim == {}: 
+                bound = max(abs(np.floor(df_data[comp].min())), abs(np.ceil(df_data[comp].max())))
+                ax.set_ylim(-1*bound, bound)
+            else: ax.set_ylim(**ylim)
+            # Set title and axes labels
+            ax.legend(loc='center left', bbox_to_anchor=(1.1, 0.5))
+            ax.set_title(comp) ; ax.set_xlabel(xlab) ; ax.set_ylabel(ylab)
+            ax.set_xlim(**xlim_kws) ; ax.set_ylim(**ylim_kws)
+            ax.spines['top'].set_visible(False) ; ax.spines['bottom'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+            for d in domains:
+                ax.axvspan(d['start'], d['end'], alpha=domains_alpha, facecolor=domains_color)
+
+        plt.tight_layout() # ADJUST DIMENSIONS #
+        # Save file
+        outpath = Path(out_dir)
+        if savefig: 
+            out = f'{out_name}.{out_type}'
+            plt.savefig(outpath / out, format=out_type, dpi=300)
+        if show: plt.show()
+        plt.close()
 
 # scatterplot(
 #     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
