@@ -138,11 +138,12 @@ def interactive_corr_jointplot(df_filepath, condition1, condition2,
     df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)
 
+    hex_pal = [mcolors.to_hex(c) for c in pal] 
     # Scatter plot with histograms
     fig = px.scatter(
         df_data, x=condition1, y=condition2, 
         color=hue_col if include_hue else None,  # Hue equivalent
-        color_discrete_sequence=[mcolors.to_hex(c) for c in pal] if include_hue else None,  # Custom palette
+        color_discrete_sequence=hex_pal if include_hue else None,  # Custom palette
         marginal_x="histogram",  marginal_y="histogram",  # Marginal histogram
         trendline="ols"  # Add regression line
     )
