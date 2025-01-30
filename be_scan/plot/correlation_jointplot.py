@@ -100,7 +100,7 @@ def corr_jointplot(df_filepath, condition1, condition2,
         if savefig:
             outpath = Path(out_dir)
             out_name = f"{condition1}{condition2}_{out_name}.{out_type}"
-            fig.write_image(str(outpath / out_name), format=out_type)
+            fig.write_html(str(outpath / out_name), format=out_type)
 
     else: 
         # set plot params, if there is hue add params for plotting

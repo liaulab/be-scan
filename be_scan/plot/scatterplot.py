@@ -15,6 +15,8 @@ import pandas as pd
 import warnings
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import plotly.io as pio
+import matplotlib.colors as mcolors
 
 from be_scan.plot._annotating_ import *
 
@@ -27,12 +29,13 @@ def scatterplot(df_filepath, # dataframe
     neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # neg control params
     savefig=True, show=True, out_name='scatterplot', out_type='png', out_dir='', # output params
     domains=[], domains_alpha=0.25, domains_color='lightblue', # draw domains
-    xwindow=[], interactive=False, 
+    xwindow=[], interactive=False, annot_label='', 
     
     # style params
     subplots_kws={}, xlim={}, ylim={}, 
     xlim_kws={'xmin':None, 'xmax':None}, ylim_kws={'ymin':None, 'ymax':None},
-    scatterplot_kws={'alpha': 0.85, 'linewidth': 0.8, 's': 50},
+    scatterplot_kws={'alpha': 0.85, 'linewidth': 0.8, 's': 30},
+    plotly_go_kws={'opacity':0.85, 'line':dict(width=0.8)}, 
     axhline_kws={'color':'k', 'ls':'--', 'lw':1},
     ):
     
@@ -113,6 +116,9 @@ def scatterplot(df_filepath, # dataframe
         baseline_params.update({'hue':hue_col, 'hue_order':unique_types_sorted})
         sns.set_palette(pal, len(unique_types_sorted))
 
+        palette = sns.color_palette(pal, n_colors=len(unique_types_sorted))
+        pal = dict(zip(unique_types_sorted, [mcolors.to_hex(c) for c in palette]))
+
     # normalize data to intergenic controls if neg_ctrl is provided
     if neg_ctrl: 
         assert isinstance(neg_ctrl_col, str) and neg_ctrl_col in df_data.columns.tolist(), "check param: params_cols"
@@ -130,15 +136,23 @@ def scatterplot(df_filepath, # dataframe
     if interactive: 
         num_plots = len(comparisons)
         fig = make_subplots(rows=num_plots, cols=1, subplot_titles=comparisons, shared_xaxes=True)
+
+        if not annot_label in df_data.columns: 
+            warnings.warn(f"{annot_label} is not a column in input DataFrame", UserWarning)
+            hovertext = None
+        else: hovertext = df_data[annot_label]
         
         # Iterate through comparisons to create each subplot
-        for idx, comp in enumerate(comparisons):            
+        for idx, comp in enumerate(comparisons): 
             # Scatter Plot
             fig.add_trace(
                 go.Scatter(
-                    x=df_data[x_column], y=df_data[comp], mode='markers',
-                    name=comp, **scatterplot_kws), row=idx + 1, col=1 )
-            
+                    x=df_data[x_column], y=df_data[comp], 
+                    hovertext=hovertext, mode='markers',
+                    name=comp, marker=dict(size=6, color=df_data[hue_col].map(pal)), 
+                    **plotly_go_kws), row=idx + 1, col=1
+            )
+
             # Overlay neg ctrl avg +/- 2 SD as black dashed lines
             if neg_ctrl and list_ctrlstats is not None:
                 try:
@@ -155,7 +169,7 @@ def scatterplot(df_filepath, # dataframe
                     pass  # Handle missing control stats gracefully
 
             # Adjust x and y axis limits
-            fig.update_xaxes(range=[df_data[x_column].min()-10, df_data[x_column].max()+10] if not xlim else xlim, row=row, col=1)
+            fig.update_xaxes(range=[df_data[x_column].min()-10, df_data[x_column].max()+10] if not xlim else [xlim['left'], xlim['right']], row=idx + 1, col=1)
             if not ylim:
                 bound = max(abs(np.floor(df_data[comp].min())), abs(np.ceil(df_data[comp].max())))
                 fig.update_yaxes(range=[-bound, bound], row=idx + 1, col=1)
@@ -166,19 +180,20 @@ def scatterplot(df_filepath, # dataframe
             for d in domains:
                 fig.add_shape(
                     dict(type="rect", x0=d['start'], x1=d['end'], y0=ylim[0] if ylim else -bound, 
-                        y1=ylim[1] if ylim else bound, fillcolor=domains_color, opacity=domains_alpha, layer="below"),
+                         y1=ylim[1] if ylim else bound, fillcolor=domains_color, opacity=domains_alpha, layer="below"),
                     row=idx + 1, col=1 )
 
         # Update layout
         fig.update_layout(
-            height=300*num_plots, width=900, title_text="Scatter Plots", showlegend=True,
+            title_text="Scatter Plots", showlegend=True,
             xaxis_title=xlab, yaxis_title=ylab )
 
         # Save file
         if show: fig.show()
         if savefig:
             outpath = Path(out_dir)
-            fig.write_image(str(outpath / f"{out_name}.{out_type}"))
+            out_name = f"{out_name}.{out_type}"
+            fig.write_html(str(outpath / out_name))
 
     else: 
         mpl.rcParams.update({'font.size': 10}) # STYLE #
@@ -221,13 +236,25 @@ def scatterplot(df_filepath, # dataframe
         if show: plt.show()
         plt.close()
 
-# scatterplot(
-#     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
-#     comparisons=["d3-pos", "d3-neg"], 
-#     x_column='Edit_site_3A1', 
-#     include_hue=True, hue_col='Mut_type', 
-#     neg_ctrl=True, neg_ctrl_col='Gene', neg_ctrl_conditions=['NON-GENE'], # neg control params
-#     xlim={'left':200, 'right':920}, 
-#     annot=True, annot_label='sgRNA_ID', annot_abs=10, # annot_cutoff=0.5 annot_top=10
-#     # domains=[{'start':300, 'end':400}], 
-# )
+scatterplot(
+    df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
+    comparisons=["d3-pos", "d3-neg"], 
+    x_column='Edit_site_3A1', 
+    include_hue=True, hue_col='Mut_type', 
+    neg_ctrl=True, neg_ctrl_col='Gene', neg_ctrl_conditions=['NON-GENE'], # neg control params
+    xlim={'left':200, 'right':920}, 
+    # annot=True, annot_label='sgRNA_ID', annot_abs=10, # annot_cutoff=0.5 annot_top=10
+    # domains=[{'start':300, 'end':400}], 
+    interactive=True, annot_label='Mut_list_all', 
+)
+scatterplot(
+    df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
+    comparisons=["d3-pos", "d3-neg"], 
+    x_column='Edit_site_3A1', 
+    include_hue=True, hue_col='Mut_type', 
+    neg_ctrl=True, neg_ctrl_col='Gene', neg_ctrl_conditions=['NON-GENE'], # neg control params
+    xlim={'left':200, 'right':920}, 
+    # annot=True, annot_label='sgRNA_ID', annot_abs=10, # annot_cutoff=0.5 annot_top=10
+    # domains=[{'start':300, 'end':400}], 
+    # interactive=True, 
+)
