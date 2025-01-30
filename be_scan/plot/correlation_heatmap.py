@@ -11,7 +11,6 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
-import plotly.express as px
 import plotly.graph_objects as go
 
 def corr_heatmap(df_filepath, comparisons, 
@@ -89,7 +88,7 @@ def corr_heatmap(df_filepath, comparisons,
         # Add heatmap
         fig.add_trace(go.Heatmap(
             z=df_corr.values, x=df_corr.columns, y=df_corr.index, 
-            colorscale="coolwarm",  # Change color scheme if needed
+            colorscale="rdbu_r", 
             colorbar=dict(title="Correlation"),
             zmin=-1, zmax=1  # Ensure scale is between -1 and 1 for correlation
         ))

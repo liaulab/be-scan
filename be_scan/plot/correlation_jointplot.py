@@ -12,11 +12,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
 import scipy.stats as stats
+import plotly.express as px
 
 def corr_jointplot(df_filepath, condition1, condition2, 
 
     include_hue=False, hue_col='CtoT_muttype', pal='pastel', # color params
     savefig=True, show=True, out_dir='', out_name='correlation_jointplot', out_type='png', 
+    interactive=False, 
 
     # style params
     jointplot_kws={'alpha':0.8, 'linewidth':1, 'edgecolor':'black', 's':25}, 
@@ -66,28 +68,63 @@ def corr_jointplot(df_filepath, condition1, condition2,
     df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)
 
-    # set plot params, if there is hue add params for plotting
-    baseline_params = {'data':df_data, 'x':condition1, 'y':condition2}
-    if include_hue: 
-        unique_types_sorted = sorted(df_data[hue_col].unique())
-        baseline_params.update({'hue':hue_col, 'hue_order':unique_types_sorted})
-        sns.set_palette(pal, len(unique_types_sorted))
-    
-    mpl.rcParams.update({'font.size': 10}) # STYLE #
-    sns.jointplot(**baseline_params, **jointplot_kws, ) # PLOT #
-    plt.tight_layout()
-    ax = plt.gca()
-    ax.legend(loc='center left', bbox_to_anchor=(1.25, 0.5)) # LEGEND #
+    if interactive: 
+        # Scatter plot with histograms
+        fig = px.scatter(
+            df_data, x=condition1, y=condition2, 
+            color=hue_col if include_hue else None,  # Hue equivalent
+            color_discrete_sequence=pal if include_hue else None,  # Custom palette
+            marginal_x="histogram",  marginal_y="histogram",  # Marginal histogram
+            trendline="ols"  # Add regression line
+        )
 
-    # calculate R2 stats and output them
-    m, b, r_value, p_value, std_err = stats.linregress(df_data[condition1], df_data[condition2])
-    print("R: {0} (p-value {1})".format(r_value, p_value))
-    print("R2: {0}".format(r_value**2))
+        # Regression statistics
+        m, b, r_value, p_value, std_err = stats.linregress(df_data[condition1], df_data[condition2])
+        r2 = r_value**2
+        fig.add_annotation(
+            x=min(df_data[condition1]), y=max(df_data[condition2]), 
+            text=f"R² = {r2:.3f}<br>P-value = {p_value:.3g}", 
+            showarrow=False, font=dict(size=12, color="black"), align="left", xanchor="left", yanchor="top"
+        )
 
-    # save to pdf and close
-    outpath = Path(out_dir)
-    if savefig: 
-        out_name = f'{condition1}{condition2}_{out_name}.{out_type}'
-        plt.savefig(outpath / out_name, format=out_type, dpi=300)
-    if show: plt.show()
-    plt.close()
+        # Update layout
+        fig.update_layout(
+            title=f"{condition1} vs {condition2}",
+            xaxis_title=condition1, yaxis_title=condition2,
+            legend_title=hue_col if include_hue else None,
+            font=dict(size=10)
+        )
+
+        # save pdf and close everything
+        if show: fig.show()
+        if savefig:
+            outpath = Path(out_dir)
+            out_name = f"{condition1}{condition2}_{out_name}.{out_type}"
+            fig.write_image(str(outpath / out_name), format=out_type)
+
+    else: 
+        # set plot params, if there is hue add params for plotting
+        baseline_params = {'data':df_data, 'x':condition1, 'y':condition2}
+        if include_hue: 
+            unique_types_sorted = sorted(df_data[hue_col].unique())
+            baseline_params.update({'hue':hue_col, 'hue_order':unique_types_sorted})
+            sns.set_palette(pal, len(unique_types_sorted))
+        
+        mpl.rcParams.update({'font.size': 10}) # STYLE #
+        sns.jointplot(**baseline_params, **jointplot_kws, ) # PLOT #
+        plt.tight_layout()
+        ax = plt.gca()
+        ax.legend(loc='center left', bbox_to_anchor=(1.25, 0.5)) # LEGEND #
+
+        # calculate R2 stats and output them
+        m, b, r_value, p_value, std_err = stats.linregress(df_data[condition1], df_data[condition2])
+        print("R: {0} (p-value {1})".format(r_value, p_value))
+        print("R2: {0}".format(r_value**2))
+
+        # save to pdf and close
+        outpath = Path(out_dir)
+        if savefig: 
+            out_name = f'{condition1}{condition2}_{out_name}.{out_type}'
+            plt.savefig(outpath / out_name, format=out_type, dpi=300)
+        if show: plt.show()
+        plt.close()
