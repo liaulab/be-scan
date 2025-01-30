@@ -13,6 +13,7 @@ import pandas as pd
 from pathlib import Path
 import scipy.stats as stats
 import plotly.express as px
+import matplotlib.colors as mcolors
 
 def corr_jointplot(df_filepath, condition1, condition2, 
 
@@ -95,7 +96,7 @@ def corr_jointplot(df_filepath, condition1, condition2,
 
 def interactive_corr_jointplot(df_filepath, condition1, condition2, 
 
-    include_hue=False, hue_col='CtoT_muttype', pal='pastel', # color params
+    include_hue=False, hue_col='CtoT_muttype', pal=px.colors.qualitative.Pastel, # color params
     savefig=True, show=True, out_dir='', out_name='correlation_jointplot', out_type='png', 
     ):
     
@@ -141,7 +142,7 @@ def interactive_corr_jointplot(df_filepath, condition1, condition2,
     fig = px.scatter(
         df_data, x=condition1, y=condition2, 
         color=hue_col if include_hue else None,  # Hue equivalent
-        color_discrete_sequence=pal if include_hue else None,  # Custom palette
+        color_discrete_sequence=[mcolors.to_hex(c) for c in pal] if include_hue else None,  # Custom palette
         marginal_x="histogram",  marginal_y="histogram",  # Marginal histogram
         trendline="ols"  # Add regression line
     )
