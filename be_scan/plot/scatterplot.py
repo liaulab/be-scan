@@ -12,6 +12,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from pathlib import Path
 import pandas as pd
+import warnings
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
@@ -26,7 +27,7 @@ def scatterplot(df_filepath, # dataframe
     neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # neg control params
     savefig=True, show=True, out_name='scatterplot', out_type='png', out_dir='', # output params
     domains=[], domains_alpha=0.25, domains_color='lightblue', # draw domains
-    x_window=[], interactive=False, 
+    xwindow=[], interactive=False, 
     
     # style params
     subplots_kws={}, xlim={}, ylim={}, 
@@ -121,7 +122,10 @@ def scatterplot(df_filepath, # dataframe
         # calculate normalized log_fc scores for each comp condition
         df_data = norm_to_intergenic_ctrls(df_data, comparisons, avg_dict)
 
-    df_data = df_data[(df_data[x_column] >= x_window[0]) & (df_data[x_column] <= x_window[1])] # FILTER X WINDOW #
+    if len(xwindow) == 2: 
+        df_data = df_data[(df_data[x_column] >= xwindow[0]) & (df_data[x_column] <= xwindow[1])] # FILTER X WINDOW #
+    elif len(xwindow) != 0: 
+        warnings.warn(f"Warning: xwindow should be a list of 2 values", UserWarning)
 
     if interactive: 
         num_plots = len(comparisons)
@@ -177,7 +181,6 @@ def scatterplot(df_filepath, # dataframe
             fig.write_image(str(outpath / f"{out_name}.{out_type}"))
 
     else: 
-
         mpl.rcParams.update({'font.size': 10}) # STYLE #
         fig, axes = plt.subplots(nrows=len(comparisons), ncols=1, figsize=(10, 3*len(comparisons)), 
                                 **subplots_kws) # SETUP SUBPLOTS #
