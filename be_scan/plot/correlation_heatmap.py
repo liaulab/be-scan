@@ -136,15 +136,15 @@ def corr_heatmap(df_filepath, comparisons,
         if show: plt.show()
         plt.close()
 
-corr_heatmap(
-    df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
-    comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg'], 
-    savefig=False, 
-    interactive=True, 
-)
-corr_heatmap(
-    df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
-    comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg'], 
-    savefig=False, 
-    interactive=False, 
-)
+# corr_heatmap(
+#     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
+#     comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg'], 
+#     savefig=False, 
+#     interactive=True, 
+# )
+# corr_heatmap(
+#     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
+#     comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg'], 
+#     savefig=False, 
+#     interactive=False, 
+# )
