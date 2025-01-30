@@ -23,7 +23,7 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
     xlab='', ylab='Log2 Fold Change', # boxplot labels
     neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # neg control params
     savefig=True, show=True, out_name='boxes', out_type='png', out_dir='', # output params
-    interactive=True, 
+    interactive=False, 
 
     # style params
     subplots_kws={}, 
@@ -99,12 +99,6 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
         df_data = norm_to_intergenic_ctrls(df_data, comparisons, avg_dict)
 
     df_data = df_data.loc[df_data[plot_column].isin(plot_conditions)].copy()
-    
-    mpl.rcParams.update({'font.size': 10}) # STYLE #
-    fig, axes = plt.subplots(nrows=len(comparisons), ncols=1, figsize=(5, 3*len(comparisons)), 
-                             **subplots_kws) # SETUP SUBPLOTS #
-    if len(comparisons) == 1: axes = [axes]
-
 
     # INTERACTIVE #
     if interactive: 
@@ -112,8 +106,11 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
         figures = []
         for comp in comparisons:
             fig = go.Figure()
-            fig.add_trace(go.Box(y=df_data[comp], x=df_data[plot_column], name=comp,
-                                marker=dict(color="blue"), boxmean="sd"))
+            fig.add_trace(go.Box(
+                y=df_data[comp], 
+                x=df_data[plot_column], 
+                name=comp, marker=dict(color="blue"), boxmean="sd"
+            ))
 
             # Overlay neg ctrl avg +/- 2 SD as dashed lines
             if neg_ctrl and list_ctrlstats is not None:
@@ -123,19 +120,27 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
 
             # Adjust layout
             fig.update_layout(
-                title=comp,
-                xaxis_title=xlab,
-                yaxis_title=ylab,
+                title=comp, xaxis_title=xlab, yaxis_title=ylab,
                 xaxis=dict(tickangle=-45),
                 yaxis=dict(range=[np.floor(df_data[comp].min()), np.ceil(df_data[comp].max())])
             )
             figures.append(fig)
 
         # Show all figures
-        for fig in figures:
-            fig.show()
+        if show: 
+            for fig in figures: fig.show()
+        # Save as an HTML file instead of PDF (since Plotly is interactive)
+        outpath = Path(out_dir)
+        if savefig:
+            for i, fig in enumerate(figures):
+                out_name = f'{out_name}_{str(i)}.html'
+                fig.write_html(outpath / out_name)
 
     else: # NON INTERACTIVE #
+        mpl.rcParams.update({'font.size': 10}) # STYLE #
+        fig, axes = plt.subplots(nrows=len(comparisons), ncols=1, figsize=(5, 3*len(comparisons)), 
+                                **subplots_kws) # SETUP SUBPLOTS #
+        if len(comparisons) == 1: axes = [axes]
 
         for ax, comp in zip(axes, comparisons):
             # Create box plot using Plotly Express
@@ -175,7 +180,6 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
 #     neg_ctrl=True, neg_ctrl_col="Gene", neg_ctrl_conditions=["NON-GENE"], 
 #     interactive=False, 
 # )
-
 # boxplot(
 #     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
 #     comparisons=["d3-pos", "d3-neg", "d6-pos"], #, "d6-neg", "d9-pos", "d9-neg"], 

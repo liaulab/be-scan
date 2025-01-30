@@ -11,12 +11,15 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
+import plotly.express as px
+import plotly.graph_objects as go
 
 def corr_heatmap(df_filepath, comparisons, 
 
     corr_type='spearman', 
     xlab='', ylab='', title='Spearman Correlation Heatmap', # figure related params
     savefig=True, show=True, out_dir='', out_name='correlation_heatmap', out_type='png', # output related params
+    interactive=False, 
 
     # style params
     heatmap_kws={'center':0, 'linewidth':0.5, 'cmap':'coolwarm', 
@@ -80,24 +83,68 @@ def corr_heatmap(df_filepath, comparisons,
     df_comp = df_data[comparisons].copy()
     df_corr = df_comp.corr(method=corr_type)
 
-    # Set up the matplotlib figure
-    _, ax = plt.subplots(**subplots_kws)
-    ax = sns.heatmap(df_corr, **heatmap_kws)
-    
-    # show frame
-    for _, spine in ax.spines.items():
-        spine.set_visible(True)
-    # adjustments and labels
-    plt.title(title) ; plt.ylabel(xlab) ; plt.xlabel(ylab)
-    # rotate axis labels
-    plt.xticks(rotation=45, horizontalalignment='right')
-    plt.yticks(rotation=0, horizontalalignment='right')
-    plt.tight_layout()
+    if interactive: 
+        # Create figure
+        fig = go.Figure()
 
-    # save pdf and close everything
-    outpath = Path(out_dir)
-    if savefig: 
-        out_name = f'{out_name}.{out_type}'
-        plt.savefig(outpath / out_name, format=out_type, dpi=300)
-    if show: plt.show()
-    plt.close()
+        # Add heatmap
+        fig.add_trace(go.Heatmap(
+            z=df_corr.values,  # Correlation values
+            x=df_corr.columns,  # Column names
+            y=df_corr.index,  # Row names
+            colorscale="Viridis",  # Change color scheme if needed
+            colorbar=dict(title="Correlation"),
+            zmin=-1, zmax=1  # Ensure scale is between -1 and 1 for correlation
+        ))
+
+        # Adjustments and labels
+        fig.update_layout(
+            title=title,
+            xaxis=dict(title=xlab, tickangle=-45),
+            yaxis=dict(title=ylab, tickangle=0),
+            margin=dict(l=50, r=50, t=50, b=50)
+        )
+
+        # Show interactive plot
+        if show: fig.show()
+        # Save as an HTML file instead of PDF (since Plotly is interactive)
+        outpath = Path(out_dir)
+        if savefig:
+            out_name = f'{out_name}.html'
+            fig.write_html(outpath / out_name)
+
+    else: 
+        # Set up the matplotlib figure
+        _, ax = plt.subplots(**subplots_kws)
+        ax = sns.heatmap(df_corr, **heatmap_kws)
+        
+        # show frame
+        for _, spine in ax.spines.items():
+            spine.set_visible(True)
+        # adjustments and labels
+        plt.title(title) ; plt.ylabel(xlab) ; plt.xlabel(ylab)
+        # rotate axis labels
+        plt.xticks(rotation=45, horizontalalignment='right')
+        plt.yticks(rotation=0, horizontalalignment='right')
+        plt.tight_layout()
+
+        # save pdf and close everything
+        outpath = Path(out_dir)
+        if savefig: 
+            out_name = f'{out_name}.{out_type}'
+            plt.savefig(outpath / out_name, format=out_type, dpi=300)
+        if show: plt.show()
+        plt.close()
+
+corr_heatmap(
+    df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
+    comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg'], 
+    savefig=False, 
+    interactive=True, 
+)
+corr_heatmap(
+    df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
+    comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg'], 
+    savefig=False, 
+    interactive=False, 
+)
