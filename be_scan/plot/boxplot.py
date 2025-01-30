@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
 import matplotlib as mpl
+import plotly.express as px
+import plotly.graph_objects as go
 
 from be_scan.plot._annotating_ import *
 
@@ -21,6 +23,7 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
     xlab='', ylab='Log2 Fold Change', # boxplot labels
     neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # neg control params
     savefig=True, show=True, out_name='boxes', out_type='png', out_dir='', # output params
+    interactive=True, 
 
     # style params
     subplots_kws={}, 
@@ -102,38 +105,82 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
                              **subplots_kws) # SETUP SUBPLOTS #
     if len(comparisons) == 1: axes = [axes]
 
-    for ax, comp in zip(axes, comparisons):
-        # make plot for every comparison
-        sns.boxplot(data=df_data, ax=ax, x=plot_column, y=comp, **boxplot_kws)
 
-        plt.setp(ax.artists, edgecolor='black')
-        plt.setp(ax.lines, color='black')
+    # INTERACTIVE #
+    if interactive: 
 
-        # Overlay neg ctrl avg +/- 2 sd as black dashed line
-        if neg_ctrl and list_ctrlstats != None: 
-            tup_comp_stdev = [tup for tup in list_ctrlstats if tup[0] == comp][0][2]
-            ax.axhline(y=2*tup_comp_stdev, **axhline_kws) # top baseline
-            ax.axhline(y=-2*tup_comp_stdev, **axhline_kws) # bottom baseline
-        
-        # Adjust x and y axis limits
-        plt.ylim(np.floor(df_data[comp].min()), np.ceil(df_data[comp].max()))
-        plt.title(comp) ; plt.ylabel(ylab) ; plt.xlabel(xlab)
-        plt.xticks(rotation=45, horizontalalignment='right')
-    
-    # Adjust dimensions
-    plt.tight_layout()
-    # Save file
-    outpath = Path(out_dir)
-    if savefig: 
-        out = f'{out_name}.{out_type}'
-        plt.savefig(outpath / out, format=out_type, dpi=300)
-    if show: plt.show()
-    plt.close()
+        figures = []
+        for comp in comparisons:
+            fig = go.Figure()
+            fig.add_trace(go.Box(y=df_data[comp], x=df_data[plot_column], name=comp,
+                                marker=dict(color="blue"), boxmean="sd"))
+
+            # Overlay neg ctrl avg +/- 2 SD as dashed lines
+            if neg_ctrl and list_ctrlstats is not None:
+                tup_comp_stdev = [tup for tup in list_ctrlstats if tup[0] == comp][0][2]
+                fig.add_hline(y=2*tup_comp_stdev, line=dict(dash="dash", color="black"))  # Top baseline
+                fig.add_hline(y=-2*tup_comp_stdev, line=dict(dash="dash", color="black"))  # Bottom baseline
+
+            # Adjust layout
+            fig.update_layout(
+                title=comp,
+                xaxis_title=xlab,
+                yaxis_title=ylab,
+                xaxis=dict(tickangle=-45),
+                yaxis=dict(range=[np.floor(df_data[comp].min()), np.ceil(df_data[comp].max())])
+            )
+            figures.append(fig)
+
+        # Show all figures
+        for fig in figures:
+            fig.show()
+
+    else: # NON INTERACTIVE #
+
+        for ax, comp in zip(axes, comparisons):
+            # Create box plot using Plotly Express
+            fig = px.box(df_data, x=plot_column, y=comp) #, title=comp, color=plot_column) 
+                        #, points="all")  # Show individual points
+            # make plot for every comparison
+            sns.boxplot(data=df_data, ax=ax, x=plot_column, y=comp, **boxplot_kws)
+            plt.setp(ax.artists, edgecolor='black')
+            plt.setp(ax.lines, color='black')
+
+            # Overlay neg ctrl avg +/- 2 sd as black dashed line
+            if neg_ctrl and list_ctrlstats is not None: 
+                tup_comp_stdev = [tup for tup in list_ctrlstats if tup[0] == comp][0][2]
+                ax.axhline(y=2*tup_comp_stdev, **axhline_kws) # top baseline
+                ax.axhline(y=-2*tup_comp_stdev, **axhline_kws) # bottom baseline
+
+            # Adjust x and y axis limits
+            plt.ylim(np.floor(df_data[comp].min()), np.ceil(df_data[comp].max()))
+            plt.title(comp) ; plt.ylabel(ylab) ; plt.xlabel(xlab)
+            plt.xticks(rotation=45, horizontalalignment='right')
+
+        # Adjust dimensions
+        plt.tight_layout()
+        # Save file
+        outpath = Path(out_dir)
+        if savefig: 
+            out = f'{out_name}.{out_type}'
+            plt.savefig(outpath / out, format=out_type, dpi=300)
+        if show: plt.show()
+        plt.close()
 
 # boxplot(
 #     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
-#     comparisons=["d3-pos", "d3-neg", "d6-pos", "d6-neg", "d9-pos", "d9-neg"], 
+#     comparisons=["d3-pos", "d3-neg", "d6-pos"], #, "d6-neg", "d9-pos", "d9-neg"], 
 #     plot_conditions = ["PWWP", "ADD", "MTase", "Nterm"], 
 #     plot_column="Domain", 
-#     neg_ctrl=True, neg_ctrl_col="Gene", neg_ctrl_conditions=["NON-GENE"]
+#     neg_ctrl=True, neg_ctrl_col="Gene", neg_ctrl_conditions=["NON-GENE"], 
+#     interactive=False, 
+# )
+
+# boxplot(
+#     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
+#     comparisons=["d3-pos", "d3-neg", "d6-pos"], #, "d6-neg", "d9-pos", "d9-neg"], 
+#     plot_conditions = ["PWWP", "ADD", "MTase", "Nterm"], 
+#     plot_column="Domain", 
+#     neg_ctrl=True, neg_ctrl_col="Gene", neg_ctrl_conditions=["NON-GENE"], 
+#     interactive=True, 
 # )
