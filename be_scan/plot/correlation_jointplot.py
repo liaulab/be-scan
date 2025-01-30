@@ -138,7 +138,7 @@ def interactive_corr_jointplot(df_filepath, condition1, condition2,
     df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)
 
-    hex_pal = [mcolors.to_hex(c) for c in pal] 
+    hex_pal = ["#{:02x}{:02x}{:02x}".format(*tuple(map(int, c[4:-1].split(",")))) for c in pal]
     # Scatter plot with histograms
     fig = px.scatter(
         df_data, x=condition1, y=condition2, 
