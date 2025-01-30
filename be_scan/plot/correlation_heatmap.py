@@ -83,20 +83,16 @@ def corr_heatmap(df_filepath, comparisons,
     df_comp = df_data[comparisons].copy()
     df_corr = df_comp.corr(method=corr_type)
 
-    if interactive: 
-        # Create figure
+    if interactive: # INTERACTIVE #
         fig = go.Figure()
 
         # Add heatmap
         fig.add_trace(go.Heatmap(
-            z=df_corr.values,  # Correlation values
-            x=df_corr.columns,  # Column names
-            y=df_corr.index,  # Row names
-            colorscale="Viridis",  # Change color scheme if needed
+            z=df_corr.values, x=df_corr.columns, y=df_corr.index, 
+            colorscale="coolwarm",  # Change color scheme if needed
             colorbar=dict(title="Correlation"),
             zmin=-1, zmax=1  # Ensure scale is between -1 and 1 for correlation
         ))
-
         # Adjustments and labels
         fig.update_layout(
             title=title,
@@ -105,15 +101,14 @@ def corr_heatmap(df_filepath, comparisons,
             margin=dict(l=50, r=50, t=50, b=50)
         )
 
-        # Show interactive plot
+        # Show plot and save fig
         if show: fig.show()
-        # Save as an HTML file instead of PDF (since Plotly is interactive)
         outpath = Path(out_dir)
         if savefig:
             out_name = f'{out_name}.html'
             fig.write_html(outpath / out_name)
 
-    else: 
+    else: # NON INTERACTIVE #
         # Set up the matplotlib figure
         _, ax = plt.subplots(**subplots_kws)
         ax = sns.heatmap(df_corr, **heatmap_kws)

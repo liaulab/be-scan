@@ -14,6 +14,7 @@ from pathlib import Path
 import matplotlib as mpl
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from be_scan.plot._annotating_ import *
 
@@ -100,41 +101,46 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
 
     df_data = df_data.loc[df_data[plot_column].isin(plot_conditions)].copy()
 
-    # INTERACTIVE #
-    if interactive: 
+    if interactive: # INTERACTIVE #
+        # Number of comparisons
+        num_comparisons = len(comparisons)
+        # Create subplots if there are multiple comparisons
+        fig = make_subplots(rows=num_comparisons, cols=1, subplot_titles=comparisons)
 
-        figures = []
-        for comp in comparisons:
-            fig = go.Figure()
-            fig.add_trace(go.Box(
-                y=df_data[comp], 
-                x=df_data[plot_column], 
-                name=comp, marker=dict(color="blue"), boxmean="sd"
-            ))
+        # Loop through each comparison
+        for i, comp in enumerate(comparisons):
+            # Create box plot using Plotly Express
+            box_fig = px.box(df_data, x=plot_column, y=comp, points="all")  # Show individual points
+            
+            # Add each trace from Plotly Express into our subplot
+            for trace in box_fig.data:
+                fig.add_trace(trace, row=i+1, col=1)
 
-            # Overlay neg ctrl avg +/- 2 SD as dashed lines
+            # Overlay neg ctrl avg +/- 2 SD as black dashed lines
             if neg_ctrl and list_ctrlstats is not None:
                 tup_comp_stdev = [tup for tup in list_ctrlstats if tup[0] == comp][0][2]
-                fig.add_hline(y=2*tup_comp_stdev, line=dict(dash="dash", color="black"))  # Top baseline
-                fig.add_hline(y=-2*tup_comp_stdev, line=dict(dash="dash", color="black"))  # Bottom baseline
+                fig.add_hline(y=2*tup_comp_stdev, line=dict(dash="dash", color="black"), row=i+1, col=1)  # Top baseline
+                fig.add_hline(y=-2*tup_comp_stdev, line=dict(dash="dash", color="black"), row=i+1, col=1)  # Bottom baseline
 
-            # Adjust layout
-            fig.update_layout(
-                title=comp, xaxis_title=xlab, yaxis_title=ylab,
-                xaxis=dict(tickangle=-45),
-                yaxis=dict(range=[np.floor(df_data[comp].min()), np.ceil(df_data[comp].max())])
+            # Adjust y-axis limits
+            fig.update_yaxes(
+                range=[np.floor(df_data[comp].min()), np.ceil(df_data[comp].max())],
+                title_text=ylab, row=i+1, col=1
             )
-            figures.append(fig)
 
-        # Show all figures
-        if show: 
-            for fig in figures: fig.show()
-        # Save as an HTML file instead of PDF (since Plotly is interactive)
+        # Update layout settings
+        fig.update_layout(
+            title="Box Plot Comparisons", xaxis_title=xlab,
+            width=600, height=300 * num_comparisons,  # Adjust height dynamically
+            showlegend=False, 
+        )
+
+        # Show plot and save fig
+        if show: fig.show()
         outpath = Path(out_dir)
         if savefig:
-            for i, fig in enumerate(figures):
-                out_name = f'{out_name}_{str(i)}.html'
-                fig.write_html(outpath / out_name)
+            out_name_full = f"{out_name}.html"
+            fig.write_html(outpath / out_name_full)  # Saves as an interactive HTML
 
     else: # NON INTERACTIVE #
         mpl.rcParams.update({'font.size': 10}) # STYLE #
