@@ -121,7 +121,7 @@ def scatterplot(df_filepath, # dataframe
         # calculate normalized log_fc scores for each comp condition
         df_data = norm_to_intergenic_ctrls(df_data, comparisons, avg_dict)
 
-    df_data = df_data[(df_data[xlab] >= x_window[0]) & (df_data[xlab] <= x_window[1])] # FILTER X WINDOW #
+    df_data = df_data[(df_data[x_column] >= x_window[0]) & (df_data[x_column] <= x_window[1])] # FILTER X WINDOW #
 
     if interactive: 
         num_plots = len(comparisons)
