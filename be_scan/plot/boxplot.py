@@ -174,24 +174,8 @@ def interactive_boxplot(df_filepath, comparisons, # each comparison is a plot
         whether or not to show the plot
     out_name : str, optional, defaults to 'scatterplot'
         name of figure output
-    out_type : str, optional, defaults to 'pdf'
-        file type of figure output
     out_directory : str, optional, defaults to ''
         path to output directory
-
-    subplots_kws : dict, optional, defaults to 
-        {'figsize':(5,4)}
-        input params for plt.subplots() 
-        https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
-    boxplot_kws : dict, optional, defaults to 
-        {'saturation':1, 'fliersize':4, 'width':0.4, 
-        'flierprops':{'marker':'o', 'mec':'black', 'lw':1, 'alpha':0.8}}
-        input params for sns.boxplot() 
-        https://seaborn.pydata.org/generated/seaborn.boxplot.html
-    axhline_kws : dict, optional, defaults to 
-        {'color':'k', 'ls':'--', 'lw':1}
-        input params for plt.axhline() 
-        https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axhline.html
 
     Returns
     ------------
