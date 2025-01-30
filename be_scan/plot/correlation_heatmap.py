@@ -104,7 +104,7 @@ def corr_heatmap(df_filepath, comparisons,
     plt.close()
 
 
-def corr_heatmap(df_filepath, comparisons, 
+def interactive_corr_heatmap(df_filepath, comparisons, 
 
     corr_type='spearman', 
     xlab='', ylab='', title='Spearman Correlation Heatmap', # figure related params
@@ -166,6 +166,7 @@ def corr_heatmap(df_filepath, comparisons,
     # Adjustments and labels
     fig.update_layout(
         title=title,
+        width=600, height=600, 
         xaxis=dict(title=xlab, tickangle=-45), yaxis=dict(title=ylab, tickangle=0),
         margin=dict(l=50, r=50, t=50, b=50)
     )
