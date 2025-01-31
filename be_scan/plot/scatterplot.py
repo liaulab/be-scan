@@ -12,6 +12,10 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from pathlib import Path
 import pandas as pd
+import warnings
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import matplotlib.colors as mcolors
 
 from be_scan.plot._annotating_ import *
 
@@ -22,16 +26,15 @@ def scatterplot(df_filepath, # dataframe
     xlab='Amino Acid Position', ylab='sgRNA Score', # scatterplot labels
     include_hue=False, hue_col='', pal='pastel', # color params
     neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # neg control params
-    annot=False, annot_label='', annot_top=None, annot_cutoff=None, annot_abs=None, # annotate outliers
     savefig=True, show=True, out_name='scatterplot', out_type='png', out_dir='', # output params
     domains=[], domains_alpha=0.25, domains_color='lightblue', # draw domains
+    xwindow=[], 
     
     # style params
     subplots_kws={}, xlim={}, ylim={}, 
     xlim_kws={'xmin':None, 'xmax':None}, ylim_kws={'ymin':None, 'ymax':None},
-    scatterplot_kws={'alpha': 0.85, 'linewidth': 0.8, 's': 50},
+    scatterplot_kws={'alpha': 0.85, 'linewidth': 0.8, 's': 30},
     axhline_kws={'color':'k', 'ls':'--', 'lw':1},
-    label_text_kwargs={'ha':'right', 'va':'bottom', 'fontsize':6}, 
     ):
     
     """[Summary]
@@ -65,15 +68,6 @@ def scatterplot(df_filepath, # dataframe
         column of .csv which correspond to normalization control
     neg_ctrl_conditions : list of str, optional, defaults to ['Intron', 'Control']
         name of categories of neg_ctrl_col to normalize dataframe
-
-    annot : bool, optional, defaults to False
-        Whether or not to automatically annotate points
-    annot_label : string, optional, defaults to 'CtoT_mutations'
-        The column of the label in the dataframe
-    annot_top : int, optional, defaults to 10
-        The top n scoring points will be labeled
-    annot_cutoff : float, optional, defaults to None
-        The absolute value cutoff for which points will be labeled
     
     savefig : bool, optional, defaults to True
         whether or not to save the figure
@@ -129,13 +123,14 @@ def scatterplot(df_filepath, # dataframe
         # calculate normalized log_fc scores for each comp condition
         df_data = norm_to_intergenic_ctrls(df_data, comparisons, avg_dict)
 
-    if annot: # annot the screen hits #
-        assert isinstance(annot_label, str) and annot_label in df_data.columns.tolist(), "check param: annot_label"
-        assert isinstance(annot_top, int) or isinstance(annot_cutoff, float) or isinstance(annot_abs, int), "check param: annot_top annot_cutoff"
+    if len(xwindow) == 2: 
+        df_data = df_data[(df_data[x_column] >= xwindow[0]) & (df_data[x_column] <= xwindow[1])] # FILTER X WINDOW #
+    elif len(xwindow) != 0: 
+        warnings.warn(f"Warning: xwindow should be a list of 2 values", UserWarning)
 
     mpl.rcParams.update({'font.size': 10}) # STYLE #
     fig, axes = plt.subplots(nrows=len(comparisons), ncols=1, figsize=(10, 3*len(comparisons)), 
-                             **subplots_kws) # SETUP SUBPLOTS #
+                            **subplots_kws) # SETUP SUBPLOTS #
     if len(comparisons) == 1: axes = [axes]
 
     for ax, comp in zip(axes, comparisons):
@@ -147,30 +142,6 @@ def scatterplot(df_filepath, # dataframe
             tup_comp_stdev = [tup for tup in list_ctrlstats if tup[0] == comp][0][2]
             ax.axhline(y=2*tup_comp_stdev, **axhline_kws) # top baseline
             ax.axhline(y=-2*tup_comp_stdev, **axhline_kws) # bottom baseline
-
-        if annot: # annot the screen hits #
-            if annot_cutoff: # annotate by a cutoff where all values outside are annotated
-                df_cutoff = df_data[df_data[comp].abs() > annot_cutoff]
-                for _, row in df_cutoff.iterrows():
-                    if row[annot_label] != "nan": 
-                        ax.text(row[x_column], row[comp], row[annot_label], **label_text_kwargs)
-                toprows_df = df_cutoff.sort_values(by=comp, ascending=False)
-                print(toprows_df)
-            elif annot_abs: # annotate the top scoring abs value
-                sorted_df = df_data.assign(yabs=df_data[comp].abs()).sort_values(by='yabs', ascending=False)
-                toprows_df = sorted_df.head(annot_abs)
-                for _, row in toprows_df.iterrows(): 
-                    t = ax.text(row[x_column], row[comp]-0.2, row[annot_label], **label_text_kwargs)
-                print(toprows_df)
-            elif annot_top: # annotate by the top or bottom n
-                sign = np.sign(annot_top)
-                ascen = True if sign==-1 else False
-                sorted_df = df_data.assign(yabs=df_data[comp]).sort_values(by='yabs', ascending=ascen)
-                toprows_df = sorted_df.head(sign*annot_top)
-                for _, row in toprows_df.iterrows():
-                    t = ax.text(row[x_column], row[comp]-0.2, row[annot_label],
-                                **label_text_kwargs)
-                print(toprows_df)
 
         # Adjust x and y axis limits
         if xlim == {}: ax.set_xlim(df_data[x_column].min()-10, df_data[x_column].max()+10)
@@ -197,6 +168,152 @@ def scatterplot(df_filepath, # dataframe
     if show: plt.show()
     plt.close()
 
+def interactive_scatter(df_filepath, # dataframe
+                        comparisons, # each comparison is a plot, and also the y axis
+                        x_column, # the x axis values
+
+    xlab='Amino Acid Position', ylab='sgRNA Score', # scatterplot labels
+    include_hue=False, hue_col='', pal='pastel', # color params
+    neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # neg control params
+    savefig=True, show=True, out_name='scatterplot', out_type='png', out_dir='', # output params
+    domains=[], domains_alpha=0.25, domains_color='lightblue', # draw domains
+    xwindow=[], annot_label='', 
+    
+    # style params
+    xlim={}, ylim={},
+    plotly_go_kws={'opacity':0.85, 'line':dict(width=0.8)}, 
+    ):
+    
+    """[Summary]
+    This function takes in a dataframe from analysis and then 
+    plots the data for each condition to reveal which guides are enriched
+
+    Parameters
+    ------------
+    df_filepath : str, required
+        filepath to .csv data generated from count_reads
+    x_column : str, required
+        column of .csv, typically amino acid position
+    comparisons : list of str, required
+        list of comparisons that correspond to columns of data
+
+    xlab : str, optional, defaults to 'Amino Acid Position'
+        name of x-axis label
+    ylab : str, optional, defaults to 'sgRNA Score'
+        name of y-axis label
+    include_hue: bool, optional, default to False
+        whether or not to color points by a variable, 
+        will also restrict points plotted to only the hue_order values listed
+    hue_col: str, optional, defaults to 'CtoT_muttype'
+        the categorial dimension of the data, name of .csv data column
+    palette: list of str, optional, defaults to a preset list of colors from ColorBrewer2
+        a list of colors which correspond to hue_order
+        
+    neg_ctrl : bool, optional, defaults to False
+        whether or not to calulate negative control for normalization and line drawing
+    neg_ctrl_col : str, optional, defaults to 'CtoT_win_overlap'
+        column of .csv which correspond to normalization control
+    neg_ctrl_conditions : list of str, optional, defaults to ['Intron', 'Control']
+        name of categories of neg_ctrl_col to normalize dataframe
+    
+    savefig : bool, optional, defaults to True
+        whether or not to save the figure
+    show : bool, optional, defaults to True
+        whether or not to show the plot
+    out_name : str, optional, defaults to 'scatterplot'
+        name of figure output
+    out_type : str, optional, defaults to 'pdf'
+        file type of figure output
+    out_directory : str, optional, defaults to ''
+        path to output directory
+
+    Returns
+    ------------
+    """
+    df_filepath = Path(df_filepath)
+    df_data = pd.read_csv(df_filepath)
+
+    # if there is hue add params for plotting
+    if include_hue: 
+        unique_types_sorted = sorted(df_data[hue_col].unique())
+        sns.set_palette(pal, len(unique_types_sorted))
+
+        palette = sns.color_palette(pal, n_colors=len(unique_types_sorted))
+        pal = dict(zip(unique_types_sorted, [mcolors.to_hex(c) for c in palette]))
+
+    # normalize data to intergenic controls if neg_ctrl is provided
+    if neg_ctrl: 
+        assert isinstance(neg_ctrl_col, str) and neg_ctrl_col in df_data.columns.tolist(), "check param: params_cols"
+        assert isinstance(neg_ctrl_conditions, list), "check param: params_conditions"
+        # calculate negative control stats
+        _, list_ctrlstats, avg_dict = calc_neg_ctrls(df_data, comparisons, neg_ctrl_col, neg_ctrl_conditions)
+        # calculate normalized log_fc scores for each comp condition
+        df_data = norm_to_intergenic_ctrls(df_data, comparisons, avg_dict)
+
+    if len(xwindow) == 2: 
+        df_data = df_data[(df_data[x_column] >= xwindow[0]) & (df_data[x_column] <= xwindow[1])] # FILTER X WINDOW #
+    elif len(xwindow) != 0: 
+        warnings.warn(f"Warning: xwindow should be a list of 2 values", UserWarning)
+
+    num_plots = len(comparisons)
+    fig = make_subplots(rows=num_plots, cols=1, subplot_titles=comparisons, shared_xaxes=True)
+
+    if not annot_label in df_data.columns: 
+        warnings.warn(f"{annot_label} is not a column in input DataFrame", UserWarning)
+        hovertext = None
+    else: hovertext = df_data[annot_label]
+    
+    # Iterate through comparisons to create each subplot
+    for idx, comp in enumerate(comparisons): 
+        # Scatter Plot
+        fig.add_trace(
+            go.Scatter(
+                x=df_data[x_column], y=df_data[comp], 
+                hovertext=hovertext, mode='markers', name=comp, 
+                marker=dict(size=6, color=df_data[hue_col].map(pal) if include_hue else None), 
+                **plotly_go_kws), row=idx + 1, col=1 )
+
+        # Overlay neg ctrl avg +/- 2 SD as black dashed lines
+        if neg_ctrl and list_ctrlstats != None:
+            tup_comp_stdev = next(tup[2] for tup in list_ctrlstats if tup[0] == comp)
+            fig.add_shape(
+                dict(type="line", x0=df_data[x_column].min(), x1=df_data[x_column].max(),
+                     y0=2*tup_comp_stdev, y1=2*tup_comp_stdev, line=dict(color="black", dash="dash")),
+                row=idx + 1, col=1 )
+            fig.add_shape(
+                dict(type="line", x0=df_data[x_column].min(), x1=df_data[x_column].max(),
+                     y0=-2*tup_comp_stdev, y1=-2*tup_comp_stdev, line=dict(color="black", dash="dash")),
+                row=idx + 1, col=1 )
+
+        # Adjust x and y axis limits
+        x_range = [df_data[x_column].min()-10, df_data[x_column].max()+10] if not xlim else [xlim['left'], xlim['right']]
+        fig.update_xaxes(range=x_range, row=idx + 1, col=1 )
+        if not ylim:
+            bound = max(abs(np.floor(df_data[comp].min())), abs(np.ceil(df_data[comp].max())))
+            fig.update_yaxes(range=[-bound, bound], row=idx + 1, col=1 )
+        else: 
+            fig.update_yaxes(range=ylim, row=idx + 1, col=1 )
+        
+        # Add domain highlighting
+        for d in domains:
+            fig.add_shape(
+                dict(type="rect", x0=d['start'], x1=d['end'], y0=ylim[0] if ylim else -bound, 
+                     y1=ylim[1] if ylim else bound, fillcolor=domains_color, opacity=domains_alpha, layer="below"),
+                row=idx + 1, col=1 )
+
+    # Update layout
+    fig.update_layout(
+        title_text="Scatter Plots - Comparisons", 
+        xaxis_title=xlab, yaxis_title=ylab, 
+        width=1200, height=600 * num_plots, )
+
+    # Save file
+    if show: fig.show()
+    if savefig:
+        outpath = Path(out_dir)
+        out_name = f"{out_name}.{out_type}"
+        fig.write_html(str(outpath / out_name))
+
 # scatterplot(
 #     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
 #     comparisons=["d3-pos", "d3-neg"], 
@@ -204,6 +321,18 @@ def scatterplot(df_filepath, # dataframe
 #     include_hue=True, hue_col='Mut_type', 
 #     neg_ctrl=True, neg_ctrl_col='Gene', neg_ctrl_conditions=['NON-GENE'], # neg control params
 #     xlim={'left':200, 'right':920}, 
-#     annot=True, annot_label='sgRNA_ID', annot_abs=10, # annot_cutoff=0.5 annot_top=10
+#     # annot=True, annot_label='sgRNA_ID', annot_abs=10, # annot_cutoff=0.5 annot_top=10
 #     # domains=[{'start':300, 'end':400}], 
+#     interactive=True, annot_label='Mut_list_all', 
+# )
+# scatterplot(
+#     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
+#     comparisons=["d3-pos", "d3-neg"], 
+#     x_column='Edit_site_3A1', 
+#     include_hue=True, hue_col='Mut_type', 
+#     neg_ctrl=True, neg_ctrl_col='Gene', neg_ctrl_conditions=['NON-GENE'], # neg control params
+#     xlim={'left':200, 'right':920}, 
+#     # annot=True, annot_label='sgRNA_ID', annot_abs=10, # annot_cutoff=0.5 annot_top=10
+#     # domains=[{'start':300, 'end':400}], 
+#     # interactive=True, 
 # )

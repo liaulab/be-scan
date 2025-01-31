@@ -11,6 +11,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
+import plotly.graph_objects as go
 
 def corr_heatmap(df_filepath, comparisons, 
 
@@ -101,3 +102,91 @@ def corr_heatmap(df_filepath, comparisons,
         plt.savefig(outpath / out_name, format=out_type, dpi=300)
     if show: plt.show()
     plt.close()
+
+
+def interactive_corr_heatmap(df_filepath, comparisons, 
+
+    corr_type='spearman', 
+    xlab='', ylab='', title='Spearman Correlation Heatmap', # figure related params
+    savefig=True, show=True, out_dir='', out_name='correlation_heatmap', # output related params
+    ): 
+    
+    """[Summary]
+    This function takes in a dataframe from count_reads, and plots
+    a scatterplot showing correlation between two given conditions
+    
+    Parameters
+    ------------
+    df_filepath : str, required
+        filepath to .csv data generated from count_reads
+    comparisons : list of str, required
+        list of comparisons that correspond to columns of .csv data
+
+    corr_type : str, optional, defaults to 'spearman'
+        type of correlation, refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.corr.html
+    xlab : str, optional, defaults to ''
+        name of the x-axis label
+    ylab : str, optional, defaults to ''
+        name of the y-axis label
+    title : str, optional, defaults to 'Spearman Correlation Heatmap'
+        name of title label
+        
+    savefig : bool, optional, defaults to True
+        whether or not to save the figure
+    show : bool, optional, defaults to True
+        whether or not to show the plot
+    out_dir : str, optional, defaults to ''
+        path to output directory
+    out_name : str, optional, defaults to 'scatterplot'
+        name of figure output
+
+    Returns
+    ------------
+    """
+
+    df_filepath = Path(df_filepath)
+    df_data = pd.read_csv(df_filepath)
+
+    # style
+    mpl.rcParams.update({'font.size': 10})
+    sns.set_style('ticks')
+
+    # Compute correlation matrix
+    df_comp = df_data[comparisons].copy()
+    df_corr = df_comp.corr(method=corr_type)
+
+    fig = go.Figure()
+    # Add heatmap
+    fig.add_trace(go.Heatmap(
+        z=df_corr.values, x=df_corr.columns, y=df_corr.index, 
+        colorscale="rdbu_r", 
+        colorbar=dict(title="Correlation"),
+        zmin=-1, zmax=1  # Ensure scale is between -1 and 1 for correlation
+    ))
+    # Adjustments and labels
+    fig.update_layout(
+        title=title,
+        width=600, height=600, 
+        xaxis=dict(title=xlab, tickangle=-45), yaxis=dict(title=ylab, tickangle=0),
+        margin=dict(l=50, r=50, t=50, b=50)
+    )
+
+    # Show plot and save fig
+    if show: fig.show()
+    outpath = Path(out_dir)
+    if savefig:
+        out_name = f'{out_name}.html'
+        fig.write_html(outpath / out_name)
+
+# corr_heatmap(
+#     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
+#     comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg'], 
+#     savefig=False, 
+#     interactive=True, 
+# )
+# corr_heatmap(
+#     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
+#     comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg'], 
+#     savefig=False, 
+#     interactive=False, 
+# )

@@ -18,6 +18,7 @@ def batch_process(sample_sheet, annotated_lib,
     comparisons='', neg_ctrl_col='', neg_ctrl_conditions=[], 
     file_dir='', controls=['t0'], 
     KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
+    lower_cutoff=0, lower_cutoff_cols=[], 
     out_counts='counts_library.csv', out_lfc='library_LFC.csv', out_comps='conditions.csv', out_stats = 'stats.txt',
     
     stats_comparisons=[], 
@@ -66,6 +67,10 @@ def batch_process(sample_sheet, annotated_lib,
         default is the start of the sgRNA scaffold sequence.
     dont_trim_G : bool, default False
         Whether to trim the first G from 21-nt sgRNA sequences to make them 20-nt.
+    lower_cutoff : float, default 0
+        The cutoff for values which do not go into the final dataframe
+    lower_cutoff_cols : list of str, default []
+        The column names on which to filter for the lower_cutoff
 
     stats_comparisons : list of str
         a list of columns of the conditions for which to calculate negative controls
@@ -95,26 +100,29 @@ def batch_process(sample_sheet, annotated_lib,
     count_reads_params = {
         'sample_sheet':sample_sheet, 'annotated_lib':annotated_lib, 'in_dir':file_dir, 
         'KEY_INTERVAL':KEY_INTERVAL, 'KEY':KEY, 'KEY_REV':KEY_REV, 'dont_trim_G':dont_trim_G, 
+        'lower_cutoff':lower_cutoff, 'lower_cutoff_cols':lower_cutoff_cols, 
         'out_dir':file_dir, 'out_file':out_counts, 'return_df':return_df, 'plot_out_type':plot_out_type, 'save_files':save, }
     count_reads(**count_reads_params)
 
     log_transform_params = {
         'sample_sheet':sample_sheet, 'library_counts':out_counts, 'controls':controls, 
-        'in_dir':file_dir, 'out_dir':file_dir, 'out_file':out_lfc, 'save':save, 'return_df':return_df,
+        'in_dir':file_dir, 'out_dir':file_dir, 'out_file':out_lfc, 'save':save, 'return_df':return_df, 
     }
     result = log_transform(**log_transform_params)
     
     if len(comparisons) > 1: 
         compare_conds_params = {
             'comparisons':comparisons, 'avg_conds':out_lfc, 'out_file':out_comps, 
-            'in_dir':file_dir, 'out_dir':file_dir, 'save':save, 'return_df':return_df, }
+            'in_dir':file_dir, 'out_dir':file_dir, 'save':save, 'return_df':return_df, 
+            'controls':controls, }
         result = compare_conds(**compare_conds_params)
 
     if len(neg_ctrl_col) > 0 and len(neg_ctrl_conditions) > 0 and len(stats_comparisons) > 0: 
         calc_controls_params = {
             'conditions':out_comps, 'stats_comparisons':stats_comparisons, 
             'neg_ctrl_col':neg_ctrl_col, 'neg_ctrl_conditions':neg_ctrl_conditions, 
-            'in_dir':file_dir, 'out_dir':file_dir, 'out_file':out_stats, 'save':save, 'return_txt':return_df, }
+            'in_dir':file_dir, 'out_dir':file_dir, 'out_file':out_stats, 'save':save, 'return_txt':return_df, 
+            'controls':controls, }
         calc_controls(**calc_controls_params)
 
     if return_df: 

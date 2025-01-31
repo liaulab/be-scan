@@ -14,14 +14,14 @@ from pathlib import Path
 
 def sgrna_enrichment(df_filepath, comparisons, 
 
-     highlight=False, highlight_col='sgRNA_ID', highlight_vals=['sgRNA_0'], 
-     density=True, 
-     
-     savefig=True, show=True, out_name='scatterplot', out_type='png', out_directory='', # output params
+    highlight=False, highlight_col='sgRNA_ID', highlight_vals=['sgRNA_0'], 
+    density=True, 
+    
+    savefig=True, show=True, out_name='scatterplot', out_type='png', out_directory='', # output params
 
-     rugplot_kws={'height':0.25, 'color':'black', 'linewidth':2, 'alpha':0.05}, 
-     kdeplot_kws={'color':'black', 'linewidth':1, 'alpha':0.5}, 
-     highlight_rugplot_kws={'height':0.25, 'color':'red', 'linewidth':5, 'alpha':0.6}
+    rugplot_kws={'height':0.25, 'color':'black', 'linewidth':2, 'alpha':0.05}, 
+    kdeplot_kws={'color':'black', 'linewidth':1, 'alpha':0.5}, 
+    highlight_rugplot_kws={'height':0.25, 'color':'red', 'linewidth':5, 'alpha':0.6}
     ):
     
     """[Summary]
