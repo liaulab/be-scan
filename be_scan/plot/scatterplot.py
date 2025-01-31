@@ -303,7 +303,7 @@ def interactive_scatter(df_filepath, # dataframe
 
     # Update layout
     fig.update_layout(
-        title_text="Scatter Plots - Comparisons", showlegend=True,
+        title_text="Scatter Plots - Comparisons", 
         xaxis_title=xlab, yaxis_title=ylab, 
         width=1200, height=600 * num_plots, )
 
