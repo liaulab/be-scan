@@ -1,4 +1,4 @@
-from be_scan.plot.scatterplot import scatterplot
+from be_scan.plot.scatterplot import scatterplot, interactive_scatter
 from be_scan.plot.correlation_jointplot import corr_jointplot, interactive_corr_jointplot
 from be_scan.plot.correlation_heatmap import corr_heatmap, interactive_corr_heatmap
 from be_scan.plot.boxplot import boxplot, interactive_boxplot
