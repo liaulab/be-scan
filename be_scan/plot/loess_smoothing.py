@@ -387,10 +387,10 @@ def output_clusters(name, xvals, yvals):
 #     domains=[{'start':300, 'end':350}], 
 # )
 
-loess_range(
-    df_filepath='tests/test_data/plot/NZL10196_v9_comparisons.csv', 
-    x_column='Edit_site_3A1', 
-    comparison="d3-pos", 
-    spans=[10, 20, 30, 40], n_repeats=3000, 
-    domains=[{'start':300, 'end':350}], 
-)
+# loess_range(
+#     df_filepath='tests/test_data/plot/NZL10196_v9_comparisons.csv', 
+#     x_column='Edit_site_3A1', 
+#     comparison="d3-pos", 
+#     spans=[10, 20, 30, 40], n_repeats=3000, 
+#     domains=[{'start':300, 'end':350}], 
+# )
