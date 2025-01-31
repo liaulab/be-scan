@@ -162,8 +162,7 @@ def interactive_corr_jointplot(df_filepath, condition1, condition2,
         title=f"{condition1} vs {condition2}",
         xaxis_title=condition1, yaxis_title=condition2,
         legend_title=hue_col if include_hue else None,
-        font=dict(size=10), 
-        width=600, height=600, 
+        font=dict(size=10), width=800, height=800, 
     )
 
     # Save file
