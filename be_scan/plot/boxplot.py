@@ -120,9 +120,13 @@ def boxplot(df_filepath, comparisons, # each comparison is a plot
             ax.axhline(y=-2*tup_comp_stdev, **axhline_kws) # bottom baseline
 
         # Adjust x and y axis limits
-        plt.ylim(np.floor(df_data[comp].min()), np.ceil(df_data[comp].max()))
-        plt.title(comp) ; plt.ylabel(ylab) ; plt.xlabel(xlab)
-        plt.xticks(rotation=45, horizontalalignment='right')
+        ax.set_ylim(np.floor(df_data[comp].min()), np.ceil(df_data[comp].max()))
+        ax.set_title(comp)
+        ax.set_ylabel(ylab) ; ax.set_xlabel(xlab)
+
+        for label in ax.get_xticklabels():
+            label.set_rotation(45)
+            label.set_horizontalalignment('right')
 
     # Adjust dimensions
     plt.tight_layout()
@@ -238,7 +242,6 @@ def interactive_boxplot(df_filepath, comparisons, # each comparison is a plot
 #     plot_conditions = ["PWWP", "ADD", "MTase", "Nterm"], 
 #     plot_column="Domain", 
 #     neg_ctrl=True, neg_ctrl_col="Gene", neg_ctrl_conditions=["NON-GENE"], 
-#     interactive=False, 
 # )
 # boxplot(
 #     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
@@ -246,5 +249,4 @@ def interactive_boxplot(df_filepath, comparisons, # each comparison is a plot
 #     plot_conditions = ["PWWP", "ADD", "MTase", "Nterm"], 
 #     plot_column="Domain", 
 #     neg_ctrl=True, neg_ctrl_col="Gene", neg_ctrl_conditions=["NON-GENE"], 
-#     interactive=True, 
 # )
