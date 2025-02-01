@@ -142,9 +142,11 @@ def count_reads(sample_sheet, annotated_lib,
 
             start_index = key_index + KEY_START + len(KEY)
             guide = read_sequence[start_index:end_index]
-            if not dont_trim_G:
+            if not dont_trim_G: # trim G
                 if guide.startswith('G') and len(guide) == 21:
                     guide = guide[1:]
+            if not KEY_REV: 
+                guide = guide[:20]
             if len(guide) != 20:
                 num_badlength += 1
                 continue
