@@ -175,7 +175,7 @@ def interactive_scatter(df_filepath, # dataframe
     xlab='Amino Acid Position', ylab='sgRNA Score', # scatterplot labels
     include_hue=False, hue_col='', pal='pastel', # color params
     neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # neg control params
-    savefig=True, show=True, out_name='scatterplot', out_type='png', out_dir='', # output params
+    savefig=True, show=True, out_name='scatterplot', out_dir='', # output params
     domains=[], domains_alpha=0.25, domains_color='lightblue', # draw domains
     xwindow=[], annot_label='', 
     
@@ -311,7 +311,7 @@ def interactive_scatter(df_filepath, # dataframe
     if show: fig.show()
     if savefig:
         outpath = Path(out_dir)
-        out_name = f"{out_name}.{out_type}"
+        out_name = f"{out_name}"
         fig.write_html(str(outpath / out_name))
 
 # scatterplot(
