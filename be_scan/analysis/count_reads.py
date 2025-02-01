@@ -141,7 +141,6 @@ def count_reads(sample_sheet, annotated_lib,
                 end_index = KEY_END  # Set end_index to the full available region
 
             start_index = key_index + KEY_START + len(KEY)
-            end_index = key_rev_index + KEY_START
             guide = read_sequence[start_index:end_index]
             if not dont_trim_G:
                 if guide.startswith('G') and len(guide) == 21:
