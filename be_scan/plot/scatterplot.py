@@ -107,13 +107,6 @@ def scatterplot(df_filepath, # dataframe
     df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)
 
-    # if there is hue add params for plotting
-    baseline_params = {'data':df_data,  'x':x_column}
-    if include_hue: 
-        unique_types_sorted = sorted(df_data[hue_col].unique())
-        baseline_params.update({'hue':hue_col, 'hue_order':unique_types_sorted})
-        sns.set_palette(pal, len(unique_types_sorted))
-
     # normalize data to intergenic controls if neg_ctrl is provided
     if neg_ctrl: 
         assert isinstance(neg_ctrl_col, str) and neg_ctrl_col in df_data.columns.tolist(), "check param: params_cols"
@@ -127,6 +120,13 @@ def scatterplot(df_filepath, # dataframe
         df_data = df_data[(df_data[x_column] >= xwindow[0]) & (df_data[x_column] <= xwindow[1])] # FILTER X WINDOW #
     elif len(xwindow) != 0: 
         warnings.warn(f"Warning: xwindow should be a list of 2 values", UserWarning)
+
+    # if there is hue add params for plotting
+    baseline_params = {'data':df_data,  'x':x_column}
+    if include_hue: 
+        unique_types_sorted = sorted(df_data[hue_col].unique())
+        baseline_params.update({'hue':hue_col, 'hue_order':unique_types_sorted})
+        sns.set_palette(pal, len(unique_types_sorted))
 
     mpl.rcParams.update({'font.size': 10}) # STYLE #
     fig, axes = plt.subplots(nrows=len(comparisons), ncols=1, figsize=(10, 3*len(comparisons)), 
@@ -320,10 +320,10 @@ def interactive_scatter(df_filepath, # dataframe
 #     x_column='Edit_site_3A1', 
 #     include_hue=True, hue_col='Mut_type', 
 #     neg_ctrl=True, neg_ctrl_col='Gene', neg_ctrl_conditions=['NON-GENE'], # neg control params
-#     xlim={'left':200, 'right':920}, 
+#     # xlim={'left':200, 'right':920}, 
 #     # annot=True, annot_label='sgRNA_ID', annot_abs=10, # annot_cutoff=0.5 annot_top=10
 #     # domains=[{'start':300, 'end':400}], 
-#     interactive=True, annot_label='Mut_list_all', 
+#     xwindow=[400,700]
 # )
 # scatterplot(
 #     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
