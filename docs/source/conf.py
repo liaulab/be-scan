@@ -18,7 +18,7 @@ MOCK_MODULES = ['statsmodels', 'statsmodels.stats.multitest',
                 'statsmodels.nonparametric.smoothers_lowess', 
                 'statsmodels.sandbox.regression.predstd', 
                 'plotly.graph_objects', 'plotly.express', 'plotly.subplots', 
-                'biopandas.pdb', 
+                'biopandas.pdb', 'plotly', 
                 'plotly.express', 'plotly.subplots', 'plotly.graph_objects', 
                 ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
