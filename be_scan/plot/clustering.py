@@ -6,17 +6,17 @@ Date: 250130
 {Description: }
 """
 
+import os
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-import scipy as sp
-import scipy.spatial.distance as dist
+from scipy.spatial.distance import pdist, squareform
 import scipy.cluster as sp_cl
 
-# from biopandas.pdb import PandasPdb
+from biopandas.pdb import PandasPdb
 
 ### HELPER FUNCTIONS: DISTANCE FACTOR (e^(-d^2 / 2t^2))--------------------------------------------------------------------------
 
@@ -78,11 +78,10 @@ def get_pairwise_dist(df_centroids, aa_int=None):
     # calculate all pairwise distances in euclidean 3d space, condense to square-form
     print("Calculating pairwise distances...")
 
-    pairwise = dist.pdist(df_aaint[['x','y','z']], 'euclidean')
-    pairwise = dist.squareform(pairwise)
+    pairwise = pdist(df_aaint[['x','y','z']], 'euclidean')
+    pairwise = squareform(pairwise)
     df_pwdist = pd.DataFrame(pairwise, index=df_aaint['aa_num'], columns=df_aaint['aa_num'])
     return df_pwdist
-
 
 def gauss(distance, std):
     """
@@ -93,6 +92,7 @@ def gauss(distance, std):
     return dist
 
 ### HELPER FUNCTIONS: ENRICHMENT SCORE CALCULATIONS-----------------------------------------------------
+
 def hill(lfc, m, theta): 
     """
     From NZL code:
@@ -110,10 +110,9 @@ def hill(lfc, m, theta):
     val = num/denom
     return val
 
-
 def calculate_pw_score(df_score, scores_col):
     """
-    Calculate pairwise sums matrix for scores
+    Calculate pairwise sums matrix for scores.
     """
 
     df_pws_scores = df_score.copy()
@@ -124,19 +123,14 @@ def calculate_pw_score(df_score, scores_col):
                                  columns=df_pws_scores['sgRNA_ID'],
                                  data= pw_sum)
     
-    print(df_pws_sum)
-    
     #Calculate parameters for tanh and zscore
     upper_tri = np.where(np.triu(np.ones(df_pws_sum.shape), k=1).astype(bool), df_pws_sum, np.nan) #get upper triangle
     pws_triu = pd.DataFrame(index=df_pws_sum.index, 
                             columns=df_pws_sum.columns, 
                             data= upper_tri)
     
-    print(pws_triu)
     flat_pws = pd.Series([y for x in pws_triu.columns for y in pws_triu[x]], name='sum_lfc').dropna() # flatten for mean + std calc.
-    print(flat_pws)
     df_pws = np.tanh((df_pws_sum - flat_pws.mean()) / flat_pws.std())
-    print(df_pws)
     return df_pws
 
 
@@ -146,25 +140,21 @@ def calculate_pwes(df_gauss, df_pws, list_aas):
     """
     Calculate PWES
     """
-    print(df_pws)
-    print(df_gauss.loc[list_aas, list_aas])
     df_pws.index, df_pws.columns = list_aas, list_aas #replace sgrna index with amino acid pos 
-    print(df_pws)
     df_pws = df_pws * df_gauss.loc[list_aas, list_aas].copy()
 
     #Sort by aa
     df_pws_sort = df_pws.sort_index(axis=0)
     df_pws_sort = df_pws_sort.sort_index(axis=1)
 
-    print(df_pws_sort)
-
     print("PWES calculated...")
 
     return df_pws_sort
 
-def cluster_pws(df_pws, df_score, df_gauss, scores_col, t, out_prefix = None):
+def cluster_pws(df_pws, df_score, df_gauss, t):
     list_aas = df_score[df_score['aa_pos'].isin(df_gauss.index)]['aa_pos']
     
+    #Create dendrogram
     print("Starting linkage...")
     df_clus = df_score.loc[df_score['aa_pos'].isin(list_aas)].copy().reset_index()
     link = sp_cl.hierarchy.linkage(df_pws, method='ward', metric='euclidean', optimal_ordering=True)
@@ -172,39 +162,63 @@ def cluster_pws(df_pws, df_score, df_gauss, scores_col, t, out_prefix = None):
     print("Linking complete...")
     
     df_clus['cl_new'] = sp_cl.hierarchy.fcluster(link, t=t, criterion='distance')
-    df_sorted = df_clus.sort_values(by='cl_new')
-    
+
+    #Find number of clusters
     num_clus = sorted(df_clus['cl_new'].unique())[-1]
     print(f"Number of clusters: {num_clus}")
+
+    return df_clus, link
     
+def get_clus_aa(df_clus):
+    """
+    Given df_clus, generated from cluster_pws, print the amino acids in each cluster.
+    """
+    try:    
+        df_clus['cl_new']
+        df_clus['aa_pos']
+    except KeyError:
+        raise Exception('df_clus does not contain required columns (cl_new or aa_pos)')
+
+    for clus in sorted(df_clus["cl_new"].unique()):
+        aas = sorted(list(set(df_clus[df_clus["cl_new"] == clus]["aa_pos"])))
+        print(f'Cluster {clus} amino acids: \n{aas}')
+
+### HELPER FUNCTIONS: PLOTTING--------------------------------------------------------------------------
+
+def plot_clus_histogram(df_clus, out_prefix):
+    """
+    Given df_clus, generated from cluster_pws, plot histogram of
+    the number of guides in each cluster.
+    """
+    try:    
+        df_clus['cl_new']
+    except KeyError:
+        raise Exception('df_clus does not contain a "cl_new" column')
+
     clust_counts = df_clus["cl_new"].value_counts().sort_index()
-    cluster_histogram = plt.figure()
     plt.bar(clust_counts.index, clust_counts)
     plt.xticks(clust_counts.index)
     plt.xlabel("Cluster")
     plt.ylabel("Count")
     plt.title("Number of Guides in Cluster")
     plt.savefig(out_prefix + 'cluster_histogram.pdf', format='pdf')
-    plt.show()
-    
-    scatter_clusters = plt.figure(figsize = (15, 9))
+    plt.close()
+    #plt.show()
+
+def plot_scatter_clusters(df_clus, scores_col, out_prefix):
+    try:    
+        df_clus['cl_new']
+    except KeyError:
+        raise Exception('df_clus does not contain a "cl_new" column')
+    plt.figure(figsize=(15, 6))
     sns.scatterplot(data = df_clus, x = 'aa_pos', y = scores_col, hue = 'cl_new', palette = 'bright')
     plt.xlabel("Amino Acid Position")
     plt.ylabel(scores_col)
     plt.title("Scatterplot, Colored by Cluster")
     plt.savefig(out_prefix + 'scatterplot.pdf', format='pdf')
-    plt.show()
-    
+    #plt.show()
     plt.close()
-    print("Scatterplot complete...")
-    for clus in sorted(df_clus["cl_new"].unique()):
-        aas = sorted(list(set(df_clus[df_clus["cl_new"] == clus]["aa_pos"])))
-        print(f'Cluster {clus} amino acids: \n{aas}')
-    
-    plot_clustermap(df_scaled = df_pws, link = link, df_clusters = df_clus, num_clusters = num_clus, out_prefix = out_prefix)
 
-
-### HELPER FUNCTIONS: PLOTTING--------------------------------------------------------------------------
 def plot_PWES_heatmap(df_scaled, out_prefix, mask_on=True, bounds=[],
                       mark_bounds=True, sns_context='talk', cmap='RdBu_r',
                       v_min=-1, v_max=1):
@@ -240,11 +254,10 @@ def plot_PWES_heatmap(df_scaled, out_prefix, mask_on=True, bounds=[],
     ax.set_yticklabels([])
     plt.tight_layout()
     plt.savefig(out_prefix+'PWES_heatmap.pdf', format='pdf', bbox_inches='tight')
-    plt.show()
+    #plt.show()
     plt.close()
     
-
-def plot_clustermap(df_scaled, link, df_clusters, num_clusters, out_prefix,
+def plot_clustermap(df_scaled, link, df_clusters, out_prefix,
                     cmap='RdBu_r', sns_context='paper', v_min=-1, v_max=1,
                     color_clusters=True,
                     color_list=list(sns.color_palette('deep').as_hex())):
@@ -289,17 +302,13 @@ def plot_clustermap(df_scaled, link, df_clusters, num_clusters, out_prefix,
         spine.set_visible(True)
         spine.set_color('k')
     plt.savefig(out_prefix + 'cluster_heatmap.pdf', format='pdf')
-    plt.show()
-    
+    #plt.show()
     plt.close()
 
-
-def pwes_clustering(
-        pdb_file, scores_file, scores_col,
-        norm_type = "tanh",
-        gauss_std = 16, dend_t = 13.9, 
-        aa_int=None, out_prefix=None):
-    
+def main(pdb_file, scores_file, scores_col,
+         norm_type = "tanh",
+         gauss_std = 16, dend_t = 13.9, 
+         aa_int=None, out_prefix=None):
     """
     Main function to run 3D clustering analysis.
     """
@@ -314,13 +323,10 @@ def pwes_clustering(
     #Get scores and calculate pairwise sums:
     df_scores = pd.read_csv(scores_file)
     
-    print(df_scores)
     sgrnaID = ["sgRNA_" + num for num in map(str, list(range(df_scores.shape[0])))] #assign id numbers 
     df_scores["sgRNA_ID"] = sgrnaID
 
     list_aas = df_scores[df_scores['aa_pos'].isin(df_gauss.index)]['aa_pos']
-    print(df_scores["aa_pos"])
-    print(df_scores)
     df_pws_score = calculate_pw_score(df_scores, scores_col)
 
     #Calculate PWES:
@@ -328,19 +334,29 @@ def pwes_clustering(
     df_pwes = calculate_pwes(df_gauss, df_pws_score, list_aas)
 
     #Plot triangular matrix
-    plot_PWES_heatmap(df_pwes, 
-                      out_prefix)
+    plot_PWES_heatmap(df_pwes, out_prefix)
 
     #Cluster PWES:
-    cluster_pws(df_pws = df_pwes, 
-            df_score = df_scores, 
-            df_gauss = df_gauss,
-            scores_col = scores_col,
-            t = 13,
-            out_prefix = out_prefix)
+    df_clus, link = cluster_pws(df_pws = df_pwes, 
+                                df_score = df_scores, 
+                                df_gauss = df_gauss,
+                                t = 13)
 
-#TEST
-# main(pdb_file = "./data/Alphafold/AF_Q15022.pdb",
-#      scores_file = "./data/clean_data/SUZ12_clean_data_WT_ABE.csv",
+    #Plot histograms and scatterplots:
+    plot_clus_histogram(df_clus, out_prefix)
+    plot_scatter_clusters(df_clus, scores_col, out_prefix)
+
+    #Print clusters:
+    get_clus_aa(df_clus)
+
+    #Plot clustergram
+    plot_clustermap(df_scaled = df_pwes, 
+                    link = link, 
+                    df_clusters = df_clus, 
+                    out_prefix = out_prefix)
+
+# #TEST
+# main(pdb_file = "../data/Alphafold/AF_Q15022.pdb",
+#      scores_file = "../data/old_data/SUZ12_clean_data_WT_ABE.csv",
 #      scores_col = "PRC2i_minus_DMSO_Z",
-#      out_prefix = "./outputs/test_heatmaps/")
+#      out_prefix = "./outputs/Suz_12_heatmaps/")
