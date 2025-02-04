@@ -305,10 +305,10 @@ def plot_clustermap(df_scaled, link, df_clusters, out_prefix,
     #plt.show()
     plt.close()
 
-def main(pdb_file, scores_file, scores_col,
-         norm_type = "tanh",
-         gauss_std = 16, dend_t = 13.9, 
-         aa_int=None, out_prefix=None):
+def pwes_clustering(pdb_file, scores_file, scores_col,
+                    norm_type = "tanh",
+                    gauss_std = 16, dend_t = 13.9, 
+                    aa_int=None, out_prefix=None):
     """
     Main function to run 3D clustering analysis.
     """
