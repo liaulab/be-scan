@@ -127,16 +127,26 @@ def count_reads(sample_sheet, annotated_lib,
             read_sequence = str.upper(str(read))
             key_region = read_sequence[KEY_START:KEY_END]
             key_index = key_region.find(KEY)
-            key_rev_index = key_region.rfind(KEY_REV)
-            if key_index < 0 or key_rev_index <= key_index: # if keys not found
-                num_nokey += 1
-                continue
+        
+            if KEY_REV:  # Only search for KEY_REV if it's not empty
+                key_rev_index = key_region.rfind(KEY_REV)
+                if key_index < 0 or key_rev_index <= key_index:  # If keys not found
+                    num_nokey += 1
+                    continue
+                end_index = key_rev_index + KEY_START
+            else:  # If KEY_REV is empty, just use the key start and allow the full sequence
+                if key_index < 0:  # If the forward key is not found
+                    num_nokey += 1
+                    continue
+                end_index = KEY_END  # Set end_index to the full available region
+
             start_index = key_index + KEY_START + len(KEY)
-            end_index = key_rev_index + KEY_START
             guide = read_sequence[start_index:end_index]
-            if not dont_trim_G:
+            if not dont_trim_G: # trim G
                 if guide.startswith('G') and len(guide) == 21:
                     guide = guide[1:]
+            if not KEY_REV: 
+                guide = guide[:20]
             if len(guide) != 20:
                 num_badlength += 1
                 continue
@@ -146,6 +156,7 @@ def count_reads(sample_sheet, annotated_lib,
             else:
                 num_np_matches += 1
                 list_np.append(guide)
+    
         handle.close()
 
         # STEP 3: SORT PERF MATCH DICTIONARIES AND GENERATE OUTPUT FILES

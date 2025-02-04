@@ -18,6 +18,7 @@ def batch_process(sample_sheet, annotated_lib,
     comparisons='', neg_ctrl_col='', neg_ctrl_conditions=[], 
     file_dir='', controls=['t0'], 
     KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
+    sgRNA_seq_col = 'sgRNA_seq', 
     lower_cutoff=0, lower_cutoff_cols=[], 
     out_counts='counts_library.csv', out_lfc='library_LFC.csv', out_comps='conditions.csv', out_stats = 'stats.txt',
     
@@ -99,7 +100,7 @@ def batch_process(sample_sheet, annotated_lib,
 
     count_reads_params = {
         'sample_sheet':sample_sheet, 'annotated_lib':annotated_lib, 'in_dir':file_dir, 
-        'KEY_INTERVAL':KEY_INTERVAL, 'KEY':KEY, 'KEY_REV':KEY_REV, 'dont_trim_G':dont_trim_G, 
+        'KEY_INTERVAL':KEY_INTERVAL, 'KEY':KEY, 'KEY_REV':KEY_REV, 'dont_trim_G':dont_trim_G, 'sgRNA_seq_col':sgRNA_seq_col, 
         'lower_cutoff':lower_cutoff, 'lower_cutoff_cols':lower_cutoff_cols, 
         'out_dir':file_dir, 'out_file':out_counts, 'return_df':return_df, 'plot_out_type':plot_out_type, 'save_files':save, }
     count_reads(**count_reads_params)
