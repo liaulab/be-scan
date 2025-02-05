@@ -118,7 +118,7 @@ def loess_smoothing(
     mpl.rcParams.update({'font.size': 10})
     fig, axes = plt.subplots(nrows=len(comparisons), ncols=2, 
                              figsize=(25, 2.5*len(comparisons)), **subplots_kws)
-    if len(comparisons) == 1: axes = [axes]
+    if len(comparisons) == 1: axes = np.atleast_2d(axes)
 
     # process columns from dataframe and input into loess_v3
     for i, comp in enumerate(comparisons): 
