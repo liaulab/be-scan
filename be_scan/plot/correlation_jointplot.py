@@ -53,7 +53,7 @@ def corr_jointplot(df_filepath, condition1, condition2,
         name of the output plot
     out_type : str, optional, defaults to 'pdf'
         type of the output plot
-    out_directory : str, optional, defaults to ''
+    out_dir : str, optional, defaults to ''
         directory path of the output plot
 
     jointplot_kws : dict, optional, defaults to 
@@ -97,7 +97,7 @@ def corr_jointplot(df_filepath, condition1, condition2,
 def interactive_corr_jointplot(df_filepath, condition1, condition2, 
 
     include_hue=False, hue_col='CtoT_muttype', pal=px.colors.qualitative.Pastel, # color params
-    savefig=True, show=True, out_dir='', out_name='correlation_jointplot', out_type='png', 
+    savefig=True, show=True, out_dir='', out_name='correlation_jointplot', 
     ):
     
     """[Summary]
@@ -118,7 +118,7 @@ def interactive_corr_jointplot(df_filepath, condition1, condition2,
         will also restrict points plotted to only the hue_order values listed
     hue_col: str, optional, defaults to 'CtoT_muttype'
         the categorial dimension of the data, name of .csv data column
-    palette: list of str, optional, defaults to a preset list of colors from ColorBrewer2
+    pal: list of str, optional, defaults to a preset list of colors from ColorBrewer2
         a list of colors which correspond to hue_order
 
     savefig : bool, optional, defaults to True
@@ -127,9 +127,7 @@ def interactive_corr_jointplot(df_filepath, condition1, condition2,
         whether or not to show the plot
     out_name : str, optional, defaults to 'scatterplot'
         name of the output plot
-    out_type : str, optional, defaults to 'pdf'
-        type of the output plot
-    out_directory : str, optional, defaults to ''
+    out_dir : str, optional, defaults to ''
         directory path of the output plot
 
     Returns
@@ -169,6 +167,6 @@ def interactive_corr_jointplot(df_filepath, condition1, condition2,
     if show: fig.show()
     if savefig:
         outpath = Path(out_dir)
-        out_name = f"{condition1}{condition2}_{out_name}.{out_type}"
+        out_name = f"{condition1}{condition2}_{out_name}.html"
         fig.write_html(str(outpath / out_name))
         

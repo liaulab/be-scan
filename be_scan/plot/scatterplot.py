@@ -24,11 +24,11 @@ def scatterplot(df_filepath, # dataframe
                 x_column, # the x axis values
 
     xlab='Amino Acid Position', ylab='sgRNA Score', # scatterplot labels
+    xwindow=[], 
     include_hue=False, hue_col='', pal='pastel', # color params
     neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # neg control params
     savefig=True, show=True, out_name='scatterplot', out_type='png', out_dir='', # output params
     domains=[], domains_alpha=0.25, domains_color='lightblue', # draw domains
-    xwindow=[], 
     
     # style params
     subplots_kws={}, xlim={}, ylim={}, 
@@ -54,6 +54,8 @@ def scatterplot(df_filepath, # dataframe
         name of x-axis label
     ylab : str, optional, defaults to 'sgRNA Score'
         name of y-axis label
+    xwindow : list, optional, defaults to []
+        an inclusive range to restrict the x axis value to display
     include_hue: bool, optional, default to False
         whether or not to color points by a variable, 
         will also restrict points plotted to only the hue_order values listed
@@ -173,11 +175,11 @@ def interactive_scatter(df_filepath, # dataframe
                         x_column, # the x axis values
 
     xlab='Amino Acid Position', ylab='sgRNA Score', # scatterplot labels
+    xwindow=[], annot_label='', 
     include_hue=False, hue_col='', pal='pastel', # color params
     neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # neg control params
     savefig=True, show=True, out_name='scatterplot', out_dir='', # output params
     domains=[], domains_alpha=0.25, domains_color='lightblue', # draw domains
-    xwindow=[], annot_label='', 
     
     # style params
     xlim={}, ylim={},
@@ -201,6 +203,10 @@ def interactive_scatter(df_filepath, # dataframe
         name of x-axis label
     ylab : str, optional, defaults to 'sgRNA Score'
         name of y-axis label
+    xwindow : list, optional, defaults to []
+        an inclusive range to restrict the x axis value to display
+    annot_label : str, optional, defaults to ''
+        name of an input column on which to annotate the interactive scatterplots
     include_hue: bool, optional, default to False
         whether or not to color points by a variable, 
         will also restrict points plotted to only the hue_order values listed
@@ -222,8 +228,6 @@ def interactive_scatter(df_filepath, # dataframe
         whether or not to show the plot
     out_name : str, optional, defaults to 'scatterplot'
         name of figure output
-    out_type : str, optional, defaults to 'pdf'
-        file type of figure output
     out_directory : str, optional, defaults to ''
         path to output directory
 
