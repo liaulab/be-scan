@@ -24,7 +24,11 @@ dependencies = [
   "pandas",
   "scikit-learn",
   "biopython",
-  "pyahocorasick"
+  "pyahocorasick", 
+  "biopandas", 
+  "plotly", 
+  "scipy", 
+  "statsmodels", 
 ]
 
 [project.optional-dependencies]

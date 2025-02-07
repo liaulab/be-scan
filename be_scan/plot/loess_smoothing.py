@@ -118,7 +118,7 @@ def loess_smoothing(
     mpl.rcParams.update({'font.size': 10})
     fig, axes = plt.subplots(nrows=len(comparisons), ncols=2, 
                              figsize=(25, 2.5*len(comparisons)), **subplots_kws)
-    if len(comparisons) == 1: axes = [axes]
+    if len(comparisons) == 1: axes = np.atleast_2d(axes)
 
     # process columns from dataframe and input into loess_v3
     for i, comp in enumerate(comparisons): 
@@ -194,6 +194,71 @@ def loess_range(
     interp_kws={'fill_value':'extrapolate'}, 
     smm_multipletests_kws={'alpha':0.05, 'method':'fdr_bh', 'is_sorted':False, 'returnsorted':False}, 
 ): 
+
+    """[Summary]
+    This function calculates the smoothed arbitrary values for each value 
+    in your x_out for the enrichment profile of your POI
+    
+    Parameters
+    ------------
+    df_filepath : str, required
+        filepath to .csv data
+    x_column : str, required
+        column of .csv, typically amino acid position
+    comparison : str, required
+        comparison that correspond to columns of data
+    spans : list of floats or ints, required (recommended range to start is ~0.05-0.10 or 10-30)
+        hyperparameters for the spans that you want to smooth over, requires optimization
+
+    interp_method: str, optional, defaults to 'quadratic'
+        method should 'statsmodels' or on be one of 
+        'linear', 'nearest', 'nearest-up', 'zero', 
+        'slinear', 'quadratic', 'cubic', 'previous', or 'next'
+        from https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
+    n_repeats: int, optional, defaults to 10,000
+        the number of times you want to shuffle
+        1000x is recommended for final data
+
+    savefig : bool, optional, defaults to True
+        whether or not to save the figure
+    show : bool, optional, defaults to True
+        whether or not to show the plot
+    out_name : str, optional, defaults to 'loess_smoothed'
+        name of figure output
+    out_type : str, optional, defaults to 'pdf'
+        file type of figure output
+    out_directory : str, optional, defaults to ''
+        path to output directory
+    return_df: bool, optional, defaults to True
+        whether or not to return the dataframes
+
+    domains : dict, optional, defaults to {}
+        a list of start dicts of start and end for each domain annotation ie [{'start': 1, 'end': 2}, ]
+    domains_alpha : float, optional, defaults to 0.25
+        The level of transparency for the domains
+    domains_color : str, optional, defaults to 'lightblue'
+        The color for the domains
+
+    subplots_kws : dict, optional, defaults to {}
+`       input params for plt.subplots
+        https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
+    loess_kws: dict, optional, defaults to
+        {'missing':'raise', 'return_sorted':False, 'it':0}
+        input params for statsmodels.nonparametric.smoothers_lowess.lowess()
+        https://www.statsmodels.org/devel/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html
+    interp_kws: dict, optional, defaults to
+        {'fill_value':'extrapolate'}
+        input params for scipy.interpolate.interp1d()
+        https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
+    smm_multipletests_kws: dict, optional, defaults to 
+        {'alpha':0.05, 'method':'fdr_bh', 'is_sorted':False, 'returnsorted':False}
+        input params for smm.multipletests()
+        https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html
+
+    Returns
+    ------------
+    """
+
     df_filepath = Path(df_filepath)
     df_data = pd.read_csv(df_filepath)
     
@@ -211,7 +276,7 @@ def loess_range(
     mpl.rcParams.update({'font.size': 10})
     fig, axes = plt.subplots(nrows=len(spans), ncols=1, 
                              figsize=(15, 2.5*len(spans)), **subplots_kws)
-    if len(spans) == 1: axes = [axes]
+    if len(spans) == 1: axes = np.atleast_2d(axes)
 
     # process columns from dataframe and input into loess_v3
     for i, (span, ax) in enumerate(zip(spans, axes)): 

@@ -178,7 +178,7 @@ def interactive_boxplot(df_filepath, comparisons, # each comparison is a plot
         whether or not to show the plot
     out_name : str, optional, defaults to 'scatterplot'
         name of figure output
-    out_directory : str, optional, defaults to ''
+    out_dir : str, optional, defaults to ''
         path to output directory
 
     Returns
