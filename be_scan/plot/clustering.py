@@ -5,8 +5,8 @@ Date: 250130
 
 {Description: }
 """
-
 import os
+
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
@@ -136,12 +136,15 @@ def calculate_pw_score(df_score, scores_col):
 
 ### HELPER FUNCTIONS: CALCULATE PWES-----------------------------------------------------
 
-def calculate_pwes(df_gauss, df_pws, list_aas):
+def signed_exp(df, exponent):
+    return np.sign(df) * np.abs(df)**exponent
+
+def calculate_pwes(df_gauss, df_pws, list_aas, pws_scaling, gauss_scaling):
     """
     Calculate PWES
     """
-    df_pws.index, df_pws.columns = list_aas, list_aas #replace sgrna index with amino acid pos 
-    df_pws = df_pws * df_gauss.loc[list_aas, list_aas].copy()
+    df_pws.index, df_pws.columns = list_aas, list_aas #replace sgrna index with amino acid pos
+    df_pws = signed_exp(df_pws, pws_scaling) * signed_exp(df_gauss.loc[list_aas, list_aas].copy(), gauss_scaling)
 
     #Sort by aa
     df_pws_sort = df_pws.sort_index(axis=0)
@@ -149,77 +152,84 @@ def calculate_pwes(df_gauss, df_pws, list_aas):
 
     print("PWES calculated...")
 
-    return df_pws_sort
+    return df_pws_sort, df_pws
 
-def cluster_pws(df_pws, df_score, df_gauss, t):
-    list_aas = df_score[df_score['aa_pos'].isin(df_gauss.index)]['aa_pos']
+def cluster_pws(df_pws, df_score, df_gauss, t, x_col):
+    list_aas = df_score[df_score[x_col].isin(df_gauss.index)][x_col]
     
     #Create dendrogram
     print("Starting linkage...")
-    df_clus = df_score.loc[df_score['aa_pos'].isin(list_aas)].copy().reset_index()
+    df_clus = df_score.loc[df_score[x_col].isin(list_aas)].copy().reset_index()
+
     link = sp_cl.hierarchy.linkage(df_pws, method='ward', metric='euclidean', optimal_ordering=True)
     
     print("Linking complete...")
     
     df_clus['cl_new'] = sp_cl.hierarchy.fcluster(link, t=t, criterion='distance')
-
     #Find number of clusters
     num_clus = sorted(df_clus['cl_new'].unique())[-1]
     print(f"Number of clusters: {num_clus}")
 
     return df_clus, link
     
-def get_clus_aa(df_clus):
+def get_clus_aa(df_clus, x_col):
     """
     Given df_clus, generated from cluster_pws, print the amino acids in each cluster.
     """
     try:    
         df_clus['cl_new']
-        df_clus['aa_pos']
+        df_clus[x_col]
     except KeyError:
         raise Exception('df_clus does not contain required columns (cl_new or aa_pos)')
 
     for clus in sorted(df_clus["cl_new"].unique()):
-        aas = sorted(list(set(df_clus[df_clus["cl_new"] == clus]["aa_pos"])))
+        aas = sorted(list(set(df_clus[df_clus["cl_new"] == clus][x_col])))
         print(f'Cluster {clus} amino acids: \n{aas}')
+
 
 ### HELPER FUNCTIONS: PLOTTING--------------------------------------------------------------------------
 
-def plot_clus_histogram(df_clus, out_prefix):
+def plot_clus_histogram(df_clus, 
+                        out_prefix, out_dir, ):
     """
     Given df_clus, generated from cluster_pws, plot histogram of
     the number of guides in each cluster.
     """
+
     try:    
         df_clus['cl_new']
     except KeyError:
         raise Exception('df_clus does not contain a "cl_new" column')
 
+    
     clust_counts = df_clus["cl_new"].value_counts().sort_index()
     plt.bar(clust_counts.index, clust_counts)
     plt.xticks(clust_counts.index)
     plt.xlabel("Cluster")
     plt.ylabel("Count")
     plt.title("Number of Guides in Cluster")
-    plt.savefig(out_prefix + 'cluster_histogram.pdf', format='pdf')
+    plt.legend(loc="upper left", bbox_to_anchor=(1.05, 1), borderaxespad=0.)
+    plt.savefig(f'{out_dir}/{out_prefix}_cluster_histogram.pdf', format='pdf')
     plt.close()
-    #plt.show()
+    plt.show()
 
-def plot_scatter_clusters(df_clus, scores_col, out_prefix):
-    try:    
+def plot_scatter_clusters(df_clus, x_col, scores_col, 
+                          out_prefix, out_dir, ):
+    try: 
         df_clus['cl_new']
     except KeyError:
         raise Exception('df_clus does not contain a "cl_new" column')
     plt.figure(figsize=(15, 6))
-    sns.scatterplot(data = df_clus, x = 'aa_pos', y = scores_col, hue = 'cl_new', palette = 'bright')
+    sns.scatterplot(data = df_clus, x = x_col, y = scores_col, hue = 'cl_new', palette = 'bright')
     plt.xlabel("Amino Acid Position")
     plt.ylabel(scores_col)
     plt.title("Scatterplot, Colored by Cluster")
-    plt.savefig(out_prefix + 'scatterplot.pdf', format='pdf')
-    #plt.show()
+    plt.savefig(f'{out_dir}/{out_prefix}_scatterplot.pdf', format='pdf')
+    plt.show()
     plt.close()
 
-def plot_PWES_heatmap(df_scaled, out_prefix, mask_on=True, bounds=[],
+def plot_PWES_heatmap(df_scaled, out_prefix, out_dir, 
+                      mask_on=True, bounds=[],
                       mark_bounds=True, sns_context='talk', cmap='RdBu_r',
                       v_min=-1, v_max=1):
     
@@ -236,28 +246,56 @@ def plot_PWES_heatmap(df_scaled, out_prefix, mask_on=True, bounds=[],
         mask[np.tril_indices_from(mask, k=-1)] = True
     
     # Generate heatmap
-    fig, ax = plt.subplots(figsize=(5,4))
+    fig, ax = plt.subplots(figsize=(10, 8))
+        
     sns.heatmap(data=df_scaled, ax=ax, square=True, mask=mask, cmap=cmap,
                 xticklabels=False, yticklabels=False, vmin=v_min, vmax=v_max,
-                cbar_kws={"shrink": .70})
-    for edge,spine in ax.spines.items():
+                cbar_kws={"shrink": .70, 'location':'left'}, )
+    
+    for edge, spine in ax.spines.items():
         spine.set_visible(True)
         spine.set_color('k')
-    if mark_bounds:
-        for i in bounds:
-            temp = np.where(df_scaled.index == i)[0]
-            ax.axhline(y=temp[0], color='k', ls='--')
-            ax.axvline(x=temp[0], color='k', ls='--')
+    
+    # LOOK AT DOMAINS
+    for bound in bounds:
+
+        # TRY START BOUND
+        start = bound['start']
+        while len(np.where(df_scaled.index == start)[0]) == 0 and start < df_scaled.index.max():
+            start += 1
+        start = np.where(df_scaled.index == start)[0]
+        # TRY END BOUND
+        end = bound['end']
+        while len(np.where(df_scaled.index == end)[0]) == 0 and end > df_scaled.index.min():
+            end -= 1
+        end = np.where(df_scaled.index == end)[0]
+
+        if start[0] >= end[0]: 
+            print(f'Error with domain {bound['name']}')
+            continue
+
+        ax.axhspan(start[0], end[0], color=bound['color'], alpha=1/8)
+        ax.axvspan(start[0], end[0], color=bound['color'], alpha=1/8)
+
+        # ADD DOMAIN NAME LABEL
+        mid_x = (start[0] + end[0]) / 2
+        mid_y = (start[0] + end[0]) / 2
+        x_lim = ax.get_xlim()
+        y_lim = ax.get_ylim()
+        ax.text(x_lim[1] +5, mid_y, bound['name'], fontsize=10, ha='left', va='center', color='black', rotation=0)
+        ax.text(mid_x, y_lim[1] -5, bound['name'], fontsize=10, ha='center', va='bottom', color='black', rotation=90)
+
     ax.set_xlabel('')
     ax.set_ylabel('')
     ax.set_xticklabels([])
     ax.set_yticklabels([])
     plt.tight_layout()
-    plt.savefig(out_prefix+'PWES_heatmap.pdf', format='pdf', bbox_inches='tight')
-    #plt.show()
+    plt.savefig(f'{out_dir}/{out_prefix}_PWES_heatmap.pdf', format='pdf', bbox_inches='tight')
+    plt.show()
     plt.close()
     
-def plot_clustermap(df_scaled, link, df_clusters, out_prefix,
+def plot_clustermap(df_scaled, link, df_clusters, 
+                    out_prefix, out_dir, 
                     cmap='RdBu_r', sns_context='paper', v_min=-1, v_max=1,
                     color_clusters=True,
                     color_list=list(sns.color_palette('deep').as_hex())):
@@ -301,19 +339,114 @@ def plot_clustermap(df_scaled, link, df_clusters, out_prefix,
     for edge,spine in ax.spines.items():
         spine.set_visible(True)
         spine.set_color('k')
-    plt.savefig(out_prefix + 'cluster_heatmap.pdf', format='pdf')
-    #plt.show()
+    plt.savefig(f'{out_dir}/{out_prefix}_cluster_heatmap.pdf', format='pdf')
+    plt.show()
     plt.close()
 
-def pwes_clustering(pdb_file, scores_file, scores_col,
-                    norm_type = "tanh",
+def plot_cluster_boxplots(df_clus, x_col, 
+                          out_prefix, out_dir, 
+                          ): 
+
+    # Set figure size
+    plt.figure(figsize=(12, 6))
+
+    # Create the boxplot
+    sns.boxplot(x='cl_new', y=x_col, data=df_clus)
+
+    # Customize plot
+    plt.xlabel('Clusters')
+    plt.ylabel(f'{x_col} Values')
+    plt.title('Boxplot')
+    plt.grid(True, alpha=0.5)
+
+    # Show plot
+    plt.savefig(f'{out_dir}/{out_prefix}_cluster_boxplots.pdf', format='pdf')
+    plt.show()
+    plt.close()
+
+from pycirclize import Circos
+
+def plot_pwes_circos(
+        df, out_prefix, out_dir, 
+        ignore_range=0, width=30, 
+        EZH2_domains_list=[]): 
+
+    aa_pos_list = df.columns
+    sectors = dict(zip(aa_pos_list, [width]*len(aa_pos_list))) # SET WIDTH SO THERES SPACE FOR MORE CONNECTIONS
+    circos = Circos(sectors)
+    EZH2_domains_bools = [True]*len(EZH2_domains_list)
+    # EZH2_domains_dict = dict(zip(EZH2_domains_list, [True]*len(EZH2_domains_list)))
+
+    # SET UP THE COLORS ACCORDING TO DOMAIN ANNOT DICTIONARY #
+    for i, (sector, res_num) in enumerate(zip(circos.sectors, aa_pos_list)): 
+        track = sector.add_track((100, 104))
+
+        # IF NO ANNOT, COLOR WHITE AND ANNOT NUM EVERY 20 RESIDUES
+        if len(EZH2_domains_list) == 0: 
+            track.axis(fc='white')
+            if i % 20 == 0: 
+                sector.text(res_num, r=110, size=10)
+            continue
+        
+        # IF THERE IS DOMAIN ANNOT
+        for i, (item, bool) in enumerate(zip(EZH2_domains_list, EZH2_domains_bools)): 
+            if item['start'] <= int(res_num) <= item['end']: # IF RESIDUE IS WITHIN DOMAIN
+                track.axis(fc=item['color']) # RECOLOR
+
+                # ANNOT DOMAIN NUMBERS
+                if int(res_num) == item['start'] or int(res_num) == item['end']: 
+                    sector.text(res_num, r=110, size=10) # ADD NUM ANNOT
+
+                midpoint = int((item['start'] + item['end'])/2)
+                # ANNOT DOMAIN NAME
+                if EZH2_domains_bools[i] and midpoint-2 < int(res_num) < midpoint+2: 
+                    ### this likely misses some name annotations if there i no residue with a +-2 range
+                    sector.text(item['name'], r=110, size=15) # ADD LABEL ANNOT
+                    EZH2_domains_bools[i] = False # SKIP THIS DOMAIN IN THE FUTURE
+
+                break # IF RES WITHIN DOMAIN, WE CAN SKIP REST OF DOMAINS TO NEXT RES
+
+    matrix = df.values.tolist()
+    matrix_abs = np.abs(matrix)
+    matrix_max = np.max(matrix_abs)
+    matrix_alpha = matrix_abs / matrix_max
+
+    int1, int2 = 5, 6
+    for i in range(len(aa_pos_list)): 
+        for j in range(len(aa_pos_list)): 
+            if i <= j or j - ignore_range < i < j + ignore_range:
+                # ONLY HALF OF THE MATRIX, AND IGNORE CLOSE RANGE INTERACTIONS
+                continue
+
+            val = matrix[i][j]
+            # SKIP ZERO VALS #
+            if matrix[i][j] == 0.0: 
+                ### could also change this to a cmap colorbar instead of binary
+                continue
+
+            if val < 0.0: color = 'royalblue' # blue
+            if val > 0.0: color = 'orangered' # red
+            alpha_ratio_dec = matrix_alpha[i][j]
+
+            # MANUALLY SETTING LINK WITH START, END, COLOR, TRANSPARENCY
+            circos.link((aa_pos_list[i], int1, int2), (aa_pos_list[j], int1, int2), 
+                        color=color, alpha=alpha_ratio_dec*.3)
+            # MANUALLY SET HOW TO DRAW CIRCOS PLOT
+            int1, int2 = (int1 + 1) % width, (int2 + 1) % width
+
+    fig = circos.plotfig(dpi=300, figsize = (15, 15))
+    fig.savefig(f'{out_dir}/{out_prefix}_pwes_circos.pdf', format='pdf')
+
+def pwes_clustering(pdb_file, scores_file, x_col, scores_col, domains_list=[], 
+                    norm_type = "tanh", pws_scaling=1, gauss_scaling=1, 
                     gauss_std = 16, dend_t = 13.9, 
-                    aa_int=None, out_prefix=None):
+                    aa_int=None, out_prefix=None, out_dir=None):
+    
     """
     Main function to run 3D clustering analysis.
     """
-    if not os.path.exists(out_prefix):
-        os.makedirs(out_prefix)
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
 
     #Get centroids and spatial factor:
     df_centroids = process_pdb(pdb_file)
@@ -326,37 +459,96 @@ def pwes_clustering(pdb_file, scores_file, scores_col,
     sgrnaID = ["sgRNA_" + num for num in map(str, list(range(df_scores.shape[0])))] #assign id numbers 
     df_scores["sgRNA_ID"] = sgrnaID
 
-    list_aas = df_scores[df_scores['aa_pos'].isin(df_gauss.index)]['aa_pos']
+    list_aas = df_scores[df_scores[x_col].isin(df_gauss.index)][x_col]
+
     df_pws_score = calculate_pw_score(df_scores, scores_col)
 
     #Calculate PWES:
     #if(norm_type == "tanh"):
-    df_pwes = calculate_pwes(df_gauss, df_pws_score, list_aas)
+    df_pwes_sorted, df_pwes_unsorted = calculate_pwes(df_gauss, df_pws_score, list_aas, 
+                                                      pws_scaling, gauss_scaling)
 
     #Plot triangular matrix
-    plot_PWES_heatmap(df_pwes, out_prefix)
+    plot_PWES_heatmap(df_pwes_sorted, out_prefix, out_dir, 
+                      bounds=domains_list)
 
     #Cluster PWES:
-    df_clus, link = cluster_pws(df_pws = df_pwes, 
+    df_clus, link = cluster_pws(df_pws = df_pwes_unsorted, 
                                 df_score = df_scores, 
                                 df_gauss = df_gauss,
-                                t = 13)
+                                t = dend_t, 
+                                x_col=x_col, )
 
     #Plot histograms and scatterplots:
-    plot_clus_histogram(df_clus, out_prefix)
-    plot_scatter_clusters(df_clus, scores_col, out_prefix)
+    plot_clus_histogram(df_clus, out_prefix, out_dir)
+    plot_scatter_clusters(df_clus, x_col, scores_col, out_prefix, out_dir)
+    plot_cluster_boxplots(df_clus, scores_col, out_prefix, out_dir)
 
     #Print clusters:
-    get_clus_aa(df_clus)
+    get_clus_aa(df_clus, x_col)
 
     #Plot clustergram
-    plot_clustermap(df_scaled = df_pwes, 
+    plot_clustermap(df_scaled = df_pwes_unsorted, 
                     link = link, 
                     df_clusters = df_clus, 
-                    out_prefix = out_prefix)
+                    out_prefix=out_prefix, out_dir=out_dir)
 
-# #TEST
-# main(pdb_file = "../data/Alphafold/AF_Q15022.pdb",
-#      scores_file = "../data/old_data/SUZ12_clean_data_WT_ABE.csv",
-#      scores_col = "PRC2i_minus_DMSO_Z",
-#      out_prefix = "./outputs/Suz_12_heatmaps/")
+    return df_pwes_sorted, df_pwes_unsorted, df_clus
+
+
+# colors = [
+#         '#beffe0', '#a2d9be', '#91c1be', '#7fa8b5', '#628397',
+#         '#ead4aa', '#e8b796', '#d9ac9d', '#c99fa2', '#b08b9d',
+#         '#98ff6a', '#83de6d', '#7bc17f', '#6dab8f', '#578886',
+#         '#ffa296', '#f58b83', '#f6757a', '#d8677a', '#b6587c',
+#         '#ff65ed', '#cf53cf', '#ae45d1', '#9a3dcc', '#7c30c8',
+#         '#fffd95', '#d2d29c', '#b2b2a4', '#9898ab', '#78789e',
+#         '#aec2bb', '#97a8bd', '#8494c0', '#6975b2', '#4c549b',
+#         '#ffc337', '#feae34', '#e39a3b', '#be8042', '#9e6a43',
+#         '#ff964e', '#ff8643', '#ff6932', '#d15842', '#b14a50',
+#          ]
+
+# EZH2_domains_list = [    # start, end, color, name
+#     {'start':14, 'end':38, 
+#      'color':colors[10], 'name':'SBD',},
+#     {'start':38, 'end':68, 
+#      'color':colors[11], 'name':'EBD',},
+#     {'start':68, 'end':107, 
+#      'color':colors[12], 'name':'SANBAMT',},
+#     {'start':107, 'end':127, 
+#      'color':colors[13], 'name':'SAL',},
+#     {'start':127, 'end':157, 
+#      'color':colors[14], 'name':'SRM',},
+#     {'start':159, 'end':250, 
+#      'color':colors[15], 'name':'SANT1',},
+#     {'start':257, 'end':309, 
+#      'color':colors[16], 'name':'MCSS',},
+#     {'start':428, 'end':476, 
+#      'color':colors[15], 'name':'SANT2',},
+#     {'start':503, 'end':605, 
+#      'color':colors[17], 'name':'CXC',},
+#     {'start':609, 'end':728, 
+#      'color':colors[18], 'name':'SET',},
+# ]
+
+# # running it with domains
+# df_pwes_sorted, df_pwes_unsorted, df_clus = pwes_clustering(
+#     pdb_file = 'AF_Q15910.pdb', 
+#     scores_file = 'conditions_q575r_pos_mean.csv', 
+#     x_col = 'xpos', 
+#     scores_col  = 'DMSO-PRC2i',
+#     gauss_std = 16, dend_t = 10, 
+#     out_prefix='q575r_mean', 
+#     out_dir='q575r_mean', 
+#     domains_list=EZH2_domains_list, 
+# )
+# # running it without domains
+# df_pwes_sorted, df_pwes_unsorted, df_clus = pwes_clustering(
+#     pdb_file = 'AF_Q15910.pdb', 
+#     scores_file = 'conditions_q575r_pos_mean.csv', 
+#     x_col = 'xpos', 
+#     scores_col  = 'DMSO-PRC2i',
+#     gauss_std = 16, dend_t = 10, 
+#     out_prefix='q575r_mean', 
+#     out_dir='q575r_mean', 
+# )
