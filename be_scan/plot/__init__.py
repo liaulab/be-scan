@@ -5,3 +5,4 @@ from be_scan.plot.boxplot import boxplot, interactive_boxplot
 from be_scan.plot.sgrna_enrichment import sgrna_enrichment
 from be_scan.plot.loess_smoothing import loess_smoothing, loess_range
 from be_scan.plot.clustering import pwes_clustering
+from be_scan.plot.clustering_plots import plot_pwes_circos
