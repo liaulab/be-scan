@@ -192,6 +192,83 @@ def plot_cluster_boxplots(df_clus, x_col,
     plt.show()
     plt.close()
 
+def plot_PWES_heatmap_clusters(df_pwes_sorted, aas_dict, out_prefix, out_dir, 
+                               mask_on=True, bounds=[], 
+                               sns_context='talk', cmap='RdBu_r',
+                               cols=3, v_min=-1, v_max=1 ): 
+
+    unique_clusters = sorted(aas_dict.keys())  # Get unique clusters
+    num_clusters = len(unique_clusters)
+    rows = math.ceil(num_clusters / cols)  # Determine required number of rows
+
+    fig, axes = plt.subplots(rows, cols, figsize=(cols * 8, rows * 8))  # Create subplots
+    axes = axes.flatten()  # Flatten axes array for easy indexing
+
+    sns.set_context(sns_context)
+    mpl.rcParams['pdf.fonttype'] = 42
+    mpl.rcParams['ps.fonttype'] = 42    
+    mpl.rcParams['font.sans-serif'] = ['Arial']
+
+    mask = np.zeros_like(df_pwes_sorted)
+    if mask_on:
+        # Make a mask for lower triangle
+        mask[np.tril_indices_from(mask, k=-1)] = True
+
+    for i, clus_num in enumerate(unique_clusters):
+        print(f'Cluster Number: {clus_num}')
+        ax = axes[i]
+        aas_list = aas_dict[clus_num]
+        aas_list_floats = [float(x) for x in aas_list]
+
+        # filtered_df = df_pwes_sorted.loc[aas_list_floats, aas_list_floats]
+        df_filtered = df_pwes_sorted.copy()
+        df_filtered[~df_filtered.index.isin(aas_list_floats)] = 0
+        df_filtered.loc[:, ~df_filtered.columns.isin(aas_list_floats)] = 0
+
+        sns.heatmap(data=df_filtered, ax=ax, square=True, mask=mask, cmap=cmap, 
+                    xticklabels=False, yticklabels=False, vmin=v_min, vmax=v_max, 
+                    cbar_kws={"shrink": .70, 'location':'left'}, )
+
+        # LOOK AT DOMAINS
+        for bound in bounds:
+
+            # TRY START BOUND
+            start = bound['start']
+            while len(np.where(df_pwes_sorted.index == start)[0]) == 0 and start < df_pwes_sorted.index.max():
+                start += 1
+            start = np.where(df_pwes_sorted.index == start)[0]
+            # TRY END BOUND
+            end = bound['end']
+            while len(np.where(df_pwes_sorted.index == end)[0]) == 0 and end > df_pwes_sorted.index.min():
+                end -= 1
+            end = np.where(df_pwes_sorted.index == end)[0]
+
+            if start[0] >= end[0]: 
+                print(f'Error with domain {bound['name']}')
+                continue
+
+            ax.axhspan(start[0], end[0], color=bound['color'], alpha=1/8)
+            ax.axvspan(start[0], end[0], color=bound['color'], alpha=1/8)
+
+            # ADD DOMAIN NAME LABEL
+            mid_x = (start[0] + end[0]) / 2
+            mid_y = (start[0] + end[0]) / 2
+            x_lim = ax.get_xlim()
+            y_lim = ax.get_ylim()
+            ax.text(x_lim[1] +5, mid_y, bound['name'], fontsize=10, ha='left', va='center', color='black', rotation=0)
+            ax.text(mid_x, y_lim[1] -5, bound['name'], fontsize=10, ha='center', va='bottom', color='black', rotation=90)
+
+        ax.set_title(f"Cluster {clus_num}")
+
+    # Remove empty subplots if clusters don't perfectly fill the grid
+    for j in range(i + 1, len(axes)):
+        fig.delaxes(axes[j])
+
+    plt.tight_layout()
+    fig.savefig(f'{out_dir}/{out_prefix}_heatmap_subplots.pdf', format='pdf')
+    plt.show()
+    plt.close(fig)
+
 from pycirclize import Circos
 
 def plot_pwes_circos(

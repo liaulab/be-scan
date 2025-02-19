@@ -9,11 +9,13 @@ import os
 
 import numpy as np
 import pandas as pd
+import pickle
 
 from scipy.spatial.distance import pdist, squareform
 import scipy.cluster as sp_cl
 
 from biopandas.pdb import PandasPdb
+from be_scan.plot.clustering_plots import *
 
 ### HELPER FUNCTIONS: DISTANCE FACTOR (e^(-d^2 / 2t^2))--------------------------------------------------------------------------
 
@@ -186,7 +188,7 @@ def get_clus_aa(df_clus, x_col):
 # MAIN #
 
 def pwes_clustering(pdb_file, scores_file, x_col, scores_col, domains_list=[], 
-                    norm_type = "tanh", pws_scaling=1, gauss_scaling=1, 
+                    pws_scaling=1, gauss_scaling=1, 
                     gauss_std = 16, dend_t = 13.9, tanh_a=1, 
                     aa_int=None, out_prefix=None, out_dir=None):
     
@@ -196,12 +198,12 @@ def pwes_clustering(pdb_file, scores_file, x_col, scores_col, domains_list=[],
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
-    #Get centroids and spatial factor:
+    # Get centroids and spatial factor:
     df_centroids = process_pdb(pdb_file)
     df_pwdist = get_pairwise_dist(df_centroids, aa_int=aa_int)
     df_gauss = df_pwdist.apply(lambda x: gauss(x, gauss_std))
 
-    #Get scores and calculate pairwise sums:
+    # Get scores and calculate pairwise sums:
     df_scores = pd.read_csv(scores_file)
     
     sgrnaID = ["sgRNA_" + num for num in map(str, list(range(df_scores.shape[0])))] #assign id numbers 
@@ -211,36 +213,41 @@ def pwes_clustering(pdb_file, scores_file, x_col, scores_col, domains_list=[],
 
     df_pws_score = calculate_pw_score(df_scores, scores_col, tanh_a)
 
-    #Calculate PWES:
+    # Calculate PWES:
     df_pwes_sorted, df_pwes_unsorted = calculate_pwes(df_gauss, df_pws_score, list_aas, 
                                                       pws_scaling, gauss_scaling)
 
-    #Plot triangular matrix
+    # Plot triangular matrix
     plot_PWES_heatmap(df_pwes_sorted, out_prefix, out_dir, 
                       bounds=domains_list)
 
-    #Cluster PWES:
+    # Cluster PWES:
     df_clus, link = cluster_pws(df_pws = df_pwes_unsorted, 
                                 df_score = df_scores, 
                                 df_gauss = df_gauss,
                                 t = dend_t, 
                                 x_col=x_col, )
 
-    #Plot histograms and scatterplots:
+    # Plot histograms and scatterplots:
     plot_clus_histogram(df_clus, out_prefix, out_dir)
     plot_scatter_clusters(df_clus, x_col, scores_col, out_prefix, out_dir)
     plot_cluster_boxplots(df_clus, scores_col, out_prefix, out_dir)
 
-    #Print clusters:
-    get_clus_aa(df_clus, x_col)
+    # Print and return clusters:
+    aas_dict = get_clus_aa(df_clus, x_col)
+    with open(f"{out_dir}/{out_prefix}_aas_dict.pickle", "wb") as file:
+        pickle.dump(aas_dict, file)
+    
+    plot_PWES_heatmap_clusters(df_pwes_sorted, aas_dict, out_prefix, out_dir, 
+                               bounds=domains_list)
 
-    #Plot clustergram
+    # Plot clustergram
     plot_clustermap(df_scaled = df_pwes_unsorted, 
                     link = link, 
                     df_clusters = df_clus, 
                     out_prefix=out_prefix, out_dir=out_dir)
 
-    return df_pwes_sorted, df_pwes_unsorted, df_clus
+    return df_pwes_sorted, df_pwes_unsorted, df_clus, aas_dict
 
 
 # colors = [
