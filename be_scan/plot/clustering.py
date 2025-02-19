@@ -110,7 +110,7 @@ def hill(lfc, m, theta):
     val = num/denom
     return val
 
-def calculate_pw_score(df_score, scores_col):
+def calculate_pw_score(df_score, scores_col, tanh_a):
     """
     Calculate pairwise sums matrix for scores.
     """
@@ -130,7 +130,7 @@ def calculate_pw_score(df_score, scores_col):
                             data= upper_tri)
     
     flat_pws = pd.Series([y for x in pws_triu.columns for y in pws_triu[x]], name='sum_lfc').dropna() # flatten for mean + std calc.
-    df_pws = np.tanh((df_pws_sum - flat_pws.mean()) / flat_pws.std())
+    df_pws = np.tanh(tanh_a * (df_pws_sum - flat_pws.mean()) / flat_pws.std())
     return df_pws
 
 
@@ -271,7 +271,8 @@ def plot_PWES_heatmap(df_scaled, out_prefix, out_dir,
         end = np.where(df_scaled.index == end)[0]
 
         if start[0] >= end[0]: 
-            print(f'Error with domain {bound['name']}')
+            name_temp = bound['name']
+            print(f'Error with domain {name_temp}')
             continue
 
         ax.axhspan(start[0], end[0], color=bound['color'], alpha=1/8)
@@ -439,7 +440,7 @@ def plot_pwes_circos(
 
 def pwes_clustering(pdb_file, scores_file, x_col, scores_col, domains_list=[], 
                     norm_type = "tanh", pws_scaling=1, gauss_scaling=1, 
-                    gauss_std = 16, dend_t = 13.9, 
+                    gauss_std = 16, dend_t = 13.9, tanh_a=1, 
                     aa_int=None, out_prefix=None, out_dir=None):
     
     """
@@ -461,10 +462,9 @@ def pwes_clustering(pdb_file, scores_file, x_col, scores_col, domains_list=[],
 
     list_aas = df_scores[df_scores[x_col].isin(df_gauss.index)][x_col]
 
-    df_pws_score = calculate_pw_score(df_scores, scores_col)
+    df_pws_score = calculate_pw_score(df_scores, scores_col, tanh_a)
 
     #Calculate PWES:
-    #if(norm_type == "tanh"):
     df_pwes_sorted, df_pwes_unsorted = calculate_pwes(df_gauss, df_pws_score, list_aas, 
                                                       pws_scaling, gauss_scaling)
 
