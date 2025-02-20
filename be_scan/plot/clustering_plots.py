@@ -244,7 +244,8 @@ def plot_PWES_heatmap_clusters(df_pwes_sorted, aas_dict, out_prefix, out_dir,
             end = np.where(df_pwes_sorted.index == end)[0]
 
             if start[0] >= end[0]: 
-                print(f'Error with domain {bound['name']}')
+                dom_name = bound['name']
+                print(f'Error with domain {dom_name}')
                 continue
 
             ax.axhspan(start[0], end[0], color=bound['color'], alpha=1/8)
