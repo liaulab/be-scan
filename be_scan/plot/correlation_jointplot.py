@@ -14,6 +14,7 @@ from pathlib import Path
 import scipy.stats as stats
 import plotly.express as px
 import matplotlib.colors as mcolors
+import warnings
 
 def corr_jointplot(df_filepath, condition1, condition2, 
 
@@ -97,6 +98,7 @@ def corr_jointplot(df_filepath, condition1, condition2,
 def interactive_corr_jointplot(df_filepath, condition1, condition2, 
 
     include_hue=False, hue_col='CtoT_muttype', pal=px.colors.qualitative.Pastel, # color params
+    annot_label='', 
     savefig=True, show=True, out_dir='', out_name='correlation_jointplot', 
     ):
     
@@ -120,6 +122,8 @@ def interactive_corr_jointplot(df_filepath, condition1, condition2,
         the categorial dimension of the data, name of .csv data column
     pal: list of str, optional, defaults to a preset list of colors from ColorBrewer2
         a list of colors which correspond to hue_order
+    annot_label : str, optional, defaults to ''
+        name of an input column on which to annotate the interactive scatterplots
 
     savefig : bool, optional, defaults to True
         whether or not to save the figure
@@ -143,7 +147,8 @@ def interactive_corr_jointplot(df_filepath, condition1, condition2,
         color=hue_col if include_hue else None,  # Hue equivalent
         color_discrete_sequence=hex_pal if include_hue else None,  # Custom palette
         marginal_x="histogram",  marginal_y="histogram",  # Marginal histogram
-        trendline="ols"  # Add regression line
+        trendline="ols",  # Add regression line
+        hover_data={annot_label: True} if annot_label in df_data.columns else None  # Ensure annot_label is displayed
     )
 
     # Regression statistics
@@ -169,4 +174,16 @@ def interactive_corr_jointplot(df_filepath, condition1, condition2,
         outpath = Path(out_dir)
         out_name = f"{condition1}{condition2}_{out_name}.html"
         fig.write_html(str(outpath / out_name))
-        
+
+plot_file = 'tests/test_data/plot/NZL10196_v9_comparisons.csv'
+interactive_corr_jointplot(
+    df_filepath = plot_file, condition1 = 'd3-neg', condition2 = 'd9-pos', # names of columns in data
+    include_hue = True, hue_col = 'Mut_type',  # name of a column in data
+    savefig = False,
+    annot_label='Mut_list_all', 
+    )
+interactive_corr_jointplot(
+    df_filepath = plot_file, condition1 = 'd3-neg', condition2 = 'd9-pos', # names of columns in data
+    include_hue = True, hue_col = 'Mut_type',  # name of a column in data
+    savefig = False,
+    )
