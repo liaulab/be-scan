@@ -175,15 +175,15 @@ def interactive_corr_jointplot(df_filepath, condition1, condition2,
         out_name = f"{condition1}{condition2}_{out_name}.html"
         fig.write_html(str(outpath / out_name))
 
-plot_file = 'tests/test_data/plot/NZL10196_v9_comparisons.csv'
-interactive_corr_jointplot(
-    df_filepath = plot_file, condition1 = 'd3-neg', condition2 = 'd9-pos', # names of columns in data
-    include_hue = True, hue_col = 'Mut_type',  # name of a column in data
-    savefig = False,
-    annot_label='Mut_list_all', 
-    )
-interactive_corr_jointplot(
-    df_filepath = plot_file, condition1 = 'd3-neg', condition2 = 'd9-pos', # names of columns in data
-    include_hue = True, hue_col = 'Mut_type',  # name of a column in data
-    savefig = False,
-    )
+# plot_file = 'tests/test_data/plot/NZL10196_v9_comparisons.csv'
+# interactive_corr_jointplot(
+#     df_filepath = plot_file, condition1 = 'd3-neg', condition2 = 'd9-pos', # names of columns in data
+#     include_hue = True, hue_col = 'Mut_type',  # name of a column in data
+#     savefig = False,
+#     annot_label='Mut_list_all', 
+#     )
+# interactive_corr_jointplot(
+#     df_filepath = plot_file, condition1 = 'd3-neg', condition2 = 'd9-pos', # names of columns in data
+#     include_hue = True, hue_col = 'Mut_type',  # name of a column in data
+#     savefig = False,
+#     )
