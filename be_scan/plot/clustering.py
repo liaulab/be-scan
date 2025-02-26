@@ -16,26 +16,32 @@ import scipy.cluster as sp_cl
 
 from biopandas.pdb import PandasPdb
 from be_scan.plot.clustering_plots import *
+import pickle
 
 ### HELPER FUNCTIONS: DISTANCE FACTOR (e^(-d^2 / 2t^2))--------------------------------------------------------------------------
 
-def process_pdb(pdb_file):
+def process_pdb(pdb_file, chains):
     '''
     Given PDB or Alphafold .pdb file, returns dataframe with X, Y, Z coordinates and amino acid number.
 
     pdb_file: str, path to pdb file
     '''
     ppdb = PandasPdb().read_pdb(pdb_file)
-    atom_df = ppdb.df['ATOM'] #return just atoms
+    atom_df = ppdb.df['ATOM'] # return just atoms
+    if len(chains) > 0: 
+        atom_df = atom_df.loc[atom_df["chain_id"].isin(chains)]
     
-    #gather XYZ of alpha carbons
+    # gather XYZ of alpha carbons
     coord_df = atom_df.loc[atom_df["atom_name"] == "CA"] 
-    df_centroids = coord_df[["residue_number", "x_coord", "y_coord", "z_coord"]] 
-    df_centroids.columns = ["aa_num", "x", "y", "z"]
+    df_centroids = coord_df[["chain_id", "residue_number", "x_coord", "y_coord", "z_coord"]] 
+    df_centroids.columns = ["chain", "aa_num", "x", "y", "z"]
+
+    if len(chains) > 0: df_centroids['label'] = df_centroids['chain'] + df_centroids['aa_num'].astype(str).str.zfill(4)
+    else: df_centroids['label'] =  df_centroids['aa_num'].astype(str)
     
     return df_centroids
 
-def get_pairwise_dist(df_centroids, aa_int=None):
+def get_pairwise_dist(df_centroids, chains, aa_int=None):
     """
     Calculate pairwise distances from centroid coordinates.
     Returns a pandas df of pairwise distances with columns/index as AA pos
@@ -46,11 +52,11 @@ def get_pairwise_dist(df_centroids, aa_int=None):
         the default is None, which takes the min/max of df_centroids
     """
     
-    #ARGUMENT ASSERTIONS:
-    # check for correct columns in df_centroids, convert aa_num to integers
-    list_cols = df_centroids.columns.tolist()
-    if not all(col in list_cols for col in ['aa_num', 'x', 'y', 'z']):
-        raise Exception('df_centroids is missing an essential column id')
+    # ARGUMENT ASSERTIONS:
+    # # check for correct columns in df_centroids, convert aa_num to integers
+    # list_cols = df_centroids.columns.tolist()
+    # if not all(col in list_cols for col in ['aa_num', 'x', 'y', 'z']):
+    #     raise Exception('df_centroids is missing an essential column id')
     df_centroids['aa_num'] = df_centroids['aa_num'].astype('int64')
 
     # Isolate desired amino acid interval
@@ -58,8 +64,8 @@ def get_pairwise_dist(df_centroids, aa_int=None):
         # remove unresolved residues (xyz = NaN) before finding aa min/max
         print("Removing unresolved residues...")
         df_aaint = df_centroids.loc[~df_centroids.isnull().any(axis=1)].copy()
-        aa_min = df_aaint['aa_num'].min()
-        aa_max = df_aaint['aa_num'].max()
+        # aa_min = df_aaint['aa_num'].min()
+        # aa_max = df_aaint['aa_num'].max()
 
     else:
         aa_min = aa_int[0]
@@ -76,10 +82,11 @@ def get_pairwise_dist(df_centroids, aa_int=None):
             
     # calculate all pairwise distances in euclidean 3d space, condense to square-form
     print("Calculating pairwise distances...")
-
     pairwise = pdist(df_aaint[['x','y','z']], 'euclidean')
     pairwise = squareform(pairwise)
-    df_pwdist = pd.DataFrame(pairwise, index=df_aaint['aa_num'], columns=df_aaint['aa_num'])
+    
+    if len(chains) > 0: df_pwdist = pd.DataFrame(pairwise, index=df_aaint['label'], columns=df_aaint['label'])
+    else: df_pwdist = pd.DataFrame(pairwise, index=df_aaint['aa_num'], columns=df_aaint['aa_num'])
     return df_pwdist
 
 def gauss(distance, std):
@@ -113,59 +120,64 @@ def calculate_pw_score(df_score, scores_col, tanh_a):
     """
     Calculate pairwise sums matrix for scores.
     """
-
     df_pws_scores = df_score.copy()
 
-    #Calculate pairwise sums matrix
+    # Calculate pairwise sums matrix
     pw_sum = df_pws_scores[scores_col].values[:, None] + df_pws_scores[scores_col].values[None, :] # pairwise sums matrix
-    df_pws_sum = pd.DataFrame(index=df_pws_scores['sgRNA_ID'], 
-                                 columns=df_pws_scores['sgRNA_ID'],
-                                 data= pw_sum)
+    df_pws_sum = pd.DataFrame(
+        index=df_pws_scores['sgRNA_ID'], columns=df_pws_scores['sgRNA_ID'],
+        data=pw_sum
+        )
     
-    #Calculate parameters for tanh and zscore
-    upper_tri = np.where(np.triu(np.ones(df_pws_sum.shape), k=1).astype(bool), df_pws_sum, np.nan) #get upper triangle
-    pws_triu = pd.DataFrame(index=df_pws_sum.index, 
-                            columns=df_pws_sum.columns, 
-                            data= upper_tri)
+    # Calculate parameters for tanh and zscore
+    upper_tri = np.where(np.triu(np.ones(df_pws_sum.shape), k=1).astype(bool), 
+                         df_pws_sum, np.nan) # get upper triangle
+    pws_triu = pd.DataFrame(index=df_pws_sum.index, columns=df_pws_sum.columns, data= upper_tri )
     
     flat_pws = pd.Series([y for x in pws_triu.columns for y in pws_triu[x]], name='sum_lfc').dropna() # flatten for mean + std calc.
     df_pws = np.tanh(tanh_a * (df_pws_sum - flat_pws.mean()) / flat_pws.std())
+    ###
     return df_pws
-
 
 ### HELPER FUNCTIONS: CALCULATE PWES-----------------------------------------------------
 
 def signed_exp(df, exponent):
     return np.sign(df) * np.abs(df)**exponent
 
-def calculate_pwes(df_gauss, df_pws, list_aas, pws_scaling, gauss_scaling):
+def calculate_pwes(df_gauss, df_pws, list_aas, 
+                #    pws_scaling, gauss_scaling
+                   ):
     """
     Calculate PWES
     """
-    df_pws.index, df_pws.columns = list_aas, list_aas #replace sgrna index with amino acid pos
-    df_pws = signed_exp(df_pws, pws_scaling) * signed_exp(df_gauss.loc[list_aas, list_aas].copy(), gauss_scaling)
+    df_pws.index, df_pws.columns = list_aas, list_aas # replace sgrna index with amino acid pos
 
-    #Sort by aa
+    # scaled_pws_df = signed_exp(df_pws, pws_scaling) 
+        # pw_ij ** a , pw_ij is between -1 and 1
+    # scaled_gauss_df = signed_exp(df_gauss.loc[list_aas, list_aas].copy(), gauss_scaling) 
+        # gauss_ij = e^( (-x**2)/2s**2 ) , gauss_ij is between 0 and 1
+        # gauss_ij ** b
+    df_pws = df_pws * df_gauss.loc[list_aas, list_aas].copy() 
+        # pw_ij * gauss_ij
+
+    # Sort by aa
     df_pws_sort = df_pws.sort_index(axis=0)
     df_pws_sort = df_pws_sort.sort_index(axis=1)
-
     print("PWES calculated...")
 
     return df_pws_sort, df_pws
 
 def cluster_pws(df_pws, df_score, df_gauss, t, x_col):
-    list_aas = df_score[df_score[x_col].isin(df_gauss.index)][x_col]
+    list_aas = df_score[df_score[x_col].isin(df_gauss.index)][x_col] ### not x_col
     
-    #Create dendrogram
+    # Create dendrogram
     print("Starting linkage...")
     df_clus = df_score.loc[df_score[x_col].isin(list_aas)].copy().reset_index()
-
     link = sp_cl.hierarchy.linkage(df_pws, method='ward', metric='euclidean', optimal_ordering=True)
-    
     print("Linking complete...")
     
     df_clus['cl_new'] = sp_cl.hierarchy.fcluster(link, t=t, criterion='distance')
-    #Find number of clusters
+    # Find number of clusters
     num_clus = sorted(df_clus['cl_new'].unique())[-1]
     print(f"Number of clusters: {num_clus}")
 
@@ -181,15 +193,22 @@ def get_clus_aa(df_clus, x_col):
     except KeyError:
         raise Exception('df_clus does not contain required columns (cl_new or aa_pos)')
 
+    aas_dict = {}
     for clus in sorted(df_clus["cl_new"].unique()):
-        aas = sorted(list(set(df_clus[df_clus["cl_new"] == clus][x_col])))
+        df_subset = df_clus[df_clus["cl_new"] == clus][x_col]
+        aas = sorted([int(x) for x in list(set(df_subset))])
         print(f'Cluster {clus} amino acids: \n{aas}')
+
+        aas_dict[clus] = aas
+    return aas_dict
 
 # MAIN #
 
-def pwes_clustering(pdb_file, scores_file, x_col, scores_col, domains_list=[], 
-                    pws_scaling=1, gauss_scaling=1, 
-                    gauss_std = 16, dend_t = 13.9, tanh_a=1, 
+def pwes_clustering(df_scores, x_col, scores_col, pdb_file, 
+                    gene_col='', gene_map={}, 
+                    domains_list={}, 
+                    tanh_a=1, 
+                    gauss_std = 16, dend_t = 13.9, 
                     aa_int=None, out_prefix=None, out_dir=None):
     
     """
@@ -199,53 +218,82 @@ def pwes_clustering(pdb_file, scores_file, x_col, scores_col, domains_list=[],
         os.makedirs(out_dir)
 
     # Get centroids and spatial factor:
-    df_centroids = process_pdb(pdb_file)
-    df_pwdist = get_pairwise_dist(df_centroids, aa_int=aa_int)
+    df_centroids = process_pdb(pdb_file, gene_map.values())
+    df_pwdist = get_pairwise_dist(df_centroids, gene_map.values(), aa_int)
     df_gauss = df_pwdist.apply(lambda x: gauss(x, gauss_std))
 
-    # Get scores and calculate pairwise sums:
-    df_scores = pd.read_csv(scores_file)
-    
-    sgrnaID = ["sgRNA_" + num for num in map(str, list(range(df_scores.shape[0])))] #assign id numbers 
+    sgrnaID = ["sgRNA_" + num for num in map(str, list(range(df_scores.shape[0])))] # ASSIGN ID NUMS
     df_scores["sgRNA_ID"] = sgrnaID
 
-    list_aas = df_scores[df_scores[x_col].isin(df_gauss.index)][x_col]
+    # only use base editing scores from residues in structure
+    if len(gene_map) == 0 or gene_col == 0: 
+        print('No genes indicated, automatically assigning to structure ...')
+        aa_in_structure = df_centroids.aa_num.tolist()
+        df_scores = df_scores[df_scores[x_col].isin(aa_in_structure)]
 
-    df_pws_score = calculate_pw_score(df_scores, scores_col, tanh_a)
+        list_aas = df_scores[df_scores[x_col].isin(df_gauss.index)][x_col]
+        df_pws_score = calculate_pw_score(df_scores, scores_col, tanh_a)
+    else: 
+        print('Genes indicated, mapping genes to chains ...')
+        assert gene_col in df_scores.columns, 'Check [gene_col]'
+        assert len(gene_map) > 1, 'Check [chains] and [gene_list]'
+        aa_in_structure = df_centroids.label.tolist()
+        df_scores = df_scores[df_scores[gene_col].isin(gene_map.keys())] # FILTER OUT GENES NOT IN MAP #
+        df_scores['label'] = df_scores[gene_col].map(gene_map) + df_scores[x_col].astype(int).astype(str).str.zfill(4)
+        df_scores = df_scores[df_scores['label'].isin(aa_in_structure)]
+
+        list_aas = df_scores[df_scores['label'].isin(df_gauss.index)]['label']
+        df_pws_score = calculate_pw_score(df_scores, scores_col, tanh_a)
 
     # Calculate PWES:
-    df_pwes_sorted, df_pwes_unsorted = calculate_pwes(df_gauss, df_pws_score, list_aas, 
-                                                      pws_scaling, gauss_scaling)
+    df_pwes_sorted, df_pwes_unsorted = calculate_pwes(df_gauss, df_pws_score, list_aas)
 
     # Plot triangular matrix
-    plot_PWES_heatmap(df_pwes_sorted, out_prefix, out_dir, 
+    plot_PWES_heatmap(df_pwes_sorted, out_prefix, out_dir, gene_map, 
                       bounds=domains_list)
 
     # Cluster PWES:
-    df_clus, link = cluster_pws(df_pws = df_pwes_unsorted, 
-                                df_score = df_scores, 
-                                df_gauss = df_gauss,
-                                t = dend_t, 
-                                x_col=x_col, )
+    if len(gene_map) == 0 or gene_col == 0: 
+        df_clus, link = cluster_pws(
+            df_pws = df_pwes_sorted, df_score = df_scores, 
+            df_gauss = df_gauss,
+            t = dend_t, x_col=x_col, )
+    else: 
+        df_clus, link = cluster_pws(
+            df_pws = df_pwes_sorted, df_score = df_scores, 
+            df_gauss = df_gauss,
+            t = dend_t, x_col='label', )
+    
+    unique_clusters = sorted(df_clus['cl_new'].unique())
+    palette = sns.color_palette('tab20', len(unique_clusters)) # 20 colors in palette
+    color_map = {cluster: color for cluster, color in zip(unique_clusters, palette)}
+    df_clus['color'] = df_clus['cl_new'].map(color_map)
 
     # Plot histograms and scatterplots:
-    plot_clus_histogram(df_clus, out_prefix, out_dir)
-    plot_scatter_clusters(df_clus, x_col, scores_col, out_prefix, out_dir)
-    plot_cluster_boxplots(df_clus, scores_col, out_prefix, out_dir)
+    plot_clus_histogram(df_clus, out_prefix, out_dir, color_map)
+    print(df_clus[scores_col])
+    plot_cluster_boxplots(df_clus, scores_col, out_prefix, out_dir, color_map)
+
+    if len(gene_map) == 0 or gene_col == 0: 
+        plot_scatter_clusters(df_clus, x_col, scores_col, out_prefix, out_dir, color_map)
+        plot_scatter_clusters_subplots(df_clus, x_col, scores_col, out_prefix, out_dir, color_map)
+    else: 
+        plot_scatter_clusters_complex(df_clus, x_col, scores_col, out_prefix, out_dir, color_map, gene_map)
+        plot_scatter_clusters_subplots_complex(df_clus, x_col, scores_col, out_prefix, out_dir, color_map, gene_map)
 
     # Print and return clusters:
     aas_dict = get_clus_aa(df_clus, x_col)
     with open(f"{out_dir}/{out_prefix}_aas_dict.pickle", "wb") as file:
         pickle.dump(aas_dict, file)
     
-    plot_PWES_heatmap_clusters(df_pwes_sorted, aas_dict, out_prefix, out_dir, 
-                               bounds=domains_list)
+    # if len(gene_map) == 0 or gene_col == 0: 
+    #     plot_PWES_heatmap_clusters(df_pwes_sorted, aas_dict, out_prefix, out_dir, gene_map, 
+    #                             bounds=domains_list)
 
     # Plot clustergram
-    plot_clustermap(df_scaled = df_pwes_unsorted, 
-                    link = link, 
-                    df_clusters = df_clus, 
-                    out_prefix=out_prefix, out_dir=out_dir)
+    plot_clustermap(df_scaled = df_pwes_sorted, 
+                    link = link, df_clusters = df_clus, 
+                    out_prefix=out_prefix, out_dir=out_dir, color_list=color_map)
 
     return df_pwes_sorted, df_pwes_unsorted, df_clus, aas_dict
 
@@ -262,47 +310,95 @@ def pwes_clustering(pdb_file, scores_file, x_col, scores_col, domains_list=[],
 #         '#ff964e', '#ff8643', '#ff6932', '#d15842', '#b14a50',
 #          ]
 
-# EZH2_domains_list = [    # start, end, color, name
-#     {'start':14, 'end':38, 
-#      'color':colors[10], 'name':'SBD',},
-#     {'start':38, 'end':68, 
-#      'color':colors[11], 'name':'EBD',},
-#     {'start':68, 'end':107, 
-#      'color':colors[12], 'name':'SANBAMT',},
-#     {'start':107, 'end':127, 
-#      'color':colors[13], 'name':'SAL',},
-#     {'start':127, 'end':157, 
-#      'color':colors[14], 'name':'SRM',},
-#     {'start':159, 'end':250, 
-#      'color':colors[15], 'name':'SANT1',},
-#     {'start':257, 'end':309, 
-#      'color':colors[16], 'name':'MCSS',},
-#     {'start':428, 'end':476, 
-#      'color':colors[15], 'name':'SANT2',},
-#     {'start':503, 'end':605, 
-#      'color':colors[17], 'name':'CXC',},
-#     {'start':609, 'end':728, 
-#      'color':colors[18], 'name':'SET',},
+# EZH2_domains_list = {'EZH2':[    # start, end, color, name
+#     {'start':14, 'end':38, 'color':colors[10], 'name':'SBD',},
+#     {'start':38, 'end':68, 'color':colors[11], 'name':'EBD',},
+#     {'start':68, 'end':107, 'color':colors[12], 'name':'SANBAMT',},
+#     {'start':107, 'end':127, 'color':colors[13], 'name':'SAL',},
+#     {'start':127, 'end':157, 'color':colors[14], 'name':'SRM',},
+#     {'start':159, 'end':250, 'color':colors[15], 'name':'SANT1',},
+#     {'start':257, 'end':309, 'color':colors[16], 'name':'MCSS',},
+#     {'start':428, 'end':476, 'color':colors[15], 'name':'SANT2',},
+#     {'start':503, 'end':605, 'color':colors[17], 'name':'CXC',},
+#     {'start':609, 'end':728, 'color':colors[18], 'name':'SET',},
+# ]}
+
+# prc2_domains_dict = {
+#     'EZH2': [
+#         {'start':14, 'end':38, 'color':colors[10], 'name':'SBD',},
+#         {'start':38, 'end':68, 'color':colors[11], 'name':'EBD',},
+#         {'start':68, 'end':107, 'color':colors[12], 'name':'SANBAMT',},
+#         {'start':107, 'end':127, 'color':colors[13], 'name':'SAL',},
+#         {'start':127, 'end':157, 'color':colors[14], 'name':'SRM',},
+#         {'start':159, 'end':250, 'color':colors[15], 'name':'SANT1',},
+#         {'start':257, 'end':309, 'color':colors[16], 'name':'MCSS',},
+#         {'start':428, 'end':476, 'color':colors[15], 'name':'SANT2',},
+#         {'start':503, 'end':605, 'color':colors[17], 'name':'CXC',},
+#         {'start':609, 'end':728, 'color':colors[18], 'name':'SET',},
+#     ], 
+#     'EED': [
+#         {'start':81, 'end':125, 'color':colors[4], 'name':'WD40',},
+#         {'start':131, 'end':176, 'color':colors[4], 'name':'WD40',},
+#         {'start':179, 'end':219, 'color':colors[4], 'name':'WD40',},
+#         {'start':222, 'end':264, 'color':colors[4], 'name':'WD40',},
+#         {'start':295, 'end':332, 'color':colors[4], 'name':'WD40',},
+#         {'start':357, 'end':397, 'color':colors[4], 'name':'WD40',},
+#         {'start':397, 'end':438, 'color':colors[4], 'name':'WD40',},
+#     ], 
+#     'SUZ12': [
+#         {'start':79, 'end':106, 'color':colors[0], 'name':'ZnB',},
+#         {'start':110, 'end':145, 'color':colors[5], 'name':'WDB1',},
+#         {'start':150, 'end':365, 'color':colors[6], 'name':'C2',},
+#         {'start':426, 'end':492, 'color':colors[0], 'name':'ZnB',},
+#         {'start':514, 'end':514, 'color':colors[5], 'name':'WDB2',},
+#         {'start':560, 'end':682, 'color':colors[8], 'name':'VEFS',},
+#     ], 
+# }
+
+# files_ezh2 = [
+#     '/Users/calvinxyh/Documents/liau/7.PRC2analysis/250212-PWES-ByResidue/conditions_q575r_pos_max.csv',
+#     '/Users/calvinxyh/Documents/liau/7.PRC2analysis/250212-PWES-ByResidue/conditions_stability_pos_max.csv',
+# ]
+# files_whole = [
+#     '/Users/calvinxyh/Documents/liau/7.PRC2analysis/250220-PWES-Randomize-ParamOptimize/data/q575r_abe_pos_max.csv',
+#     '/Users/calvinxyh/Documents/liau/7.PRC2analysis/250220-PWES-Randomize-ParamOptimize/data/stability_ABE_EZH2_pos_max.csv',
 # ]
 
-# # running it with domains
-# df_pwes_sorted, df_pwes_unsorted, df_clus = pwes_clustering(
-#     pdb_file = 'AF_Q15910.pdb', 
-#     scores_file = 'conditions_q575r_pos_mean.csv', 
+# EZH2_pdb = '/Users/calvinxyh/Documents/liau/7.PRC2analysis/250212-PRC2-PDBvsAF/PDB Files/chainC-EZH2.pdb'
+# pdb = '/Users/calvinxyh/Documents/liau/7.PRC2analysis/250212-PRC2-PDBvsAF/PDB Files/6wkr.pdb'
+
+# # no domains, EZH2
+# df_pwes_sorted, df_pwes_unsorted, df_clus, aas_dict = pwes_clustering(
+#     pdb_file = EZH2_pdb, 
+#     df_scores = pd.read_csv(files_ezh2[0]), 
 #     x_col = 'xpos', 
 #     scores_col  = 'DMSO-PRC2i',
-#     gauss_std = 16, dend_t = 10, 
-#     out_prefix='q575r_mean', 
-#     out_dir='q575r_mean', 
+#     gauss_std = 16, dend_t = 14, tanh_a=1, 
+#     out_prefix='EZH2_Q575R_PDB_MaxRes', 
+#     out_dir='EZH2_Q575R_PDB_MaxRes', 
+# )
+
+# # domains, EZH2
+# df_pwes_sorted, df_pwes_unsorted, df_clus, aas_dict = pwes_clustering(
+#     pdb_file = EZH2_pdb, 
+#     df_scores = pd.read_csv(files_ezh2[0]), 
+#     x_col = 'xpos', 
+#     scores_col  = 'DMSO-PRC2i',
+#     gauss_std = 16, dend_t = 14, tanh_a=1, 
+#     out_prefix='EZH2_Q575R_PDB_MaxRes', 
+#     out_dir='EZH2_Q575R_PDB_MaxRes', 
 #     domains_list=EZH2_domains_list, 
 # )
-# # running it without domains
-# df_pwes_sorted, df_pwes_unsorted, df_clus = pwes_clustering(
-#     pdb_file = 'AF_Q15910.pdb', 
-#     scores_file = 'conditions_q575r_pos_mean.csv', 
-#     x_col = 'xpos', 
+
+# # domains, PRC2
+# df_pwes_sorted, df_pwes_unsorted, df_clus, aas_dict = pwes_clustering(
+#     pdb_file = pdb, 
+#     df_scores = pd.read_csv(files_whole[0]), 
+#     x_col = 'aa_pos', 
 #     scores_col  = 'DMSO-PRC2i',
-#     gauss_std = 16, dend_t = 10, 
-#     out_prefix='q575r_mean', 
-#     out_dir='q575r_mean', 
+#     gauss_std = 18, dend_t = 14, tanh_a=1, 
+#     out_prefix='EZH2_Q575R_PDB_MaxRes', 
+#     out_dir='EZH2_Q575R_PDB_MaxRes', 
+#     domains_list=prc2_domains_dict, 
+#     gene_col='Gene Symbol', gene_map={'EZH2':'C', 'EED':'L', 'SUZ12':'A'}
 # )
