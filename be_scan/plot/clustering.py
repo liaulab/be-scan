@@ -16,7 +16,6 @@ import scipy.cluster as sp_cl
 
 from biopandas.pdb import PandasPdb
 from be_scan.plot.clustering_plots import *
-import pickle
 
 ### HELPER FUNCTIONS: DISTANCE FACTOR (e^(-d^2 / 2t^2))--------------------------------------------------------------------------
 
@@ -52,11 +51,6 @@ def get_pairwise_dist(df_centroids, chains, aa_int=None):
         the default is None, which takes the min/max of df_centroids
     """
     
-    # ARGUMENT ASSERTIONS:
-    # # check for correct columns in df_centroids, convert aa_num to integers
-    # list_cols = df_centroids.columns.tolist()
-    # if not all(col in list_cols for col in ['aa_num', 'x', 'y', 'z']):
-    #     raise Exception('df_centroids is missing an essential column id')
     df_centroids['aa_num'] = df_centroids['aa_num'].astype('int64')
 
     # Isolate desired amino acid interval
@@ -64,8 +58,6 @@ def get_pairwise_dist(df_centroids, chains, aa_int=None):
         # remove unresolved residues (xyz = NaN) before finding aa min/max
         print("Removing unresolved residues...")
         df_aaint = df_centroids.loc[~df_centroids.isnull().any(axis=1)].copy()
-        # aa_min = df_aaint['aa_num'].min()
-        # aa_max = df_aaint['aa_num'].max()
 
     else:
         aa_min = aa_int[0]
@@ -141,24 +133,13 @@ def calculate_pw_score(df_score, scores_col, tanh_a):
 
 ### HELPER FUNCTIONS: CALCULATE PWES-----------------------------------------------------
 
-def signed_exp(df, exponent):
-    return np.sign(df) * np.abs(df)**exponent
-
 def calculate_pwes(df_gauss, df_pws, list_aas, 
-                #    pws_scaling, gauss_scaling
                    ):
     """
     Calculate PWES
     """
     df_pws.index, df_pws.columns = list_aas, list_aas # replace sgrna index with amino acid pos
-
-    # scaled_pws_df = signed_exp(df_pws, pws_scaling) 
-        # pw_ij ** a , pw_ij is between -1 and 1
-    # scaled_gauss_df = signed_exp(df_gauss.loc[list_aas, list_aas].copy(), gauss_scaling) 
-        # gauss_ij = e^( (-x**2)/2s**2 ) , gauss_ij is between 0 and 1
-        # gauss_ij ** b
     df_pws = df_pws * df_gauss.loc[list_aas, list_aas].copy() 
-        # pw_ij * gauss_ij
 
     # Sort by aa
     df_pws_sort = df_pws.sort_index(axis=0)
@@ -167,12 +148,12 @@ def calculate_pwes(df_gauss, df_pws, list_aas,
 
     return df_pws_sort, df_pws
 
-def cluster_pws(df_pws, df_score, df_gauss, t, x_col):
-    list_aas = df_score[df_score[x_col].isin(df_gauss.index)][x_col] ### not x_col
+def cluster_pws(df_pws, df_score, df_gauss, list_aas, t, x_col):
     
     # Create dendrogram
     print("Starting linkage...")
     df_clus = df_score.loc[df_score[x_col].isin(list_aas)].copy().reset_index()
+    # df_clus['label_encoded'] = df_clus['label'].astype('category').cat.codes ###
     link = sp_cl.hierarchy.linkage(df_pws, method='ward', metric='euclidean', optimal_ordering=True)
     print("Linking complete...")
     
@@ -182,7 +163,7 @@ def cluster_pws(df_pws, df_score, df_gauss, t, x_col):
     print(f"Number of clusters: {num_clus}")
 
     return df_clus, link
-    
+
 def get_clus_aa(df_clus, x_col):
     """
     Given df_clus, generated from cluster_pws, print the amino acids in each cluster.
@@ -202,9 +183,41 @@ def get_clus_aa(df_clus, x_col):
         aas_dict[clus] = aas
     return aas_dict
 
+def shuffle_pwes(df_gauss, df_pws, list_aas, nrand=1000, 
+                #    pws_scaling, gauss_scaling
+                   ):
+    """
+    Calculate PWES
+    """
+    df_pws.index, df_pws.columns = list_aas, list_aas  # Replace sgrna index with amino acid pos
+    
+    df_pws_list = []
+    np.random.seed(0)  # Set seed for reproducibility
+
+    for i in range(nrand): 
+        np.random.seed(i)  # Different shuffle per iteration
+        permutation = np.random.permutation(df_pws.shape[0])
+        df_shuffled_sample = df_pws.iloc[permutation, permutation]  # Shuffle both rows and cols
+        df_shuffled_sample.index, df_shuffled_sample.columns = list_aas, list_aas
+
+        df_shuffled_sample *= df_gauss.loc[list_aas, list_aas].copy()  # Element-wise multiplication
+        df_pws_list.append(df_shuffled_sample)
+
+    # Compute element-wise mean
+    result_df = sum(df_pws_list) / len(df_pws_list)
+
+    # Debugging: Check for NaNs
+    print('HERE', result_df.isna().sum().sum())  # Should be 0
+
+    # Sort by amino acids
+    df_pws_sort = result_df.sort_index(axis=0).sort_index(axis=1)
+
+    print("PWES calculated...")
+    return df_pws_sort, result_df
+
 # MAIN #
 
-def pwes_clustering(df_scores, x_col, scores_col, pdb_file, 
+def pwes_clustering(df_scores, x_col, scores_col, pdb_file, nrand=1000, 
                     gene_col='', gene_map={}, 
                     domains_list={}, 
                     tanh_a=1, 
@@ -247,6 +260,28 @@ def pwes_clustering(df_scores, x_col, scores_col, pdb_file,
 
     # Calculate PWES:
     df_pwes_sorted, df_pwes_unsorted = calculate_pwes(df_gauss, df_pws_score, list_aas)
+    df_pws_sort_shuffle, result_df = shuffle_pwes(df_gauss, df_pws_score.abs(), list_aas, nrand=nrand)
+
+    sns.heatmap(df_gauss, center=0, cmap='RdBu_r')
+    plt.title('Gaussian of Distances')
+    plt.show()
+    plt.close()
+    sns.heatmap(df_pwes_sorted, cmap='RdBu_r')
+    plt.title('PWES Scores')
+    plt.show()
+    plt.close()
+    sns.heatmap(df_pws_sort_shuffle, center=0, cmap='RdBu_r')
+    plt.title('AVG of Shuffled PWES Scores 1000x')
+    plt.show()
+    plt.close()
+    df_pws_sort_shuffle.stack().plot.hist(bins=100)
+    plt.title('Histogram of Shuffled PWES Scores 1000x')
+    plt.show()
+    plt.close()
+    sns.heatmap(pd.DataFrame(np.sign(df_pwes_sorted)) * (df_pwes_sorted.abs() - df_pws_sort_shuffle), cmap='RdBu_r')
+    plt.title('PWES - PWES Shuffled Scores')
+    plt.show()
+    plt.close()
 
     # Plot triangular matrix
     plot_PWES_heatmap(df_pwes_sorted, out_prefix, out_dir, gene_map, 
@@ -255,15 +290,15 @@ def pwes_clustering(df_scores, x_col, scores_col, pdb_file,
     # Cluster PWES:
     if len(gene_map) == 0 or gene_col == 0: 
         df_clus, link = cluster_pws(
-            df_pws = df_pwes_sorted, df_score = df_scores, 
-            df_gauss = df_gauss,
+            df_pws = df_pwes_unsorted, df_score = df_scores, 
+            df_gauss = df_gauss, list_aas=list_aas, 
             t = dend_t, x_col=x_col, )
     else: 
         df_clus, link = cluster_pws(
-            df_pws = df_pwes_sorted, df_score = df_scores, 
-            df_gauss = df_gauss,
+            df_pws = df_pwes_unsorted, df_score = df_scores, 
+            df_gauss = df_gauss, list_aas=list_aas, 
             t = dend_t, x_col='label', )
-    
+
     unique_clusters = sorted(df_clus['cl_new'].unique())
     palette = sns.color_palette('tab20', len(unique_clusters)) # 20 colors in palette
     color_map = {cluster: color for cluster, color in zip(unique_clusters, palette)}
@@ -271,7 +306,6 @@ def pwes_clustering(df_scores, x_col, scores_col, pdb_file,
 
     # Plot histograms and scatterplots:
     plot_clus_histogram(df_clus, out_prefix, out_dir, color_map)
-    print(df_clus[scores_col])
     plot_cluster_boxplots(df_clus, scores_col, out_prefix, out_dir, color_map)
 
     if len(gene_map) == 0 or gene_col == 0: 
@@ -282,7 +316,8 @@ def pwes_clustering(df_scores, x_col, scores_col, pdb_file,
         plot_scatter_clusters_subplots_complex(df_clus, x_col, scores_col, out_prefix, out_dir, color_map, gene_map)
 
     # Print and return clusters:
-    aas_dict = get_clus_aa(df_clus, x_col)
+    if len(gene_map) == 0 or gene_col == 0: aas_dict = get_clus_aa(df_clus, x_col)
+    else: aas_dict = get_clus_aa(df_clus, 'label')
     with open(f"{out_dir}/{out_prefix}_aas_dict.pickle", "wb") as file:
         pickle.dump(aas_dict, file)
     
@@ -360,8 +395,8 @@ def pwes_clustering(df_scores, x_col, scores_col, pdb_file,
 #     '/Users/calvinxyh/Documents/liau/7.PRC2analysis/250212-PWES-ByResidue/conditions_stability_pos_max.csv',
 # ]
 # files_whole = [
-#     '/Users/calvinxyh/Documents/liau/7.PRC2analysis/250220-PWES-Randomize-ParamOptimize/data/q575r_abe_pos_max.csv',
-#     '/Users/calvinxyh/Documents/liau/7.PRC2analysis/250220-PWES-Randomize-ParamOptimize/data/stability_ABE_EZH2_pos_max.csv',
+#     '/Users/calvinxyh/Documents/liau/7.PRC2analysis/250220-PWES-ParamOptimize/data/q575r_abe_pos_max.csv',
+#     '/Users/calvinxyh/Documents/liau/7.PRC2analysis/250220-PWES-ParamOptimize/data/stability_ABE_EZH2_pos_max.csv',
 # ]
 
 # EZH2_pdb = '/Users/calvinxyh/Documents/liau/7.PRC2analysis/250212-PRC2-PDBvsAF/PDB Files/chainC-EZH2.pdb'
