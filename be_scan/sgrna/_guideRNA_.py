@@ -314,12 +314,16 @@ def is_splice_acceptor_guide(row, pre, dir, window):
             return True
         if ('G' in pre_from) and bool(re.match(r'^[a-z]*ag[A-Z]*$', edit_wind)) and seq[window[1]].isupper(): 
             return True
+        elif ('G' in pre_from) and bool(re.match(r'^g[A-Z]*$', edit_wind)) and seq[window[1]+1].isupper(): 
+            return True
     elif dir == 'antisense' and bool(re.match(r'^[A-Z]+ct[a-z]+$', seq)):
-        if ('T' in pre_from) and bool(re.match(r'^[A-Z]*ct[a-z]*$', edit_wind)) and seq[window[1]].isupper(): 
+        if ('T' in pre_from) and bool(re.match(r'^[A-Z]*ct[a-z]*$', edit_wind)) and seq[window[1]].islower(): 
             return True
-        elif ('T' in pre_from) and bool(re.match(r'^t[a-z]*$', edit_wind)) and seq[window[1]+1].isupper(): 
+        elif ('T' in pre_from) and bool(re.match(r'^t[a-z]*$', edit_wind)) and seq[window[1]+1].islower(): 
             return True
-        if ('C' in pre_from) and bool(re.match(r'^[A-Z]*ct[a-z]*$', edit_wind)) and seq[window[1]].isupper(): 
+        if ('C' in pre_from) and bool(re.match(r'^[A-Z]*ct[a-z]*$', edit_wind)) and seq[window[1]].islower(): 
+            return True
+        elif ('C' in pre_from) and bool(re.match(r'^[A-Z]*c$', edit_wind)) and seq[window[1]+1].islower(): 
             return True
     return False
 
@@ -330,11 +334,13 @@ def is_splice_donor_guide(row, pre, dir, window):
     if edit_wind is None: 
         return False
     if dir == 'sense' and bool(re.match(r'^[A-Z]*gt[a-z]*$', seq)):
-        if ('T' in pre_from) and bool(re.match(r'^[A-Z]*gt[a-z]*$', edit_wind)) and seq[window[1]].isupper(): 
+        if ('T' in pre_from) and bool(re.match(r'^[A-Z]*gt[a-z]*$', edit_wind)) and seq[window[1]].islower(): 
             return True
-        elif ('T' in pre_from) and bool(re.match(r'^t[a-z]*$', edit_wind)) and seq[window[1]+1].isupper(): 
+        elif ('T' in pre_from) and bool(re.match(r'^t[a-z]*$', edit_wind)) and seq[window[1]+1].islower(): 
             return True
-        if ('G' in pre_from) and bool(re.match(r'^[A-Z]*gt[a-z]*$', edit_wind)) and seq[window[1]].isupper(): 
+        if ('G' in pre_from) and bool(re.match(r'^[A-Z]*gt[a-z]*$', edit_wind)) and seq[window[1]].islower(): 
+            return True
+        elif ('G' in pre_from) and bool(re.match(r'^[A-Z]*g$', edit_wind)) and seq[window[1]+1].islower(): 
             return True
     elif dir == 'antisense' and bool(re.match(r'^[a-z]*ac[A-Z]*$', seq)):
         if ('A' in pre_from) and bool(re.match(r'^[a-z]*ac[A-Z]*$', edit_wind)) and seq[window[1]].isupper(): 
@@ -342,6 +348,8 @@ def is_splice_donor_guide(row, pre, dir, window):
         elif ('A' in pre_from) and bool(re.match(r'^[a-z]*a$', edit_wind)) and seq[window[1]+1].isupper(): 
             return True
         if ('C' in pre_from) and bool(re.match(r'^[a-z]*ac[A-Z]*$', edit_wind)) and seq[window[1]].isupper(): 
+            return True
+        elif ('C' in pre_from) and bool(re.match(r'^c[A-Z]*$', edit_wind)) and seq[window[1]+1].isupper(): 
             return True
     return False
 
