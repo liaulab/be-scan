@@ -7,10 +7,14 @@ Date: 231204
 import os
 from pathlib import Path
 
-from be_scan.sgrna.generate_library import generate_library
-from be_scan.sgrna.reference_check import reference_check
-from be_scan.sgrna.annotate import annotate
-from be_scan.sgrna.coverage import coverage_plots
+# from be_scan.sgrna.generate_library import generate_library
+# from be_scan.sgrna.reference_check import reference_check
+# from be_scan.sgrna.annotate import annotate
+# from be_scan.sgrna.coverage import coverage_plots
+from generate_library import generate_library
+from reference_check import reference_check
+from annotate import annotate
+from coverage import coverage_plots
 
 def design_library(gene_filepath, cas_type='SpG', 
 
@@ -109,13 +113,14 @@ def design_library(gene_filepath, cas_type='SpG',
         'PAM':PAM, 'window':window, 'return_df':True, 'save_df':False, 
         'exclude_introns':exclude_introns, 'exclude_nonediting':exclude_nonediting, 
         'exclude_duplicates':exclude_duplicates, 'exclude_sequences':exclude_sequences, }
-    guides = generate_library(**generate_library_params)
+    guides, gene = generate_library(**generate_library_params)
     guides.to_csv(temp, index=False)
 
     # ANNOTATE LIBRARY FOR ALL THREE TYPES #
     for edit_from, edit_to in zip(edit_from_list, edit_to_list): 
         annotate_params = {
             'guides_file':temp, 'edit_from':edit_from, 'edit_to':edit_to,
+            'exons':gene.exons, 
             'protein_filepath':protein_filepath, 'window':window, 
             'exclude_duplicates':exclude_duplicates, 'return_df':True, 'save_df':False, }
         annotated = annotate(**annotate_params)

@@ -10,7 +10,8 @@ import re
 import warnings
 
 from pathlib import Path
-from be_scan.sgrna._genomic_ import complements, rev_complement
+# from be_scan.sgrna._genomic_ import complements, rev_complement
+from _genomic_ import complements, rev_complement
 
 # CLASS OBJECT NEEDED TO PARSE SPECIFIC INPUT INTRON/EXON .FASTA FORMAT #
 class GeneForCRISPR(): 
@@ -98,10 +99,11 @@ class GeneForCRISPR():
             g_rev.append(g[5]+self.n-1)
             g_rev.append(g[6])
 
-            if g_rev[0][window[0]-1].islower(): g_rev.append(-1)
+            if    g_rev[0][window[0]-1].islower(): g_rev.append(-1)
             else: g_rev.append((g[9]+self.n-1)-(window[0]-1))
-            if g_rev[0][window[1]].islower(): g_rev.append(-1)
+            if    g_rev[0][window[1]].islower(): g_rev.append(-1)
             else: g_rev.append((g[9]+self.n-1)-(window[1]-1))
+
             self.rev_guides.append(g_rev)
 
     # EXTRACT METADATA ABOUT CHROMOSOME POSITION, STRAND #

@@ -9,10 +9,12 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-from be_scan.sgrna._genomic_ import *
-from be_scan.sgrna._guideRNA_ import *
+# from be_scan.sgrna._genomic_ import *
+# from be_scan.sgrna._guideRNA_ import *
+from _genomic_ import *
+from _guideRNA_ import *
 
-def annotate(guides_file, edit_from, edit_to,
+def annotate(guides_file, edit_from, edit_to, exons, ### ADD EXONS TO ALL DOCUMENTATION #
 
     protein_filepath='', window=[4,8], 
     seq_col = 'sgRNA_seq', frame_col = 'starting_frame', strand_col = 'sgRNA_strand', 
@@ -80,7 +82,6 @@ def annotate(guides_file, edit_from, edit_to,
        'muttypes'       : list,   Missense Nonsense Silent No_C/Exon EssentialSpliceSite Control unique list
        'muttype'        : str,    muttypes condensed down to one type
     """
-
     path = Path.cwd()
     col_names = frame_col, strand_col, gene_pos_col, seq_col, window_start_col, window_end_col
 
@@ -115,20 +116,19 @@ def annotate(guides_file, edit_from, edit_to,
     df[edit_from+'_count'] = df['sgRNA_seq'].apply(lambda x: sum([x[window[0]-1:window[1]].count(e) for e in edit_from]))
 
     # CALCULATE target_CDS, codon_window, residue_window #
-    df[f'{pre}_target_CDS'] = df.apply(lambda x: calc_coding_window(x, window, col_names), axis=1) 
+    df[[f'{pre}_target_CDS', f'{pre}_target_windowpos']] = df.apply(lambda x: calc_coding_window(x, window, col_names), axis=1, result_type='expand') 
     df[[f'{pre}_codon_window', f'{pre}_residue_window']] = df.apply(lambda x: calc_target(x, window, col_names), axis=1, result_type='expand')
-    # df[f'{pre}_edit_site'] = df[f'{pre}_editing_window'].apply(lambda x: None if x is None else ((x[0]+x[1])/2)//3)
 
     # PREDICT POSSIBLE MUTATIONS #
-    if len(edit_from) > 1: df[f'{pre}_mutations'] = df.apply(lambda x : annotate_dual_muts(x, edit, amino_acid_seq, col_names, pre, window), axis=1)
-    elif len(edit_from) == 1: df[f'{pre}_mutations'] = df.apply(lambda x : annotate_muts(x, edit, amino_acid_seq, col_names, pre, window), axis=1)
+    if len(edit_from) > 1: df[f'{pre}_mutations'] = df.apply(lambda x : annotate_dual_muts(x, edit, amino_acid_seq, col_names, pre, window, exons), axis=1)
+    elif len(edit_from) == 1: df[f'{pre}_mutations'] = df.apply(lambda x : annotate_muts(x, edit, amino_acid_seq, col_names, pre, window, exons), axis=1)
 
     # CALC muttypes LIST AND SINGLE muttype #
     df[f'{pre}_muttypes'] = df.apply(lambda x: determine_mutations(x, col_names, pre), axis=1)
-    df[f'{pre}_muttype'] = df.apply(lambda x: categorize_mutations(x, pre), axis=1)
+    df[f'{pre}_muttype'] = df.apply(lambda x: categorize_mutations(x, pre, col_names, window), axis=1)
 
     # DROP UNNECESSARY COLUMNS #
-    df = df.drop([f'{pre}_target_CDS', f'{pre}_codon_window', f'{pre}_residue_window'], axis=1)
+    df = df.drop([f'{pre}_target_CDS', f'{pre}_codon_window', f'{pre}_residue_window', f'{pre}_target_windowpos'], axis=1)
 
     print(f'Guides annotated for {edit_from} to {edit_to}.')
     if save_df: 
