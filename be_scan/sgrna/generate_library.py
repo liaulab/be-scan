@@ -9,9 +9,12 @@ from pathlib import Path
 import pandas as pd
 import warnings
 
-from be_scan.sgrna._genomic_ import *
-from be_scan.sgrna._guideRNA_ import filter_guide, filter_sequence
-from be_scan.sgrna._gene_ import GeneForCRISPR
+# from be_scan.sgrna._genomic_ import *
+# from be_scan.sgrna._guideRNA_ import filter_guide, filter_sequence
+# from be_scan.sgrna._gene_ import GeneForCRISPR
+from _genomic_ import *
+from _guideRNA_ import filter_guide, filter_sequence
+from _gene_ import GeneForCRISPR
 
 def generate_library(gene_filepath, 
                      cas_type, edit_from, edit_to, 
@@ -148,4 +151,4 @@ def generate_library(gene_filepath,
         Path.mkdir(path / output_dir, exist_ok=True)
         df.to_csv(path / output_dir / output_name, index=False)
     if return_df: 
-        return df
+        return df, gene
