@@ -276,7 +276,7 @@ def determine_mutations(row, col_names, pre):
         types.append('/'.join(type))
     return ';'.join(types)
 
-def categorize_mutations(row, pre, col_names, window): 
+def categorize_mutations(row, pre, col_names, window, edit_from): 
     """
     Categorizes mutations by predicted mutations and context metadata. 
     Based on a priority of: 
@@ -295,11 +295,18 @@ def categorize_mutations(row, pre, col_names, window):
         return 'Splice-donor'
     elif row[f'{pre}_muttypes'] is not None and 'Missense' in row[f'{pre}_muttypes']: 
         return 'Missense'
-    elif row[f'{pre}_win_overlap'] == 'Intron': 
-        return 'Intron'
     elif row[f'{pre}_muttypes'] is not None and 'Silent' in row[f'{pre}_muttypes']: 
         return 'Silent'
-    return 'No Mutation'
+    else: 
+        grna_seq = row[f'sgRNA_seq']
+        seq_window = grna_seq[window[0]-1:window[1]]
+        if any(char.islower() for char in seq_window) and edit_from.lower() in seq_window: 
+            if row['UTR'] == True: 
+                return 'UTR'
+            else: 
+                return 'Intron'
+        else: 
+            return 'No Mutation'
 
 def is_splice_acceptor_guide(row, pre, dir, window): 
     pre_from = pre.split('to')[0]

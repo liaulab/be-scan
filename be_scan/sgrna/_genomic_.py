@@ -108,3 +108,15 @@ def process_PAM(PAM):
     PAM = PAM.replace("R", "[aAgG]{1}")
     PAM = PAM.replace("N", "[acgtACGT]{1}")
     return re.compile("({})".format(PAM))
+
+# FIND FIRST OR LAST INSTANCE OF CAPITAL LETTER
+def first_capital_index(sequence):
+    for i, char in enumerate(sequence):
+        if char.isupper():
+            return i
+    raise Exception("First exon has no coding sequences")
+def last_capital_index(sequence):
+    for i in range(len(sequence) - 1, -1, -1):  # Iterate backwards
+        if sequence[i].isupper():
+            return i
+    raise Exception("Last exon has no coding sequences")

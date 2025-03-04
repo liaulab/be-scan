@@ -125,10 +125,10 @@ def annotate(guides_file, edit_from, edit_to, exons, ### ADD EXONS TO ALL DOCUME
 
     # CALC muttypes LIST AND SINGLE muttype #
     df[f'{pre}_muttypes'] = df.apply(lambda x: determine_mutations(x, col_names, pre), axis=1)
-    df[f'{pre}_muttype'] = df.apply(lambda x: categorize_mutations(x, pre, col_names, window), axis=1)
+    df[f'{pre}_muttype'] = df.apply(lambda x: categorize_mutations(x, pre, col_names, window, edit_from), axis=1)
 
     # DROP UNNECESSARY COLUMNS #
-    df = df.drop([f'{pre}_target_CDS', f'{pre}_codon_window', f'{pre}_residue_window', f'{pre}_target_windowpos'], axis=1)
+    # df = df.drop([f'{pre}_target_CDS', f'{pre}_codon_window', f'{pre}_residue_window', f'{pre}_target_windowpos'], axis=1)
 
     print(f'Guides annotated for {edit_from} to {edit_to}.')
     if save_df: 
