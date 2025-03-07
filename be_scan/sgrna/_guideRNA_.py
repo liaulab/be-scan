@@ -178,11 +178,10 @@ def annotate_dual_muts(row, edit, amino_acid_seq, col_names, pre, window, exons)
                 new_aa = DNA_to_AA(new_dna, upper=False)
 
             # FORMAT MUTATIONS AS LETTER-NUMBER-LETTER #
-            if dna != new_dna: 
+            if dna_temp != new_dna: 
                 mutations = format_mutation(aa_temp, new_aa, start, amino_acid_seq, dna_temp, new_dna, seq)
                 mutation_details.append(mutations)
     return ';'.join(set(filter(None, mutation_details)))
-
 
 def fill_in_dna_exons(new_dna, row, exons): 
     new_dna_codons = [new_dna[i:i + 3] for i in range(0, len(new_dna), 3)]
@@ -285,14 +284,14 @@ def categorize_mutations(row, pre, col_names, window, edit_from):
     frame_col, strand_col, gene_pos_col, seq_col, window_start_col, window_end_col = col_names
     frame, dir, pos, seq = row[frame_col], row[strand_col], row[gene_pos_col], row[seq_col]
 
-    if row[f'{pre}_muttypes'] is not None and 'Nonsense' in row[f'{pre}_muttypes']: 
-        return 'Nonsense'
     # 'Splice-acceptor' means guide edits the 'AG' at 3' of intron
     # 'Splice-donor' means guide edits the 'GT' at 5' of intron
-    elif is_splice_acceptor_guide(row, pre, dir, window): 
+    if is_splice_acceptor_guide(row, pre, dir, window): 
         return 'Splice-acceptor'
     elif is_splice_donor_guide(row, pre, dir, window): 
         return 'Splice-donor'
+    elif row[f'{pre}_muttypes'] is not None and 'Nonsense' in row[f'{pre}_muttypes']: 
+        return 'Nonsense'
     elif row[f'{pre}_muttypes'] is not None and 'Missense' in row[f'{pre}_muttypes']: 
         return 'Missense'
     elif row[f'{pre}_muttypes'] is not None and 'Silent' in row[f'{pre}_muttypes']: 
@@ -376,6 +375,12 @@ def find_first_uppercase_index(input_string):
         
 def annotate_intron_exon(x, window): 
     coding = x[window[0]-1: window[1]]
+    if coding.isupper(): return "Exon"
+    elif coding.islower(): return "Intron"
+    else: return "Exon/Intron"
+
+def annotate_intron_exon_anti(x, window): 
+    coding = x[20-window[1]: 20-window[0]+1] # window=(4,8) so x[12:17]
     if coding.isupper(): return "Exon"
     elif coding.islower(): return "Intron"
     else: return "Exon/Intron"

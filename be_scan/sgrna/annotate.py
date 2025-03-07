@@ -112,6 +112,10 @@ def annotate(guides_file, edit_from, edit_to, exons, ### ADD EXONS TO ALL DOCUME
 
     # win_overlap #
     df[f'{pre}_win_overlap'] = df['coding_seq'].apply(lambda x: annotate_intron_exon(x, window))
+    df[f'{pre}_win_overlap'] = df.apply(lambda row: annotate_intron_exon(row['coding_seq'], window) 
+                                        if row[strand_col] == 'sense' 
+                                        else annotate_intron_exon_anti(row['coding_seq'], window), 
+                                        axis=1 )
     # edit_from+'_count'
     df[edit_from+'_count'] = df['sgRNA_seq'].apply(lambda x: sum([x[window[0]-1:window[1]].count(e) for e in edit_from]))
 
@@ -128,7 +132,7 @@ def annotate(guides_file, edit_from, edit_to, exons, ### ADD EXONS TO ALL DOCUME
     df[f'{pre}_muttype'] = df.apply(lambda x: categorize_mutations(x, pre, col_names, window, edit_from), axis=1)
 
     # DROP UNNECESSARY COLUMNS #
-    # df = df.drop([f'{pre}_target_CDS', f'{pre}_codon_window', f'{pre}_residue_window', f'{pre}_target_windowpos'], axis=1)
+    df = df.drop([f'{pre}_target_CDS', f'{pre}_codon_window', f'{pre}_residue_window', f'{pre}_target_windowpos'], axis=1)
 
     print(f'Guides annotated for {edit_from} to {edit_to}.')
     if save_df: 
