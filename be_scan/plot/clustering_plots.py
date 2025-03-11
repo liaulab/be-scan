@@ -75,7 +75,8 @@ def plot_PWES_heatmap(df_scaled, out_prefix, out_dir, gene_map,
                 end = np.where(df_scaled.index == end)[0]
 
             if len(start) != 1 or len(end) != 1 or start[0] >= end[0]: 
-                print(f'Error with domain {domain['name']} in gene {gene}')
+                domain_name = domain['name']
+                print(f'Error with domain {domain_name} in gene {gene}')
                 continue
 
             ax.axhspan(start[0], end[0], color=domain['color'], alpha=1/8)
@@ -417,8 +418,8 @@ def plot_PWES_heatmap_clusters(df_pwes_sorted, aas_dict, out_prefix, out_dir,
             end = np.where(df_pwes_sorted.index == end)[0]
 
             if start[0] >= end[0]: 
-                name_temp = bound['name']
-                print(f'Error with domain {name_temp}')
+                domain_name = bound['name']
+                print(f'Error with domain {domain_name}')
                 continue
 
             ax.axhspan(start[0], end[0], color=bound['color'], alpha=1/8)
