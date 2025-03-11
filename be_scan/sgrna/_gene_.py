@@ -10,8 +10,8 @@ import re
 import warnings
 
 from pathlib import Path
-# from be_scan.sgrna._genomic_ import complements, rev_complement
-from _genomic_ import complements, rev_complement
+from be_scan.sgrna._genomic_ import complements, rev_complement
+# from _genomic_ import complements, rev_complement
 
 # CLASS OBJECT NEEDED TO PARSE SPECIFIC INPUT INTRON/EXON .FASTA FORMAT #
 class GeneForCRISPR(): 

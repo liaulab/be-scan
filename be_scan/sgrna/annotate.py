@@ -9,10 +9,10 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-# from be_scan.sgrna._genomic_ import *
-# from be_scan.sgrna._guideRNA_ import *
-from _genomic_ import *
-from _guideRNA_ import *
+from be_scan.sgrna._genomic_ import *
+from be_scan.sgrna._guideRNA_ import *
+# from _genomic_ import *
+# from _guideRNA_ import *
 
 def annotate(guides_file, edit_from, edit_to, exons, ### ADD EXONS TO ALL DOCUMENTATION #
 

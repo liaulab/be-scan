@@ -13,10 +13,10 @@ import pandas as pd
 from pathlib import Path
 import re
 
-# from be_scan.sgrna._genomic_ import *
-# from be_scan.sgrna._guideRNA_ import *
-from _genomic_ import *
-from _guideRNA_ import *
+from be_scan.sgrna._genomic_ import *
+from be_scan.sgrna._guideRNA_ import *
+# from _genomic_ import *
+# from _guideRNA_ import *
 
 aa_list = ['R', 'H', 'K', # POS CHARGED
             'D', 'E', # NEG CHARGED
