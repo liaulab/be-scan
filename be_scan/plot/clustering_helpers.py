@@ -129,13 +129,15 @@ def calculate_pw_score(df_score, scores_col, tanh_a):
 
 ### HELPER FUNCTIONS: CALCULATE PWES-----------------------------------------------------
 
-def calculate_pwes(df_gauss, df_pws, list_aas):
+def calculate_pwes(df_gauss, df_pws, list_aas, pos_only):
     """
     Calculate PWES
     """
     df_pws.index, df_pws.columns = list_aas, list_aas
     # MAKE SURE THE INDEX OF df_pws AND df_gauss ARE THE SAME #
     df_pws = df_pws * df_gauss.loc[list_aas, list_aas].copy()
+
+    if pos_only: df_pws[df_pws < 0] = 0 ###
 
     # SORT BY AA #
     df_pws_sort = df_pws.sort_index(axis=0)
@@ -202,3 +204,16 @@ def shuffle_pwes(df_gauss, df_pws, list_aas, nrand=1000):
 
     print("Randomized PWES calculated.")
     return df_pws_sort, result_df
+
+def fillgaps(df_pwes_sorted, gene_bounds): 
+
+    labels_list = []
+    for key, (start, end) in gene_bounds.items(): 
+        labels = [f"{key}{i:04d}" for i in range(start, end + 1)]
+        labels_list += labels
+
+    # Create DataFrame with NaNs
+    full_matrix = pd.DataFrame(np.nan, index=labels_list, columns=labels_list)
+    assert all(item in labels_list for item in df_pwes_sorted.index.tolist())
+    full_matrix.update(df_pwes_sorted)
+    return full_matrix
