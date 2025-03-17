@@ -23,7 +23,7 @@ def pwes_clustering(
     domains_list={}, 
     tanh_a=1, gauss_std = 16, dend_t = 14, 
     aa_int=None, out_prefix=None, out_dir=None, 
-    show_plots=True, 
+    show_plots=True, pos_only=False, 
     ): 
     
     """
@@ -70,7 +70,7 @@ def pwes_clustering(
     del df_centroids, df_pwdist
 
     # CALCULATE PWES SCORE #
-    df_pwes_sorted, df_pwes_unsorted = calculate_pwes(df_gauss, df_pws_score, list_aas)
+    df_pwes_sorted, df_pwes_unsorted = calculate_pwes(df_gauss, df_pws_score, list_aas, pos_only)
 
     # CLUSTER PWES #
     if len(gene_map) == 0 or gene_col == 0: cluster_xcol = x_col
@@ -79,7 +79,7 @@ def pwes_clustering(
         df_pws = df_pwes_unsorted, df_score = df_scores, 
         list_aas=list_aas, t=dend_t, x_col=cluster_xcol)
     
-    # PLOT TRIANGLE MATRIX #
+    # PLOT TRIANGLE MATRIX NO GAPS #
     plot_PWES_heatmap(df_pwes_sorted, gene_map, out_prefix, out_dir, 
                       bounds=domains_list, show_plots=show_plots)
 
@@ -104,7 +104,7 @@ def pwes_clustering(
     #     plot_PWES_heatmap_clust(df_pwes_sorted, aas_dict, out_prefix, out_dir, gene_map, bounds=domains_list)
 
     # PLOT CLUSTERGRAM #
-    plot_clustermap(df_scaled=df_pwes_sorted, link=link, df_clusters=df_clus, 
+    plot_clustermap(df_scaled=df_pwes_unsorted, link=link, df_clusters=df_clus, 
                     out_prefix=out_prefix, out_dir=out_dir, color_list=color_map, show_plots=show_plots)
 
     # SAVE CLUSTERS #
