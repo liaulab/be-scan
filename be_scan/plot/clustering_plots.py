@@ -28,17 +28,43 @@ def find_bounds(df_scaled, gene, gene_map, domain):
             end -= 1
         end = np.where(df_scaled.index == end)[0]
 
+    # else: # FOR MULTIPLE GENE
+    #     # TRY START BOUND
+    #     start = gene_map[gene] + str(domain['start']).zfill(4)
+    #     while len(np.where(df_scaled.index == start)[0]) == 0 and start < df_scaled.index.max():
+    #         start = gene_map[gene] + str(int(start[1:])+1).zfill(4)
+    #     start = np.where(df_scaled.index == start)[0]
+    #     # TRY END BOUND
+    #     end = gene_map[gene] + str(domain['end']).zfill(4)
+    #     while len(np.where(df_scaled.index == end)[0]) == 0 and end > df_scaled.index.min():
+    #         end = gene_map[gene] + str(int(end[1:])-1).zfill(4)
+    #     end = np.where(df_scaled.index == end)[0]
+    # ### I think there is an issue with this start < df_scaled.index.max() comparison
+
     else: # FOR MULTIPLE GENE
         # TRY START BOUND
-        start = gene_map[gene] + str(domain['start']).zfill(4)
-        while len(np.where(df_scaled.index == start)[0]) == 0 and start < df_scaled.index.max():
-            start = gene_map[gene] + str(int(start[1:])+1).zfill(4)
-        start = np.where(df_scaled.index == start)[0]
+        start_val = domain['start']
+        max_val = 10000
+        found = False
+        while start_val <= max_val:
+            start_str = gene_map[gene] + str(start_val).zfill(4)
+            if start_str in df_scaled.index:
+                found = True
+                break
+            start_val += 1
+        start = np.where(df_scaled.index == start_str)[0] if found else []
+
         # TRY END BOUND
-        end = gene_map[gene] + str(domain['end']).zfill(4)
-        while len(np.where(df_scaled.index == end)[0]) == 0 and end > df_scaled.index.min():
-            end = gene_map[gene] + str(int(end[1:])-1).zfill(4)
-        end = np.where(df_scaled.index == end)[0]
+        end_val = domain['end']
+        min_val = 0  # or domain-specific lower bound
+        found = False
+        while end_val >= min_val:
+            end_str = gene_map[gene] + str(end_val).zfill(4)
+            if end_str in df_scaled.index:
+                found = True
+                break
+            end_val -= 1
+        end = np.where(df_scaled.index == end_str)[0] if found else []
 
     return start, end
 
