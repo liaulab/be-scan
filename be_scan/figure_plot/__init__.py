@@ -8,7 +8,7 @@ from be_scan.figure_plot.figure_jitterplot import jitterbox_kdeplot_figure
 from be_scan.figure_plot.figure_lollipop import lollipop_figure, lollipop_split_figure
 
 from be_scan.figure_plot.figure_clustered_heatmap_main import kmeans_clustered_heatmap
-from be_scan.figure_plot.figure_clustered_heatmap_helpers import kmeans_elbow, kmeans_pca_scatterplot
+from be_scan.figure_plot.figure_clustered_heatmap_helpers import kmeans_elbow, kmeans_pca_scatterplot, hex_to_rgb
 
 from be_scan.figure_plot.figure_loess_main import loess_smoothing
 from be_scan.figure_plot.figure_loess_helpers import interp_methods

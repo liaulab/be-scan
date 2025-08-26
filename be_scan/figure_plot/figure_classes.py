@@ -212,16 +212,38 @@ class ClusteredHeatmapStyleOpts:
 class PWESHeatmapStyleOpts:
     # HEATMAPS #
     heatmap_kws: Dict[str, Any] = field(default_factory=lambda:
-        {"square":True, "cmap":'RdBu_r', "v_min":-1, "v_max":1,
+        {"square":True, "cmap":'RdBu_r', "vmin":-1, "vmax":1,
          "xticklabels":False, "yticklabels":False, "cbar":False})
     clustered_heatmap_kws: Dict[str, Any] = field(default_factory=lambda:
-        {"v_min":-1, "v_max":1, "center":0, "xticklabels":False, "yticklabels":False})
+        {"vmin":-1, "vmax":1, "center":0, "cmap":'RdBu_r',
+         "xticklabels":False, "yticklabels":False})
     line_kws: Optional[Dict[str, Any]] = field(default_factory=lambda:
         {"color": "k", "ls": "--", "lw": 0.25})
+
+    swarmplot_kws: Optional[Dict[str, Any]] = field(default_factory=lambda:
+        {"size": 2, "linewidth": 0, "edgecolor":None})
+    jitterplot_kws: Optional[Dict[str, Any]] = field(default_factory=lambda:
+        {"alpha":0.5, "size":2, "linewidth":0, "edgecolor":None})
+    stripplot_kws: Optional[Dict[str, Any]] = field(default_factory=lambda:
+        {"alpha":0.5, "size":2, "linewidth":0, "edgecolor":None})
+
+    boxplot_kws: Optional[Dict[str, Any]] = field(default_factory=lambda:
+        {"fliersize":0, "linewidth":0.5, "width":0.5, })
+    boxprops: Dict[str, Any] = field(default_factory=lambda:
+        {'facecolor': 'none', 'edgecolor': "black"})
+    whiskerprops: Dict[str, Any] = field(default_factory=lambda:
+        {'color': 'black'})
+    capprops: Dict[str, Any] = field(default_factory=lambda:
+        {'color': 'black'})
+    medianprops: Dict[str, Any] = field(default_factory=lambda:
+        {'color': 'black'})
+
     spine_color: str = "black"
     spine_visible: bool = True
     spine_wspace: float = 0.2
     spine_hspace: float = 0.2
+    linewidth: float = 0.5
+    edgecolor: str = "black"
     # COLOR BAR #
     colorbar_normalize_kws: Dict[str, Any] = field(default_factory=lambda:
         {"vmin":-1, "vmax":1})
@@ -273,3 +295,4 @@ LEGEND = LegendOpts()
 OUTPUT = OutputOpts()
 
 arial_font6 = fm.FontProperties(fname=f'Arial.ttf', size=6)
+ 
