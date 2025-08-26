@@ -16,3 +16,4 @@ from be_scan.figure_plot.figure_loess_plot import loess_figure
 
 from be_scan.figure_plot.figure_pwes_main import pwes_clustering
 from be_scan.figure_plot.figure_pwes_plot import pwes_histogram, pwes_boxplots, pwes_scatterplots, pwes_heatmap, pwes_clustermap, pwes_heatmap_colorbar
+from be_scan.figure_plot.figure_pwes_helpers import fillgaps
