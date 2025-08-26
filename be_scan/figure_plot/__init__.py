@@ -1,0 +1,18 @@
+
+from be_scan.figure_plot.figure_classes import *
+
+from be_scan.figure_plot.figure_scatterplot import scatterplot_figure
+from be_scan.figure_plot.figure_correlation_scatterplot import correlation_scatterplot_figure
+from be_scan.figure_plot.figure_boxplot import boxplot_figure
+from be_scan.figure_plot.figure_jitterplot import jitterbox_kdeplot_figure
+from be_scan.figure_plot.figure_lollipop import lollipop_figure, lollipop_split_figure
+
+from be_scan.figure_plot.figure_clustered_heatmap_main import kmeans_clustered_heatmap
+from be_scan.figure_plot.figure_clustered_heatmap_helpers import kmeans_elbow, kmeans_pca_scatterplot
+
+from be_scan.figure_plot.figure_loess_main import loess_smoothing
+from be_scan.figure_plot.figure_loess_helpers import interp_methods
+from be_scan.figure_plot.figure_loess_plot import loess_figure
+
+from be_scan.figure_plot.figure_pwes_main import pwes_clustering
+from be_scan.figure_plot.figure_pwes_plot import pwes_histogram, pwes_boxplots, pwes_scatterplots, pwes_heatmap, pwes_clustermap, pwes_heatmap_colorbar
