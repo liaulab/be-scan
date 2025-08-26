@@ -1,9 +1,0 @@
-Number of reads processed: 15349
-Number of reads where key was not found: 936
-Number of perfect guide matches: 12764
-Number of nonperfect guide matches: 1649
-Number of undetected guides: 0
-Percentage of guides that matched perfectly: 88.6
-Percentage of undetected guides: 0.0
-List of undetected gRNAs: 
-Skew ratio of top 10% to bottom 10%: 1.4904214559386972
