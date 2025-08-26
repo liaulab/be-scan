@@ -2,6 +2,10 @@
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+analysis/__pycache__/
+figure_plot/__pycache__/
+sgrna/__pycache__/
+plot/__pycache__/
 *.py[cod]
 *$py.class
 *.pyc
