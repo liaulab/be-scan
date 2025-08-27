@@ -35,6 +35,7 @@ def pwes_histogram(
     plt.title("Number of Guides in Clusters", fontproperties=arial_font6)
 
     out_path = Path(f"{str(output.path)}-cluster_histogram.{output.out_type}")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(
         out_path, dpi=output.dpi,
         format=output.out_type, transparent=output.transparent,
@@ -85,6 +86,7 @@ def pwes_boxplots(
     plt.title('Clusters Boxplot', fontproperties=arial_font6)
 
     out_path = Path(f"{str(output.path)}-cluster_swarm.{output.out_type}")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(out_path, dpi=output.dpi,
                 format=output.out_type, transparent=output.transparent,
                 bbox_inches="tight")
@@ -126,6 +128,7 @@ def pwes_boxplots(
     plt.title('Clusters Boxplot', fontproperties=arial_font6)
 
     out_path = Path(f"{str(output.path)}-cluster_swarm_boxplot.{output.out_type}")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(out_path, dpi=output.dpi,
                 format=output.out_type, transparent=output.transparent,
                 bbox_inches="tight")
@@ -158,6 +161,7 @@ def pwes_boxplots(
     plt.title('Clusters Boxplot', fontproperties=arial_font6)
 
     out_path = Path(f"{str(output.path)}-cluster_strip.{output.out_type}")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(out_path, dpi=output.dpi,
                 format=output.out_type, transparent=output.transparent,
                 bbox_inches="tight")
@@ -200,6 +204,7 @@ def pwes_boxplots(
     plt.title('Clusters Boxplot', fontproperties=arial_font6)
 
     out_path = Path(f"{str(output.path)}-cluster_strip_boxplot.{output.out_type}")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(out_path, dpi=output.dpi,
                 format=output.out_type, transparent=output.transparent,
                 bbox_inches="tight")

@@ -149,8 +149,11 @@ def scatterplot_figure(
             leg_ax.axis("off")
             leg_ax.legend(handles=handles, labels=labels, loc="center", ncol=legend.ncol, frameon=legend.frameon, title=legend.title)
             Path(legend.path).parent.mkdir(parents=True, exist_ok=True)
-            path = Path(f"{str(legend.path)}.{output.out_type}")
-            leg_fig.savefig(path, dpi=output.dpi, transparent=output.transparent, format=output.out_type)
+            out_path = Path(f"{str(legend.path)}.{output.out_type}")
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            leg_fig.savefig(out_path, format=output.out_type, 
+                            dpi=output.dpi, transparent=output.transparent
+                            )
             plt.close(leg_fig)
 
         if legend.loc:

@@ -70,6 +70,7 @@ def pwes_clustering(
         pickle.dump(aas_dict, file)
 
     # SAVE DATAFRAMES #
+    f"{out_dir}{out_prefix}_df_gauss.csv".parent.mkdir(parents=True, exist_ok=True)
     df_gauss.to_csv(f"{out_dir}{out_prefix}_df_gauss.csv")
     df_pwes_sorted.to_csv(f"{out_dir}{out_prefix}_df_pwes_sorted.csv")
     df_pwes_unsorted.to_csv(f"{out_dir}{out_prefix}_df_pwes_unsorted.csv")

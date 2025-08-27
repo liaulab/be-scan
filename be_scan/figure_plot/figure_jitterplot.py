@@ -60,6 +60,7 @@ def jitterbox_kdeplot_figure(
         plt.legend([],[], frameon=False)
 
         out_path = Path(f"{str(output.path)}_Boxplot.{output.out_type}")
+        out_path.parent.mkdir(parents=True, exist_ok=True)
         plt.savefig(out_path, dpi=output.dpi,
                     format=output.out_type, transparent=output.transparent,
                     bbox_inches="tight")
@@ -94,6 +95,7 @@ def jitterbox_kdeplot_figure(
         legend = ax.legend(prop=arial_font6, frameon=False)
 
         out_path = Path(f"{str(output.path)}_Density.{output.out_type}")
+        out_path.parent.mkdir(parents=True, exist_ok=True)
         plt.savefig(out_path, dpi=output.dpi,
                     format=output.out_type, transparent=output.transparent,
                     bbox_inches="tight")

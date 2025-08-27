@@ -110,6 +110,7 @@ def correlation_scatterplot_figure(
         fig_legend.legend(handles=legend_elements, loc='center', frameon=False)
         fig_legend.tight_layout()
         legend_out = f"{str(output.path)}-legend.{output.out_type}"
+        legend_out.parent.mkdir(parents=True, exist_ok=True)
         fig_legend.savefig(legend_out, format=output.out_type,
                            dpi=output.dpi, transparent=output.transparent)
     plt.close(fig_legend)

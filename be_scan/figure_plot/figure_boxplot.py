@@ -44,6 +44,7 @@ def boxplot_figure(
         label.set_fontproperties(arial_font6)
 
     out_path = Path(f"{str(output.path)}.{output.out_type}")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(out_path, dpi=output.dpi,
                 format=output.out_type, transparent=output.transparent,
                 bbox_inches="tight")
