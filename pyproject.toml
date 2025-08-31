@@ -6,10 +6,12 @@ build-backend = "hatchling.build"
 name = "be_scan"
 version = "0.0.2"
 authors = [
-  { name="Calvin Hu", email="xiaohu@g.harvard.edu" },
+  { name="Calvin XY Hu", email="xiaohu@g.harvard.edu" },
   { name="Simon P Shen", email="simonshen@fas.harvard.edu" },
+  { name="Christine Lee" },
+  { name="Brian B Liau", email="liau@chemistry.harvard.edu" },
 ]
-description = "A package for CRISPR screening computational tools"
+description = "A package for CRISPR base editor screening computational tools"
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
