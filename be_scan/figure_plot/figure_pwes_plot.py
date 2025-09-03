@@ -460,3 +460,32 @@ def pwes_heatmap_colorbar(
     # SHOW #
     if output.show: plt.show()
     plt.close(fig)
+
+
+def generate_pymol_script(
+    output_filename,
+    pdb_filename,
+    residue_dict,
+    ):
+
+    """
+    Generates a PyMOL script to display selected residues as separate objects.
+    """
+
+    with open(output_filename, 'w') as pymol_script:
+        pymol_script.write(f"load {pdb_filename}\n")
+        pymol_script.write(f"show cartoon\n")
+        pymol_script.write(f"color white\n")
+        pymol_script.write(f"zoom\n")
+
+        for i, (key, vals) in enumerate(residue_dict.items()):
+            # Must be one continuous character #
+            group_name = f"Cluster{key}"
+            # res has a format of A0123 #
+            selection_str = " or ".join([f"resi {str(int(res[1:]))} and chain {res[0]} and name CA" for res in vals])
+
+            pymol_script.write(f"select {selection_str}\n")
+            pymol_script.write(f"create {group_name}, sele\n")
+            pymol_script.write(f"show spheres, {group_name}\n")
+            pymol_script.write(f"color red, {group_name}\n")
+            pymol_script.write(f"disable {group_name}\n")
