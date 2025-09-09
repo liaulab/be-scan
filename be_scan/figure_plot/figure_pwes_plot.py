@@ -461,11 +461,22 @@ def pwes_heatmap_colorbar(
     if output.show: plt.show()
     plt.close(fig)
 
+# PWES Cluster Mapping #
+
+def tuple_to_hex(rgb_tuple):
+    if not (isinstance(rgb_tuple, tuple) and len(rgb_tuple) == 3 and
+            all(isinstance(val, float) and 0 <= val <= 1 for val in rgb_tuple)):
+        return None
+
+    r, g, b = rgb_tuple
+    r, g, b = int(r * 255), int(g * 255), int(b * 255)
+    return f"{r:02x}{g:02x}{b:02x}".upper()
 
 def generate_pymol_script(
     output_filename,
     pdb_filename,
     residue_dict,
+    colors, 
     ):
 
     """
@@ -479,13 +490,17 @@ def generate_pymol_script(
         pymol_script.write(f"zoom\n")
 
         for i, (key, vals) in enumerate(residue_dict.items()):
-            # Must be one continuous character #
             group_name = f"Cluster{key}"
-            # res has a format of A0123 #
+            # res has a format of ('A', 123) #
             selection_str = " or ".join([f"resi {str(int(res[1:]))} and chain {res[0]} and name CA" for res in vals])
 
+            color = colors[i]
+            color_hex = tuple_to_hex(color)
+            color_str = f'0x{color_hex}'
+            print(color_str)
+            
             pymol_script.write(f"select {selection_str}\n")
             pymol_script.write(f"create {group_name}, sele\n")
             pymol_script.write(f"show spheres, {group_name}\n")
-            pymol_script.write(f"color red, {group_name}\n")
+            pymol_script.write(f"color {color_str}, {group_name}\n")
             pymol_script.write(f"disable {group_name}\n")
