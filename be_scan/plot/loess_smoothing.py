@@ -10,7 +10,6 @@ Date: 240313
 
 import numpy as np
 import pandas as pd
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 from pathlib import Path
 import random
@@ -19,314 +18,112 @@ import random
 import scipy.interpolate as interp
 from statsmodels.nonparametric.smoothers_lowess import lowess
 import statsmodels.stats.multitest as smm
+from matplotlib.collections import LineCollection
 
 interp_methods = ['linear', 'nearest', 'nearest-up', 'zero', 
                   'slinear', 'quadratic', 'cubic', 'previous', 'next']
 
 def loess_smoothing(
-    df_filepath, 
-    x_column, comparisons, span, 
-
-    interp_method='quadratic', n_repeats=1000, 
-    savefig=True, show=True, out_name='loesssmoothing', out_type='png', out_dir='', return_df=True, # output params
-    domains=[], domains_alpha=0.25, domains_color='lightblue', # draw domains
-
-    subplots_kws={}, 
-    loess_kws={'missing':'raise', 'return_sorted':False, 'it':0}, 
-    interp_kws={'fill_value':'extrapolate'}, 
-    smm_multipletests_kws={'alpha':0.05, 'method':'fdr_bh', 'is_sorted':False, 'returnsorted':False}, 
-    ): 
-
-    """[Summary]
-    This function calculates the smoothed arbitrary values for each value 
-    in your x_out for the enrichment profile of your POI
-    
-    Parameters
-    ------------
-    df_filepath : str, required
-        filepath to .csv data
-    x_column : str, required
-        column of .csv, typically amino acid position
-    comparisons : list of str, required
-        list of comparisons that correspond to columns of data
-    span : float, required (recommended range to start is ~0.05-0.10)
-        hyperparameter for the span that you want to smooth over, requires optimization
-
-    interp_method: str, optional, defaults to 'quadratic'
-        method should 'statsmodels' or on be one of 
-        'linear', 'nearest', 'nearest-up', 'zero', 
-        'slinear', 'quadratic', 'cubic', 'previous', or 'next'
-        from https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
-    n_repeats: int, optional, defaults to 10,000
-        the number of times you want to shuffle
-        1000x is recommended for final data
-
-    savefig : bool, optional, defaults to True
-        whether or not to save the figure
-    show : bool, optional, defaults to True
-        whether or not to show the plot
-    out_name : str, optional, defaults to 'loess_smoothed'
-        name of figure output
-    out_type : str, optional, defaults to 'pdf'
-        file type of figure output
-    out_directory : str, optional, defaults to ''
-        path to output directory
-    return_df: bool, optional, defaults to True
-        whether or not to return the dataframes
-
-    domains : dict, optional, defaults to {}
-        a list of start dicts of start and end for each domain annotation ie [{'start': 1, 'end': 2}, ]
-    domains_alpha : float, optional, defaults to 0.25
-        The level of transparency for the domains
-    domains_color : str, optional, defaults to 'lightblue'
-        The color for the domains
-
-    subplots_kws : dict, optional, defaults to {}
-`       input params for plt.subplots
-        https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
-    loess_kws: dict, optional, defaults to
-        {'missing':'raise', 'return_sorted':False, 'it':0}
-        input params for statsmodels.nonparametric.smoothers_lowess.lowess()
-        https://www.statsmodels.org/devel/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html
-    interp_kws: dict, optional, defaults to
-        {'fill_value':'extrapolate'}
-        input params for scipy.interpolate.interp1d()
-        https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
-    smm_multipletests_kws: dict, optional, defaults to 
-        {'alpha':0.05, 'method':'fdr_bh', 'is_sorted':False, 'returnsorted':False}
-        input params for smm.multipletests()
-        https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html
-
-    Returns
-    ------------
-    """
-    df_filepath = Path(df_filepath)
-    df_data = pd.read_csv(df_filepath)
-    
-    # check variable inputs
+    df, x_column, comparisons, span, 
+    interp_method='quadratic', n_repeats=1000,
+    loess_kws=None, interp_kws=None, smm_multipletests_kws=None,
+):
     assert interp_method in interp_methods
 
-    # check all column names are valid, and filter down data
-    assert x_column in df_data.columns, "check param: x_column"
-    for comp in comparisons: 
-        assert comp in df_data.columns, f"check param: comparisons {comp}"
+    # OR OPERATOR ASSIGNS VALUE IF NOT NONE, ELSE ASSIGNS A DEFAULT #
+    loess_kws = loess_kws or {'missing':'raise', 'return_sorted':False, 'it':0}
+    interp_kws = interp_kws or {'fill_value':'extrapolate'}
+    smm_multipletests_kws = smm_multipletests_kws or {
+        'alpha': 0.05, 'method': 'fdr_bh', 'is_sorted': False, 'returnsorted': False
+    }
 
-    df_filtered = df_data[[x_column] + comparisons]
+    # FILTER AND FLOOR DATA #
+    df_filtered = df[[x_column] + comparisons].copy()
     df_filtered = df_filtered[df_filtered[x_column] >= 0].sort_values(by=x_column)
-    result = {}
+    df_filtered[comparisons] = df_filtered[comparisons].apply(np.floor)
 
-    mpl.rcParams.update({'font.size': 10})
-    fig, axes = plt.subplots(nrows=len(comparisons), ncols=2, 
-                             figsize=(25, 2.5*len(comparisons)), **subplots_kws)
-    if len(comparisons) == 1: axes = np.atleast_2d(axes)
-
-    # process columns from dataframe and input into loess_v3
-    for i, comp in enumerate(comparisons): 
+    results = {}
+    for comp in comparisons:
         x_obs, y_obs = df_filtered[x_column], df_filtered[comp]
+        x_min, x_max = x_obs.min(), x_obs.max()
+        span_new = span / (x_max - x_min) if span > 1 else span
 
-        # ADJUSTING SPAN #
-        x_min, x_max = df_filtered[x_column].min(), df_filtered[x_column].max()
-        if span > 1: 
-            assert span < (x_max-x_min), 'Please enter a span less than the length of your protein.'
-            span_new = span / (x_max-x_min) ### assumming continuous scanning
+        df_loess = loess_v3(x_obs, y_obs, span=span_new,
+                            interp_method=interp_method,
+                            loess_kws=loess_kws, interp_kws=interp_kws)
+        df_rand = randomize(x_obs, y_obs, span=span_new,
+                            n_repeats=n_repeats,
+                            interp_method=interp_method, random_seed=0)
+        df_pvals = calculate_sig(df_loess, df_rand,
+                                 n_repeats=n_repeats,
+                                 smm_multipletests_kws=smm_multipletests_kws)
 
-        # LOESS SMOOTHES ACROSS LENGTH OF PROTEIN FOR SIGNAL #
-        df_loess = loess_v3(x_obs=x_obs, y_obs=y_obs, span=span_new, 
-                            interp_method=interp_method, loess_kws=loess_kws, interp_kws=interp_kws, )
-        # RANDOMIZES TO OBTAIN A BACKGROUND SIGNAL #
-        df_rand = randomize(x_obs=x_obs, y_obs=y_obs, span=span_new, 
-                            n_repeats=n_repeats, interp_method=interp_method, )
-        # COMPARES SIGNAL AGAINST BACKGROUND SIGNAL #
-        df_pvals = calculate_sig(df_loess=df_loess, df_rand=df_rand, 
-                                 n_repeats=n_repeats, smm_multipletests_kws=smm_multipletests_kws, )
+        results[comp] = {
+            'loess': df_loess, 'rand': df_rand, 'pvals': df_pvals
+        }
+    return results
 
-        # P VALUE PLOT ON LEFT #
+def plot_loess(
+    results, gene, 
+    domains=[], domains_alpha=0.25, 
+    show=True, savefig=False, out_name='loesssmoothing', out_type='png', out_dir='',
+):
+    for comp, res in results.items():
+        df_pvals = res['pvals']
+        df_loess = res['loess']
+
+        # --- P-VALUE PLOT --- #
+        fig1, ax1 = plt.subplots(figsize=(6, 4))
         df_plotting = df_pvals[['corr_pval']].copy()
         df_plotting['-log10'] = np.log10(df_plotting['corr_pval'] + 10**-4) * -1
-        axes[i, 0].plot(df_plotting.index, df_plotting['-log10'], color='steelblue', markersize=3)
-        axes[i, 0].axhline(y=np.log10(0.05 + 10**-4)*-1,ls='--', c='k', linewidth=1)
-        axes[i, 0].set_title(comp)
+        # X Y VALUES #
+        x, y = df_plotting.index.to_numpy(), df_plotting['-log10'].to_numpy()
+        x, y = increase_resolution(x), increase_resolution(y)
+        threshold = np.log10(0.05 + 10**-4) * -1
+        # PLOT ABOVE AND BELOW DIFFERENT COLORS #
+        points = np.array([x, y]).T.reshape(-1, 1, 2)
+        segments = np.concatenate([points[:-1], points[1:]], axis=1)
+        colors = ['red' if (yi > threshold and yj > threshold) else 'lightgray' for yi, yj in zip(y[:-1], y[1:])]
+        line = LineCollection(segments, colors=colors, linewidths=1)
+        ax1.add_collection(line)
+        # PLOT SETTINGS #
+        ax1.axhline(y=threshold, ls='--', c='k', linewidth=1)
+        ax1.set_title(f'{gene} Linear Clustering')
+        ax1.set_ylabel('-log 10 (adjusted P value)')
+        ax1.spines['top'].set_visible(False)
+        ax1.spines['right'].set_visible(False)
+        ax1.spines['bottom'].set_visible(False)
+        plt.xticks([])
+        # DOMAINS #
         for d in domains:
-            axes[i, 0].axvspan(d['start'], d['end'], alpha=domains_alpha, facecolor=domains_color)
-        axes[i, 0].spines['top'].set_visible(False)
-        axes[i, 0].spines['right'].set_visible(False)
-        axes[i, 0].spines['bottom'].set_visible(False)
-        axes[i, 0].axhline(y=0, c='black')
+            ax1.axvspan(d['start'], d['end'], alpha=domains_alpha, facecolor=d['color'])
+        # SAVE AND CLOSE #
+        if savefig:
+            plt.savefig(Path(out_dir) / f'{out_name}_{comp}_pvals.{out_type}', dpi=300)
+        if show: plt.show()
+        plt.close()
 
-        output_clusters(comp, df_plotting.index, df_plotting['-log10']) # ANYTHING ABOVE CUTOFF #
-
-        # LOESS SMOOTHED PLOT ON RIGHT #
+        # --- LOESS SIGNAL PLOT --- #
+        fig2, ax2 = plt.subplots(figsize=(6, 4))
         df_plotting = df_loess[['y_loess']].copy()
-        axes[i, 1].plot(df_plotting.index, df_plotting['y_loess'], color='steelblue', markersize=3)
-        axes[i, 1].set_title(comp)
+        # PLOT #
+        ax2.plot(df_plotting.index, df_plotting['y_loess'], color='gray', markersize=2)
+        # PLOT SETTINGS #
+        ax2.set_title(f'{gene} Loess Smoothed')
+        ax2.set_ylabel('sgRNA Score')
+        ax2.spines['top'].set_visible(False)
+        ax2.spines['right'].set_visible(False)
+        ax2.spines['bottom'].set_visible(False)
+        ax2.axhline(y=0, ls='--', c='k', linewidth=1)
+        plt.xticks([])
+        # DOMAINS #
         for d in domains:
-            axes[i, 1].axvspan(d['start'], d['end'], alpha=domains_alpha, facecolor=domains_color)
-        axes[i, 1].spines['top'].set_visible(False)
-        axes[i, 1].spines['right'].set_visible(False)
-        axes[i, 1].spines['bottom'].set_visible(False)
-        axes[i, 1].axhline(y=0, c='black')
-
-        if return_df: result[comp] = {'loess':df_loess, 'rand':df_rand, 'pvals':df_pvals}
-
-    plt.tight_layout() # ADJUST DIMENSIONS #
-    plt.subplots_adjust(wspace=0.1, hspace=0.2)
-    # Save file
-    outpath = Path(out_dir)
-    if savefig: 
-        out = f'{out_name}.{out_type}'
-        plt.savefig(outpath / out, format=out_type, dpi=300)
-    if show: plt.show()
-    plt.close()
-
-    if return_df: return result
-    else: return None
-
-def loess_range(
-    df_filepath, 
-    x_column, comparison, spans, 
-
-    interp_method='quadratic', n_repeats=1000, 
-    savefig=True, show=True, out_name='loesssmoothing', out_type='png', out_dir='', return_df=True, # output params
-    domains=[], domains_alpha=0.25, domains_color='lightblue', # draw domains
-
-    subplots_kws={}, 
-    loess_kws={'missing':'raise', 'return_sorted':False, 'it':0}, 
-    interp_kws={'fill_value':'extrapolate'}, 
-    smm_multipletests_kws={'alpha':0.05, 'method':'fdr_bh', 'is_sorted':False, 'returnsorted':False}, 
-): 
-
-    """[Summary]
-    This function calculates the smoothed arbitrary values for each value 
-    in your x_out for the enrichment profile of your POI
-    
-    Parameters
-    ------------
-    df_filepath : str, required
-        filepath to .csv data
-    x_column : str, required
-        column of .csv, typically amino acid position
-    comparison : str, required
-        comparison that correspond to columns of data
-    spans : list of floats or ints, required (recommended range to start is ~0.05-0.10 or 10-30)
-        hyperparameters for the spans that you want to smooth over, requires optimization
-
-    interp_method: str, optional, defaults to 'quadratic'
-        method should 'statsmodels' or on be one of 
-        'linear', 'nearest', 'nearest-up', 'zero', 
-        'slinear', 'quadratic', 'cubic', 'previous', or 'next'
-        from https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
-    n_repeats: int, optional, defaults to 10,000
-        the number of times you want to shuffle
-        1000x is recommended for final data
-
-    savefig : bool, optional, defaults to True
-        whether or not to save the figure
-    show : bool, optional, defaults to True
-        whether or not to show the plot
-    out_name : str, optional, defaults to 'loess_smoothed'
-        name of figure output
-    out_type : str, optional, defaults to 'pdf'
-        file type of figure output
-    out_directory : str, optional, defaults to ''
-        path to output directory
-    return_df: bool, optional, defaults to True
-        whether or not to return the dataframes
-
-    domains : dict, optional, defaults to {}
-        a list of start dicts of start and end for each domain annotation ie [{'start': 1, 'end': 2}, ]
-    domains_alpha : float, optional, defaults to 0.25
-        The level of transparency for the domains
-    domains_color : str, optional, defaults to 'lightblue'
-        The color for the domains
-
-    subplots_kws : dict, optional, defaults to {}
-`       input params for plt.subplots
-        https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
-    loess_kws: dict, optional, defaults to
-        {'missing':'raise', 'return_sorted':False, 'it':0}
-        input params for statsmodels.nonparametric.smoothers_lowess.lowess()
-        https://www.statsmodels.org/devel/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html
-    interp_kws: dict, optional, defaults to
-        {'fill_value':'extrapolate'}
-        input params for scipy.interpolate.interp1d()
-        https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
-    smm_multipletests_kws: dict, optional, defaults to 
-        {'alpha':0.05, 'method':'fdr_bh', 'is_sorted':False, 'returnsorted':False}
-        input params for smm.multipletests()
-        https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html
-
-    Returns
-    ------------
-    """
-
-    df_filepath = Path(df_filepath)
-    df_data = pd.read_csv(df_filepath)
-    
-    # check variable inputs
-    assert interp_method in interp_methods
-
-    # check all column names are valid, and filter down data
-    assert x_column in df_data.columns, "check param: x_column"
-    assert comparison in df_data.columns, f"check param: comparisons {comparison}"
-
-    df_filtered = df_data[[x_column] + [comparison]]
-    df_filtered = df_filtered[df_filtered[x_column] >= 0].sort_values(by=x_column)
-    result = {}
-
-    mpl.rcParams.update({'font.size': 10})
-    fig, axes = plt.subplots(nrows=len(spans), ncols=1, 
-                             figsize=(15, 2.5*len(spans)), **subplots_kws)
-    if len(spans) == 1: axes = np.atleast_2d(axes)
-
-    # process columns from dataframe and input into loess_v3
-    for i, (span, ax) in enumerate(zip(spans, axes)): 
-        x_obs, y_obs = df_filtered[x_column], df_filtered[comparison]
-
-        # ADJUSTING SPAN #
-        x_min, x_max = df_filtered[x_column].min(), df_filtered[x_column].max()
-        if span > 1: 
-            assert span < (x_max-x_min), 'Please enter a span less than the length of your protein.'
-            span_new = span / (x_max-x_min) ### assumming continuous scanning
-
-        # LOESS SMOOTHES ACROSS LENGTH OF PROTEIN FOR SIGNAL #
-        df_loess = loess_v3(x_obs=x_obs, y_obs=y_obs, span=span_new, 
-                            interp_method=interp_method, loess_kws=loess_kws, interp_kws=interp_kws, )
-        # RANDOMIZES TO OBTAIN A BACKGROUND SIGNAL #
-        df_rand = randomize(x_obs=x_obs, y_obs=y_obs, span=span_new, 
-                            n_repeats=n_repeats, interp_method=interp_method, )
-        # COMPARES SIGNAL AGAINST BACKGROUND SIGNAL #
-        df_pvals = calculate_sig(df_loess=df_loess, df_rand=df_rand, 
-                                 n_repeats=n_repeats, smm_multipletests_kws=smm_multipletests_kws, )
-
-        # P VALUE PLOT ON LEFT #
-        df_plotting = df_pvals[['corr_pval']].copy()
-        df_plotting['-log10'] = np.log10(df_plotting['corr_pval'] + 10**-4) * -1
-        ax.plot(df_plotting.index, df_plotting['-log10'], color='steelblue', markersize=3)
-        ax.axhline(y=np.log10(0.05 + 10**-4)*-1,ls='--', c='k', linewidth=1)
-        ax.set_title(span)
-        for d in domains:
-            ax.axvspan(d['start'], d['end'], alpha=domains_alpha, facecolor=domains_color)
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        ax.spines['bottom'].set_visible(False)
-        ax.axhline(y=0, c='black')
-
-        output_clusters(comparison, df_plotting.index, df_plotting['-log10']) # ANYTHING ABOVE CUTOFF #
-
-        if return_df: result[span] = {'loess':df_loess, 'rand':df_rand, 'pvals':df_pvals}
-
-    plt.tight_layout() # ADJUST DIMENSIONS #
-    plt.subplots_adjust(wspace=0.1, hspace=0.2)
-    # Save file
-    outpath = Path(out_dir)
-    if savefig: 
-        out = f'{out_name}.{out_type}'
-        plt.savefig(outpath / out, format=out_type, dpi=300)
-    if show: plt.show()
-    plt.close()
-
-    if return_df: return result
-    else: return None
+            ax2.axvspan(d['start'], d['end'], alpha=domains_alpha, facecolor=d['color'])
+        # SAVE AND CLOSE #
+        if savefig:
+            plt.savefig(Path(out_dir) / f'{out_name}_{comp}_loess.{out_type}', dpi=300)
+        if show: plt.show()
+        plt.close()
 
 # HELPER FUNCTIONS #
 
@@ -443,6 +240,17 @@ def output_clusters(name, xvals, yvals):
         ranges = [f"{clusters_x[start]}-{clusters_x[end-1]}" if start != end-1 else f"{clusters_x[start]}" 
                 for start, end in zip(breaks[:-1], breaks[1:])]
         print(name, ':', ranges)
+
+def increase_resolution(x, times=5): 
+    for _ in range(times): 
+        new_x = []
+        for i in range(len(x) - 1):
+            new_x.append(x[i])
+            avg = (x[i] + x[i+1]) / 2
+            new_x.append(avg)
+        new_x.append(x[-1])
+        x = new_x
+    return x
 
 # loess_smoothing(
 #     df_filepath='tests/test_data/plot/NZL10196_v9_comparisons.csv', 

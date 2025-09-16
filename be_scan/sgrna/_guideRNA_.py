@@ -6,9 +6,11 @@ Date: 231102
 """
 
 import warnings
+import re
 
 from itertools import product
 from be_scan.sgrna._genomic_ import complements, rev_complement, DNA_to_AA
+# from _genomic_ import complements, rev_complement, DNA_to_AA
 
 # FUNCTIONS FOR generate_library #
 
@@ -57,9 +59,7 @@ def calc_target(row, window, col_names):
     else: 
         start = frame+1
         dna = rev_complement(complements, guide[start:start+(num_aa*3)])
-
-    ### this does not catch when a codon spans an exon/intron junction and can be edited
-    return dna, DNA_to_AA(dna, upper=False) 
+    return dna, DNA_to_AA(dna, upper=False)
     
 def calc_coding_window(row, window, col_names): 
     """
@@ -68,14 +68,19 @@ def calc_coding_window(row, window, col_names):
     frame_col, strand_col, gene_pos_col, seq_col, window_start_col, window_end_col = col_names
 
     if row[window_start_col] == -1 and row[window_end_col] == -1: # NO CODING DNA IN WINDOW
-        return None
+        return None, None
+
+    frame = row[frame_col]
+    if row[strand_col] == 'sense': start = (-1*frame)+3
+    else:                          start = frame+1
 
     # RETURN EVEN IF THERE IS PARTIAL CODING DNA IN WINDOW #
     if row[strand_col] == 'sense': 
-        return row[seq_col][window[0]-1:window[1]]
-    return rev_complement(complements, row[seq_col][window[0]-1:window[1]])
+        return row[seq_col][window[0]-1:window[1]], int(window[0]-start-1)
+    return rev_complement(complements, row[seq_col][window[0]-1:window[1]]), int(start-window[0])
 
-def annotate_muts(row, edit, amino_acid_seq, col_names, pre, window): 
+
+def annotate_muts(row, edit, amino_acid_seq, col_names, pre, window, exons): 
     """
     Come up with list of annotations (ie F877L;F877P) for each guide
     """
@@ -88,28 +93,44 @@ def annotate_muts(row, edit, amino_acid_seq, col_names, pre, window):
     frame, dir, pos, seq = row[frame_col], row[strand_col], row[gene_pos_col], row[seq_col]
     window1_pos, window2_pos = row[window_start_col], row[window_end_col]
     dna_window, dna, aa = row[f'{pre}_target_CDS'], row[f'{pre}_codon_window'], row[f'{pre}_residue_window']
+    substitute_pos = int(row[f'{pre}_target_windowpos'])
 
     # USE POS TO CALCULATE WHICH AMINO ACID #
-    if dir == 'sense' and pos != -1:               start = int((pos+(-1*frame))/3)+2 # index at 1
-    elif dir == 'antisense' and pos != -1:         start = int((pos+(-1*frame)+1)/3)-2
-    elif dir == 'sense' and window1_pos != -1:     start = int((window1_pos-(window[0]+1)+(-1*frame))/3)+2
-    elif dir == 'antisense' and window1_pos != -1: start = int((window1_pos+(window[0]-1)+(-1*frame)+1)/3)-2
-    elif dir == 'sense' and window2_pos != -1:     start = int((window2_pos-(window[1]+1)+(-1*frame))/3)+2
-    elif dir == 'antisense' and window2_pos != -1: start = int((window2_pos+(window[1]-1)+(-1*frame)+1)/3)-2
+    if dir == 'sense' and pos != -1:               start = int((pos-frame)/3)+2
+    elif dir == 'antisense' and pos != -1:         start = int((pos-frame+1)//3)-2
+    elif dir == 'sense' and window1_pos != -1:
+        if window1_pos < 3:                        start = 1
+        else:                                      start = int((window1_pos-(window[0]+1)-frame)/3)+3
+    elif dir == 'antisense' and window1_pos != -1: start = int((window1_pos+(window[0]-1)-frame+1)/3)-2
+    elif dir == 'sense' and window2_pos != -1: 
+        if window2_pos == 0:                       start = -1
+        elif window2_pos <= 3:                     start = 0
+        else:                                      start = int((window2_pos-(window[1]+1)-frame)/3)+3
+    elif dir == 'antisense' and window2_pos != -1: start = int((window2_pos+(window[1]-1)-frame+1)/3)-2
 
     # LIST OF MUTATIONS FOR EACH ROW #
     mutation_details = []
     for m in mutation_combos(dna_window, edit, dir): 
         # COMPARE MUTATED DNA/AA WITH OLD DNA/AA #
-        new_dna = dna.replace(dna_window, m)
+        dna_temp, aa_temp = dna, aa
+        # REPLACE CAUSED AN ISSUE FOR REPEATED AMINO ACIDS AND REGIONS #
+        if dir == 'sense': new_dna = dna[:substitute_pos] + m + dna[substitute_pos+len(dna_window):]
+        else: new_dna = dna[:len(dna)+substitute_pos+1-len(dna_window)] + m + dna[len(dna)+substitute_pos+1:]
         new_aa = DNA_to_AA(new_dna, upper=False)
-        # FORMAT MUTATIONS AS LETTER-NUMBER-LETTER #
-        if dna != new_dna: 
-            mutations = format_mutation(aa, new_aa, start, amino_acid_seq, dna, new_dna, seq)
-            mutation_details.append(mutations)
-    return ';'.join(list(set(mutation_details)))
 
-def annotate_dual_muts(row, edit, amino_acid_seq, col_names, pre, window): 
+        if window_on_boundary(new_dna): 
+            dna_temp = fill_in_dna_exons(dna_temp, row, exons)
+            aa_temp = DNA_to_AA(dna_temp, upper=False)
+            new_dna = fill_in_dna_exons(new_dna, row, exons)
+            new_aa = DNA_to_AA(new_dna, upper=False)
+
+        # FORMAT MUTATIONS AS LETTER-NUMBER-LETTER #
+        if dna_temp != new_dna: 
+            mutations = format_mutation(aa_temp, new_aa, start, amino_acid_seq, dna_temp, new_dna, seq)
+            mutation_details.append(mutations)
+    return ';'.join(set(filter(None, mutation_details)))
+
+def annotate_dual_muts(row, edit, amino_acid_seq, col_names, pre, window, exons): 
     """
     Come up with list of annotations (ie F877L;F877P) for each guide for a dual editor
     """
@@ -122,14 +143,20 @@ def annotate_dual_muts(row, edit, amino_acid_seq, col_names, pre, window):
     frame, dir, pos, seq = row[frame_col], row[strand_col], row[gene_pos_col], row[seq_col]
     window1_pos, window2_pos = row[window_start_col], row[window_end_col]
     dna_window, dna, aa = row[f'{pre}_target_CDS'], row[f'{pre}_codon_window'], row[f'{pre}_residue_window']
+    substitute_pos = int(row[f'{pre}_target_windowpos'])
 
     # USE POS TO CALCULATE WHICH AMINO ACID #
-    if dir == 'sense' and pos != -1:               start = int((pos+(-1*frame))/3)+2 # index at 1
-    elif dir == 'antisense' and pos != -1:         start = int((pos+(-1*frame)+1)/3)-2
-    elif dir == 'sense' and window1_pos != -1:     start = int((window1_pos-(window[0]+1)+(-1*frame))/3)+2
-    elif dir == 'antisense' and window1_pos != -1: start = int((window1_pos+(window[0]-1)+(-1*frame)+1)/3)-2
-    elif dir == 'sense' and window2_pos != -1:     start = int((window2_pos-(window[1]+1)+(-1*frame))/3)+2
-    elif dir == 'antisense' and window2_pos != -1: start = int((window2_pos+(window[1]-1)+(-1*frame)+1)/3)-2
+    if dir == 'sense' and pos != -1:               start = int((pos-frame)/3)+2
+    elif dir == 'antisense' and pos != -1:         start = int((pos-frame+1)//3)-2
+    elif dir == 'sense' and window1_pos != -1:
+        if window1_pos < 3:                        start = 1
+        else:                                      start = int((window1_pos-(window[0]+1)-frame)/3)+3
+    elif dir == 'antisense' and window1_pos != -1: start = int((window1_pos+(window[0]-1)-frame+1)/3)-2
+    elif dir == 'sense' and window2_pos != -1: 
+        if window2_pos == 0:                       start = -1
+        elif window2_pos <= 3:                     start = 0
+        else:                                      start = int((window2_pos-(window[1]+1)-frame)/3)+3
+    elif dir == 'antisense' and window2_pos != -1: start = int((window2_pos+(window[1]-1)-frame+1)/3)-2
 
     # LIST OF MUTATIONS FOR EACH ROW #
     mutation_details = []
@@ -138,13 +165,51 @@ def annotate_dual_muts(row, edit, amino_acid_seq, col_names, pre, window):
     for m1 in mutation_combos(dna_window, edit1, dir): 
         for m2 in mutation_combos(m1, edit2, dir): 
             # COMPARE MUTATED DNA/AA WITH OLD DNA/AA #
-            new_dna = dna.replace(dna_window, m2)
+            dna_temp, aa_temp = dna, aa
+            # REPLACE CAUSED AN ISSUE FOR REPEATED AMINO ACIDS AND REGIONS #
+            if dir == 'sense': new_dna = dna[:substitute_pos] + m2 + dna[substitute_pos+len(dna_window):]
+            else: new_dna = dna[:len(dna)+substitute_pos+1-len(dna_window)] + m2 + dna[len(dna)+substitute_pos+1:]
             new_aa = DNA_to_AA(new_dna, upper=False)
+
+            if window_on_boundary(new_dna): 
+                dna_temp = fill_in_dna_exons(dna_temp, row, exons)
+                aa_temp = DNA_to_AA(dna_temp, upper=False)
+                new_dna = fill_in_dna_exons(new_dna, row, exons)
+                new_aa = DNA_to_AA(new_dna, upper=False)
+
             # FORMAT MUTATIONS AS LETTER-NUMBER-LETTER #
-            if dna != new_dna: 
-                mutations = format_mutation(aa, new_aa, start, amino_acid_seq, dna, new_dna, seq)
+            if dna_temp != new_dna: 
+                mutations = format_mutation(aa_temp, new_aa, start, amino_acid_seq, dna_temp, new_dna, seq)
                 mutation_details.append(mutations)
-    return ';'.join(list(set(mutation_details)))
+    return ';'.join(set(filter(None, mutation_details)))
+
+def fill_in_dna_exons(new_dna, row, exons): 
+    new_dna_codons = [new_dna[i:i + 3] for i in range(0, len(new_dna), 3)]
+    exon_i = row['exon']
+    for i, codon in enumerate(new_dna_codons): 
+        if window_on_boundary(codon): 
+            num_lower = sum(1 for c in codon if c.islower())
+            if codon[0].islower(): # LOOK AT PREVIOUS EXON #
+                exon_seq = exons[exon_i - 1]
+                replacement_codon = exon_seq[-num_lower:] + codon[-(3-num_lower):]
+                new_dna_codons[i] = replacement_codon
+            if codon[-1].islower(): # LOOK AT NEXT EXON #
+                exon_seq = exons[exon_i + 1]
+                replacement_codon = codon[:(3-num_lower)] + exon_seq[:num_lower]
+                new_dna_codons[i] = replacement_codon
+    return ''.join(new_dna_codons)
+
+def window_on_boundary(dna): 
+    """
+    Function to determine whether a DNA sequence contains upper and lower case.
+    """
+    has_upper, has_lower = False, False
+    for char in dna:
+        if char.isupper():   has_upper = True
+        elif char.islower(): has_lower = True
+        if has_upper and has_lower:
+            return True
+    return False
 
 
 def mutation_combos(guide_window, edit, dir):
@@ -171,12 +236,12 @@ def format_mutation(aa, new_aa, start, amino_acid_seq, dna, new_dna, guide):
     """
     result = []
     for i in range(len(aa)): 
-        if dna[i*3:(i*3)+3] == new_dna[i*3:(i*3)+3]: # DNA MUT BUT NO AA MUT
+        if dna[i*3:(i*3)+3] == new_dna[i*3:(i*3)+3]: # NO DNA MUT
             continue
         if aa[i] == '_': # INSIDE INTRON
             continue
         mut = aa[i] + str(start+i) + new_aa[i]
-        assert start+i > 0, 'Error'
+        assert start+i > 0, f'Error {start}'
         # CHECK MUT AGAINST PROTEIN SEQ #
         if amino_acid_seq is not None: 
             ### assert amino_acid_seq[start+i] == aa[i], f"Error: guide {guide}"
@@ -205,33 +270,94 @@ def determine_mutations(row, col_names, pre):
             if len(mut) == 0: 
                 continue
             elif mut[0] == mut[-1]: type.append('Silent')
-            elif '.' in mut: type.append('Nonsense')
+            elif '.' == mut[-1]: type.append('Nonsense')
             else: type.append('Missense')
         types.append('/'.join(type))
     return ';'.join(types)
 
-def categorize_mutations(row, pre): 
+def categorize_mutations(row, pre, col_names, window, edit_from): 
     """
     Categorizes mutations by predicted mutations and context metadata. 
     Based on a priority of: 
     1. Nonsense, 2. Splice Site, 3. Missense, 4. Intron, 5. Silent, 6. UTR, 7. Flank, 8. No Mutation
     """
+    frame_col, strand_col, gene_pos_col, seq_col, window_start_col, window_end_col = col_names
+    frame, dir, pos, seq = row[frame_col], row[strand_col], row[gene_pos_col], row[seq_col]
 
-    if row[f'{pre}_muttypes'] is not None and 'Nonsense' in row[f'{pre}_muttypes']: 
+    # 'Splice-acceptor' means guide edits the 'AG' at 3' of intron
+    # 'Splice-donor' means guide edits the 'GT' at 5' of intron
+    if is_splice_acceptor_guide(row, pre, dir, window): 
+        return 'Splice-acceptor'
+    elif is_splice_donor_guide(row, pre, dir, window): 
+        return 'Splice-donor'
+    elif row[f'{pre}_muttypes'] is not None and 'Nonsense' in row[f'{pre}_muttypes']: 
         return 'Nonsense'
-    elif row[f'{pre}_win_overlap'] == 'Exon/Intron': 
-        seq = row['sgRNA_seq']
-        if seq[0].islower() and seq[-1].isupper(): 
-            return 'Splice-acceptor'
-        elif seq[0].isupper() and seq[-1].islower(): 
-            return 'Splice-donor'
     elif row[f'{pre}_muttypes'] is not None and 'Missense' in row[f'{pre}_muttypes']: 
         return 'Missense'
-    elif row[f'{pre}_win_overlap'] == 'Intron': 
-        return 'Intron'
     elif row[f'{pre}_muttypes'] is not None and 'Silent' in row[f'{pre}_muttypes']: 
         return 'Silent'
-    return 'No Mutation'
+    else: 
+        grna_seq = row[f'sgRNA_seq']
+        seq_window = grna_seq[window[0]-1:window[1]]
+        if any(char.islower() for char in seq_window) and edit_from.lower() in seq_window: 
+            if row['UTR'] == True: 
+                return 'UTR'
+            else: 
+                return 'Intron'
+        else: 
+            return 'No Mutation'
+
+def is_splice_acceptor_guide(row, pre, dir, window): 
+    pre_from = pre.split('to')[0]
+    seq = row['sgRNA_seq']
+    edit_wind = seq[window[0]-1:window[1]]
+    if edit_wind is None: 
+        return False
+    if dir == 'sense' and bool(re.match(r'^[a-z]+ag[A-Z]+$', seq)):
+        if ('A' in pre_from) and bool(re.match(r'^[a-z]*ag[A-Z]*$', edit_wind)) and seq[window[1]].isupper(): 
+            return True
+        elif ('A' in pre_from) and bool(re.match(r'^[a-z]*a$', edit_wind)) and seq[window[1]+1].isupper(): 
+            return True
+        if ('G' in pre_from) and bool(re.match(r'^[a-z]*ag[A-Z]*$', edit_wind)) and seq[window[1]].isupper(): 
+            return True
+        elif ('G' in pre_from) and bool(re.match(r'^g[A-Z]*$', edit_wind)) and seq[window[1]+1].isupper(): 
+            return True
+    elif dir == 'antisense' and bool(re.match(r'^[A-Z]+ct[a-z]+$', seq)):
+        if ('T' in pre_from) and bool(re.match(r'^[A-Z]*ct[a-z]*$', edit_wind)) and seq[window[1]].islower(): 
+            return True
+        elif ('T' in pre_from) and bool(re.match(r'^t[a-z]*$', edit_wind)) and seq[window[1]+1].islower(): 
+            return True
+        if ('C' in pre_from) and bool(re.match(r'^[A-Z]*ct[a-z]*$', edit_wind)) and seq[window[1]].islower(): 
+            return True
+        elif ('C' in pre_from) and bool(re.match(r'^[A-Z]*c$', edit_wind)) and seq[window[1]+1].islower(): 
+            return True
+    return False
+
+def is_splice_donor_guide(row, pre, dir, window): 
+    pre_from = pre.split('to')[0]
+    seq = row['sgRNA_seq']
+    edit_wind = seq[window[0]-1:window[1]]
+    if edit_wind is None: 
+        return False
+    if dir == 'sense' and bool(re.match(r'^[A-Z]*gt[a-z]*$', seq)):
+        if ('T' in pre_from) and bool(re.match(r'^[A-Z]*gt[a-z]*$', edit_wind)) and seq[window[1]].islower(): 
+            return True
+        elif ('T' in pre_from) and bool(re.match(r'^t[a-z]*$', edit_wind)) and seq[window[1]+1].islower(): 
+            return True
+        if ('G' in pre_from) and bool(re.match(r'^[A-Z]*gt[a-z]*$', edit_wind)) and seq[window[1]].islower(): 
+            return True
+        elif ('G' in pre_from) and bool(re.match(r'^[A-Z]*g$', edit_wind)) and seq[window[1]+1].islower(): 
+            return True
+    elif dir == 'antisense' and bool(re.match(r'^[a-z]*ac[A-Z]*$', seq)):
+        if ('A' in pre_from) and bool(re.match(r'^[a-z]*ac[A-Z]*$', edit_wind)) and seq[window[1]].isupper(): 
+            return True
+        elif ('A' in pre_from) and bool(re.match(r'^[a-z]*a$', edit_wind)) and seq[window[1]+1].isupper(): 
+            return True
+        if ('C' in pre_from) and bool(re.match(r'^[a-z]*ac[A-Z]*$', edit_wind)) and seq[window[1]].isupper(): 
+            return True
+        elif ('C' in pre_from) and bool(re.match(r'^c[A-Z]*$', edit_wind)) and seq[window[1]+1].isupper(): 
+            return True
+    return False
 
 def extract_uppercase_letters(input):
     """
@@ -249,6 +375,12 @@ def find_first_uppercase_index(input_string):
         
 def annotate_intron_exon(x, window): 
     coding = x[window[0]-1: window[1]]
+    if coding.isupper(): return "Exon"
+    elif coding.islower(): return "Intron"
+    else: return "Exon/Intron"
+
+def annotate_intron_exon_anti(x, window): 
+    coding = x[20-window[1]: 20-window[0]+1] # window=(4,8) so x[12:17]
     if coding.isupper(): return "Exon"
     elif coding.islower(): return "Intron"
     else: return "Exon/Intron"

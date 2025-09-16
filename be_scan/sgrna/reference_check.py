@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 
 from be_scan.sgrna._genomic_ import rev_complement, complements
+# from _genomic_ import rev_complement, complements
 import ahocorasick # https://github.com/WojciechMula/pyahocorasick
 
 def reference_check(guides_file, genome_file, 

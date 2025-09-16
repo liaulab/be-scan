@@ -12,6 +12,9 @@ import warnings
 from be_scan.sgrna._genomic_ import *
 from be_scan.sgrna._guideRNA_ import filter_guide, filter_sequence
 from be_scan.sgrna._gene_ import GeneForCRISPR
+# from _genomic_ import *
+# from _guideRNA_ import filter_guide, filter_sequence
+# from _gene_ import GeneForCRISPR
 
 def generate_library(gene_filepath, 
                      cas_type, edit_from, edit_to, 
@@ -111,7 +114,8 @@ def generate_library(gene_filepath,
     
     # SET COLUMN NAMES FOR OUTPUT #
     column_names = ['sgRNA_seq', 'PAM_seq', 'starting_frame', 'gene_pos', 'chr_pos', 'exon', 
-                    'windowstart_pos', 'windowend_pos', 'coding_seq', 'sgRNA_strand', 'gene_strand', 'gene', ]
+                    'windowstart_pos', 'windowend_pos', 'UTR', 'coding_seq', 'sgRNA_strand', 
+                    'gene_strand', 'gene', ]
 
     # FILTER LIBRARY ACCORDING TO SPECIFICATIONS FOR NONEDITING, INTRONIC, PAM #
     filter_guide_input = {'PAM_regex':PAM_regex, 'edit':edit, 'window':window, 
@@ -148,4 +152,4 @@ def generate_library(gene_filepath,
         Path.mkdir(path / output_dir, exist_ok=True)
         df.to_csv(path / output_dir / output_name, index=False)
     if return_df: 
-        return df
+        return df, gene

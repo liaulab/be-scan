@@ -13,22 +13,24 @@ import pandas as pd
 from pathlib import Path
 import plotly.graph_objects as go
 
-def corr_heatmap(df_filepath, comparisons, 
+def corr_heatmap(
+    df_filepath, # DF Filename or DF #
+    comparisons, # A List of Y-Axis Values #
 
-    corr_type='spearman', 
-    xlab='', ylab='', title='Spearman Correlation Heatmap', # figure related params
-    savefig=True, show=True, out_dir='', out_name='correlation_heatmap', out_type='png', # output related params
+    corr_type='spearman',
+    xlab='', ylab='', title='Spearman Correlation Heatmap', # Labels #
+    savefig=True, show=True, out_dir='', out_name='correlation_heatmap', out_type='png', # Output Parameters #
 
-    # style params
-    heatmap_kws={'center':0, 'linewidth':0.5, 'cmap':'coolwarm', 
+    # Style Params #
+    heatmap_kws={'center':0, 'linewidth':0.5, 'cmap':'coolwarm',
                  'square':True, 'cbar_kws':{"shrink": 0.5}, 'annot':True},
-    subplots_kws = {'figsize':(4,4)}, 
-    ): 
-    
+    subplots_kws = {},
+    ):
+
     """[Summary]
     This function takes in a dataframe from count_reads, and plots
     a scatterplot showing correlation between two given conditions
-    
+
     Parameters
     ------------
     df_filepath : str, required
@@ -44,7 +46,7 @@ def corr_heatmap(df_filepath, comparisons,
         name of the y-axis label
     title : str, optional, defaults to 'Spearman Correlation Heatmap'
         name of title label
-        
+
     savefig : bool, optional, defaults to True
         whether or not to save the figure
     show : bool, optional, defaults to True
@@ -55,66 +57,69 @@ def corr_heatmap(df_filepath, comparisons,
         name of figure output
     out_type : str, optional, defaults to 'pdf'
         file type of figure output
-    
-    heatmap_kws : dict, optional, defaults to 
-        {'center':0, 'linewidth':0.5, 'cmap':'coolwarm', 
+
+    heatmap_kws : dict, optional, defaults to
+        {'center':0, 'linewidth':0.5, 'cmap':'coolwarm',
         'square':True, 'cbar_kws':{"shrink": 0.5}, 'annot':True}
-        input params for sns.heatmap() 
+        input params for sns.heatmap()
         https://seaborn.pydata.org/generated/seaborn.heatmap.html
-    subplots_kws : dict, optional, defaults to 
-        {'figsize':(4,4)}
-        input params for plt.subplots() 
+    subplots_kws : dict, optional, defaults to
+        {}
+        input params for plt.subplots()
         https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
 
     Returns
     ------------
     """
+    # LOAD DATAFRAME #
+    if isinstance(df_filepath, pd.DataFrame):
+        df_data = df_filepath.copy()
+    elif isinstance(df_filepath, (str, Path)):
+        df_filepath = Path(df_filepath)
+        df_data = pd.read_csv(df_filepath)
+    else:
+        raise ValueError("df_filepath must be a pandas DataFrame or a path string/Path.")
 
-    df_filepath = Path(df_filepath)
-    df_data = pd.read_csv(df_filepath)
-
-    # style
-    mpl.rcParams.update({'font.size': 10})
     sns.set_style('ticks')
 
-    # Compute correlation matrix
+    # Compute Correlation Matrix #
     df_comp = df_data[comparisons].copy()
     df_corr = df_comp.corr(method=corr_type)
 
-    # Set up the matplotlib figure
+    # Setup Subplots #
     _, ax = plt.subplots(**subplots_kws)
     ax = sns.heatmap(df_corr, **heatmap_kws)
-    
-    # show frame
+
+    # Adjustments and Labels #
     for _, spine in ax.spines.items():
         spine.set_visible(True)
-    # adjustments and labels
     plt.title(title) ; plt.ylabel(xlab) ; plt.xlabel(ylab)
-    # rotate axis labels
     plt.xticks(rotation=45, horizontalalignment='right')
     plt.yticks(rotation=0, horizontalalignment='right')
     plt.tight_layout()
 
-    # save pdf and close everything
+    # Save File #
     outpath = Path(out_dir)
-    if savefig: 
-        out_name = f'{out_name}.{out_type}'
-        plt.savefig(outpath / out_name, format=out_type, dpi=300)
+    if savefig:
+        out = f'{out_name}.{out_type}'
+        plt.savefig(outpath / out, format=out_type, dpi=300)
     if show: plt.show()
     plt.close()
 
+def interactive_corr_heatmap(
+    df_filepath, # DF Filename or DF #
+    comparisons, # A List of Y-Axis Values #
 
-def interactive_corr_heatmap(df_filepath, comparisons, 
+    corr_type='spearman',
+    figsize=(500,500),
+    xlab='', ylab='', title='Spearman Correlation Heatmap', # Labels #
+    savefig=True, show=True, out_dir='', out_name='correlation_heatmap', # Output Parameters #
+    ):
 
-    corr_type='spearman', 
-    xlab='', ylab='', title='Spearman Correlation Heatmap', # figure related params
-    savefig=True, show=True, out_dir='', out_name='correlation_heatmap', # output related params
-    ): 
-    
     """[Summary]
     This function takes in a dataframe from count_reads, and plots
     a scatterplot showing correlation between two given conditions
-    
+
     Parameters
     ------------
     df_filepath : str, required
@@ -124,13 +129,15 @@ def interactive_corr_heatmap(df_filepath, comparisons,
 
     corr_type : str, optional, defaults to 'spearman'
         type of correlation, refer to https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.corr.html
+    figsize : tuple, optional, defaults to (500, 300)
+        (width, height) of figure in pixels
     xlab : str, optional, defaults to ''
         name of the x-axis label
     ylab : str, optional, defaults to ''
         name of the y-axis label
     title : str, optional, defaults to 'Spearman Correlation Heatmap'
         name of title label
-        
+
     savefig : bool, optional, defaults to True
         whether or not to save the figure
     show : bool, optional, defaults to True
@@ -143,50 +150,39 @@ def interactive_corr_heatmap(df_filepath, comparisons,
     Returns
     ------------
     """
+    # LOAD DATAFRAME #
+    if isinstance(df_filepath, pd.DataFrame):
+        df_data = df_filepath.copy()
+    elif isinstance(df_filepath, (str, Path)):
+        df_filepath = Path(df_filepath)
+        df_data = pd.read_csv(df_filepath)
+    else:
+        raise ValueError("df_filepath must be a pandas DataFrame or a path string/Path.")
 
-    df_filepath = Path(df_filepath)
-    df_data = pd.read_csv(df_filepath)
-
-    # style
-    mpl.rcParams.update({'font.size': 10})
     sns.set_style('ticks')
 
-    # Compute correlation matrix
+    # Compute Correlation Matrix #
     df_comp = df_data[comparisons].copy()
     df_corr = df_comp.corr(method=corr_type)
 
     fig = go.Figure()
-    # Add heatmap
+    # Add Heatmap #
     fig.add_trace(go.Heatmap(
-        z=df_corr.values, x=df_corr.columns, y=df_corr.index, 
-        colorscale="rdbu_r", 
+        z=df_corr.values, x=df_corr.columns, y=df_corr.index,
+        colorscale="rdbu_r",
         colorbar=dict(title="Correlation"),
         zmin=-1, zmax=1  # Ensure scale is between -1 and 1 for correlation
     ))
-    # Adjustments and labels
+    # Adjustments and Labels #
     fig.update_layout(
         title=title,
-        width=600, height=600, 
+        width=figsize[0], height=figsize[1],
         xaxis=dict(title=xlab, tickangle=-45), yaxis=dict(title=ylab, tickangle=0),
-        margin=dict(l=50, r=50, t=50, b=50)
+        margin=dict(l=50, r=50, t=50, b=50),
     )
 
-    # Show plot and save fig
-    if show: fig.show()
+    # Save File #
     outpath = Path(out_dir)
     if savefig:
-        out_name = f'{out_name}.html'
-        fig.write_html(outpath / out_name)
-
-# corr_heatmap(
-#     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
-#     comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg'], 
-#     savefig=False, 
-#     interactive=True, 
-# )
-# corr_heatmap(
-#     df_filepath="tests/test_data/plot/NZL10196_v9_comparisons.csv", 
-#     comparisons = ['d3-pos', 'd3-neg', 'd6-pos', 'd6-neg', 'd9-pos', 'd9-neg'], 
-#     savefig=False, 
-#     interactive=False, 
-# )
+        fig.write_html(outpath / f"{out_name}.html")
+    if show: fig.show()
