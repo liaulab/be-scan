@@ -290,6 +290,7 @@ class OutputOpts:
 # Defining default options
 AXIS = AxisLabelOpts()
 SCATTERSTYLE = ScatterStyleOpts()
+NEGCONTROL = NegCtrlOpts()
 LOLLIPOPSTYLE = LollipopStyleOpts()
 BOXPLOTSTYLE = BoxStyleOpts()
 JITTERPLOTSTYLE = JitterStyleOpts()
