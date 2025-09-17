@@ -16,7 +16,9 @@ from be_scan.sgrna.coverage import coverage_plots
 # from annotate import annotate
 # from coverage import coverage_plots
 
-def design_library(gene_filepath, cas_type='SpG', 
+def design_library(
+    gene_filepath, 
+    cas_type='SpG', 
 
     edit_from_list=['A', 'C', 'AC'], edit_to_list=['G', 'T', 'GT'], 
     genome_file='', protein_filepath='', delete=False, 

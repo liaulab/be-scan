@@ -132,6 +132,8 @@ def annotate(
     # CALC muttypes LIST AND SINGLE muttype #
     df[f'{pre}_muttypes'] = df.apply(lambda x: determine_mutations(x, col_names, pre), axis=1)
     df[f'{pre}_muttype'] = df.apply(lambda x: categorize_mutations(x, pre, col_names, window, edit_from), axis=1)
+    df[f'{pre}_pos'] = df.apply(
+        lambda row: assign_position(row[f'{pre}_mutations'], row['windowstart_pos'], row['windowend_pos'], row['gene'], f'{pre}_muttype'), axis=1 )
 
     # DROP UNNECESSARY COLUMNS #
     df = df.drop([f'{pre}_target_CDS', f'{pre}_codon_window', f'{pre}_residue_window', f'{pre}_target_windowpos'], axis=1)

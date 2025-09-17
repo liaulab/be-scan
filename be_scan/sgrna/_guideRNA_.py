@@ -14,6 +14,68 @@ from be_scan.sgrna._genomic_ import complements, rev_complement, DNA_to_AA
 
 # FUNCTIONS FOR generate_library #
 
+# All guides apart from exonic ones: set to –1
+# Exonic guides: assign position based on 1-indexed protein sequence
+# No C: Use the center of the editing window (convert to residue number)
+# Yes C:
+    # Silent: Use the center of the editing window
+    # Missense: Take mutated residue numbers and average
+    # Nonsense: Take nonsense mutation residue numbers (avg if multiple)
+def assign_position(mutations, start_pos, end_pos, gene, muttype):
+    if gene == 'Control' or gene == 'Essential':
+        return -1
+
+    # By default, all -1
+    if muttype in ['Splice-donor', 'Splice-acceptor', 'UTR', 'Intron']:
+        return -1
+
+    # for Nonsense, Missense, Silent
+    if not isinstance(mutations, float) and mutations is not None:
+
+        nonsense_list = []
+        missense_list = []
+        silent_list = []
+
+        mutations_list = re.split("/|;", mutations)
+        for mutation in mutations_list:
+          if len(mutation) == 0:
+              continue
+          numerals = re.findall(r'\d+', mutation)
+          num = int(''.join(numerals))
+          if mutation[-1] == '.' and mutation[0] != '.':
+              nonsense_list.append(num)
+          elif mutation[0] == mutation[-1]:
+              silent_list.append(num)
+          else:
+              missense_list.append(num)
+
+        nonsense_list = list(set(nonsense_list))
+        missense_list = list(set(missense_list))
+        silent_list = list(set(silent_list))
+
+        if len(nonsense_list) > 0:
+            return float(sum(nonsense_list)/len(nonsense_list))
+        elif len(missense_list) > 0:
+            return float(sum(missense_list)/len(missense_list))
+        elif len(silent_list) > 0:
+            return float(sum(silent_list)/len(silent_list))
+
+    # for Splice-acceptor, Splice-donor, UTR, Intron, No Mutation
+    #    Splice only if Missense edits are not present
+    #    Splice takes precedence over Missense etc for categorization, but not position labeling
+
+    # For No Mutation, take center of editing window
+    if start_pos != -1 and end_pos != -1:
+        center = (start_pos + end_pos) / 2
+        return 1+(center//3)
+    # elif start_pos != -1:
+    #   return 1+(start_pos)//3
+    # elif end_pos != -1:
+    #   return 1+(end_pos)//3
+    else:
+        return -1
+
+
 def filter_guide(g, PAM_regex, edit, window, excl_introns, excl_nonediting): 
     """
     Evaluates if a guide has a PAM and target residue within its window. 
