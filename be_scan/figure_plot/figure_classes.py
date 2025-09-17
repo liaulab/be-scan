@@ -104,9 +104,9 @@ class AxisLabelOpts:
 
 @dataclass(frozen = True)
 class NegCtrlOpts:
-    adjust = False
-    neg_ctrl_col = 'gene'
-    neg_ctrl_conditions = 'NT Controls
+    adjust: bool = False
+    neg_ctrl_col: Optional[str] = 'gene'
+    neg_ctrl_conditions: Optional[str] = 'NT Controls'
 
 # Dataclass for style, colors, etc
 @dataclass(frozen = True)
