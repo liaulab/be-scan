@@ -28,7 +28,6 @@ def scatterplot_figure(
     if missing: raise ValueError(f"Missing column(s): {sorted(missing)}")
 
     # Negative‑control normalisation
-    ctrl_stats = None
     if neg_ctrl.adjust:
         assert(neg_ctrl.neg_ctrl_col in df_data.columns.tolist())
         _, ctrl_stats, avg_dict = calc_neg_ctrls(df_data, y_col_list, neg_ctrl.neg_ctrl_col, neg_ctrl.neg_ctrl_conditions)

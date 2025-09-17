@@ -12,6 +12,11 @@ def boxplot_figure(
     output: OutputOpts = OUTPUT,
     ):
 
+    # LOAD DATA OR COPY DF #
+    if isinstance(df, (str, Path)):
+        df_data = pd.read_csv(df)
+    else: df_data = df.copy()
+
     fig, ax = plt.subplots(figsize=output.figsize,
                            **output.subplots_kws)
 
@@ -20,7 +25,7 @@ def boxplot_figure(
 
     # BOXPLOT LINE #
     sns.boxplot(
-        data = df,
+        data = df_data,
         ax = ax,
         x = x_col, y = y_col,
         order = lab_order,
