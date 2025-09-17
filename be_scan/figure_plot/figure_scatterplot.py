@@ -1,5 +1,6 @@
 
 from be_scan.figure_plot.figure_classes import *
+from be_scan.plot._annotating_ import *
 
 def scatterplot_figure(
     df_data: Union[pd.DataFrame, str],
@@ -11,7 +12,7 @@ def scatterplot_figure(
     domain: DomainOpts = DOMAIN,
     legend: LegendOpts = LEGEND,
     output: OutputOpts = OUTPUT,
-    # neg_ctrl: Optional[NegCtrlOpts] = None,
+    neg_ctrl: NegCtrlOpts = NEGCONTROL, 
 ):
 
     # LOAD DATA OR COPY DF #
@@ -29,12 +30,12 @@ def scatterplot_figure(
     # FILTER X-VALUES, MIN AND MAX INCLUSIVE #
     if axis.xwindow: df_data = df_data[df_data[x_col].between(*axis.xwindow)]
 
-    # # Negative‑control normalisation
-    # ctrl_stats = None
-    # if neg_ctrl:
-    #     assert(neg_ctrl.neg_ctrl_col in df_data.columns.tolist())
-    #     _, ctrl_stats, avg_dict = calc_neg_ctrls(df_data, y_col_list, neg_ctrl.neg_ctrl_col, neg_ctrl.neg_ctrl_conditions)
-    #     df_data = norm_to_intergenic_ctrls(df_data, y_col_list, avg_dict)
+    # Negative‑control normalisation
+    ctrl_stats = None
+    if neg_ctrl.adjust:
+        assert(neg_ctrl.neg_ctrl_col in df_data.columns.tolist())
+        _, ctrl_stats, avg_dict = calc_neg_ctrls(df_data, y_col_list, neg_ctrl.neg_ctrl_col, neg_ctrl.neg_ctrl_conditions)
+        df_data = norm_to_intergenic_ctrls(df_data, y_col_list, avg_dict)
 
     # SETUP FIGURE AND AXES #
     n = len(y_col_list)
