@@ -9,8 +9,11 @@ from pathlib import Path
 import pandas as pd
 from be_scan.analysis._controls_ import *
 
-def calc_controls(conditions, stats_comparisons, 
-                  neg_ctrl_col, neg_ctrl_conditions,
+def calc_controls(
+    conditions, 
+    stats_comparisons, 
+    neg_ctrl_col, 
+    neg_ctrl_conditions,
 
     controls=['t0'], 
     in_dir='', out_dir='', out_file='stats.txt', 
@@ -22,7 +25,7 @@ def calc_controls(conditions, stats_comparisons,
 
     Parameters
     ------------
-    conditions : str or path
+    conditions : str or path or pandas DataFrame()
         String or path to the csv file containing the values for comparison.
         The column headers must match the sample names in stats_comparisons
     stats_comparisons : list of str
@@ -52,7 +55,11 @@ def calc_controls(conditions, stats_comparisons,
     if len(controls) > 0: suffix = '_LFCminusControl'
     else: suffix = '_LFC'
     
-    df_conds = pd.read_csv(in_path / conditions)
+    # LOAD DATA OR COPY DF #
+    if isinstance(df_conds, (str, Path)):
+        df_conds = pd.read_csv(in_path / conditions)
+    else: df_conds = df_conds.copy()
+
     stats_comparisons = [x+suffix+'_avg' for x in stats_comparisons]
 
     # calculate negative control stats

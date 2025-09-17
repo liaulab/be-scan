@@ -13,9 +13,12 @@ from be_scan.analysis.log_transform import log_transform
 from be_scan.analysis.compare_conds import compare_conds
 from be_scan.analysis.calc_controls import calc_controls
 
-def batch_process(sample_sheet, annotated_lib, 
+def batch_process(
+    sample_sheet, 
+    annotated_lib, 
 
-    comparisons='', neg_ctrl_col='', neg_ctrl_conditions=[], 
+    comparisons='', 
+    neg_ctrl_col='', neg_ctrl_conditions=[], 
     file_dir='', controls=['t0'], 
     KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
     sgRNA_seq_col = 'sgRNA_seq', 

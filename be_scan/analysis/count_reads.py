@@ -15,7 +15,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import warnings
 
-def count_reads(sample_sheet, annotated_lib, 
+def count_reads(
+    sample_sheet, 
+    annotated_lib, 
     
     KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
     sgRNA_seq_col = 'sgRNA_seq', 
@@ -34,7 +36,7 @@ def count_reads(sample_sheet, annotated_lib,
 
     Parameters
     ------------
-    sample_sheet : str or path
+    sample_sheet : str or path or pandas DataFrame()
         REQUIRED COLS: 'fastq_file', 'counts_file', 'noncounts_file', 'stats_file'
         a sheet with information on sequence id, 
         in_fastq (string or path to the FASTQ file to be processed), 
@@ -42,7 +44,7 @@ def count_reads(sample_sheet, annotated_lib,
         out_nc (string or path for the output csv file with non-perfect sgRNA matches ex: 'noncounts.csv'), 
         out_stats (string or path for the output txt file with the read counting statistics ex: 'stats.txt'), 
         condition names, and condition categories
-    annotated_lib : str or path
+    annotated_lib : str or path or pandas DataFrame()
         String or path to the reference file. annotated_lib must have column headers,
         with 'sgRNA_seq' as the header for the column with the sgRNA sequences.
 
@@ -81,12 +83,13 @@ def count_reads(sample_sheet, annotated_lib,
     ------------
     """
     path = Path.cwd()
-    inpath = Path(in_dir)
+    in_path = Path(in_dir)
     outpath = Path(out_dir)
 
     # LOAD IN SAMPLE SHEET #
-    sample_filepath = inpath / sample_sheet
-    sample_df = pd.read_csv(sample_filepath)
+    if isinstance(sample_sheet, (str, Path)):
+        sample_df = pd.read_csv(in_path / sample_sheet)
+    else: sample_df = sample_sheet.copy()
     for colname in ['fastq_file', 'counts_file', 'noncounts_file', 'stats_file', 'condition']: 
         if colname not in sample_df.columns.tolist():
             raise Exception(f"{annotated_lib} is missing column: {colname}")
@@ -95,15 +98,16 @@ def count_reads(sample_sheet, annotated_lib,
 
     # STEP 1: OPEN INPUT FILES FOR PROCESSING, CHECK FOR REQUIRED FORMATTING
     # LOOK FOR sgRNA_seq COLUMN #
-    library_filepath = inpath / annotated_lib
-    df_ref = pd.read_csv(library_filepath, header=0)
+    if isinstance(annotated_lib, (str, Path)):
+        df_ref = pd.read_csv(in_path / annotated_lib, header=0)
+    else: df_ref = annotated_lib.copy()
     if sgRNA_seq_col not in df_ref.columns.tolist(): 
         raise Exception(f'{annotated_lib} is missing column: {sgRNA_seq_col}')
     df_ref[sgRNA_seq_col] = df_ref[sgRNA_seq_col].str.upper()
 
     for fastq, counts, nc, stats, cond in samples: 
         # FASTQ FILE OF READS AND PATH TO ALL OUTPUT FILES #
-        in_fastq = inpath / fastq
+        in_fastq = in_path / fastq
         out_counts, out_nc, out_stats = outpath / counts, outpath / nc, outpath / stats
 
         # STEP 1B: SET UP VARIABLES FOR SCRIPT

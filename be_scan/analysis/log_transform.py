@@ -11,7 +11,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-def log_transform(sample_sheet, library_counts, 
+def log_transform(
+    sample_sheet, 
+    library_counts, 
                    
     controls=['t0'], 
     in_dir='', out_dir='', out_file='library_LFC.csv', 
@@ -26,7 +28,7 @@ def log_transform(sample_sheet, library_counts,
 
     Parameters
     ------------
-    sample_sheet : str or path
+    sample_sheet : str or path or pandas DataFrame()
         REQUIRED COLS: 'condition', 'counts_file'
         a sheet with information on sequence id, 
         in_fastq (string or path to the FASTQ file to be processed), 
@@ -34,7 +36,7 @@ def log_transform(sample_sheet, library_counts,
         out_np (string or path for the output csv file with non-perfect sgRNA matches ex: 'noncounts.csv'), 
         out_stats (string or path for the output txt file with the read counting statistics ex: 'stats.txt'), 
         condition names, and condition categories
-    library_counts : str or path
+    library_counts : str or path or pandas DataFrame()
         String or path to the reference file. library_counts must have column headers,
         with 'sgRNA_seq' as the header for the column with the sgRNA sequences.
 
@@ -58,8 +60,13 @@ def log_transform(sample_sheet, library_counts,
     out_path = Path(out_dir)
 
     # IMPORT FILES, CHECK FOR REQUIREMENTS #
-    df_ref = pd.read_csv(in_path / library_counts)
-    df_samples = pd.read_csv(in_path / sample_sheet)
+    if isinstance(library_counts, (str, Path)):
+        df_ref = pd.read_csv(in_path / library_counts)
+    else: df_ref = library_counts.copy()
+    if isinstance(sample_sheet, (str, Path)):
+        df_samples = pd.read_csv(in_path / sample_sheet)
+    else: df_samples = sample_sheet.copy()
+
     dict_counts = dict(zip(df_samples.condition, df_samples.counts_file))
     dict_conds = dict(zip(df_samples.condition, df_samples.agg_conditions))
     df_map = pd.DataFrame(data=dict_conds.items(), columns=['rep','condition'])

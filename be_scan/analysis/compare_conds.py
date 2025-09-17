@@ -9,7 +9,9 @@ Date: 231128
 from pathlib import Path
 import pandas as pd
 
-def compare_conds(comparisons, avg_conds, 
+def compare_conds(
+    comparisons, 
+    avg_conds, 
                   
     controls=['t0'], 
     in_dir='', out_dir='', out_file='conditions.csv', 
@@ -27,11 +29,12 @@ def compare_conds(comparisons, avg_conds,
 
     Parameters
     ------------
-    comparisons : comparisons .csv in format (name, treatment, control)
+    comparisons : str or path or pandas DataFrame()
+        .csv in format (name, treatment, control)
         A dataframe denoting the comparisons to make, with the comparison
         being treatment - control. The output column
         headers will be labeled by the name in the dataframe.
-    avg_conds : str or path
+    avg_conds : str or path or pandas DataFrame()
         String or path to the csv file containing the values for comparison.
         The column headers must match the sample names in comparisons
 
@@ -53,12 +56,16 @@ def compare_conds(comparisons, avg_conds,
     # import files, define variables, check for requirements
     in_path = Path(in_dir)
     out_path = Path(out_dir)
-    df_conds = pd.read_csv(in_path / avg_conds)
+    if isinstance(avg_conds, (str, Path)):
+        df_conds = pd.read_csv(in_path / avg_conds)
+    else: df_conds = avg_conds.copy()
 
     if len(controls) > 0: suffix = '_LFCminusControl'
     else: suffix = '_LFC'
 
-    comparisons_df = pd.read_csv(in_path / comparisons)
+    if isinstance(comparisons, (str, Path)):
+        comparisons_df = pd.read_csv(in_path / comparisons)
+    else: comparisons_df = comparisons.copy()
     comparisons_list = list(comparisons_df.itertuples(index=False, name=None))
     # perform treatment vs. control comparison
     for name, treatment, control in comparisons_list:
