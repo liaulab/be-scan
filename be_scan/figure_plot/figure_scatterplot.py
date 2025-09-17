@@ -27,9 +27,6 @@ def scatterplot_figure(
     missing = needed.difference(df_data.columns)
     if missing: raise ValueError(f"Missing column(s): {sorted(missing)}")
 
-    # FILTER X-VALUES, MIN AND MAX INCLUSIVE #
-    if axis.xwindow: df_data = df_data[df_data[x_col].between(*axis.xwindow)]
-
     # Negative‑control normalisation
     ctrl_stats = None
     if neg_ctrl.adjust:
@@ -37,6 +34,9 @@ def scatterplot_figure(
         _, ctrl_stats, avg_dict = calc_neg_ctrls(df_data, y_col_list, neg_ctrl.neg_ctrl_col, neg_ctrl.neg_ctrl_conditions)
         df_data = norm_to_intergenic_ctrls(df_data, y_col_list, avg_dict)
 
+    # FILTER X-VALUES, MIN AND MAX INCLUSIVE #
+    if axis.xwindow: df_data = df_data[df_data[x_col].between(*axis.xwindow)]
+        
     # SETUP FIGURE AND AXES #
     n = len(y_col_list)
     fig, axes = plt.subplots(nrows=n, ncols=1,
