@@ -14,7 +14,8 @@ from be_scan.sgrna._guideRNA_ import *
 # from _genomic_ import *
 # from _guideRNA_ import *
 
-def annotate(guides_file, edit_from, edit_to, exons, ### ADD EXONS TO ALL DOCUMENTATION #
+def annotate(
+    guides_file, edit_from, edit_to, exons, ### ADD EXONS TO ALL DOCUMENTATION #
 
     protein_filepath='', window=[4,8], 
     seq_col = 'sgRNA_seq', frame_col = 'starting_frame', strand_col = 'sgRNA_strand', 
@@ -86,8 +87,9 @@ def annotate(guides_file, edit_from, edit_to, exons, ### ADD EXONS TO ALL DOCUME
     col_names = frame_col, strand_col, gene_pos_col, seq_col, window_start_col, window_end_col
 
     # READ GUIDES FILE #
-    guides_filepath = Path(guides_file)
-    df = pd.read_csv(guides_filepath)
+    if isinstance(guides_file, (str, Path)):
+        df = pd.read_csv(guides_file)
+    else: df = guides_file.copy()
 
     # ASSERTIONS #
     for col in col_names: 

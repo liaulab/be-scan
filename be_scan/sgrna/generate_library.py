@@ -16,8 +16,9 @@ from be_scan.sgrna._gene_ import GeneForCRISPR
 # from _guideRNA_ import filter_guide, filter_sequence
 # from _gene_ import GeneForCRISPR
 
-def generate_library(gene_filepath, 
-                     cas_type, edit_from, edit_to, 
+def generate_library(
+    gene_filepath, 
+    cas_type, edit_from, edit_to, 
 
     gene_name='', PAM=None, window=[4,8], 
     output_name='guides.csv', output_dir='', return_df=True, save_df=True, 

@@ -60,8 +60,9 @@ def coverage_plots(
     """
     path = Path.cwd()
     # READ GUIDES FILE #
-    guides_filepath = Path(annotated_guides)
-    df = pd.read_csv(guides_filepath)
+    if isinstance(annotated_guides, (str, Path)):
+        df = pd.read_csv(annotated_guides)
+    else: df = annotated_guides.copy()
 
     # REORGANIZE DATAFRAME BY GUIDE INTO DATAFRAME BY AMINO ACID #
     amino_acid_seq = protein_to_AAseq(protein_filepath)

@@ -52,8 +52,9 @@ def reference_check(guides_file, genome_file,
     path = Path.cwd()
     
     # READ GUIDES FILE #
-    guides_filepath = Path(guides_file)
-    df = pd.read_csv(guides_filepath)
+    if isinstance(guides_file, (str, Path)):
+        df = pd.read_csv(guides_file)
+    else: df = guides_file.copy()
     # coding_seq IS THE INPUT INTO ALGORITHM SINCE REFERENCE IS CODING #
     if 'coding_seq' not in df.columns: 
         df['coding_seq'] = np.where(df['sgRNA_strand'] == 'sense', df['sgRNA_seq'], 
