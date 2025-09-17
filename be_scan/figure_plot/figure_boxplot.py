@@ -27,10 +27,10 @@ def boxplot_figure(
         palette=palette, ###
 
         **style.box_kws,
-        boxprops=style.boxprops,
-        whiskerprops=style.whiskerprops,
-        capprops=style.capprops,
-        medianprops=style.medianprops,
+        **{"boxprops": style.boxprops,
+           "whiskerprops": style.whiskerprops,
+           "capprops": style.capprops,
+           "medianprops": style.medianprops},
     )
 
     ax.set(ylim=axis.ylim, yticks=axis.yticks)
