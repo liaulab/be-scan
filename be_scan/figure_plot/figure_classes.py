@@ -102,6 +102,12 @@ class AxisLabelOpts:
     tick_kws: Optional[Dict[str, Any]] = field(default_factory = lambda:
         {"labelsize":8, "width":0.5})
 
+@dataclass(frozen = True)
+class NegCtrlOpts:
+    adjust = False
+    neg_ctrl_col = 'gene'
+    neg_ctrl_conditions = 'NT Controls
+
 # Dataclass for style, colors, etc
 @dataclass(frozen = True)
 class ScatterStyleOpts:
