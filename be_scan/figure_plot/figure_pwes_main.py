@@ -73,6 +73,7 @@ def pwes_clustering(
     out = f"{out_dir}{out_prefix}"
     Path(f"{out}").parent.mkdir(parents=True, exist_ok=True)
     df_gauss.to_csv(f"{out}_df_gauss.csv")
+    df_pws_score.to_csv(f"{out}_df_pairwise.csv")
     df_pwes_sorted.to_csv(f"{out}_df_pwes_sorted.csv")
     df_pwes_unsorted.to_csv(f"{out}_df_pwes_unsorted.csv")
     df_clus.to_csv(f"{out}_df_clus.csv")
