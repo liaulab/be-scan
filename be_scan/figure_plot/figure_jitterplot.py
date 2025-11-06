@@ -71,11 +71,11 @@ def jitterbox_kdeplot_figure(
         # Plot KDEs of Q575R
         fig, ax = plt.subplots(figsize=output.figsize, **output.subplots_kws)
 
-        quartiles =sorted(data['quartile'].unique())[::-1]
+        quartiles =sorted(data[xcol].unique())[::-1]
         colors = style.colors[::-1]
         for q, c in zip(quartiles, colors):
             print(q, c)
-            subset = data[data['quartile'] == q]
+            subset = data[data[xcol] == q]
             sns.kdeplot(
                 y=subset[ycol], label=f'Q{q}',
                 color=c,
