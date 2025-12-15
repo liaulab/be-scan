@@ -126,10 +126,10 @@ class ScatterStyleOpts:
         {"color": "k", "ls": "--", "lw": 1})
     cutoff_line_kws: Optional[Dict[str, Any]] = field(default_factory=lambda:
         {"color": "gray", "ls": ":", "lw": 0.5})
-    x_transparency_lower_threshold: Optional[float] = 2.0
-    x_transparency_upper_threshold: Optional[float] = 2.0
-    y_transparency_lower_threshold: Optional[float] = 2.0
-    y_transparency_upper_threshold: Optional[float] = 2.0
+    x_lower_threshold: Optional[float] = -2.0
+    x_upper_threshold: Optional[float] = 2.0
+    y_lower_threshold: Optional[float] = -2.0
+    y_upper_threshold: Optional[float] = 2.0
 
 @dataclass(frozen = True)
 class BoxStyleOpts:
