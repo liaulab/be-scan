@@ -25,16 +25,15 @@ def correlation_scatterplot_figure(
 
     # OPACITY COLUMN #
     thr = style.transparency_threshold
-    upper, lower = -thr, thr
     df_data['_alpha'] = np.where(
-        (df_data[x_column].between(upper, lower)) & (df_data[y_column].between(upper, lower)),
+        (df_data[x_column].between(style.x_lower_threshold, style.x_upper_threshold)) & (df_data[y_column].between(style.y_lower_threshold, style.y_upper_threshold)),
         "low", "high",
     )
-
     # CUTOFF LINES #
-    for cutoff in [-thr, thr]:
-        ax.axhline(y=cutoff, **style.cutoff_line_kws)
-        ax.axvline(x=cutoff, **style.cutoff_line_kws)
+    ax.axhline(y=style.y_lower_threshold, **style.cutoff_line_kws)
+    ax.axhline(y=style.y_upper_threshold, **style.cutoff_line_kws)
+    ax.axvline(x=style.x_lower_threshold, **style.cutoff_line_kws)
+    ax.axvline(x=style.x_upper_threshold, **style.cutoff_line_kws)
 
     # OUTLINE SPLICE AND INTRONS #
     df_data_si = df_data.loc[df_data[highlight_col].isin(highlight_categories)]
