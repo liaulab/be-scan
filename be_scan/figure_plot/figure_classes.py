@@ -126,6 +126,7 @@ class ScatterStyleOpts:
         {"color": "k", "ls": "--", "lw": 1})
     cutoff_line_kws: Optional[Dict[str, Any]] = field(default_factory=lambda:
         {"color": "gray", "ls": ":", "lw": 0.5})
+    transparency_threshold: Optional[float] = 2.0
     x_lower_threshold: Optional[float] = -2.0
     x_upper_threshold: Optional[float] = 2.0
     y_lower_threshold: Optional[float] = -2.0
