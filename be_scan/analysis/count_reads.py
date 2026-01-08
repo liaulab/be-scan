@@ -10,6 +10,7 @@ from collections import Counter
 import gzip
 from pathlib import Path
 
+import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -105,6 +106,10 @@ def count_reads(
         raise Exception(f'{annotated_lib} is missing column: {sgRNA_seq_col}')
     df_ref[sgRNA_seq_col] = df_ref[sgRNA_seq_col].str.upper()
 
+    for fastq, _, _, _, _ in samples: 
+        in_fastq = in_path / fastq
+        assert os.path.exists(in_fastq), f"Error: {in_fastq} cannot be found."
+        
     for fastq, counts, nc, stats, cond in samples: 
         # FASTQ FILE OF READS AND PATH TO ALL OUTPUT FILES #
         in_fastq = in_path / fastq
