@@ -116,7 +116,7 @@ def scatterplot_figure(
         for line in ax.get_lines(): line.set_linewidth(axis.linewidth)
 
         # SPINES AND LEGEND SETTINGS #
-        ax.spines['left'].set_position(('outward', 3))
+        ax.spines['left'].set_position(('outward', axis.space))
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
         fig_leg = ax.get_legend()
