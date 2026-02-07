@@ -101,6 +101,7 @@ class AxisLabelOpts:
     linewidth: Optional[float] = 0.5
     tick_kws: Optional[Dict[str, Any]] = field(default_factory = lambda:
         {"labelsize":8, "width":0.5})
+    space: Optional[float] = 3
 
 @dataclass(frozen = True)
 class NegCtrlOpts:
