@@ -111,6 +111,8 @@ class NegCtrlOpts:
     neg_ctrl_conditions: Optional[str] = 'NT Controls'
     lines: bool = False
     sd: Optional[float] = 1
+    ctrl_line_kws: Optional[Dict[str, Any]] = field(default_factory=lambda:
+        {"color": "k", "ls": "--", "lw": 1})
 
 # Dataclass for style, colors, etc
 @dataclass(frozen = True)
