@@ -86,12 +86,10 @@ def scatterplot_figure(
             # PLOT #
             sns.scatterplot(ax=ax, **plot_kws, **base_kws)
 
-        # # If negative control is given, draw in 2 SD guide lines
-        # if ctrl_stats and neg_ctrl:
-        #     sd = next((s for name, _, s in ctrl_stats if name == ycol), None)
-        #     if sd is not None:
-        #         ax.axhline(2*sd, **style.ctrl_line_kws)
-        #         ax.axhline(-2*sd, **style.ctrl_line_kws)
+        # If negative control is given, draw in 2 SD guide lines
+        if neg_ctrl.lines: 
+            ax.axhline(2*neg_ctrl.sd, **neg_ctrl.ctrl_line_kws)
+            ax.axhline(-2*neg_ctrl.sd, **neg_ctrl.ctrl_line_kws)
 
         if axis.title: ax.set_title(axis.title, fontproperties=arial_font6)
 
