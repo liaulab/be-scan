@@ -77,7 +77,7 @@ def scatterplot_figure(
                 }
             # DEFINE MARKER SETTINGS #
             plot_kws["style"] = style.marker_col
-            plot_kws["markers"] = list(style.marker_map.values())
+            plot_kws["markers"] = plot_kws["markers"] = [style.marker_map[m] for m in df_data[style.marker_col].unique()]
             # DEFINE STYLE SETTINGS #
             if style.hue_col:
                 plot_kws["hue"] = style.hue_col
