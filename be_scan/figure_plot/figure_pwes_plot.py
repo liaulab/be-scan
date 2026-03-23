@@ -285,6 +285,7 @@ def pwes_scatterplots(
         # AXES LABELS #
         ax.set_xlabel(None, fontproperties=arial_font6)
         ax.set_ylabel(axis.ylabel, fontproperties=arial_font6)
+        ax.set_title(f'Cluster {cluster}', fontproperties=arial_font6)
 
         # ----- OUTPUT ----- #
 
