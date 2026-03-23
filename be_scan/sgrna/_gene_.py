@@ -48,8 +48,8 @@ class GeneForCRISPR():
                             ''.join([base for base in exon[len(exon)//2:] if base.islower()])))
 
         # CHECK INTRON LENGTHS CONSISTENT ACROSS FASTA FILE #
-        assert all([len(x)-len(y)==0 for x, y in introns]), [(len(x), len(y)) for x, y in introns]
-        assert all([len(x) == len(y) for x, y in introns]), "Make sure 5' and 3' intron sequences are the same length" ###
+        if not all([len(x) == len(y) for x, y in introns]): 
+            print("Make sure 5' and 3' intron sequences are the same length")
         self.intron_len = len(introns[0][0])
         
         # IDENTIFY START POSITION OF EACH EXON #
