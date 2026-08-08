@@ -97,10 +97,10 @@ def test_annotate_intron_exon_anti_assumes_a_20mer():
     """
     The mirrored slice is computed against a hardcoded length of 20.
 
-    _guideRNA_.py:445 reads `x[20-window[1] : 20-window[0]+1]` with a literal
-    20 rather than len(x). On a guide of any other length the window lands in
-    the wrong place. Recorded here so the assumption is explicit; the guide
-    length is being made tunable elsewhere in this release.
+    The function reads `x[20-window[1] : 20-window[0]+1]` with a literal 20
+    rather than len(x). On a guide of any other length the window lands in the
+    wrong place. Recorded here so the assumption is explicit; the guide length
+    is made tunable in a later step of this release.
     """
     twenty = "A" * 12 + "ggggg" + "A" * 3
     assert annotate_intron_exon_anti(twenty, WINDOW) == "Intron"
@@ -191,35 +191,30 @@ def test_fill_in_dna_exons_leaves_fully_intronic_codons_alone():
     assert fill_in_dna_exons("ATGttt", row, exons) == "ATGttt"
 
 
-def test_fill_in_dna_exons_reads_past_the_last_exon():
+def test_fill_in_dna_exons_leaves_the_codon_alone_past_the_last_exon():
     """
-    A boundary codon in the final exon indexes exons[exon_i + 1].
+    A boundary codon in the final exon has no next exon to draw from.
 
-    _guideRNA_.py:259 has no bounds check, so this raises rather than
-    reporting that there is no next exon. Recorded, not fixed.
+    This used to index exons[exon_i + 1] unguarded and raise IndexError. The
+    codon is now left as-is, so it translates to '_' and format_mutation skips
+    it, rather than crashing the whole annotation run.
     """
     exons = ["ATGCTT", "GGGAAA"]
     row = {"exon": 1}  # last exon
-    with pytest.raises(IndexError):
-        fill_in_dna_exons("GGGAAACcc", row, exons)
+    assert fill_in_dna_exons("GGGAAACcc", row, exons) == "GGGAAACcc"
 
 
-def test_fill_in_dna_exons_wraps_to_the_last_exon_before_the_first():
+def test_fill_in_dna_exons_leaves_the_codon_alone_before_the_first_exon():
     """
-    A boundary codon in the first exon indexes exons[-1].
+    A boundary codon in the first exon has no previous exon to draw from.
 
-    Python's negative indexing makes exons[0 - 1] the *last* exon, so this
-    silently completes the codon from the wrong end of the gene instead of
-    raising. The result below is built from 'TTT' (the tail of the last exon)
-    rather than from any upstream sequence.
-
-    Not reachable through annotate() on a well-formed gene, because the first
-    exon begins at a codon boundary, but recorded because the failure is
-    silent rather than loud.
+    This used to index exons[0 - 1], which Python resolves to the *last*
+    exon, silently rebuilding the codon from the wrong end of the gene. The
+    codon is now left untouched instead.
     """
     exons = ["ATGCTT", "GGGAAA", "CCCTTT"]
     row = {"exon": 0}
-    assert fill_in_dna_exons("ttATGCTT", row, exons) == "TTATGCTT"
+    assert fill_in_dna_exons("ttATGCTT", row, exons) == "ttATGCTT"
 
 
 # --------------------------------------------------------------------------- #

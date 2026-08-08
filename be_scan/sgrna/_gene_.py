@@ -85,7 +85,7 @@ class GeneForCRISPR():
                 # if (e==0 and i < self.intron_len-window[1]-1) or (e==len(self.exons_extra) and i > len(exon_extra)-self.intron_len+1): ind_gene = -2 # OUTSIDE GENE UTR -2
                 if seq[window[0]-1].islower(): window_pos1 = -1
                 else: window_pos1 = i-self.intron_len+prev_ind+window[0]-1
-                if seq[window[1]].islower(): window_pos2 = -1
+                if seq[window[1]-1].islower(): window_pos2 = -1
                 else: window_pos2 = i-self.intron_len+prev_ind+window[1]-1
 
                 utr, anti_utr = False, False
@@ -118,7 +118,7 @@ class GeneForCRISPR():
 
             if    g_rev[0][window[0]-1].islower(): g_rev.append(-1)
             else: g_rev.append((g[10]+self.n-1)-(window[0]-1))
-            if    g_rev[0][window[1]].islower(): g_rev.append(-1)
+            if    g_rev[0][window[1]-1].islower(): g_rev.append(-1)
             else: g_rev.append((g[10]+self.n-1)-(window[1]-1))
 
             g_rev.append(g[11])

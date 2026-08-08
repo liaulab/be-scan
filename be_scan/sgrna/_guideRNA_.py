@@ -102,7 +102,98 @@ def filter_sequence(results, sequence):
     return results
 
 # FUNCTIONS FOR annotate #
-def calc_target(row, window, col_names): 
+
+def codon_window_geometry(frame, strand, window, guide_len):
+    """
+    Where the translated codon window sits inside a guide, and how long it is.
+
+    The editing window is `window` (1-indexed, inclusive), so it occupies guide
+    indices window[0]-1 .. window[1]-1. The codon window has to begin on a
+    codon boundary at or before the editing window and extend past its end.
+
+    Codon boundaries depend on the strand:
+      sense     -- guide index k is a boundary when (k + frame) % 3 == 0
+      antisense -- boundaries are offset by frame+1
+
+    Both rules reproduce what the previous hardcoded expressions produced at
+    the default window [4, 8]; they are simply written in terms of `window`
+    rather than baked in as constants. num_aa is likewise held at its original
+    value and only grown when a wider window needs more codons, so the
+    geometry at [4, 8] is unchanged.
+
+    Returns (start, num_aa): the guide index the codon window begins at, and
+    how many codons it spans.
+    """
+    first = window[0] - 1          # guide index of the window's first base
+    last_exclusive = window[1]     # one past the window's last base
+
+    if strand == 'sense': phase = (-frame) % 3
+    else:                 phase = (frame + 1) % 3
+
+    # largest codon boundary at or before the start of the editing window
+    start = first - ((first - phase) % 3)
+
+    # a codon beginning before the guide cannot be translated from the guide
+    # alone, so step forward to the first boundary inside it
+    while start < 0:
+        start += 3
+
+    # keep the original width, widening only when the window demands it
+    num_aa = int(2+((window[1]-window[0]-1)//3))
+    needed = -(-(last_exclusive - start) // 3)   # ceiling division
+    num_aa = max(num_aa, needed)
+
+    # never read past the end of the guide
+    while num_aa > 0 and start + (num_aa * 3) > guide_len:
+        num_aa -= 1
+
+    return start, num_aa
+
+
+def first_residue_number(strand, frame, pos, window1_pos, window2_pos,
+                         window, guide_len, dna_len):
+    """
+    Residue number of the first codon in the translated codon window.
+
+    Everything downstream indexes off this: format_mutation emits
+    aa[i] + str(start+i), so if this is off by one then every mutation call
+    for the guide is misnumbered.
+
+    A guide carries up to three coordinates, any of which is -1 when the
+    corresponding base sits in an intron:
+      pos          -- CDS index of guide base 0
+      window1_pos  -- CDS index of the editing window's first base
+      window2_pos  -- CDS index of the editing window's last base
+
+    Each is converted to the CDS index of the codon window's first base, then
+    to a 1-indexed residue number. On the antisense strand the CDS coordinate
+    runs backwards relative to the guide, so the codon window's first base in
+    reading order is its last base in guide order.
+
+    Reproduces the previous hardcoded arithmetic exactly at window [4, 8].
+    """
+    start, _ = codon_window_geometry(frame, strand, window, guide_len)
+
+    if strand == 'sense':
+        # CDS index of guide base 0, from whichever coordinate is available
+        if pos != -1:           base = pos
+        elif window1_pos != -1: base = window1_pos - (window[0]-1)
+        elif window2_pos != -1: base = window2_pos - (window[1]-1)
+        else:                   return -1
+        cds_index = base + start
+    else:
+        # antisense: guide base k sits at CDS index (base - k)
+        if pos != -1:           base = pos
+        elif window1_pos != -1: base = window1_pos + (window[0]-1)
+        elif window2_pos != -1: base = window2_pos + (window[1]-1)
+        else:                   return -1
+        # first base in reading order is the far end of the codon window
+        cds_index = base - (start + dna_len - 1)
+
+    return (cds_index // 3) + 1
+
+
+def calc_target(row, window, col_names):
     """
     Finds the string of the bps in codons that may be edited
     or Finds the string of the aa that may be edited
@@ -114,12 +205,12 @@ def calc_target(row, window, col_names):
     
     frame = row[frame_col]
     guide = row[seq_col]
-    num_aa = int(2+((window[1]-window[0]-1)//3)) # pretty sure this works
-    if row[strand_col] == 'sense': 
-        start = (-1*frame)+3
+    start, num_aa = codon_window_geometry(frame, row[strand_col], window, len(guide))
+    if num_aa == 0:
+        return None, None
+    if row[strand_col] == 'sense':
         dna = guide[start:start+(num_aa*3)]
-    else: 
-        start = frame+1
+    else:
         dna = rev_complement(complements, guide[start:start+(num_aa*3)])
     return dna, DNA_to_AA(dna, upper=False)
     
@@ -133,13 +224,25 @@ def calc_coding_window(row, window, col_names):
         return None, None
 
     frame = row[frame_col]
-    if row[strand_col] == 'sense': start = (-1*frame)+3
-    else:                          start = frame+1
+    guide = row[seq_col]
+    start, num_aa = codon_window_geometry(frame, row[strand_col], window, len(guide))
+    if num_aa == 0:
+        return None, None
+
+    # CLIP THE EDITING WINDOW TO THE CODON WINDOW #
+    # A base outside the translated codons cannot be substituted into them.
+    # This only bites when the editing window reaches past either end of the
+    # codon window; at the default [4, 8] the clip is a no-op and the values
+    # below are identical to the unclipped ones.
+    lo = max(window[0]-1, start)
+    hi = min(window[1]-1, start+(num_aa*3)-1)
+    if hi < lo:
+        return None, None
 
     # RETURN EVEN IF THERE IS PARTIAL CODING DNA IN WINDOW #
-    if row[strand_col] == 'sense': 
-        return row[seq_col][window[0]-1:window[1]], int(window[0]-start-1)
-    return rev_complement(complements, row[seq_col][window[0]-1:window[1]]), int(start-window[0])
+    if row[strand_col] == 'sense':
+        return guide[lo:hi+1], int(lo-start)
+    return rev_complement(complements, guide[lo:hi+1]), int(start-lo-1)
 
 
 def annotate_muts(row, edit, amino_acid_seq, col_names, pre, window, exons): 
@@ -158,17 +261,8 @@ def annotate_muts(row, edit, amino_acid_seq, col_names, pre, window, exons):
     substitute_pos = int(row[f'{pre}_target_windowpos'])
 
     # USE POS TO CALCULATE WHICH AMINO ACID #
-    if dir == 'sense' and pos != -1:               start = int((pos-frame)/3)+2
-    elif dir == 'antisense' and pos != -1:         start = int((pos-frame+1)//3)-2
-    elif dir == 'sense' and window1_pos != -1:
-        if window1_pos < 3:                        start = 1
-        else:                                      start = int((window1_pos-(window[0]+1)-frame)/3)+3
-    elif dir == 'antisense' and window1_pos != -1: start = int((window1_pos+(window[0]-1)-frame+1)/3)-2
-    elif dir == 'sense' and window2_pos != -1: 
-        if window2_pos == 0:                       start = -1
-        elif window2_pos <= 3:                     start = 0
-        else:                                      start = int((window2_pos-(window[1]+1)-frame)/3)+3
-    elif dir == 'antisense' and window2_pos != -1: start = int((window2_pos+(window[1]-1)-frame+1)/3)-2
+    start = first_residue_number(
+        dir, frame, pos, window1_pos, window2_pos, window, len(seq), len(dna))
 
     # LIST OF MUTATIONS FOR EACH ROW #
     mutation_details = []
@@ -208,17 +302,8 @@ def annotate_dual_muts(row, edit, amino_acid_seq, col_names, pre, window, exons)
     substitute_pos = int(row[f'{pre}_target_windowpos'])
 
     # USE POS TO CALCULATE WHICH AMINO ACID #
-    if dir == 'sense' and pos != -1:               start = int((pos-frame)/3)+2
-    elif dir == 'antisense' and pos != -1:         start = int((pos-frame+1)//3)-2
-    elif dir == 'sense' and window1_pos != -1:
-        if window1_pos < 3:                        start = 1
-        else:                                      start = int((window1_pos-(window[0]+1)-frame)/3)+3
-    elif dir == 'antisense' and window1_pos != -1: start = int((window1_pos+(window[0]-1)-frame+1)/3)-2
-    elif dir == 'sense' and window2_pos != -1: 
-        if window2_pos == 0:                       start = -1
-        elif window2_pos <= 3:                     start = 0
-        else:                                      start = int((window2_pos-(window[1]+1)-frame)/3)+3
-    elif dir == 'antisense' and window2_pos != -1: start = int((window2_pos+(window[1]-1)-frame+1)/3)-2
+    start = first_residue_number(
+        dir, frame, pos, window1_pos, window2_pos, window, len(seq), len(dna))
 
     # LIST OF MUTATIONS FOR EACH ROW #
     mutation_details = []
@@ -251,11 +336,14 @@ def fill_in_dna_exons(new_dna, row, exons):
     for i, codon in enumerate(new_dna_codons): 
         if window_on_boundary(codon): 
             num_lower = sum(1 for c in codon if c.islower())
-            if codon[0].islower(): # LOOK AT PREVIOUS EXON #
+            # BOUNDS-CHECKED: exons[exon_i-1] would wrap to the last exon and
+            # silently rebuild the codon from the wrong end of the gene, and
+            # exons[exon_i+1] would raise past the final exon
+            if codon[0].islower() and exon_i-1 >= 0: # LOOK AT PREVIOUS EXON #
                 exon_seq = exons[exon_i - 1]
                 replacement_codon = exon_seq[-num_lower:] + codon[-(3-num_lower):]
                 new_dna_codons[i] = replacement_codon
-            if codon[-1].islower(): # LOOK AT NEXT EXON #
+            if codon[-1].islower() and exon_i+1 < len(exons): # LOOK AT NEXT EXON #
                 exon_seq = exons[exon_i + 1]
                 replacement_codon = codon[:(3-num_lower)] + exon_seq[:num_lower]
                 new_dna_codons[i] = replacement_codon
@@ -369,29 +457,47 @@ def categorize_mutations(row, pre, col_names, window, edit_from):
         else: 
             return 'No Mutation'
 
-def is_splice_acceptor_guide(row, pre, dir, window): 
+def _is_upper_at(seq, index):
+    """
+    Whether seq[index] is uppercase, False when the index is off either end.
+
+    The splice detectors look one and two bases past the editing window to
+    confirm which side of the junction the window sits on. Those look-aheads
+    run off the end of the guide once the window reaches its 3' end, so the
+    access is bounds-checked. Out of range means there is no evidence of a
+    junction, which is the same answer as "not a splice guide".
+    """
+    return 0 <= index < len(seq) and seq[index].isupper()
+
+
+def _is_lower_at(seq, index):
+    """Whether seq[index] is lowercase, False when the index is off either end."""
+    return 0 <= index < len(seq) and seq[index].islower()
+
+
+def is_splice_acceptor_guide(row, pre, dir, window):
     pre_from = pre.split('to')[0]
     seq = row['sgRNA_seq']
     edit_wind = seq[window[0]-1:window[1]]
     if edit_wind is None: 
         return False
     if dir == 'sense' and bool(re.match(r'^[a-z]+ag[A-Z]+$', seq)):
-        if ('A' in pre_from) and bool(re.match(r'^[a-z]*ag[A-Z]*$', edit_wind)) and seq[window[1]].isupper(): 
+        if ('A' in pre_from) and bool(re.match(r'^[a-z]*ag[A-Z]*$', edit_wind)) and _is_upper_at(seq, window[1]): 
             return True
-        elif ('A' in pre_from) and bool(re.match(r'^[a-z]*a$', edit_wind)) and seq[window[1]+1].isupper(): 
+        elif ('A' in pre_from) and bool(re.match(r'^[a-z]*a$', edit_wind)) and _is_upper_at(seq, window[1]+1): 
             return True
-        if ('G' in pre_from) and bool(re.match(r'^[a-z]*ag[A-Z]*$', edit_wind)) and seq[window[1]].isupper(): 
+        if ('G' in pre_from) and bool(re.match(r'^[a-z]*ag[A-Z]*$', edit_wind)) and _is_upper_at(seq, window[1]): 
             return True
-        elif ('G' in pre_from) and bool(re.match(r'^g[A-Z]*$', edit_wind)) and seq[window[1]+1].isupper(): 
+        elif ('G' in pre_from) and bool(re.match(r'^g[A-Z]*$', edit_wind)) and _is_upper_at(seq, window[1]+1): 
             return True
     elif dir == 'antisense' and bool(re.match(r'^[A-Z]+ct[a-z]+$', seq)):
-        if ('T' in pre_from) and bool(re.match(r'^[A-Z]*ct[a-z]*$', edit_wind)) and seq[window[1]].islower(): 
+        if ('T' in pre_from) and bool(re.match(r'^[A-Z]*ct[a-z]*$', edit_wind)) and _is_lower_at(seq, window[1]): 
             return True
-        elif ('T' in pre_from) and bool(re.match(r'^t[a-z]*$', edit_wind)) and seq[window[1]+1].islower(): 
+        elif ('T' in pre_from) and bool(re.match(r'^t[a-z]*$', edit_wind)) and _is_lower_at(seq, window[1]+1): 
             return True
-        if ('C' in pre_from) and bool(re.match(r'^[A-Z]*ct[a-z]*$', edit_wind)) and seq[window[1]].islower(): 
+        if ('C' in pre_from) and bool(re.match(r'^[A-Z]*ct[a-z]*$', edit_wind)) and _is_lower_at(seq, window[1]): 
             return True
-        elif ('C' in pre_from) and bool(re.match(r'^[A-Z]*c$', edit_wind)) and seq[window[1]+1].islower(): 
+        elif ('C' in pre_from) and bool(re.match(r'^[A-Z]*c$', edit_wind)) and _is_lower_at(seq, window[1]+1): 
             return True
     return False
 
@@ -402,22 +508,22 @@ def is_splice_donor_guide(row, pre, dir, window):
     if edit_wind is None: 
         return False
     if dir == 'sense' and bool(re.match(r'^[A-Z]*gt[a-z]*$', seq)):
-        if ('T' in pre_from) and bool(re.match(r'^[A-Z]*gt[a-z]*$', edit_wind)) and seq[window[1]].islower(): 
+        if ('T' in pre_from) and bool(re.match(r'^[A-Z]*gt[a-z]*$', edit_wind)) and _is_lower_at(seq, window[1]): 
             return True
-        elif ('T' in pre_from) and bool(re.match(r'^t[a-z]*$', edit_wind)) and seq[window[1]+1].islower(): 
+        elif ('T' in pre_from) and bool(re.match(r'^t[a-z]*$', edit_wind)) and _is_lower_at(seq, window[1]+1): 
             return True
-        if ('G' in pre_from) and bool(re.match(r'^[A-Z]*gt[a-z]*$', edit_wind)) and seq[window[1]].islower(): 
+        if ('G' in pre_from) and bool(re.match(r'^[A-Z]*gt[a-z]*$', edit_wind)) and _is_lower_at(seq, window[1]): 
             return True
-        elif ('G' in pre_from) and bool(re.match(r'^[A-Z]*g$', edit_wind)) and seq[window[1]+1].islower(): 
+        elif ('G' in pre_from) and bool(re.match(r'^[A-Z]*g$', edit_wind)) and _is_lower_at(seq, window[1]+1): 
             return True
     elif dir == 'antisense' and bool(re.match(r'^[a-z]*ac[A-Z]*$', seq)):
-        if ('A' in pre_from) and bool(re.match(r'^[a-z]*ac[A-Z]*$', edit_wind)) and seq[window[1]].isupper(): 
+        if ('A' in pre_from) and bool(re.match(r'^[a-z]*ac[A-Z]*$', edit_wind)) and _is_upper_at(seq, window[1]): 
             return True
-        elif ('A' in pre_from) and bool(re.match(r'^[a-z]*a$', edit_wind)) and seq[window[1]+1].isupper(): 
+        elif ('A' in pre_from) and bool(re.match(r'^[a-z]*a$', edit_wind)) and _is_upper_at(seq, window[1]+1): 
             return True
-        if ('C' in pre_from) and bool(re.match(r'^[a-z]*ac[A-Z]*$', edit_wind)) and seq[window[1]].isupper(): 
+        if ('C' in pre_from) and bool(re.match(r'^[a-z]*ac[A-Z]*$', edit_wind)) and _is_upper_at(seq, window[1]): 
             return True
-        elif ('C' in pre_from) and bool(re.match(r'^c[A-Z]*$', edit_wind)) and seq[window[1]+1].isupper(): 
+        elif ('C' in pre_from) and bool(re.match(r'^c[A-Z]*$', edit_wind)) and _is_upper_at(seq, window[1]+1): 
             return True
     return False
 

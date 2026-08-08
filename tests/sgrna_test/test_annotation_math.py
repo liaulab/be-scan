@@ -251,81 +251,129 @@ def test_default_window_holds_across_gene_layouts(tmp_path, exon_lengths):
 
 
 # --------------------------------------------------------------------------- #
-# characterization: the window parameter only works at its default
+# the window parameter is tunable
 # --------------------------------------------------------------------------- #
 
 # `window` is documented as tunable in generate_library, annotate and
-# design_library ("Editing window, 4th to 8th bases inclusive by default").
-# It is not. Sweeping every window [start, start+width-1] for start 1..10 and
-# width 1..7 against the reference implementation, exactly one of the 70
-# combinations is correct, and it is the default:
+# design_library. Before 3.0.0 it was not. Sweeping every window on a 20-mer
+# guide, 1 of 207 combinations matched the reference, and it was the default
+# [4,8]; the rest either raised or silently shifted residue numbering, because
+# calc_target, the residue-index arithmetic and the _gene_ window guards all
+# carried constants calibrated for [4,8].
 #
-#   start |    w=1    w=2    w=3    w=4    w=5    w=6    w=7
-#       1 |  CRASH  CRASH  CRASH  CRASH  CRASH  CRASH  CRASH
-#       2 |  CRASH  CRASH  CRASH  CRASH  CRASH  CRASH  CRASH
-#       3 |  CRASH  CRASH  CRASH  CRASH  CRASH  CRASH  CRASH
-#       4 |  CRASH  CRASH  CRASH  CRASH     OK  WRONG  WRONG
-#       5 |  CRASH  CRASH  CRASH  CRASH  WRONG  WRONG  CRASH
-#       6 |  CRASH  CRASH  CRASH  CRASH  WRONG  CRASH  CRASH
-#    7-10 |  CRASH  CRASH  CRASH  CRASH  CRASH  CRASH  CRASH
+# codon_window_geometry and first_residue_number now derive that geometry from
+# `window`. The same sweep on the current code:
 #
-# Root causes, all in code tuned to window == [4, 8]:
+#         end:  12345678901234567890
+#   start   1   EExxxxxxxxxxxxxxxxxx
+#           2    Exxxxxxxxxxxxxxxxxx
+#           3     ................xx
+#           4      ...............xx
+#          ...                     ...
+#          18                       .xx
 #
-#   _gene_.py:88,121   `seq[window[1]]` indexes one past the window's last
-#                      base. On a 20-mer reverse guide this raises IndexError
-#                      whenever window[1] == 20.
-#   _guideRNA_.py:117  calc_target's codon window is anchored to the guide
-#                      start, not to the editing window, so a window far from
-#                      the 5' end falls outside the translated codons and
-#                      DNA_to_AA asserts on a length not divisible by 3.
-#   _guideRNA_.py:161  the residue-index arithmetic in annotate_muts hardcodes
-#                      offsets (+3, <3, +1) calibrated for [4,8]; other
-#                      windows shift the reported residue by one.
-#   _guideRNA_.py:255  fill_in_dna_exons reaches exons[exon_i +/- 1] without a
-#                      bounds check, so a boundary codon in the first or last
-#                      exon indexes off the end of the list.
+#   136/207 correct.  Rule: SUPPORTED when start >= 3 and end <= 18.
 #
-# These are recorded, not fixed: the baseline annotation logic is deliberately
-# left untouched. If any of these xfails starts passing, the underlying issue
-# was addressed and this block should be updated.
+# Both boundaries are the codon-alignment limits of a 20-mer, not arbitrary:
+#   start <= 2  -- a codon covering guide position 1 or 2 can begin before the
+#                  guide, and cannot be translated from the guide alone
+#   end   >= 19 -- a codon covering guide position 19 or 20 can extend past the
+#                  guide's 3' end, likewise unresolvable
+# In both cases the affected bases are skipped rather than mis-numbered.
 
-WINDOW_CRASHES = [(1, 5), (2, 6), (3, 7), (3, 9), (5, 7), (4, 4), (8, 12), (1, 20)]
-WINDOW_WRONG = [(5, 9), (6, 10), (4, 9), (4, 10), (4, 11)]
-
-
-@pytest.mark.parametrize("window", WINDOW_CRASHES, ids=str)
-@pytest.mark.xfail(reason="baseline: non-default editing windows raise", strict=True)
-def test_nondefault_window_does_not_crash(tmp_path, window):
-    """Characterizes that non-default windows raise rather than annotate."""
-    build(tmp_path, syn.ALL_PHASE_LENGTHS, "A", "G", window=window)
+WINDOW_MIN_START = 3
+WINDOW_MAX_END = 18
 
 
-@pytest.mark.parametrize("window", WINDOW_WRONG, ids=str)
+def supported_windows():
+    """Every window inside the supported region, as (start, end) pairs."""
+    return [
+        (s, e)
+        for s in range(WINDOW_MIN_START, WINDOW_MAX_END + 1)
+        for e in range(s, WINDOW_MAX_END + 1)
+    ]
+
+
+# a representative spread rather than all 136, to keep the suite quick
+WINDOWS_SUPPORTED = [
+    (3, 3), (3, 7), (3, 9), (3, 18),
+    (4, 4), (4, 8), (4, 9), (4, 11), (4, 18),
+    (5, 7), (5, 9), (6, 10), (7, 11), (8, 12),
+    (10, 14), (12, 17), (16, 18), (18, 18),
+]
+
+WINDOWS_UNRESOLVABLE_CODON = [
+    (1, 5), (2, 6), (1, 10), (2, 8),   # codon starts before the guide
+    (4, 19), (4, 20), (10, 20), (17, 20),  # codon extends past the guide
+]
+
+
+def test_supported_window_region_is_a_clean_rectangle():
+    """The supported set is a simple rule, not a scattered list."""
+    windows = supported_windows()
+    assert (4, 8) in windows, "the default window must be supported"
+    assert len(windows) == 136
+    assert all(3 <= s and e <= 18 for s, e in windows)
+
+
+@pytest.mark.parametrize("window", WINDOWS_SUPPORTED, ids=str)
+def test_window_is_tunable(tmp_path, window):
+    """Any window with start >= 3 and end <= 18 must match the reference."""
+    info = build(tmp_path, syn.ALL_PHASE_LENGTHS, "A", "G", window=window)
+    compared, disagreements = compare_all(info, "A", "G", window=window)
+
+    assert compared > 50, f"only {compared} guides compared for window {window}"
+    assert not disagreements, (
+        f"window={window}: {len(disagreements)}/{compared} guides disagree:\n"
+        f"{format_disagreements(disagreements)}"
+    )
+
+
+@pytest.mark.parametrize("window", [(3, 7), (4, 8), (5, 9), (6, 12), (9, 15)], ids=str)
+@pytest.mark.parametrize("edit_from,edit_to", EDITORS)
+def test_window_is_tunable_for_every_editor(tmp_path, window, edit_from, edit_to):
+    info = build(tmp_path, syn.ALL_PHASE_LENGTHS, edit_from, edit_to, window=window)
+    compared, disagreements = compare_all(info, edit_from, edit_to, window=window)
+    assert not disagreements, (
+        f"window={window} {edit_from}->{edit_to}: "
+        f"{len(disagreements)}/{compared} disagree:\n"
+        f"{format_disagreements(disagreements)}"
+    )
+
+
+@pytest.mark.parametrize("window", WINDOWS_UNRESOLVABLE_CODON, ids=str)
 @pytest.mark.xfail(
-    reason="baseline: non-default windows shift residue numbering", strict=True
+    reason="a codon reaching past either end of the guide cannot be resolved "
+           "from the guide sequence alone, so those bases are skipped",
+    strict=True,
 )
-def test_nondefault_window_matches_reference(tmp_path, window):
-    """Characterizes that non-default windows misnumber residues."""
+def test_window_outside_the_supported_region(tmp_path, window):
     info = build(tmp_path, syn.ALL_PHASE_LENGTHS, "A", "G", window=window)
     _, disagreements = compare_all(info, "A", "G", window=window)
     assert not disagreements, format_disagreements(disagreements)
 
 
-def test_default_window_is_the_only_supported_window():
+@pytest.mark.parametrize("window", WINDOWS_UNRESOLVABLE_CODON, ids=str)
+def test_window_outside_the_supported_region_does_not_crash(tmp_path, window):
     """
-    A signpost, so the [4,8]-only limitation is discoverable from the tests.
+    Under-reporting out there is acceptable; crashing is not.
 
-    Kept deliberately simple: the detailed evidence is in the sweep recorded
-    in the comment block above.
+    Every one of these windows used to raise. They now annotate, skipping only
+    the codon that cannot be resolved.
     """
-    from be_scan.sgrna.annotate import annotate as _annotate
+    info = build(tmp_path, syn.ALL_PHASE_LENGTHS, "A", "G", window=window)
+    assert len(info["annotated"]) > 0
+
+
+def test_default_window_is_unchanged():
+    """The documented default must stay [4,8]; existing callers rely on it."""
     import inspect
 
-    default = inspect.signature(_annotate).parameters["window"].default
-    assert default == [4, 8], (
-        "annotate's default window changed. The annotation math is only "
-        "correct at [4,8]; see the window sweep above."
-    )
+    from be_scan.sgrna.annotate import annotate as _annotate
+    from be_scan.sgrna.generate_library import generate_library as _gen
+
+    assert inspect.signature(_annotate).parameters["window"].default == [4, 8]
+    assert inspect.signature(_gen).parameters["window"].default == [4, 8]
 
 
 @pytest.mark.parametrize("edit_from,edit_to", EDITORS)
