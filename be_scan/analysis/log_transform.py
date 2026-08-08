@@ -10,6 +10,60 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from scipy import stats
+
+def calc_pvals(df_reps):
+    """
+    Two-sided one-sample t-test of each row's replicate values against zero.
+
+    Parameters
+    ------------
+    df_reps : pandas DataFrame
+        One column per replicate, one row per sgRNA.
+
+    Returns
+    ------------
+    numpy array of p-values, one per row. Rows with fewer than two usable
+    replicates, or with no variance across them, yield NaN rather than a
+    misleading value.
+
+    Notes
+    ------------
+    Zero-variance rows are deliberately NaN rather than 0. scipy reports p=0
+    for identical replicates, because the t-statistic is infinite, and -log10
+    of that is ~308 -- the most significant value possible. An sgRNA with zero
+    counts in every replicate has exactly identical log-fold-changes, so
+    dropped-out guides would otherwise dominate every volcano plot. With no
+    spread between replicates there is no evidence about significance, and NaN
+    is the honest answer.
+    """
+    values = df_reps.to_numpy(dtype=float)
+    with np.errstate(invalid='ignore', divide='ignore'):
+        _, pvals = stats.ttest_1samp(values, popmean=0.0, axis=1,
+                                     nan_policy='omit')
+    pvals = np.asarray(pvals, dtype=float)
+
+    # mask rows that carry no information: too few replicates, or no spread
+    n_obs = np.sum(~np.isnan(values), axis=1)
+    with np.errstate(invalid='ignore'):
+        spread = np.nanstd(values, axis=1)
+    pvals = np.where((n_obs < 2) | (spread == 0), np.nan, pvals)
+    return pvals
+
+
+def neg_log10(pvals):
+    """
+    -log10 of a p-value array, for volcano-style plotting.
+
+    A p-value of exactly 0 would give infinity, so it is floored at the
+    smallest positive double first. NaN stays NaN.
+    """
+    pvals = np.asarray(pvals, dtype=float)
+    floored = np.where(pvals > 0, pvals, np.finfo(float).tiny)
+    with np.errstate(invalid='ignore', divide='ignore'):
+        out = -np.log10(floored)
+    return np.where(np.isnan(pvals), np.nan, out)
+
 
 def log_transform(
     sample_sheet, 
@@ -55,6 +109,18 @@ def log_transform(
 
     Returns
     ------------
+    df_ref : pandas DataFrame
+
+    For every condition with more than one replicate, two columns are added
+    alongside the existing '<cond>_avg' and '<cond>_stdev':
+
+       '<cond>_pval'    : float, two-sided one-sample t-test of that sgRNA's
+                          replicate values against 0
+       '<cond>_neglogp' : float, -log10 of the above
+
+    Conditions with a single replicate get no p-value columns, since a
+    p-value across one measurement is not defined. No existing column is
+    renamed, reordered or altered.
     """
     in_path = Path(in_dir)
     out_path = Path(out_dir)
@@ -97,13 +163,21 @@ def log_transform(
             # for each unique condition, find the reps
             reps = [x+suffix for x in df_map.loc[df_map['condition'] == cond]['rep'].tolist()]
             # skip averaging for single replicates (otherwise breaks script)
-            if len(reps) > 1: 
+            if len(reps) > 1:
                 df_ref[cond+suffix+'_avg'] = df_ref[reps].mean(axis=1)
                 df_ref[cond+suffix+'_stdev'] = df_ref[reps].std(axis=1)
-            elif len(reps) == 1: 
+                # SIGNIFICANCE ACROSS REPLICATES #
+                # Two-sided one-sample t-test of each sgRNA's replicate values
+                # against 0, i.e. "is this guide's effect distinguishable from
+                # no change?". Only defined with more than one replicate, so
+                # single-rep conditions get no p-value columns at all.
+                pvals = calc_pvals(df_ref[reps])
+                df_ref[cond+suffix+'_pval'] = pvals
+                df_ref[cond+suffix+'_neglogp'] = neg_log10(pvals)
+            elif len(reps) == 1:
                 df_ref[cond+suffix+'_avg'] = df_ref[reps]
                 df_ref[cond+suffix+'_stdev'] = 0
-            else: 
+            else:
                 raise Exception('Error! Replicate number not valid')
 
     # SAVE DF AND RETURN #

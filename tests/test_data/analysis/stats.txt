@@ -1,0 +1,4 @@
+For comparison cond1_LFCminusControl_avg
+Mean is 0.3444583488557236
+Standard deviation is 0.030436914973120798
+Mean +- 2 standard deviations 0.40533217880196515 0.283584518909482
