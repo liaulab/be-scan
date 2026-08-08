@@ -25,8 +25,9 @@ def batch_process(
     lower_cutoff=0, lower_cutoff_cols=[], 
     out_counts='counts_library.csv', out_lfc='library_LFC.csv', out_comps='conditions.csv', out_stats = 'stats.txt',
     
-    stats_comparisons=[], 
+    stats_comparisons=[],
     plot_out_type='pdf', save=True, return_df=False,
+    guide_len=20,
     ):
     
     """[Summary]
@@ -70,7 +71,8 @@ def batch_process(
         Sequence that is expected downstream of the spacer sequence. The
         default is the start of the sgRNA scaffold sequence.
     dont_trim_G : bool, default False
-        Whether to trim the first G from 21-nt sgRNA sequences to make them 20-nt.
+        Whether to trim a leading G from sgRNA sequences one base longer than
+        guide_len, to bring them back to guide_len.
     lower_cutoff : float, default 0
         The cutoff for values which do not go into the final dataframe
     lower_cutoff_cols : list of str, default []
@@ -96,6 +98,8 @@ def batch_process(
         Whether or not to return the resulting dataframe and statistics
     save : bool, default True
         Whether or not to save the resulting dataframe
+    guide_len : int, default 20
+        Length in nucleotides of the sgRNA spacer, forwarded to count_reads.
 
     Returns
     ------------
@@ -105,7 +109,8 @@ def batch_process(
         'sample_sheet':sample_sheet, 'annotated_lib':annotated_lib, 'in_dir':file_dir, 
         'KEY_INTERVAL':KEY_INTERVAL, 'KEY':KEY, 'KEY_REV':KEY_REV, 'dont_trim_G':dont_trim_G, 'sgRNA_seq_col':sgRNA_seq_col, 
         'lower_cutoff':lower_cutoff, 'lower_cutoff_cols':lower_cutoff_cols, 
-        'out_dir':file_dir, 'out_file':out_counts, 'return_df':return_df, 'plot_out_type':plot_out_type, 'save_files':save, }
+        'out_dir':file_dir, 'out_file':out_counts, 'return_df':return_df, 'plot_out_type':plot_out_type, 'save_files':save,
+        'guide_len':guide_len, }
     count_reads(**count_reads_params)
 
     log_transform_params = {

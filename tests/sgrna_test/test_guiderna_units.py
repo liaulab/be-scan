@@ -93,21 +93,42 @@ def test_annotate_intron_exon_anti_mirrors_the_window():
     assert annotate_intron_exon_anti(seq, WINDOW) == "Exon/Intron"
 
 
-def test_annotate_intron_exon_anti_assumes_a_20mer():
+def test_annotate_intron_exon_anti_adapts_to_the_guide_length():
     """
-    The mirrored slice is computed against a hardcoded length of 20.
+    The mirrored slice follows the guide length rather than a literal 20.
 
-    The function reads `x[20-window[1] : 20-window[0]+1]` with a literal 20
-    rather than len(x). On a guide of any other length the window lands in the
-    wrong place. Recorded here so the assumption is explicit; the guide length
-    is made tunable in a later step of this release.
+    This used to read `x[20-window[1] : 20-window[0]+1]`, so any guide that
+    was not 20 nt had its window read from the wrong place. guide_len now
+    defaults to len(x), and a 21-mer with the same intronic run in the
+    equivalent position is still called Intron.
     """
     twenty = "A" * 12 + "ggggg" + "A" * 3
+    assert len(twenty) == 20
     assert annotate_intron_exon_anti(twenty, WINDOW) == "Intron"
 
-    # the same guide one base longer: the intronic run is no longer read
-    twenty_one = "A" + twenty
-    assert annotate_intron_exon_anti(twenty_one, WINDOW) == "Exon/Intron"
+    # a 21 nt guide whose mirrored window covers the same intronic run
+    twenty_one = "A" * 13 + "ggggg" + "A" * 3
+    assert len(twenty_one) == 21
+    assert annotate_intron_exon_anti(twenty_one, WINDOW) == "Intron"
+
+    # an explicit guide_len still overrides, preserving the old behavior
+    assert annotate_intron_exon_anti(twenty_one, WINDOW, guide_len=20) == "Exon/Intron"
+
+
+def test_annotate_intron_exon_anti_is_unchanged_for_20mers():
+    """Every 20 nt guide must give exactly what the hardcoded version gave."""
+    for seq in [
+        "A" * 12 + "GGGGG" + "A" * 3,
+        "A" * 12 + "ggggg" + "A" * 3,
+        "A" * 12 + "GGggg" + "A" * 3,
+        "acgt" * 5,
+        "ACGT" * 5,
+    ]:
+        expected_slice = seq[20 - WINDOW[1]:20 - WINDOW[0] + 1]
+        if expected_slice.isupper():   expected = "Exon"
+        elif expected_slice.islower(): expected = "Intron"
+        else:                          expected = "Exon/Intron"
+        assert annotate_intron_exon_anti(seq, WINDOW) == expected
 
 
 # --------------------------------------------------------------------------- #

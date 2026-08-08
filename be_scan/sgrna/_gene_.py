@@ -17,11 +17,11 @@ from be_scan.sgrna._genomic_ import complements, rev_complement
 class GeneForCRISPR(): 
     
     # READING THE .FASTA FILE INTO A STRING #
-    def __init__(self, filepath): 
+    def __init__(self, filepath, guide_len=20):
         self.filepath = Path(filepath)
         f = open(self.filepath, "r")
         self.file_content = f.read() # STRING
-        self.guide_len = 20
+        self.guide_len = guide_len
 
         if len(self.file_content) == 0: 
             warnings.warn('Input file is empty.')
@@ -93,9 +93,9 @@ class GeneForCRISPR():
                     utr = True
                 if e == len(self.exons_extra)-1 and i > len(exon_extra) - last_exon_utr_len - window[1]: 
                     utr = True
-                if e == 0 and i < first_exon_utr_len + 20 - window[0]+1: 
+                if e == 0 and i < first_exon_utr_len + self.guide_len - window[0]+1:
                     anti_utr = True
-                if e == len(self.exons_extra)-1 and i > len(exon_extra) - last_exon_utr_len - 20 + window[1] - window[1]: 
+                if e == len(self.exons_extra)-1 and i > len(exon_extra) - last_exon_utr_len - self.guide_len + window[1] - window[1]:
                     anti_utr = True
 
                 calc_pos = i-self.intron_len+prev_ind # USED TO CALC FOR REV GUIDES #
@@ -108,12 +108,15 @@ class GeneForCRISPR():
         self.fwd_guides = [g[1:10] for g in fwd_guides]
         # CALCULATE REV GUIDES FROM FWD GUIDES #
         self.rev_guides = []
-        for g in fwd_guides: 
-            g_rev = [rev_complement(complements, g[0][3:]), rev_complement(complements, g[0][:3]), (g[3]+1)%3]
+        # the PAM occupies whatever the n-mer has left over after the spacer,
+        # so a non-3 nt PAM (or a non-20 nt guide) stays consistent here
+        pam_len = self.n - self.guide_len
+        for g in fwd_guides:
+            g_rev = [rev_complement(complements, g[0][pam_len:]), rev_complement(complements, g[0][:pam_len]), (g[3]+1)%3]
             if g_rev[0][0].islower(): g_rev.append(-1)
             else: g_rev.append(g[10]+self.n-1)
             if self.strand=='plus': g_rev.append(g[5]+self.n-1)
-            if self.strand=='minus': g_rev.append(g[5]-self.n+3)
+            if self.strand=='minus': g_rev.append(g[5]-self.guide_len)
             g_rev.append(g[6])
 
             if    g_rev[0][window[0]-1].islower(): g_rev.append(-1)

@@ -23,9 +23,10 @@ def count_reads(
     KEY_INTERVAL=(10,80), KEY='CGAAACACC', KEY_REV='GTTTGAGA', dont_trim_G=False,
     sgRNA_seq_col = 'sgRNA_seq', 
     lower_cutoff=0, lower_cutoff_cols=[], 
-    in_dir='', out_dir='', out_file='library_counts.csv', 
-    return_df=True, save_files=True, plot_out_type='pdf', 
-    ): 
+    in_dir='', out_dir='', out_file='library_counts.csv',
+    return_df=True, save_files=True, plot_out_type='pdf',
+    guide_len=20,
+    ):
     
     """[Summary]
     Given a set of sgRNA sequences and a FASTQ file, count the reads in the
@@ -59,7 +60,8 @@ def count_reads(
         Sequence that is expected downstream of the spacer sequence. The
         default is the start of the sgRNA scaffold sequence.
     dont_trim_G : bool, default False
-        Whether to trim the first G from 21-nt sgRNA sequences to make them 20-nt.
+        Whether to trim a leading G from sgRNA sequences one base longer than
+        guide_len, to bring them back to guide_len.
     sgRNA_seq_col : str, defaults to 'sgRNA_seq'
         The column of annotated_lib with the sequence of the sgRNA
     lower_cutoff : float, default 0
@@ -79,6 +81,9 @@ def count_reads(
         Whether or not to save individual counts, noncounts, and stats files
     plot_out_type : str, optional, defaults to 'pdf'
         file type of figure output
+    guide_len : int, default 20
+        Length in nucleotides of the sgRNA spacer. Reads whose extracted
+        guide is not this length are counted as bad-length and discarded.
 
     Returns
     ------------
@@ -152,11 +157,11 @@ def count_reads(
             start_index = key_index + KEY_START + len(KEY)
             guide = read_sequence[start_index:end_index]
             if not dont_trim_G: # trim G
-                if guide.startswith('G') and len(guide) == 21:
+                if guide.startswith('G') and len(guide) == guide_len+1:
                     guide = guide[1:]
-            if not KEY_REV: 
-                guide = guide[:20]
-            if len(guide) != 20:
+            if not KEY_REV:
+                guide = guide[:guide_len]
+            if len(guide) != guide_len:
                 num_badlength += 1
                 continue
             if guide in dict_p:
@@ -222,7 +227,7 @@ def count_reads(
                 stats_list = [
                     f'Number of reads processed: {num_reads}', 
                     f'Number of reads where key was not found: {num_nokey}', 
-                    f'Number of reads where length was not 20bp: {num_badlength}', 
+                    f'Number of reads where length was not {guide_len}bp: {num_badlength}',
                     f'Number of perfect guide matches: {num_p_matches}', 
                     f'Number of nonperfect guide matches: {num_np_matches}', 
                     f'Number of undetected guides: {guides_no_reads}', 

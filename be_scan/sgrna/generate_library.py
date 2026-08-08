@@ -22,8 +22,9 @@ def generate_library(
 
     gene_name='', PAM=None, window=[4,8], 
     output_name='guides.csv', output_dir='', return_df=True, save_df=True, 
-    exclude_introns=False, exclude_nonediting=False, exclude_duplicates=True, exclude_sequences=['TTTT']
-    ): 
+    exclude_introns=False, exclude_nonediting=False, exclude_duplicates=True, exclude_sequences=['TTTT'],
+    guide_len=20,
+    ):
     
     """[Summary]
     Generates a list of guides based on a gene .fasta file,
@@ -66,12 +67,15 @@ def generate_library(
         Whether or not duplicate guides should be removed from the pool
     exclude_sequences : list of strings, defailt ['TTTT']
         Exclude guides with sequences in this list
+    guide_len : int, default 20
+        Length in nucleotides of the sgRNA spacer. The searched sequence is
+        guide_len + len(PAM), so a non-standard PAM length works too.
 
     Returns
     ------------
     df_no_duplicates : pandas dataframe
-    Dataframe contains: 
-       'sgRNA_seq'      : str,    the sequence of the guide 20 bps fwd if on sense strand and rev if on antisense
+    Dataframe contains:
+       'sgRNA_seq'      : str,    the sequence of the guide guide_len bps fwd if on sense strand and rev if on antisense
        'PAM_seq'        : str,    the sequence of the PAM 3 bps fwd if on sense strand and rev if on antisense
        'starting_frame' : int,    (0, 1, 2) coding position of the first bp in fwd sgRNA or last bp in rev sgRNA
        'chr_pos'        : int,    the genome position of the first bp in a fwd sgRNA or last bp of a rev sgRNA
@@ -100,17 +104,18 @@ def generate_library(
     PAM_regex = process_PAM(PAM)
     # PREPROCESS WINDOW #
     assert window[1] >= window[0] and window[0] >= 0, "Input a valid window ie [4,8]"
-    assert window[1] <= 20, "Input a valid window ie [4,8]"
-    
+    assert window[1] <= guide_len, f"Window must fit within a {guide_len} nt guide"
+
     path = Path.cwd()
     # CREATE GENE OBJECT #
-    gene = GeneForCRISPR(filepath=gene_filepath)
+    gene = GeneForCRISPR(filepath=gene_filepath, guide_len=guide_len)
     print('Create gene object from', gene_filepath)
     gene.parse_exons()
     print('Parsing exons:', len(gene.exons), 'exons found')
     gene.extract_metadata()
     # PARSE ALL GUIDES #
-    gene.find_all_guides(window=window)
+    # the searched n-mer is the spacer plus the PAM, so a non-3 nt PAM works
+    gene.find_all_guides(window=window, n=guide_len+len(PAM))
     print('Preprocessing sucessful!')
     
     # SET COLUMN NAMES FOR OUTPUT #

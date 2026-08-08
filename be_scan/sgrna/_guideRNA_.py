@@ -547,8 +547,18 @@ def annotate_intron_exon(x, window):
     elif coding.islower(): return "Intron"
     else: return "Exon/Intron"
 
-def annotate_intron_exon_anti(x, window): 
-    coding = x[20-window[1]: 20-window[0]+1] # window=(4,8) so x[12:17]
+def annotate_intron_exon_anti(x, window, guide_len=None):
+    """
+    Where the mirrored editing window sits on an antisense guide.
+
+    The window is mirrored because an antisense guide reads in the opposite
+    direction to the coding sequence it is compared against. guide_len
+    defaults to len(x), which for a standard 20 nt spacer gives x[12:17] at
+    window (4,8) -- identical to the length this previously hardcoded.
+    """
+    if guide_len is None:
+        guide_len = len(x)
+    coding = x[guide_len-window[1]: guide_len-window[0]+1] # window=(4,8) so x[12:17]
     if coding.isupper(): return "Exon"
     elif coding.islower(): return "Intron"
     else: return "Exon/Intron"
