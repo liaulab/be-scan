@@ -11,6 +11,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from scipy import stats
+from scipy.special import digamma, polygamma
+import statsmodels.stats.multitest as smm
 
 def calc_pvals(df_reps):
     """
@@ -49,6 +51,136 @@ def calc_pvals(df_reps):
         spread = np.nanstd(values, axis=1)
     pvals = np.where((n_obs < 2) | (spread == 0), np.nan, pvals)
     return pvals
+
+
+def _trigamma_inverse(y):
+    """
+    Solve trigamma(x) = y by Newton iteration.
+
+    Used when fitting the prior variance distribution. Mirrors limma's
+    trigammaInverse; the initial guess and update are Smyth's.
+    """
+    y = float(y)
+    if not np.isfinite(y) or y <= 0:
+        return np.inf
+    x = 0.5 + 1.0 / y
+    for _ in range(50):
+        tri = polygamma(1, x)
+        step = tri * (1 - tri / y) / polygamma(2, x)
+        x = x + step
+        if abs(step / x) < 1e-8:
+            break
+    return x
+
+
+def fit_variance_prior(variances, df):
+    """
+    Fit a scaled inverse chi-squared prior to a set of sample variances.
+
+    This is the method-of-moments fit from Smyth (2004), the step that makes a
+    moderated t-test possible: it learns how variable sgRNA variances are
+    across the whole screen, and uses that as a prior.
+
+    Parameters
+    ------------
+    variances : array of per-sgRNA sample variances
+    df : int, residual degrees of freedom per sgRNA (n_replicates - 1)
+
+    Returns
+    ------------
+    (prior_var, prior_df). prior_df is inf when the observed variances are no
+    more dispersed than sampling noise alone would explain, which collapses
+    the moderated test to using a single pooled variance for every guide.
+    """
+    variances = np.asarray(variances, dtype=float)
+    usable = variances[np.isfinite(variances) & (variances > 0)]
+    if usable.size < 2 or df <= 0:
+        return np.nan, np.inf
+
+    z = np.log(usable)
+    e = z - digamma(df / 2.0) + np.log(df / 2.0)
+    e_mean = float(np.mean(e))
+    e_var = float(np.var(e, ddof=1)) - float(polygamma(1, df / 2.0))
+
+    if e_var > 0:
+        prior_df = 2.0 * _trigamma_inverse(e_var)
+        prior_var = float(np.exp(e_mean + digamma(prior_df / 2.0)
+                                 - np.log(prior_df / 2.0)))
+    else:
+        prior_df = np.inf
+        prior_var = float(np.exp(e_mean))
+    return prior_var, prior_df
+
+
+def calc_moderated_pvals(df_reps):
+    """
+    Moderated (variance-shrunk) two-sided t-test against zero.
+
+    With three replicates the ordinary t-test is dominated by how lucky each
+    sgRNA's variance estimate was: a guide whose replicates happen to agree
+    closely outranks one with a far larger effect. Screens routinely surface
+    non-targeting controls this way.
+
+    The moderated test borrows strength across the whole library. Each guide's
+    variance is pulled toward a prior fitted from every other guide, so an
+    implausibly small variance cannot by itself produce a tiny p-value, and
+    the degrees of freedom rise accordingly.
+
+    Unlike the ordinary test, this is defined for a guide whose replicates are
+    identical: shrinkage gives it the prior variance rather than zero.
+
+    Returns
+    ------------
+    numpy array of p-values, one per row, NaN where fewer than two replicates
+    are usable.
+    """
+    values = df_reps.to_numpy(dtype=float)
+    n_obs = np.sum(~np.isnan(values), axis=1)
+
+    with np.errstate(invalid='ignore', divide='ignore'):
+        means = np.nanmean(values, axis=1)
+        variances = np.nanvar(values, ddof=1, axis=1)
+
+    # fit the prior on the guides that carry a usable variance estimate
+    full = int(np.max(n_obs)) if n_obs.size else 0
+    df_resid = full - 1
+    prior_var, prior_df = fit_variance_prior(variances[n_obs == full], df_resid)
+
+    if not np.isfinite(prior_var):
+        return np.full(values.shape[0], np.nan)
+
+    df_obs = np.maximum(n_obs - 1, 0).astype(float)
+    if np.isinf(prior_df):
+        posterior_var = np.full_like(variances, prior_var)
+        total_df = np.full_like(df_obs, np.inf)
+    else:
+        posterior_var = ((prior_df * prior_var) + (df_obs * np.nan_to_num(variances))) \
+            / (prior_df + df_obs)
+        total_df = prior_df + df_obs
+
+    with np.errstate(invalid='ignore', divide='ignore'):
+        t_mod = means / np.sqrt(posterior_var / n_obs)
+        pvals = 2.0 * stats.t.sf(np.abs(t_mod), total_df)
+
+    return np.where(n_obs >= 2, pvals, np.nan)
+
+
+def fdr_correct(pvals):
+    """
+    Benjamini-Hochberg false discovery rate correction.
+
+    A screen tests every sgRNA at once, so raw p-values below 0.05 are
+    expected by chance in proportion to the library size. NaN entries are
+    excluded from the correction and stay NaN.
+    """
+    pvals = np.asarray(pvals, dtype=float)
+    out = np.full(pvals.shape, np.nan)
+    valid = np.isfinite(pvals)
+    if valid.sum() == 0:
+        return out
+    _, qvals, _, _ = smm.multipletests(pvals[valid], method='fdr_bh')
+    out[valid] = qvals
+    return out
 
 
 def neg_log10(pvals):
@@ -111,16 +243,28 @@ def log_transform(
     ------------
     df_ref : pandas DataFrame
 
-    For every condition with more than one replicate, two columns are added
+    For every condition with more than one replicate, six columns are added
     alongside the existing '<cond>_avg' and '<cond>_stdev':
 
-       '<cond>_pval'    : float, two-sided one-sample t-test of that sgRNA's
-                          replicate values against 0
-       '<cond>_neglogp' : float, -log10 of the above
+       '<cond>_pval'        : two-sided one-sample t-test of that sgRNA's
+                              replicate values against 0
+       '<cond>_neglogp'     : -log10 of the above
+       '<cond>_pval_mod'    : the same test with the variance shrunk toward a
+                              prior fitted across the whole library
+       '<cond>_neglogp_mod' : -log10 of the above
+       '<cond>_qval'        : Benjamini-Hochberg FDR of '<cond>_pval'
+       '<cond>_qval_mod'    : Benjamini-Hochberg FDR of '<cond>_pval_mod'
 
-    Conditions with a single replicate get no p-value columns, since a
-    p-value across one measurement is not defined. No existing column is
-    renamed, reordered or altered.
+    Which to use: with only two or three replicates, prefer the moderated
+    columns. The ordinary t-test ranks largely on how lucky each guide's
+    variance estimate was, so a guide whose replicates happen to agree closely
+    can outrank one with a far larger effect, and non-targeting controls
+    routinely appear near the top. Read either alongside '<cond>_avg' -- a
+    small p-value on a negligible effect is still a negligible effect.
+
+    Conditions with a single replicate get none of these, since a p-value
+    across one measurement is not defined. No existing column is renamed,
+    reordered or altered.
     """
     in_path = Path(in_dir)
     out_path = Path(out_dir)
@@ -174,6 +318,16 @@ def log_transform(
                 pvals = calc_pvals(df_ref[reps])
                 df_ref[cond+suffix+'_pval'] = pvals
                 df_ref[cond+suffix+'_neglogp'] = neg_log10(pvals)
+                # MODERATED TEST AND MULTIPLE-TESTING CORRECTION #
+                # With few replicates the ordinary t-test ranks on how lucky a
+                # guide's variance estimate was, so a variance-shrunk version
+                # is provided alongside it. Both are then FDR-corrected across
+                # the library, since every sgRNA is tested at once.
+                pvals_mod = calc_moderated_pvals(df_ref[reps])
+                df_ref[cond+suffix+'_pval_mod'] = pvals_mod
+                df_ref[cond+suffix+'_neglogp_mod'] = neg_log10(pvals_mod)
+                df_ref[cond+suffix+'_qval'] = fdr_correct(pvals)
+                df_ref[cond+suffix+'_qval_mod'] = fdr_correct(pvals_mod)
             elif len(reps) == 1:
                 df_ref[cond+suffix+'_avg'] = df_ref[reps]
                 df_ref[cond+suffix+'_stdev'] = 0

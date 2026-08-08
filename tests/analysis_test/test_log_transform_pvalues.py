@@ -16,7 +16,14 @@ import pandas as pd
 import pytest
 from scipy import stats
 
-from be_scan.analysis.log_transform import calc_pvals, log_transform, neg_log10
+from be_scan.analysis.log_transform import (
+    calc_moderated_pvals,
+    calc_pvals,
+    fdr_correct,
+    fit_variance_prior,
+    log_transform,
+    neg_log10,
+)
 
 
 # --------------------------------------------------------------------------- #
@@ -274,6 +281,141 @@ def test_averages_are_unaffected_by_the_new_columns():
         out["treated_LFCminusControl_avg"], out[reps].mean(axis=1))
     np.testing.assert_allclose(
         out["treated_LFCminusControl_stdev"], out[reps].std(axis=1))
+
+
+# --------------------------------------------------------------------------- #
+# variance shrinkage
+# --------------------------------------------------------------------------- #
+
+
+def test_variance_prior_recovers_a_known_distribution():
+    """
+    The fitted prior should land near the truth for simulated data.
+
+    Variances are drawn as sigma^2 * chi2(df)/df around a known sigma^2, which
+    is exactly the model fit_variance_prior assumes.
+    """
+    rng = np.random.default_rng(7)
+    true_var, df = 0.25, 2
+    variances = true_var * rng.chisquare(df, size=4000) / df
+
+    prior_var, prior_df = fit_variance_prior(variances, df)
+
+    assert prior_var == pytest.approx(true_var, rel=0.25), prior_var
+    assert prior_df > 1, "a genuinely dispersed set should give finite prior df"
+
+
+def test_variance_prior_handles_degenerate_input():
+    assert np.isnan(fit_variance_prior(np.array([]), 2)[0])
+    assert np.isnan(fit_variance_prior(np.array([0.0, 0.0]), 2)[0])
+
+
+def test_moderated_test_is_defined_without_variance():
+    """
+    Shrinkage rescues the case the ordinary test cannot handle.
+
+    Identical replicates give the ordinary test NaN. The moderated test
+    borrows the prior variance and stays finite.
+    """
+    rng = np.random.default_rng(3)
+    data = pd.DataFrame(rng.normal(scale=0.4, size=(300, 3)))
+    data.iloc[0] = [1.0, 1.0, 1.0]   # zero variance
+
+    assert np.isnan(calc_pvals(data)[0])
+    assert np.isfinite(calc_moderated_pvals(data)[0])
+
+
+def test_moderated_test_penalises_implausibly_small_variance():
+    """
+    A guide with a tiny effect and a lucky-tight variance must not win.
+
+    This is the failure mode that puts non-targeting controls at the top of a
+    3-replicate screen: the ordinary test rewards agreement, the moderated
+    test asks whether the effect is large relative to typical spread.
+    """
+    rng = np.random.default_rng(11)
+    data = pd.DataFrame(rng.normal(scale=0.5, size=(500, 3)))
+    data.iloc[0] = [0.02, 0.021, 0.0205]   # negligible effect, tiny spread
+    data.iloc[1] = [1.6, 2.0, 1.2]         # large effect, ordinary spread
+
+    plain = calc_pvals(data)
+    moderated = calc_moderated_pvals(data)
+
+    assert plain[0] < plain[1], "ordinary test should favour the tight guide"
+    assert moderated[1] < moderated[0], (
+        "moderated test should favour the guide with the real effect"
+    )
+
+
+def test_moderated_pvalues_are_in_range():
+    rng = np.random.default_rng(5)
+    data = pd.DataFrame(rng.normal(size=(200, 3)))
+    p = calc_moderated_pvals(data)
+    assert np.all((p[np.isfinite(p)] >= 0) & (p[np.isfinite(p)] <= 1))
+
+
+def test_moderated_test_needs_two_replicates():
+    data = pd.DataFrame([[1.0, np.nan, np.nan]] * 50)
+    assert np.isnan(calc_moderated_pvals(data)[0])
+
+
+# --------------------------------------------------------------------------- #
+# FDR correction
+# --------------------------------------------------------------------------- #
+
+
+def test_fdr_matches_statsmodels():
+    import statsmodels.stats.multitest as smm
+    rng = np.random.default_rng(1)
+    p = rng.uniform(size=200)
+    _, expected, _, _ = smm.multipletests(p, method="fdr_bh")
+    np.testing.assert_allclose(fdr_correct(p), expected)
+
+
+def test_fdr_is_never_smaller_than_the_raw_pvalue():
+    rng = np.random.default_rng(2)
+    p = rng.uniform(size=500)
+    q = fdr_correct(p)
+    assert np.all(q >= p - 1e-12), "BH q-values cannot be below their p-values"
+
+
+def test_fdr_preserves_nan_and_excludes_it_from_correction():
+    p = np.array([0.001, np.nan, 0.5, 0.9])
+    q = fdr_correct(p)
+    assert np.isnan(q[1])
+    assert np.isfinite(q[0]) and np.isfinite(q[2]) and np.isfinite(q[3])
+
+
+def test_fdr_of_all_nan_is_all_nan():
+    assert np.all(np.isnan(fdr_correct(np.array([np.nan, np.nan]))))
+
+
+# --------------------------------------------------------------------------- #
+# the moderated and FDR columns in the full function
+# --------------------------------------------------------------------------- #
+
+
+def test_all_six_significance_columns_are_added():
+    out = run({"treated": 3})
+    for suffix in ("_pval", "_neglogp", "_pval_mod", "_neglogp_mod",
+                   "_qval", "_qval_mod"):
+        assert f"treated_LFCminusControl{suffix}" in out.columns, suffix
+
+
+def test_no_significance_columns_for_single_replicates():
+    out = run({"solo": 1})
+    for suffix in ("_pval", "_neglogp", "_pval_mod", "_neglogp_mod",
+                   "_qval", "_qval_mod"):
+        assert f"solo_LFCminusControl{suffix}" not in out.columns, suffix
+
+
+def test_qval_is_the_fdr_of_its_own_pval():
+    """Each q-value column must correct the p-value column it is named after."""
+    out = run({"treated": 3})
+    for raw, corrected in (("_pval", "_qval"), ("_pval_mod", "_qval_mod")):
+        p = out[f"treated_LFCminusControl{raw}"].to_numpy()
+        q = out[f"treated_LFCminusControl{corrected}"].to_numpy()
+        np.testing.assert_allclose(q, fdr_correct(p), equal_nan=True)
 
 
 def test_saved_csv_round_trips(tmp_path):
