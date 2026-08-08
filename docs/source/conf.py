@@ -9,7 +9,7 @@
 project = 'be_scan'
 copyright = '2023, XYH, SPS, BBL'
 author = 'XYH, SPS, BBL'
-release = '1.0.0'
+release = '2.0.0'
 
 from unittest.mock import Mock
 import sys

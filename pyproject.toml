@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "be_scan"
-version = "0.0.2"
+version = "2.0.0"
 authors = [
   { name="Calvin XY Hu", email="xiaohu@g.harvard.edu" },
   { name="Simon P Shen", email="simonshen@fas.harvard.edu" },

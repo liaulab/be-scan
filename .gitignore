@@ -77,6 +77,10 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+_build/
+
+# Local demo data source (copied into docs/ and tests/ fixtures)
+be-scan-demo/
 
 # PyBuilder
 .pybuilder/
