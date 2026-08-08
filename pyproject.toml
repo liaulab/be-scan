@@ -50,5 +50,13 @@ docs = [
 [project.urls]
 "Homepage" = "https://github.com/liaulab/be_scan"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
 [project.scripts]
 be_scan = "be_scan.main:main"

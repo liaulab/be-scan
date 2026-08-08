@@ -1,0 +1,2700 @@
+{
+  "be_scan.analysis": {
+    "batch_process": {
+      "module": "be_scan.analysis.batch_process",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "sample_sheet"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "annotated_lib"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "comparisons"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl_col"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl_conditions"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "file_dir"
+        },
+        {
+          "default": [
+            "t0"
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "controls"
+        },
+        {
+          "default": [
+            10,
+            80
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "KEY_INTERVAL"
+        },
+        {
+          "default": "CGAAACACC",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "KEY"
+        },
+        {
+          "default": "GTTTGAGA",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "KEY_REV"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "dont_trim_G"
+        },
+        {
+          "default": "sgRNA_seq",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "sgRNA_seq_col"
+        },
+        {
+          "default": 0,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "lower_cutoff"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "lower_cutoff_cols"
+        },
+        {
+          "default": "counts_library.csv",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_counts"
+        },
+        {
+          "default": "library_LFC.csv",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_lfc"
+        },
+        {
+          "default": "conditions.csv",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_comps"
+        },
+        {
+          "default": "stats.txt",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_stats"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "stats_comparisons"
+        },
+        {
+          "default": "pdf",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "plot_out_type"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "save"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "return_df"
+        }
+      ]
+    },
+    "calc_controls": {
+      "module": "be_scan.analysis.calc_controls",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "conditions"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "stats_comparisons"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl_col"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl_conditions"
+        },
+        {
+          "default": [
+            "t0"
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "controls"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "in_dir"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_dir"
+        },
+        {
+          "default": "stats.txt",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_file"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "save"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "return_txt"
+        }
+      ]
+    },
+    "compare_conds": {
+      "module": "be_scan.analysis.compare_conds",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "comparisons"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "avg_conds"
+        },
+        {
+          "default": [
+            "t0"
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "controls"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "in_dir"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_dir"
+        },
+        {
+          "default": "conditions.csv",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_file"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "save"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "return_df"
+        }
+      ]
+    },
+    "count_reads": {
+      "module": "be_scan.analysis.count_reads",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "sample_sheet"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "annotated_lib"
+        },
+        {
+          "default": [
+            10,
+            80
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "KEY_INTERVAL"
+        },
+        {
+          "default": "CGAAACACC",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "KEY"
+        },
+        {
+          "default": "GTTTGAGA",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "KEY_REV"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "dont_trim_G"
+        },
+        {
+          "default": "sgRNA_seq",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "sgRNA_seq_col"
+        },
+        {
+          "default": 0,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "lower_cutoff"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "lower_cutoff_cols"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "in_dir"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_dir"
+        },
+        {
+          "default": "library_counts.csv",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_file"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "return_df"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "save_files"
+        },
+        {
+          "default": "pdf",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "plot_out_type"
+        }
+      ]
+    },
+    "log_transform": {
+      "module": "be_scan.analysis.log_transform",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "sample_sheet"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "library_counts"
+        },
+        {
+          "default": [
+            "t0"
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "controls"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "in_dir"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_dir"
+        },
+        {
+          "default": "library_LFC.csv",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_file"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "save"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "return_df"
+        }
+      ]
+    }
+  },
+  "be_scan.figure_plot": {
+    "boxplot_figure": {
+      "module": "be_scan.figure_plot.figure_boxplot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "x_col"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "y_col"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "palette"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "lab_order"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "axis"
+        },
+        {
+          "default": "<repr>BoxStyleOpts(color_map=None, xlabel_rotation=45, xlabel_ha='right', axhline_kws={'linestyle': '--', 'color': 'grey'}, box_kws={'width': 0.4, 'showfliers': False, 'saturation': 1}, boxprops={'linewidth': 0.5, 'edgecolor': 'black'}, whiskerprops={'linewidth': 0.5}, capprops={'linewidth': 0.5}, medianprops={'linewidth': 1.5, 'color': 'black'})",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "style"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output"
+        }
+      ]
+    },
+    "correlation_scatterplot_figure": {
+      "module": "be_scan.figure_plot.figure_correlation_scatterplot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_data"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "x_column"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "y_column"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "legend_order"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "hue_col"
+        },
+        {
+          "default": {},
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "palette"
+        },
+        {
+          "default": "mut_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "highlight_col"
+        },
+        {
+          "default": [
+            "Splice",
+            "Intron",
+            "Nonsense"
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "highlight_categories"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "axis"
+        },
+        {
+          "default": "<repr>ScatterStyleOpts(palette='colorblind', hue_col=None, marker_col=None, marker_map={}, color_map=None, transparent_kws={'edgecolor': 'black', 'alpha': 0.6, 's': 3, 'linewidth': 0.1}, opaque_kws={'edgecolor': 'black', 'alpha': 1, 's': 5, 'linewidth': 0.25}, highlight_kws={'edgecolor': 'black', 'alpha': 1, 's': 5, 'linewidth': 0.3}, transparency_threshold=2.0, line_kws={'color': 'k', 'ls': '--', 'lw': 1}, cutoff_line_kws={'color': 'gray', 'ls': ':', 'lw': 0.5})",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "style"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output"
+        }
+      ]
+    },
+    "fillgaps": {
+      "module": "be_scan.figure_plot.figure_pwes_helpers",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_pwes_sorted"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "gene_bounds"
+        }
+      ]
+    },
+    "hex_to_rgb": {
+      "module": "be_scan.figure_plot.figure_clustered_heatmap_helpers",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "hex_color"
+        }
+      ]
+    },
+    "jitterbox_kdeplot_figure": {
+      "module": "be_scan.figure_plot.figure_jitterplot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "data"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "xcol"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "ycol"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "huecol"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "color_dict"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "jitterbox"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "kde"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "threshold"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "axis"
+        },
+        {
+          "default": "<repr>JitterStyleOpts(linewidth=0.5, colors=['red', 'purple', 'blue', 'cornflowerblue'], axhline_kws={'linestyle': '--', 'color': 'grey'}, box_kws={'width': 0.3, 'showcaps': True, 'showfliers': False}, stripplot_kws={'alpha': 0.75, 'size': 2, 'linewidth': 0, 'zorder': 0, 'jitter': True, 'dodge': False, 'rasterized': True}, stripplot_hits_kws={'alpha': 1.0, 'size': 3, 'linewidth': 0.25, 'zorder': 0, 'jitter': True, 'dodge': False, 'rasterized': False}, kdeplot_kws={'linewidth': 0.5}, boxprops={'facecolor': 'none', 'zorder': 1, 'linewidth': 0.5}, whiskerprops={'color': 'gray', 'zorder': 1, 'linewidth': 0.5}, capprops={'zorder': 1, 'color': 'gray', 'linewidth': 0.5}, medianprops={'zorder': 1, 'color': 'gray', 'linewidth': 0.5})",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "style"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output"
+        }
+      ]
+    },
+    "kmeans_clustered_heatmap": {
+      "module": "be_scan.figure_plot.figure_clustered_heatmap_main",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "k"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "clusters"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "genes"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "screen_order"
+        },
+        {
+          "default": {},
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "gene_palette"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "gene_list"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "cluster_order"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "highlight_cols"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "order_col"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "axis"
+        },
+        {
+          "default": "<repr>ClusteredHeatmapStyleOpts(col_width=0.05, heatmap_width=0.75, wspace=0.02, color_pal='tab20', default_color='#EEEEEE', palette=None, heatmap_kws={'cmap': 'bwr', 'center': 0, 'vmin': -10, 'vmax': 15, 'cbar': False, 'rasterized': True}, border_kws={'fill': False, 'clip_on': False, 'zorder': 10, 'edgecolor': 'black', 'linewidth': 0.75}, line_kws={'color': 'black', 'linewidth': 0.75})",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "style"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output"
+        }
+      ]
+    },
+    "kmeans_elbow": {
+      "module": "be_scan.figure_plot.figure_clustered_heatmap_helpers",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "k_values"
+        },
+        {
+          "default": 0,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "random_state"
+        }
+      ]
+    },
+    "kmeans_pca_scatterplot": {
+      "module": "be_scan.figure_plot.figure_clustered_heatmap_helpers",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "k"
+        },
+        {
+          "default": 0,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "random_state"
+        }
+      ]
+    },
+    "loess_figure": {
+      "module": "be_scan.figure_plot.figure_loess_plot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "results"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "gene"
+        },
+        {
+          "default": 4,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "max_cap"
+        },
+        {
+          "default": 0.05,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pval_thresh"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "KEYWORD_ONLY",
+          "name": "axis_pval"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "KEYWORD_ONLY",
+          "name": "axis_regr"
+        },
+        {
+          "default": "<repr>LoessStyleOpts(line_kws={'color': 'k', 'ls': '--', 'lw': 1}, pval_plot_kws={'alpha': 1, 'markersize': 1}, regr_plot_kws={'alpha': 1, 'markersize': 1, 'color': 'gray'}, below_color='lightgray', above_color='red')",
+          "kind": "KEYWORD_ONLY",
+          "name": "style"
+        },
+        {
+          "default": "<repr>DomainOpts(dom_setting={}, gene='', default_alpha=0.25, default_color='lightblue', gene_col='Gene Symbol')",
+          "kind": "KEYWORD_ONLY",
+          "name": "domain"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "KEYWORD_ONLY",
+          "name": "output_pval"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "KEYWORD_ONLY",
+          "name": "output_regr"
+        }
+      ]
+    },
+    "loess_smoothing": {
+      "module": "be_scan.figure_plot.figure_loess_main",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "x_column"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "comparisons"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "span"
+        },
+        {
+          "default": "quadratic",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "interp_method"
+        },
+        {
+          "default": 1000,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "n_repeats"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "random_seed"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "loess_kws"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "interp_kws"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "smm_multipletests_kws"
+        }
+      ]
+    },
+    "lollipop_figure": {
+      "module": "be_scan.figure_plot.figure_lollipop",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_pos"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pos_xcol"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pos_ycol"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pos_threshold"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pos_category_col"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pos_colors"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_neg"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_xcol"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ycol"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_threshold"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_category_col"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_colors"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "axis"
+        },
+        {
+          "default": "<repr>DomainOpts(dom_setting={}, gene='', default_alpha=0.25, default_color='lightblue', gene_col='Gene Symbol')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "domain"
+        },
+        {
+          "default": "<repr>LollipopStyleOpts(line_kws={'color': 'black', 'linewidth': 0.5, 'linestyle': '--'}, marker_kws={'markeredgecolor': 'black', 'markersize': 3, 'markeredgewidth': 0.4}, stem_kws={'color': 'black', 'linewidth': 0.4}, base_kws={'color': 'black'}, marker_rasterized=True, stem_rasterized=True)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "style"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output"
+        }
+      ]
+    },
+    "lollipop_split_figure": {
+      "module": "be_scan.figure_plot.figure_lollipop",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_pos"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pos_xcol"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pos_ycol"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pos_threshold"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pos_category_col"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pos_colors"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "ylim_top"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "yticks_top"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_neg"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_xcol"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ycol"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_threshold"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_category_col"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_colors"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "ylim_bot"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "yticks_bot"
+        },
+        {
+          "default": [
+            1,
+            0.001,
+            1
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "height_ratios"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "axis"
+        },
+        {
+          "default": "<repr>DomainOpts(dom_setting={}, gene='', default_alpha=0.25, default_color='lightblue', gene_col='Gene Symbol')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "domain"
+        },
+        {
+          "default": "<repr>LollipopStyleOpts(line_kws={'color': 'black', 'linewidth': 0.5, 'linestyle': '--'}, marker_kws={'markeredgecolor': 'black', 'markersize': 3, 'markeredgewidth': 0.4}, stem_kws={'color': 'black', 'linewidth': 0.4}, base_kws={'color': 'black'}, marker_rasterized=True, stem_rasterized=True)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "style"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output"
+        }
+      ]
+    },
+    "pwes_boxplots": {
+      "module": "be_scan.figure_plot.figure_pwes_plot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_clus"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "x_col"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "color_list"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "axis"
+        },
+        {
+          "default": "<repr>ScatterStyleOpts(palette='colorblind', hue_col=None, marker_col=None, marker_map={}, color_map=None, transparent_kws={'edgecolor': 'black', 'alpha': 0.6, 's': 3, 'linewidth': 0.1}, opaque_kws={'edgecolor': 'black', 'alpha': 1, 's': 5, 'linewidth': 0.25}, highlight_kws={'edgecolor': 'black', 'alpha': 1, 's': 5, 'linewidth': 0.3}, transparency_threshold=2.0, line_kws={'color': 'k', 'ls': '--', 'lw': 1}, cutoff_line_kws={'color': 'gray', 'ls': ':', 'lw': 0.5})",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "style"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output"
+        }
+      ]
+    },
+    "pwes_clustering": {
+      "module": "be_scan.figure_plot.figure_pwes_main",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_scores"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "x_col"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "scores_col"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pdb_file"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "gene_col"
+        },
+        {
+          "default": {},
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "gene_map"
+        },
+        {
+          "default": 1,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "tanh_a"
+        },
+        {
+          "default": 16,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "gauss_std"
+        },
+        {
+          "default": 14,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "dend_t"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "aa_int"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_prefix"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_dir"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pos_only"
+        }
+      ]
+    },
+    "pwes_clustermap": {
+      "module": "be_scan.figure_plot.figure_pwes_plot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_scaled"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "link"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_clusters"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "color_list"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "axis"
+        },
+        {
+          "default": "<repr>PWESHeatmapStyleOpts(heatmap_kws={'square': True, 'cmap': 'RdBu_r', 'vmin': -1, 'vmax': 1, 'xticklabels': False, 'yticklabels': False, 'cbar': False}, clustered_heatmap_kws={'vmin': -1, 'vmax': 1, 'center': 0, 'cmap': 'RdBu_r', 'xticklabels': False, 'yticklabels': False}, line_kws={'color': 'k', 'ls': '--', 'lw': 0.25}, swarmplot_kws={'size': 2, 'linewidth': 0, 'edgecolor': None}, jitterplot_kws={'alpha': 0.5, 'size': 2, 'linewidth': 0, 'edgecolor': None}, stripplot_kws={'alpha': 0.5, 'size': 2, 'linewidth': 0, 'edgecolor': None}, boxplot_kws={'fliersize': 0, 'linewidth': 0.5, 'width': 0.5}, boxprops={'facecolor': 'none', 'edgecolor': 'black'}, whiskerprops={'color': 'black'}, capprops={'color': 'black'}, medianprops={'color': 'black'}, spine_color='black', spine_visible=True, spine_wspace=0.2, spine_hspace=0.2, linewidth=0.5, edgecolor='black', colorbar_normalize_kws={'vmin': -1, 'vmax': 1}, colorbar_base_kws={'cmap': 'RdBu_r'}, colorbar_linewidth=0.5)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "style"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output"
+        }
+      ]
+    },
+    "pwes_heatmap": {
+      "module": "be_scan.figure_plot.figure_pwes_plot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_scaled"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "mask_on"
+        },
+        {
+          "default": [
+            "X"
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "blackout"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "axis"
+        },
+        {
+          "default": "<repr>PWESHeatmapStyleOpts(heatmap_kws={'square': True, 'cmap': 'RdBu_r', 'vmin': -1, 'vmax': 1, 'xticklabels': False, 'yticklabels': False, 'cbar': False}, clustered_heatmap_kws={'vmin': -1, 'vmax': 1, 'center': 0, 'cmap': 'RdBu_r', 'xticklabels': False, 'yticklabels': False}, line_kws={'color': 'k', 'ls': '--', 'lw': 0.25}, swarmplot_kws={'size': 2, 'linewidth': 0, 'edgecolor': None}, jitterplot_kws={'alpha': 0.5, 'size': 2, 'linewidth': 0, 'edgecolor': None}, stripplot_kws={'alpha': 0.5, 'size': 2, 'linewidth': 0, 'edgecolor': None}, boxplot_kws={'fliersize': 0, 'linewidth': 0.5, 'width': 0.5}, boxprops={'facecolor': 'none', 'edgecolor': 'black'}, whiskerprops={'color': 'black'}, capprops={'color': 'black'}, medianprops={'color': 'black'}, spine_color='black', spine_visible=True, spine_wspace=0.2, spine_hspace=0.2, linewidth=0.5, edgecolor='black', colorbar_normalize_kws={'vmin': -1, 'vmax': 1}, colorbar_base_kws={'cmap': 'RdBu_r'}, colorbar_linewidth=0.5)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "style"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output"
+        }
+      ]
+    },
+    "pwes_heatmap_colorbar": {
+      "module": "be_scan.figure_plot.figure_pwes_plot",
+      "params": [
+        {
+          "default": "vertical",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "orientation"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "axis"
+        },
+        {
+          "default": "<repr>PWESHeatmapStyleOpts(heatmap_kws={'square': True, 'cmap': 'RdBu_r', 'vmin': -1, 'vmax': 1, 'xticklabels': False, 'yticklabels': False, 'cbar': False}, clustered_heatmap_kws={'vmin': -1, 'vmax': 1, 'center': 0, 'cmap': 'RdBu_r', 'xticklabels': False, 'yticklabels': False}, line_kws={'color': 'k', 'ls': '--', 'lw': 0.25}, swarmplot_kws={'size': 2, 'linewidth': 0, 'edgecolor': None}, jitterplot_kws={'alpha': 0.5, 'size': 2, 'linewidth': 0, 'edgecolor': None}, stripplot_kws={'alpha': 0.5, 'size': 2, 'linewidth': 0, 'edgecolor': None}, boxplot_kws={'fliersize': 0, 'linewidth': 0.5, 'width': 0.5}, boxprops={'facecolor': 'none', 'edgecolor': 'black'}, whiskerprops={'color': 'black'}, capprops={'color': 'black'}, medianprops={'color': 'black'}, spine_color='black', spine_visible=True, spine_wspace=0.2, spine_hspace=0.2, linewidth=0.5, edgecolor='black', colorbar_normalize_kws={'vmin': -1, 'vmax': 1}, colorbar_base_kws={'cmap': 'RdBu_r'}, colorbar_linewidth=0.5)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "style"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output"
+        }
+      ]
+    },
+    "pwes_histogram": {
+      "module": "be_scan.figure_plot.figure_pwes_plot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_clus"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "color_list"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "axis"
+        },
+        {
+          "default": "<repr>ScatterStyleOpts(palette='colorblind', hue_col=None, marker_col=None, marker_map={}, color_map=None, transparent_kws={'edgecolor': 'black', 'alpha': 0.6, 's': 3, 'linewidth': 0.1}, opaque_kws={'edgecolor': 'black', 'alpha': 1, 's': 5, 'linewidth': 0.25}, highlight_kws={'edgecolor': 'black', 'alpha': 1, 's': 5, 'linewidth': 0.3}, transparency_threshold=2.0, line_kws={'color': 'k', 'ls': '--', 'lw': 1}, cutoff_line_kws={'color': 'gray', 'ls': ':', 'lw': 0.5})",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "style"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output"
+        }
+      ]
+    },
+    "pwes_scatterplots": {
+      "module": "be_scan.figure_plot.figure_pwes_plot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_clus"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "x_col"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "scores_col"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "color_list"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "max_cluster"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "axis"
+        },
+        {
+          "default": "<repr>ScatterStyleOpts(palette='colorblind', hue_col=None, marker_col=None, marker_map={}, color_map=None, transparent_kws={'edgecolor': 'black', 'alpha': 0.6, 's': 3, 'linewidth': 0.1}, opaque_kws={'edgecolor': 'black', 'alpha': 1, 's': 5, 'linewidth': 0.25}, highlight_kws={'edgecolor': 'black', 'alpha': 1, 's': 5, 'linewidth': 0.3}, transparency_threshold=2.0, line_kws={'color': 'k', 'ls': '--', 'lw': 1}, cutoff_line_kws={'color': 'gray', 'ls': ':', 'lw': 0.5})",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "style"
+        },
+        {
+          "default": "<repr>DomainOpts(dom_setting={}, gene='', default_alpha=0.25, default_color='lightblue', gene_col='Gene Symbol')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "domain"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output"
+        }
+      ]
+    },
+    "scatterplot_figure": {
+      "module": "be_scan.figure_plot.figure_scatterplot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_data"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "y_col_list"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "x_col"
+        },
+        {
+          "default": "<repr>AxisLabelOpts(title=None, xlabel=None, ylabel=None, xwindow=None, xlim=None, ylim=None, xticks=None, yticks=None, protein_len=None, linewidth=0.5, tick_kws={'labelsize': 8, 'width': 0.5}, space=3)",
+          "kind": "KEYWORD_ONLY",
+          "name": "axis"
+        },
+        {
+          "default": "<repr>ScatterStyleOpts(palette='colorblind', hue_col=None, marker_col=None, marker_map={}, color_map=None, transparent_kws={'edgecolor': 'black', 'alpha': 0.6, 's': 3, 'linewidth': 0.1}, opaque_kws={'edgecolor': 'black', 'alpha': 1, 's': 5, 'linewidth': 0.25}, highlight_kws={'edgecolor': 'black', 'alpha': 1, 's': 5, 'linewidth': 0.3}, transparency_threshold=2.0, line_kws={'color': 'k', 'ls': '--', 'lw': 1}, cutoff_line_kws={'color': 'gray', 'ls': ':', 'lw': 0.5})",
+          "kind": "KEYWORD_ONLY",
+          "name": "style"
+        },
+        {
+          "default": "<repr>DomainOpts(dom_setting={}, gene='', default_alpha=0.25, default_color='lightblue', gene_col='Gene Symbol')",
+          "kind": "KEYWORD_ONLY",
+          "name": "domain"
+        },
+        {
+          "default": "<repr>LegendOpts(loc=None, ncol=1, frameon=False, mark_size=5, title=None, path='legend')",
+          "kind": "KEYWORD_ONLY",
+          "name": "legend"
+        },
+        {
+          "default": "<repr>OutputOpts(figsize=(4.0, 2.2), subplots_kws={}, save=False, path='scatterplot', show=True, dpi=1200, transparent=True, rasterize=True, out_type='svg')",
+          "kind": "KEYWORD_ONLY",
+          "name": "output"
+        },
+        {
+          "default": "<repr>NegCtrlOpts(adjust=False, neg_ctrl_col='gene', neg_ctrl_conditions='NT Controls', lines=False, sd=1, ctrl_line_kws={'color': 'k', 'ls': '--', 'lw': 1})",
+          "kind": "KEYWORD_ONLY",
+          "name": "neg_ctrl"
+        }
+      ]
+    }
+  },
+  "be_scan.plot": {
+    "boxplot": {
+      "module": "be_scan.plot.boxplot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_filepath"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "comparisons"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "plot_column"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "plot_conditions"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "xlab"
+        },
+        {
+          "default": "Log2 Fold Change",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "ylab"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl_col"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl_conditions"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "savefig"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "show"
+        },
+        {
+          "default": "boxes",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_name"
+        },
+        {
+          "default": "png",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_type"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_dir"
+        },
+        {
+          "default": {},
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "subplots_kws"
+        },
+        {
+          "default": {
+            "flierprops": {
+              "alpha": 0.8,
+              "lw": 1,
+              "marker": "o",
+              "mec": "black"
+            },
+            "fliersize": 4,
+            "saturation": 1,
+            "width": 0.4
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "boxplot_kws"
+        },
+        {
+          "default": {
+            "color": "k",
+            "ls": "--",
+            "lw": 1
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "axhline_kws"
+        }
+      ]
+    },
+    "corr_heatmap": {
+      "module": "be_scan.plot.correlation_heatmap",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_filepath"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "comparisons"
+        },
+        {
+          "default": "spearman",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "corr_type"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "xlab"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "ylab"
+        },
+        {
+          "default": "Spearman Correlation Heatmap",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "title"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "savefig"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "show"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_dir"
+        },
+        {
+          "default": "correlation_heatmap",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_name"
+        },
+        {
+          "default": "png",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_type"
+        },
+        {
+          "default": {
+            "annot": true,
+            "cbar_kws": {
+              "shrink": 0.5
+            },
+            "center": 0,
+            "cmap": "coolwarm",
+            "linewidth": 0.5,
+            "square": true
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "heatmap_kws"
+        },
+        {
+          "default": {},
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "subplots_kws"
+        }
+      ]
+    },
+    "corr_jointplot": {
+      "module": "be_scan.plot.correlation_jointplot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_filepath"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "condition1"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "condition2"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "filter_val"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "val_cols"
+        },
+        {
+          "default": 0.0,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "val_min"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "filter_params"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "params_cols"
+        },
+        {
+          "default": [
+            [
+              "Missense",
+              "Silent",
+              "Mixed",
+              "Nonsense"
+            ]
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "params_conditions"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "include_hue"
+        },
+        {
+          "default": "CtoT_muttype",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "hue_col"
+        },
+        {
+          "default": "pastel",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pal"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "savefig"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "show"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_dir"
+        },
+        {
+          "default": "correlation_jointplot",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_name"
+        },
+        {
+          "default": "png",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_type"
+        },
+        {
+          "default": {
+            "alpha": 0.8,
+            "edgecolor": "black",
+            "linewidth": 1,
+            "s": 25
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "jointplot_kws"
+        }
+      ]
+    },
+    "interactive_boxplot": {
+      "module": "be_scan.plot.boxplot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_filepath"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "comparisons"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "plot_column"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "plot_conditions"
+        },
+        {
+          "default": [
+            500,
+            300
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "figsize"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "xlab"
+        },
+        {
+          "default": "Log2 Fold Change",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "ylab"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl_col"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl_conditions"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "savefig"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "show"
+        },
+        {
+          "default": "boxes",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_name"
+        },
+        {
+          "default": "png",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_type"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_dir"
+        }
+      ]
+    },
+    "interactive_corr_heatmap": {
+      "module": "be_scan.plot.correlation_heatmap",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_filepath"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "comparisons"
+        },
+        {
+          "default": "spearman",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "corr_type"
+        },
+        {
+          "default": [
+            500,
+            500
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "figsize"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "xlab"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "ylab"
+        },
+        {
+          "default": "Spearman Correlation Heatmap",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "title"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "savefig"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "show"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_dir"
+        },
+        {
+          "default": "correlation_heatmap",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_name"
+        }
+      ]
+    },
+    "interactive_corr_jointplot": {
+      "module": "be_scan.plot.correlation_jointplot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_filepath"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "condition1"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "condition2"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "annot_label"
+        },
+        {
+          "default": [
+            800,
+            800
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "figsize"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "include_hue"
+        },
+        {
+          "default": "CtoT_muttype",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "hue_col"
+        },
+        {
+          "default": [
+            "rgb(102, 197, 204)",
+            "rgb(246, 207, 113)",
+            "rgb(248, 156, 116)",
+            "rgb(220, 176, 242)",
+            "rgb(135, 197, 95)",
+            "rgb(158, 185, 243)",
+            "rgb(254, 136, 177)",
+            "rgb(201, 219, 116)",
+            "rgb(139, 224, 164)",
+            "rgb(180, 151, 231)",
+            "rgb(179, 179, 179)"
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pal"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "savefig"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "show"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_dir"
+        },
+        {
+          "default": "correlation_jointplot",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_name"
+        }
+      ]
+    },
+    "interactive_scatter": {
+      "module": "be_scan.plot.scatterplot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_filepath"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "comparisons"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "x_column"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "annot_label"
+        },
+        {
+          "default": [
+            600,
+            300
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "figsize"
+        },
+        {
+          "default": "Scatter Plots",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "title"
+        },
+        {
+          "default": "Amino Acid Position",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "xlab"
+        },
+        {
+          "default": "sgRNA Score",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "ylab"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "xwindow"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "include_hue"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "hue_col"
+        },
+        {
+          "default": "pastel",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pal"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "domains"
+        },
+        {
+          "default": 0.25,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "domains_alpha"
+        },
+        {
+          "default": "lightblue",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "domains_color"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl_col"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl_conditions"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "savefig"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "show"
+        },
+        {
+          "default": "scatterplot",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_name"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_dir"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "xlim"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "ylim"
+        },
+        {
+          "default": {
+            "line": {
+              "width": 0.8
+            },
+            "opacity": 0.85
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "plotly_go_kws"
+        }
+      ]
+    },
+    "loess_smoothing": {
+      "module": "be_scan.plot.loess_smoothing",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "x_column"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "comparisons"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "span"
+        },
+        {
+          "default": "quadratic",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "interp_method"
+        },
+        {
+          "default": 1000,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "n_repeats"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "loess_kws"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "interp_kws"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "smm_multipletests_kws"
+        }
+      ]
+    },
+    "scatterplot": {
+      "module": "be_scan.plot.scatterplot",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_filepath"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "comparisons"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "x_column"
+        },
+        {
+          "default": "Amino Acid Position",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "xlab"
+        },
+        {
+          "default": "sgRNA Score",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "ylab"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "xwindow"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "include_hue"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "hue_col"
+        },
+        {
+          "default": "pastel",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "pal"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl_col"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "neg_ctrl_conditions"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "domains"
+        },
+        {
+          "default": 0.25,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "domains_alpha"
+        },
+        {
+          "default": "lightblue",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "domains_color"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "savefig"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "show"
+        },
+        {
+          "default": "scatterplot",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_name"
+        },
+        {
+          "default": "png",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_type"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_dir"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "filter_val"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "val_cols"
+        },
+        {
+          "default": 0.0,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "val_min"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "filter_params"
+        },
+        {
+          "default": [],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "params_cols"
+        },
+        {
+          "default": [
+            [
+              "Missense",
+              "Silent",
+              "Mixed",
+              "Nonsense"
+            ]
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "params_conditions"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "annot"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "annot_label"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "annot_top"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "annot_cutoff"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "annot_abs"
+        },
+        {
+          "default": {},
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "subplots_kws"
+        },
+        {
+          "default": {
+            "xmax": null,
+            "xmin": null
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "xlim_kws"
+        },
+        {
+          "default": {
+            "ymax": null,
+            "ymin": null
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "ylim_kws"
+        },
+        {
+          "default": {
+            "alpha": 0.85,
+            "linewidth": 0.8,
+            "s": 30
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "scatterplot_kws"
+        },
+        {
+          "default": {
+            "color": "k",
+            "ls": "--",
+            "lw": 1
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "axhline_kws"
+        },
+        {
+          "default": {
+            "fontsize": 6,
+            "ha": "right",
+            "va": "bottom"
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "label_text_kws"
+        }
+      ]
+    },
+    "sgrna_enrichment": {
+      "module": "be_scan.plot.sgrna_enrichment",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "df_filepath"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "comparisons"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "highlight"
+        },
+        {
+          "default": "sgRNA_ID",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "highlight_col"
+        },
+        {
+          "default": [
+            "sgRNA_0"
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "highlight_vals"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "density"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "savefig"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "show"
+        },
+        {
+          "default": "scatterplot",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_name"
+        },
+        {
+          "default": "png",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_type"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "out_dir"
+        },
+        {
+          "default": {},
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "subplots_kws"
+        },
+        {
+          "default": {
+            "alpha": 0.05,
+            "color": "black",
+            "height": 0.25,
+            "linewidth": 2
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "rugplot_kws"
+        },
+        {
+          "default": {
+            "alpha": 0.5,
+            "color": "black",
+            "linewidth": 1
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "kdeplot_kws"
+        },
+        {
+          "default": {
+            "alpha": 0.6,
+            "color": "red",
+            "height": 0.25,
+            "linewidth": 3
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "highlight_rugplot_kws"
+        }
+      ]
+    }
+  },
+  "be_scan.sgrna": {
+    "annotate": {
+      "module": "be_scan.sgrna.annotate",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "guides_file"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "edit_from"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "edit_to"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "exons"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "protein_filepath"
+        },
+        {
+          "default": [
+            4,
+            8
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "window"
+        },
+        {
+          "default": "sgRNA_seq",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "seq_col"
+        },
+        {
+          "default": "starting_frame",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "frame_col"
+        },
+        {
+          "default": "sgRNA_strand",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "strand_col"
+        },
+        {
+          "default": "gene_pos",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "gene_pos_col"
+        },
+        {
+          "default": "windowstart_pos",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "window_start_col"
+        },
+        {
+          "default": "windowend_pos",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "window_end_col"
+        },
+        {
+          "default": "annotated.csv",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output_name"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output_dir"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "exclude_duplicates"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "return_df"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "save_df"
+        }
+      ]
+    },
+    "coverage_plots": {
+      "module": "be_scan.sgrna.coverage",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "annotated_guides"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "edit_from"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "edit_to"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "protein_filepath"
+        },
+        {
+          "default": "guides_by_aa.csv",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output_name"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output_dir"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "return_df"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "save_df"
+        }
+      ]
+    },
+    "design_library": {
+      "module": "be_scan.sgrna.design_library",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "gene_filepath"
+        },
+        {
+          "default": "SpG",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "cas_type"
+        },
+        {
+          "default": [
+            "A",
+            "C",
+            "AC"
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "edit_from_list"
+        },
+        {
+          "default": [
+            "G",
+            "T",
+            "GT"
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "edit_to_list"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "genome_file"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "protein_filepath"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "delete"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "gene_name"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "PAM"
+        },
+        {
+          "default": [
+            4,
+            8
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "window"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "exclude_introns"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "exclude_nonediting"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "exclude_duplicates"
+        },
+        {
+          "default": [
+            "TTTT"
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "exclude_sequences"
+        },
+        {
+          "default": "annotated_guides.csv",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output_name"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output_dir"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "return_df"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "save_df"
+        }
+      ]
+    },
+    "generate_library": {
+      "module": "be_scan.sgrna.generate_library",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "gene_filepath"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "cas_type"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "edit_from"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "edit_to"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "gene_name"
+        },
+        {
+          "default": null,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "PAM"
+        },
+        {
+          "default": [
+            4,
+            8
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "window"
+        },
+        {
+          "default": "guides.csv",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output_name"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output_dir"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "return_df"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "save_df"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "exclude_introns"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "exclude_nonediting"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "exclude_duplicates"
+        },
+        {
+          "default": [
+            "TTTT"
+          ],
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "exclude_sequences"
+        }
+      ]
+    },
+    "reference_check": {
+      "module": "be_scan.sgrna.reference_check",
+      "params": [
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "guides_file"
+        },
+        {
+          "default": "<required>",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "genome_file"
+        },
+        {
+          "default": "filtered.csv",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output_name"
+        },
+        {
+          "default": "",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "output_dir"
+        },
+        {
+          "default": false,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "delete"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "return_df"
+        },
+        {
+          "default": true,
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "save_df"
+        }
+      ]
+    }
+  }
+}
