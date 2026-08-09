@@ -271,6 +271,41 @@ class DomainOpts:
     default_color: str = "lightblue"
     gene_col: str = "Gene Symbol"
 
+
+def resolve_domains(domain, df=None):
+    """
+    The list of domain spans to shade, from a DomainOpts.
+
+    dom_setting is typed as a mapping of gene name to a list of spans, but was
+    being iterated directly, which yields the dict's *keys* -- so any non-empty
+    mapping raised TypeError on dom["start"]. This resolves the mapping using
+    DomainOpts.gene (previously read by nothing at all), and falls back to the
+    only gene present when `gene` is unset and there is exactly one.
+
+    A plain list of spans is also accepted, so callers can pass
+    [{'start': 1, 'end': 50}] without wrapping it in a dict.
+
+    Each span is a dict with 'start' and 'end', optionally 'color' and
+    'alpha'. Returns an empty list when nothing is configured.
+    """
+    setting = domain.dom_setting
+    if not setting:
+        return []
+    if isinstance(setting, (list, tuple)):
+        return list(setting)
+    if not isinstance(setting, dict):
+        return []
+
+    if domain.gene and domain.gene in setting:
+        return list(setting[domain.gene])
+    if len(setting) == 1:
+        return list(next(iter(setting.values())))
+    if df is not None and domain.gene_col in getattr(df, "columns", []):
+        genes = [g for g in df[domain.gene_col].dropna().unique() if g in setting]
+        if len(genes) == 1:
+            return list(setting[genes[0]])
+    return []
+
 @dataclass(frozen = True)
 class LegendOpts:
     loc: str = None
@@ -307,5 +342,27 @@ DOMAIN = DomainOpts()
 LEGEND = LegendOpts()
 OUTPUT = OutputOpts()
 
-arial_font6 = fm.FontProperties(fname=f'Arial.ttf', size=6)
+def _load_figure_font(size=6, filename='Arial.ttf'):
+    """
+    Font used for every figure_plot label.
+
+    This was FontProperties(fname='Arial.ttf'), a path resolved against the
+    caller's working directory. Matplotlib does not open the file until it
+    renders, so a figure only failed at savefig/tight_layout time, and only
+    for users who happened not to have Arial.ttf in the directory they ran
+    from. The lookup order below keeps that file authoritative when present
+    and degrades to a system font instead of raising.
+    """
+    for candidate in (Path.cwd() / filename, Path(__file__).parent / filename):
+        if candidate.is_file():
+            return fm.FontProperties(fname=str(candidate), size=size)
+    try:
+        found = fm.findfont(fm.FontProperties(family='Arial'),
+                            fallback_to_default=False)
+        return fm.FontProperties(fname=found, size=size)
+    except Exception:
+        return fm.FontProperties(family='sans-serif', size=size)
+
+
+arial_font6 = _load_figure_font(size=6)
  

@@ -81,7 +81,7 @@ def loess_figure_style(
     for line in ax.get_lines(): line.set_linewidth(axis.linewidth)
 
     # PLOT DOMAINS #
-    for dom in domain.dom_setting:
+    for dom in resolve_domains(domain):
         ax.axvspan(
             dom["start"], dom["end"],
             facecolor=dom.get("color", domain.default_color),

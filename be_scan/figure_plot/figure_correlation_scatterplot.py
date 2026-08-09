@@ -113,7 +113,9 @@ def correlation_scatterplot_figure(
         legend_out.parent.mkdir(parents=True, exist_ok=True)
         fig_legend.savefig(legend_out, format=output.out_type,
                            dpi=output.dpi, transparent=output.transparent)
-    plt.close(fig_legend)
+        # closed inside the block that creates it; at module level this raised
+        # NameError whenever output.save was False, which is the default
+        plt.close(fig_legend)
 
     # SAVE #
     if output.save:

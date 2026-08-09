@@ -98,7 +98,8 @@ def count_reads(
     else: sample_df = sample_sheet.copy()
     for colname in ['fastq_file', 'counts_file', 'noncounts_file', 'stats_file', 'condition']: 
         if colname not in sample_df.columns.tolist():
-            raise Exception(f"{annotated_lib} is missing column: {colname}")
+            # this loop validates the sample sheet, not the library
+            raise Exception(f"{sample_sheet} is missing column: {colname}")
     samples = [list(a) for a in zip(sample_df.fastq_file, sample_df.counts_file, sample_df.noncounts_file, 
                                     sample_df.stats_file, sample_df.condition) ]
 

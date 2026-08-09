@@ -436,9 +436,9 @@ def categorize_mutations(row, pre, col_names, window, edit_from):
 
     # 'Splice-acceptor' means guide edits the 'AG' at 3' of intron
     # 'Splice-donor' means guide edits the 'GT' at 5' of intron
-    if is_splice_acceptor_guide(row, pre, dir, window): 
+    if is_splice_acceptor_guide(row, pre, dir, window, seq_col):
         return 'Splice-acceptor'
-    elif is_splice_donor_guide(row, pre, dir, window): 
+    elif is_splice_donor_guide(row, pre, dir, window, seq_col):
         return 'Splice-donor'
     elif row[f'{pre}_muttypes'] is not None and 'Nonsense' in row[f'{pre}_muttypes']: 
         return 'Nonsense'
@@ -447,7 +447,9 @@ def categorize_mutations(row, pre, col_names, window, edit_from):
     elif row[f'{pre}_muttypes'] is not None and 'Silent' in row[f'{pre}_muttypes']: 
         return 'Silent'
     else: 
-        grna_seq = row[f'sgRNA_seq']
+        # seq_col is unpacked from col_names above; this used the literal
+        # 'sgRNA_seq', so a caller-supplied column name was ignored here
+        grna_seq = row[seq_col]
         seq_window = grna_seq[window[0]-1:window[1]]
         if any(char.islower() for char in seq_window) and edit_from.lower() in seq_window: 
             if row['UTR'] == True: 
@@ -475,9 +477,9 @@ def _is_lower_at(seq, index):
     return 0 <= index < len(seq) and seq[index].islower()
 
 
-def is_splice_acceptor_guide(row, pre, dir, window):
+def is_splice_acceptor_guide(row, pre, dir, window, seq_col='sgRNA_seq'):
     pre_from = pre.split('to')[0]
-    seq = row['sgRNA_seq']
+    seq = row[seq_col]
     edit_wind = seq[window[0]-1:window[1]]
     if edit_wind is None: 
         return False
@@ -501,9 +503,9 @@ def is_splice_acceptor_guide(row, pre, dir, window):
             return True
     return False
 
-def is_splice_donor_guide(row, pre, dir, window): 
+def is_splice_donor_guide(row, pre, dir, window, seq_col='sgRNA_seq'):
     pre_from = pre.split('to')[0]
-    seq = row['sgRNA_seq']
+    seq = row[seq_col]
     edit_wind = seq[window[0]-1:window[1]]
     if edit_wind is None: 
         return False

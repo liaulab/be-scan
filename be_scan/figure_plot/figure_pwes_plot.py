@@ -240,7 +240,7 @@ def pwes_scatterplots(
         fig, ax = plt.subplots(1, 1, figsize=output.figsize) # SUBPLOTS #
 
         # PLOT DOMAINS #
-        for dom in domain.dom_setting:
+        for dom in resolve_domains(domain):
             ax.axvspan(
                 dom["start"], dom["end"],
                 facecolor=dom.get("color", domain.default_color),

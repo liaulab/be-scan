@@ -30,7 +30,7 @@ def lollipop_figure(
     print('Negative Hit Count:', len(neg_hits))
 
     # DRAW DOMAINS #
-    for d in domain.dom_setting:
+    for d in resolve_domains(domain):
         ax.axvspan(d['start'], d['end'], facecolor=d['color'],
                    alpha=domain.default_alpha, )
 
@@ -128,7 +128,7 @@ def lollipop_split_figure(
     print('Negative Hit Count:', len(neg_hits))
 
     # DRAW DOMAINS #
-    for d in domain.dom_setting:
+    for d in resolve_domains(domain):
         for ax in (ax_top, ax_bot):
             ax.axvspan(d['start'], d['end'], facecolor=d['color'],
                        alpha=domain.default_alpha)

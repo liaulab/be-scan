@@ -21,8 +21,15 @@ def scatterplot_figure(
     else: df_data = df_data.copy()
 
     # MAKE SURE ALL NEEDED COLUMNS ARE PRESENT #
+    # domain.gene_col was required unconditionally, so every call needed a
+    # 'Gene Symbol' column even with no domains configured. It is only needed
+    # to pick between genes in a gene-keyed dom_setting.
     needed = set(y_col_list + [x_col])
-    for col in (style.hue_col, style.marker_col, domain.gene_col):
+    required = [style.hue_col, style.marker_col]
+    if (isinstance(domain.dom_setting, dict) and len(domain.dom_setting) > 1
+            and not domain.gene):
+        required.append(domain.gene_col)
+    for col in required:
         if col: needed.add(col)
     missing = needed.difference(df_data.columns)
     if missing: raise ValueError(f"Missing column(s): {sorted(missing)}")
@@ -54,7 +61,9 @@ def scatterplot_figure(
     for ax, ycol in zip(axes, y_col_list):
 
         # PLOT DOMAINS #
-        for dom in domain.dom_setting:
+        # resolve_domains unwraps the gene-keyed mapping; iterating dom_setting
+        # directly yielded dict keys, so dom["start"] raised TypeError
+        for dom in resolve_domains(domain, df_data):
             ax.axvspan(
                 dom["start"], dom["end"],
                 facecolor=dom.get("color", domain.default_color),

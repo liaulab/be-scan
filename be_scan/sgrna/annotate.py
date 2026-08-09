@@ -20,9 +20,10 @@ def annotate(
     protein_filepath='', window=[4,8], 
     seq_col = 'sgRNA_seq', frame_col = 'starting_frame', strand_col = 'sgRNA_strand', 
     gene_pos_col='gene_pos', window_start_col='windowstart_pos', window_end_col='windowend_pos', 
-    output_name="annotated.csv", output_dir='', exclude_duplicates=True, 
+    output_name="annotated.csv", output_dir='', exclude_duplicates=True,
     return_df=True, save_df=True,
-    ): 
+    gene_col='gene',
+    ):
     
     """[Summary]
     Annotates a list of guides in a dataframe with mutational information. 
@@ -65,6 +66,9 @@ def annotate(
         Whether or not to return the resulting dataframe
     save_df : bool, default True
         Whether or not to save the resulting dataframe
+    gene_col : str, default 'gene'
+        column name of the dataframe holding the gene name, used to flag
+        Control and Essential guides when assigning residue positions
 
     Returns
     ------------
@@ -108,8 +112,8 @@ def annotate(
     df['coding_seq'] = np.where(df[strand_col]=='sense', df[seq_col], 
                                 df[seq_col].apply(lambda x: rev_complement(complements, x)) )
     # DELETE ENTRIES WITH THE SAME CODING SEQUENCE #
-    if exclude_duplicates: 
-        dupl_rows = df.duplicated(subset='sgRNA_seq', keep=False)
+    if exclude_duplicates:
+        dupl_rows = df.duplicated(subset=seq_col, keep=False)
         df = df[~dupl_rows]
 
     # win_overlap #
@@ -119,7 +123,7 @@ def annotate(
                                         else annotate_intron_exon_anti(row['coding_seq'], window), 
                                         axis=1 )
     # edit_from+'_count'
-    df[edit_from+'_count'] = df['sgRNA_seq'].apply(lambda x: sum([x[window[0]-1:window[1]].count(e) for e in edit_from]))
+    df[edit_from+'_count'] = df[seq_col].apply(lambda x: sum([x[window[0]-1:window[1]].count(e) for e in edit_from]))
 
     # CALCULATE target_CDS, codon_window, residue_window #
     df[[f'{pre}_target_CDS', f'{pre}_target_windowpos']] = df.apply(lambda x: calc_coding_window(x, window, col_names), axis=1, result_type='expand') 
@@ -133,7 +137,7 @@ def annotate(
     df[f'{pre}_muttypes'] = df.apply(lambda x: determine_mutations(x, col_names, pre), axis=1)
     df[f'{pre}_muttype'] = df.apply(lambda x: categorize_mutations(x, pre, col_names, window, edit_from), axis=1)
     df[f'{pre}_pos'] = df.apply(
-        lambda row: assign_position(row[f'{pre}_mutations'], row['windowstart_pos'], row['windowend_pos'], row['gene'], row[f'{pre}_muttype']), axis=1 )
+        lambda row: assign_position(row[f'{pre}_mutations'], row[window_start_col], row[window_end_col], row[gene_col], row[f'{pre}_muttype']), axis=1 )
 
     # DROP UNNECESSARY COLUMNS #
     df = df.drop([f'{pre}_target_CDS', f'{pre}_codon_window', f'{pre}_residue_window', f'{pre}_target_windowpos'], axis=1)

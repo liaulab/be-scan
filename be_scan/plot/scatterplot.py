@@ -19,6 +19,31 @@ import matplotlib.colors as mcolors
 
 from be_scan.plot._annotating_ import *
 
+
+def _display(df):
+    """
+    Show the annotated rows, in or out of a notebook.
+
+    This was a bare call to `display`, which only exists as a builtin inside
+    IPython. Any script using annot_top or annot_abs raised NameError right
+    after drawing the labels.
+    """
+    try:
+        from IPython.display import display as _ipy_display
+    except ImportError:
+        print(df.to_string())
+        return
+    try:
+        from IPython import get_ipython
+        if get_ipython() is None:
+            print(df.to_string())
+            return
+    except ImportError:
+        print(df.to_string())
+        return
+    _ipy_display(df)
+
+
 def scatterplot(
     df_filepath, # DF Filename or DF #
     comparisons, # A List of Y-Axis Values #
@@ -201,8 +226,12 @@ def scatterplot(
     if annot:
         assert isinstance(annot_label, str), "check param: autoannot_label"
         assert annot_label in df_data.columns.tolist(), "check param: autoannot_label"
-        autoannot_bool = isinstance(annot_top, int) or isinstance(annot_cutoff, float)
-        assert autoannot_bool, "check param: autoannot_top autoannot_cutoff"
+        # annot_abs is a documented option but was missing from this gate, so
+        # annot=True with only annot_abs set always tripped the assertion
+        autoannot_bool = (isinstance(annot_top, int)
+                          or isinstance(annot_cutoff, (int, float))
+                          or isinstance(annot_abs, int))
+        assert autoannot_bool, "check param: annot_top, annot_cutoff or annot_abs"
 
     fig, axes = plt.subplots(
         nrows=len(comparisons), ncols=1,
@@ -233,7 +262,7 @@ def scatterplot(
                 toprows_df = sorted_df.head(annot_abs)
                 for _, row in toprows_df.iterrows():
                     t = ax.text(row[x_column], row[comp]-0.2, row[annot_label], **label_text_kws)
-                display(toprows_df)
+                _display(toprows_df)
             elif annot_top:
                 # Annotate the Top or Bottom n #
                 sign = np.sign(annot_top)
@@ -242,7 +271,7 @@ def scatterplot(
                 toprows_df = sorted_df.head(sign*annot_top)
                 for _, row in toprows_df.iterrows():
                     t = ax.text(row[x_column], row[comp]-0.2, row[annot_label], **label_text_kws)
-                display(toprows_df)
+                _display(toprows_df)
             else: warnings.warn("Please include a cutoff or top value")
 
         # Set Title and Axes #

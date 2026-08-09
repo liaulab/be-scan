@@ -56,9 +56,11 @@ def calc_controls(
     else: suffix = '_LFC'
     
     # LOAD DATA OR COPY DF #
-    if isinstance(df_conds, (str, Path)):
+    # the input parameter is `conditions`; testing df_conds here referenced it
+    # before assignment, so every call raised UnboundLocalError
+    if isinstance(conditions, (str, Path)):
         df_conds = pd.read_csv(in_path / conditions)
-    else: df_conds = df_conds.copy()
+    else: df_conds = conditions.copy()
 
     stats_comparisons = [x+suffix+'_avg' for x in stats_comparisons]
 
