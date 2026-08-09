@@ -1,0 +1,11 @@
+sample_id,fastq_file,condition,agg_conditions,counts_file,noncounts_file,stats_file
+0,fastq/t0.fastq.gz,t0,t0,counts-t0.csv,noncounts-t0.csv,stats-t0.txt
+1,fastq/unsorted-1.fastq.gz,unsorted-1,unsorted,counts-unsorted-1.csv,noncounts-unsorted-1.csv,stats-unsorted-1.txt
+2,fastq/unsorted-2.fastq.gz,unsorted-2,unsorted,counts-unsorted-2.csv,noncounts-unsorted-2.csv,stats-unsorted-2.txt
+3,fastq/unsorted-3.fastq.gz,unsorted-3,unsorted,counts-unsorted-3.csv,noncounts-unsorted-3.csv,stats-unsorted-3.txt
+4,fastq/sorted-top-1.fastq.gz,sorted-top-1,sorted_top,counts-sorted-top-1.csv,noncounts-sorted-top-1.csv,stats-sorted-top-1.txt
+5,fastq/sorted-top-2.fastq.gz,sorted-top-2,sorted_top,counts-sorted-top-2.csv,noncounts-sorted-top-2.csv,stats-sorted-top-2.txt
+6,fastq/sorted-top-3.fastq.gz,sorted-top-3,sorted_top,counts-sorted-top-3.csv,noncounts-sorted-top-3.csv,stats-sorted-top-3.txt
+7,fastq/sorted-bottom-1.fastq.gz,sorted-bottom-1,sorted_bottom,counts-sorted-bottom-1.csv,noncounts-sorted-bottom-1.csv,stats-sorted-bottom-1.txt
+8,fastq/sorted-bottom-2.fastq.gz,sorted-bottom-2,sorted_bottom,counts-sorted-bottom-2.csv,noncounts-sorted-bottom-2.csv,stats-sorted-bottom-2.txt
+9,fastq/sorted-bottom-3.fastq.gz,sorted-bottom-3,sorted_bottom,counts-sorted-bottom-3.csv,noncounts-sorted-bottom-3.csv,stats-sorted-bottom-3.txt

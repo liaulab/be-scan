@@ -37,3 +37,37 @@ from be_scan.figure_plot.figure_interactive import (
     interactive_pwes_clustermap,
     interactive_pwes_heatmap_colorbar,
 )
+
+# figure_classes re-exports pandas, numpy, matplotlib, seaborn, scipy and
+# sklearn names for the convenience of the modules that do `import *` from it.
+# Without an explicit __all__ those leak into be_scan.figure_plot, and autodoc
+# then pulls third-party docstrings into the API reference.
+__all__ = [
+    # option dataclasses and their defaults
+    "AxisLabelOpts", "NegCtrlOpts", "ScatterStyleOpts", "BoxStyleOpts",
+    "JitterStyleOpts", "LollipopStyleOpts", "LoessStyleOpts",
+    "ClusteredHeatmapStyleOpts", "PWESHeatmapStyleOpts", "DomainOpts",
+    "LegendOpts", "OutputOpts",
+    "AXIS", "NEGCONTROL", "SCATTERSTYLE", "BOXPLOTSTYLE", "JITTERPLOTSTYLE",
+    "LOLLIPOPSTYLE", "LOESSSTYLE", "CLUSTEREDHEATMAPSTYLE", "PWESHEATMAPSTYLE",
+    "DOMAIN", "LEGEND", "OUTPUT",
+    # shared helpers
+    "resolve_colors", "resolve_domains", "load_frame", "figure_path",
+    "save_figure", "finish_figure", "apply_axis_limits",
+    # static figures
+    "scatterplot_figure", "correlation_scatterplot_figure", "boxplot_figure",
+    "jitterbox_kdeplot_figure", "lollipop_figure", "lollipop_split_figure",
+    "kmeans_clustered_heatmap", "kmeans_elbow", "kmeans_pca_scatterplot",
+    "hex_to_rgb", "loess_smoothing", "interp_methods", "loess_figure",
+    "pwes_clustering", "pwes_histogram", "pwes_boxplots", "pwes_scatterplots",
+    "pwes_heatmap", "pwes_clustermap", "pwes_heatmap_colorbar", "fillgaps",
+    # interactive counterparts
+    "interactive_scatterplot_figure",
+    "interactive_correlation_scatterplot_figure",
+    "interactive_boxplot_figure", "interactive_jitterbox_kdeplot_figure",
+    "interactive_lollipop_figure", "interactive_lollipop_split_figure",
+    "interactive_kmeans_clustered_heatmap", "interactive_loess_figure",
+    "interactive_pwes_histogram", "interactive_pwes_boxplots",
+    "interactive_pwes_scatterplots", "interactive_pwes_heatmap",
+    "interactive_pwes_clustermap", "interactive_pwes_heatmap_colorbar",
+]

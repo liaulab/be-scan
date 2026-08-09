@@ -1,0 +1,11 @@
+﻿sample_id,fastq_file,condition,agg_conditions,counts_file,noncounts_file,stats_file
+0,ALW137_FOXA1_d0_S278_R1_001.fastq,t0,t0,counts-1.csv,noncounts-1.csv,stats-1.txt
+1,ALW137_FOXA1_unsorted_r1_S288_R1_001.fastq,unsorted-1,unsorted,counts-2.csv,noncounts-2.csv,stats-2.txt
+2,ALW137_FOXA1_unsorted_r2_S289_R1_001.fastq,unsorted-2,unsorted,counts-3.csv,noncounts-3.csv,stats-3.txt
+3,ALW137_FOXA1_unsorted_r3_S290_R1_001.fastq,unsorted-3,unsorted,counts-4.csv,noncounts-4.csv,stats-4.txt
+4,ALW137_FOXA1_sorted_top_r1_S294_R1_001.fastq,sorted-top-1,sorted_top,counts-5.csv,noncounts-5.csv,stats-5.txt
+5,ALW137_FOXA1_sorted_top_r2_S295_R1_001.fastq,sorted-top-2,sorted_top,counts-6.csv,noncounts-6.csv,stats-6.txt
+6,ALW137_FOXA1_sorted_top_r3_S296_R1_001.fastq,sorted-top-3,sorted_top,counts-7.csv,noncounts-7.csv,stats-7.txt
+7,ALW137_FOXA1_sorted_dim_r1_S291_R1_001.fastq,sorted-bottom-1,sorted_bottom,counts-8.csv,noncounts-8.csv,stats-8.txt
+8,ALW137_FOXA1_sorted_dim_r2_S292_R1_001.fastq,sorted-bottom-2,sorted_bottom,counts-9.csv,noncounts-9.csv,stats-9.txt
+9,ALW137_FOXA1_sorted_dim_r3_S293_R1_001.fastq,sorted-bottom-3,sorted_bottom,counts-10.csv,noncounts-10.csv,stats-10.txt

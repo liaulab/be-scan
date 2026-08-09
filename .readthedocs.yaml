@@ -10,6 +10,11 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.12"
+  # nbsphinx converts the markdown cells of the tutorial notebooks with
+  # pandoc. The `pandoc` package on PyPI is a wrapper, not the binary, so it
+  # has to come from apt or the notebooks fail to render.
+  apt_packages:
+    - pandoc
     # You can also specify other tool versions:
     # nodejs: "19"
     # rust: "1.64"

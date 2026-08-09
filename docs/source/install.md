@@ -1,6 +1,6 @@
 # Installation
 
-## Installation
+## With pip
 
 To install BE-SCAN:
 

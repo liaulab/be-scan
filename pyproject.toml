@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "be_scan"
-version = "2.0.0"
+version = "3.0.0"
 authors = [
   { name="Calvin XY Hu", email="xiaohu@g.harvard.edu" },
   { name="Simon P Shen", email="simonshen@fas.harvard.edu" },
@@ -38,12 +38,17 @@ test = [
     "pytest"
 ]
 docs = [
-    "sphinx", 
+    "sphinx",
     "myst-parser",
     "furo",
     "sphinx-autobuild",
     "nbsphinx",
-    "pandoc",
+    # nbconvert below 7 calls jinja2.utils.escape, removed in jinja2 3.1, and
+    # the notebooks then fail to render
+    "nbconvert>=7.0",
+    # note: rendering notebook markdown also needs the pandoc *binary*, which
+    # is a system package. .readthedocs.yaml installs it via apt; locally use
+    # `conda install -c conda-forge pandoc` or `brew install pandoc`.
     "sphinxcontrib-napoleon",
 ]
 

@@ -243,28 +243,28 @@ def log_transform(
     ------------
     df_ref : pandas DataFrame
 
-    For every condition with more than one replicate, six columns are added
-    alongside the existing '<cond>_avg' and '<cond>_stdev':
+        For every condition with more than one replicate, six columns are added
+        alongside the existing '<cond>_avg' and '<cond>_stdev'::
 
-       '<cond>_pval'        : two-sided one-sample t-test of that sgRNA's
-                              replicate values against 0
-       '<cond>_neglogp'     : -log10 of the above
-       '<cond>_pval_mod'    : the same test with the variance shrunk toward a
-                              prior fitted across the whole library
-       '<cond>_neglogp_mod' : -log10 of the above
-       '<cond>_qval'        : Benjamini-Hochberg FDR of '<cond>_pval'
-       '<cond>_qval_mod'    : Benjamini-Hochberg FDR of '<cond>_pval_mod'
+            <cond>_pval          two-sided one-sample t-test of that sgRNA's
+                                 replicate values against 0
+            <cond>_neglogp       -log10 of the above
+            <cond>_pval_mod      the same test with the variance shrunk toward a
+                                 prior fitted across the whole library
+            <cond>_neglogp_mod   -log10 of the above
+            <cond>_qval          Benjamini-Hochberg FDR of <cond>_pval
+            <cond>_qval_mod      Benjamini-Hochberg FDR of <cond>_pval_mod
 
-    Which to use: with only two or three replicates, prefer the moderated
-    columns. The ordinary t-test ranks largely on how lucky each guide's
-    variance estimate was, so a guide whose replicates happen to agree closely
-    can outrank one with a far larger effect, and non-targeting controls
-    routinely appear near the top. Read either alongside '<cond>_avg' -- a
-    small p-value on a negligible effect is still a negligible effect.
+        Which to use: with only two or three replicates, prefer the moderated
+        columns. The ordinary t-test ranks largely on how lucky each guide's
+        variance estimate was, so a guide whose replicates happen to agree closely
+        can outrank one with a far larger effect, and non-targeting controls
+        routinely appear near the top. Read either alongside '<cond>_avg' -- a
+        small p-value on a negligible effect is still a negligible effect.
 
-    Conditions with a single replicate get none of these, since a p-value
-    across one measurement is not defined. No existing column is renamed,
-    reordered or altered.
+        Conditions with a single replicate get none of these, since a p-value
+        across one measurement is not defined. No existing column is renamed,
+        reordered or altered.
     """
     in_path = Path(in_dir)
     out_path = Path(out_dir)

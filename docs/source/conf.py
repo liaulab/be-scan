@@ -9,7 +9,7 @@
 project = 'be_scan'
 copyright = '2023, XYH, SPS, BBL'
 author = 'XYH, SPS, BBL'
-release = '2.0.0'
+release = '3.0.0'
 
 from unittest.mock import Mock
 import sys
@@ -35,8 +35,27 @@ extensions = [
     "sphinx.ext.napoleon",
 ] 
 
+# notebooks are committed with their outputs already computed, so the docs
+# build does not need the example data or a working kernel
+nbsphinx_execute = 'never'
+
+# autodoc: keep the source order rather than alphabetising, and document
+# __init__ alongside the class
+autodoc_member_order = 'bysource'
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+    'show-inheritance': True,
+}
+napoleon_google_docstring = False
+napoleon_numpy_docstring = True
+
+# autosectionlabel otherwise collides whenever a notebook and a module page
+# use the same heading text
+autosectionlabel_prefix_document = True
+
 templates_path = ['_templates']
-exclude_patterns = []
+exclude_patterns = ['notebooks/.ipynb_checkpoints', '**.ipynb_checkpoints']
 
 
 
