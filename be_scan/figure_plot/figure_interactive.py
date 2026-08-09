@@ -622,7 +622,7 @@ def interactive_pwes_histogram(
     ):
     """Interactive twin of pwes_histogram."""
     df_data = load_frame(df_clus)
-    counts = df_data['cluster'].value_counts().sort_index()
+    counts = df_data['cl_new'].value_counts().sort_index()
     colors = [color_list[(i - 1) % len(color_list)] for i in counts.index]
 
     fig = go.Figure(go.Bar(
@@ -649,7 +649,7 @@ def interactive_pwes_boxplots(
     """Interactive twin of pwes_boxplots."""
     df_data = load_frame(df_clus)
     fig = go.Figure()
-    for i, (cluster, sub) in enumerate(df_data.groupby('cluster')):
+    for i, (cluster, sub) in enumerate(df_data.groupby('cl_new')):
         fig.add_trace(go.Box(
             y=sub[x_col], name=str(cluster), boxpoints='all', jitter=0.4,
             pointpos=0, fillcolor='rgba(0,0,0,0)',
@@ -680,7 +680,7 @@ def interactive_pwes_scatterplots(
     df_data = load_frame(df_clus)
     fig = go.Figure()
     add_domains(fig, domain, df_data)
-    for i, (cluster, sub) in enumerate(df_data.groupby('cluster')):
+    for i, (cluster, sub) in enumerate(df_data.groupby('cl_new')):
         if max_cluster is not None and cluster > max_cluster:
             continue
         fig.add_trace(go.Scattergl(

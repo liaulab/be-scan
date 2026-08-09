@@ -1,6 +1,20 @@
 
 from be_scan.figure_plot.figure_classes import *
 
+def _style_attr(style, name):
+    """
+    Read a style field, falling back to the PWES defaults.
+
+    pwes_histogram and pwes_scatterplots are annotated
+    `style: ScatterStyleOpts = SCATTERSTYLE` but read linewidth, edgecolor and
+    the spine_* fields, which only exist on PWESHeatmapStyleOpts. With their
+    own default they raised AttributeError, so neither could be called without
+    passing a style object of the other type. Reading through here lets either
+    dataclass work.
+    """
+    return getattr(style, name, getattr(PWESHEATMAPSTYLE, name))
+
+
 def pwes_histogram(
     df_clus,
     color_list,
@@ -23,7 +37,7 @@ def pwes_histogram(
     plt.bar(
         clust_counts.index, clust_counts,
         color=color_list,
-        linewidth=style.linewidth, edgecolor=style.edgecolor)
+        linewidth=_style_attr(style, 'linewidth'), edgecolor=_style_attr(style, 'edgecolor'))
 
     plt.xlim(min(clust_counts.index)-1, max(clust_counts.index)+1)
     plt.xticks(clust_counts.index, fontproperties=arial_font6)
@@ -63,7 +77,7 @@ def pwes_boxplots(
         ax=ax,
         x='cl_new', y=x_col, data=df_clus,
         palette=color_list, zorder=1,
-        **style.swarmplot_kws,
+        **_style_attr(style, 'swarmplot_kws'),
         )
     for collection in ax.collections:
         collection.set_rasterized(True)
@@ -89,7 +103,7 @@ def pwes_boxplots(
         ax=ax,
         x='cl_new', y=x_col, data=df_clus,
         palette=color_list, zorder=1,
-        **style.swarmplot_kws,
+        **_style_attr(style, 'swarmplot_kws'),
         )
     for collection in ax.collections:
         collection.set_rasterized(True)
@@ -97,11 +111,11 @@ def pwes_boxplots(
         ax=ax,
         x='cl_new', y=x_col, data=df_clus,
         zorder=2,
-        **style.boxplot_kws,
-        boxprops=style.boxprops,
-        whiskerprops=style.whiskerprops,
-        capprops=style.capprops,
-        medianprops=style.medianprops,
+        **_style_attr(style, 'boxplot_kws'),
+        boxprops=_style_attr(style, 'boxprops'),
+        whiskerprops=_style_attr(style, 'whiskerprops'),
+        capprops=_style_attr(style, 'capprops'),
+        medianprops=_style_attr(style, 'medianprops'),
         )
     ax.tick_params(width=0.5)
 
@@ -126,7 +140,7 @@ def pwes_boxplots(
         x='cl_new', y=x_col, data=df_clus,
         palette=color_list, zorder=1,
         jitter=True,
-        **style.stripplot_kws,
+        **_style_attr(style, 'stripplot_kws'),
         )
     for collection in ax.collections:
         collection.set_rasterized(True)
@@ -153,7 +167,7 @@ def pwes_boxplots(
         x='cl_new', y=x_col, data=df_clus,
         palette=color_list, zorder=1,
         jitter=True,
-        **style.stripplot_kws,
+        **_style_attr(style, 'stripplot_kws'),
         )
     for collection in ax.collections:
         collection.set_rasterized(True)
@@ -161,11 +175,11 @@ def pwes_boxplots(
         ax=ax,
         x='cl_new', y=x_col, data=df_clus,
         zorder=2,
-        **style.boxplot_kws,
-        boxprops=style.boxprops,
-        whiskerprops=style.whiskerprops,
-        capprops=style.capprops,
-        medianprops=style.medianprops,
+        **_style_attr(style, 'boxplot_kws'),
+        boxprops=_style_attr(style, 'boxprops'),
+        whiskerprops=_style_attr(style, 'whiskerprops'),
+        capprops=_style_attr(style, 'capprops'),
+        medianprops=_style_attr(style, 'medianprops'),
         )
     ax.tick_params(width=0.5)
 
@@ -228,7 +242,8 @@ def pwes_scatterplots(
             data=df_clus[df_clus['cl_new'] == cluster],
             ax=ax,
             x=x_col, y=scores_col,
-            color=color_list[cluster-1],
+            # wrap, so fewer colours than clusters cycles rather than raising
+            color=color_list[(cluster-1) % len(color_list)],
             **style.opaque_kws,
         )
 
@@ -294,12 +309,12 @@ def pwes_heatmap(
         data=df_scaled,
         ax=ax,
         mask=mask,
-        **style.heatmap_kws,
+        **_style_attr(style, 'heatmap_kws'),
         )
 
     for edge, spine in ax.spines.items():
-        spine.set_visible(style.spine_visible)
-        spine.set_color(style.spine_color)
+        spine.set_visible(_style_attr(style, 'spine_visible'))
+        spine.set_color(_style_attr(style, 'spine_color'))
 
     # SET TICKS AND LABELS #
     ax.set_xlabel(axis.xlabel, fontproperties=arial_font6)
@@ -308,13 +323,15 @@ def pwes_heatmap(
     if axis.yticks: ax.set_yticklabels(axis.yticks)
     # TICK LABELS #
     for label in ax.get_xticklabels() + ax.get_yticklabels(): label.set_fontproperties(arial_font6)
-    plt.subplots_adjust(wspace=style.spine_wspace, hspace=style.spine_hspace)
+    plt.subplots_adjust(wspace=_style_attr(style, 'spine_wspace'), hspace=_style_attr(style, 'spine_hspace'))
 
     # DRAW RECTANGLES #
     # HORIZONTAL #
     for i, idx in enumerate(df_scaled.index):
         for start in blackout:
-            if idx.startswith(start):
+            # labels are integer residue numbers for a single subunit and
+            # gene-prefixed strings for a complex; only the latter has a prefix
+            if str(idx).startswith(str(start)):
                 rect = patches.Rectangle(
                     (0, i), len(df_scaled.columns), 1,
                     linewidth=0, edgecolor=None, facecolor='black', alpha=1)
@@ -322,7 +339,7 @@ def pwes_heatmap(
     # VERTICAL #
     for j, col in enumerate(df_scaled.columns):
         for start in blackout:
-            if col.startswith(start):
+            if str(col).startswith(str(start)):
                 rect = patches.Rectangle(
                     (j, 0), 1, len(df_scaled),
                     linewidth=0, edgecolor=None, facecolor='black', alpha=1)
@@ -356,7 +373,8 @@ def pwes_clustermap(
     # SET COLORS FOR CLUSTERS #
     if color_list:
         df_colors = pd.DataFrame(index=df_scaled.index, columns=['Cluster'])
-        df_colors['Colors'] = [color_list[i-1] for i in df_clusters['cl_new']]
+        df_colors['Colors'] = [color_list[(i-1) % len(color_list)]
+                               for i in df_clusters['cl_new']]
         rcolor = df_colors['Colors'].copy()
     else: rcolor = None
 
@@ -366,7 +384,7 @@ def pwes_clustermap(
         row_linkage=link, col_linkage=link,
         row_colors=rcolor,
         figsize=output.figsize,
-        **style.clustered_heatmap_kws,
+        **_style_attr(style, 'clustered_heatmap_kws'),
         )
     ax = fig.ax_heatmap
 
@@ -384,8 +402,8 @@ def pwes_clustermap(
         ax.axhline(y=temp, **style.line_kws)
 
     for edge, spine in ax.spines.items():
-        spine.set_visible(style.spine_visible)
-        spine.set_color(style.spine_color)
+        spine.set_visible(_style_attr(style, 'spine_visible'))
+        spine.set_color(_style_attr(style, 'spine_color'))
 
     plt.tight_layout()
 
@@ -410,16 +428,16 @@ def pwes_heatmap_colorbar(
 
     fig, ax = plt.subplots(figsize=output.figsize)
 
-    norm = mpl.colors.Normalize(**style.colorbar_normalize_kws)
+    norm = mpl.colors.Normalize(**_style_attr(style, 'colorbar_normalize_kws'))
     cbar = mpl.colorbar.ColorbarBase(
         ax, norm=norm, orientation=orientation,
-        **style.colorbar_base_kws)
+        **_style_attr(style, 'colorbar_base_kws'))
 
     for label in (ax.get_yticklabels() if orientation == 'vertical' else ax.get_xticklabels()):
         label.set_fontproperties(arial_font6)
 
     ax.tick_params(**axis.tick_kws)
-    cbar.outline.set_linewidth(style.colorbar_linewidth)
+    cbar.outline.set_linewidth(_style_attr(style, 'colorbar_linewidth'))
 
     if output.save:
         out_path = Path(f"{str(output.path)}.{output.out_type}")

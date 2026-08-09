@@ -56,7 +56,8 @@ def df():
         "mut_type": rng.choice(["Missense", "Silent", "Nonsense", "Splice"], n),
         "cat": rng.choice(list("ABC"), n),
         "q": rng.choice([1, 2, 3, 4], n),
-        "cluster": rng.integers(1, 5, n),
+        # the real clustering output names this column cl_new
+        "cl_new": rng.integers(1, 5, n),
     })
 
 
@@ -135,7 +136,7 @@ def call_pair(name, df, output, **kw):
     if name == "interactive_pwes_scatterplots":
         return fn(df, "pos", "score", CPAL, output=output, **kw)
     if name == "interactive_kmeans_clustered_heatmap":
-        return fn(df[["score", "score2"]], 4, df["cluster"], df["cat"],
+        return fn(df[["score", "score2"]], 4, df["cl_new"], df["cat"],
                   output=output, **kw)
     raise ValueError(name)
 

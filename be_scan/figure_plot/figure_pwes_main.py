@@ -15,10 +15,18 @@ def pwes_clustering(
     Main function to run 3D clustering analysis.
     """
     # BASIC CHECKS #
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
+    # out_dir was passed straight to os.path.exists, so the default of None
+    # raised TypeError, and it was concatenated with out_prefix rather than
+    # joined, so an out_dir without a trailing separator created the directory
+    # and then wrote the files next to it instead of inside it
+    out_dir = Path('.' if out_dir is None else out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_stem = out_dir / ('' if out_prefix is None else str(out_prefix))
+
     assert x_col in df_scores.columns, 'Check [x_col] in df_scores'
     assert scores_col in df_scores.columns, 'Check [scores_col] in df_scores'
+
+    df_scores = df_scores.copy()   # do not mutate the caller's frame
 
     # CALCULATE SPATIAL COMPONENT FROM STRUCTURE #
     df_centroids = process_pdb(pdb_file, gene_map.values())
@@ -66,12 +74,11 @@ def pwes_clustering(
 
     # SAVE CLUSTERS #
     aas_dict = get_clus_aa(df_clus, cluster_xcol)
-    with open(f"{out_dir}{out_prefix}_aas_dict.pickle", "wb") as file:
+    with open(f"{out_stem}_aas_dict.pickle", "wb") as file:
         pickle.dump(aas_dict, file)
 
     # SAVE DATAFRAMES #
-    out = f"{out_dir}{out_prefix}"
-    Path(f"{out}").parent.mkdir(parents=True, exist_ok=True)
+    out = out_stem
     df_gauss.to_csv(f"{out}_df_gauss.csv")
     df_pws_score.to_csv(f"{out}_df_pairwise.csv")
     df_pwes_sorted.to_csv(f"{out}_df_pwes_sorted.csv")
