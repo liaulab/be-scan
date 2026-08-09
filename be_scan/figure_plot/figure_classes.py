@@ -342,6 +342,37 @@ DOMAIN = DomainOpts()
 LEGEND = LegendOpts()
 OUTPUT = OutputOpts()
 
+def resolve_colors(values, style, palette=None):
+    """
+    Map category values to colours, for both static and interactive figures.
+
+    ScatterStyleOpts.palette is typed Union[str, List[str]] and defaults to
+    the string "colorblind". Zipping values against it, as the code here used
+    to, iterates the *characters* of that string, so a hue column produced
+    colours 'c', 'o', 'l' and matplotlib rejected them. A string is a seaborn
+    palette name; only a list is a list of colours.
+
+    Categories are sorted before assignment so a value keeps its colour
+    between a static figure and its interactive twin.
+    """
+    values = sorted(set(values))
+    if palette:
+        return {v: palette.get(v) for v in values}
+    color_map = getattr(style, 'color_map', None)
+    if color_map:
+        return {v: color_map.get(v, None) for v in values}
+
+    pal = getattr(style, 'palette', 'colorblind')
+    if isinstance(pal, str):
+        colors = sns.color_palette(pal, n_colors=len(values))
+    else:
+        colors = list(pal)
+    if not colors:
+        colors = sns.color_palette('colorblind', n_colors=max(len(values), 1))
+    hexes = [c if isinstance(c, str) else mcolors.to_hex(c) for c in colors]
+    return {v: hexes[i % len(hexes)] for i, v in enumerate(values)}
+
+
 def load_frame(df):
     """
     Accept a DataFrame or a path to a .csv, and return a copy.

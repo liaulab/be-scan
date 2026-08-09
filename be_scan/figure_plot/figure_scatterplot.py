@@ -51,10 +51,11 @@ def scatterplot_figure(
     axes = axes if n > 1 else [axes]
 
     # INCORPORATE COLOR MAP IF ONE IS PROVIDED #
+    # zip(hue_vals, style.palette) iterated the characters of the default
+    # palette name "colorblind", handing matplotlib colours 'c', 'o', 'l'
     pal_dict = {}
     if style.hue_col and not style.color_map:
-        hue_vals = sorted(df_data[style.hue_col].unique())
-        pal_dict = {key: value for key, value in zip(hue_vals, style.palette)}
+        pal_dict = resolve_colors(df_data[style.hue_col].dropna().unique(), style)
 
     # ----- SCATTERPLOT ----- #
 
@@ -141,17 +142,21 @@ def scatterplot_figure(
 
     # COLORS #
     if style.hue_col:
-        current_palette = sns.color_palette()
-        hue_vals = sorted(df_data[style.hue_col].unique())
+        # use the same resolved mapping the points were drawn with, so the
+        # legend swatches match the markers
+        legend_colors = resolve_colors(df_data[style.hue_col].dropna().unique(), style)
+        hue_vals = sorted(df_data[style.hue_col].dropna().unique())
         for idx, val in enumerate(hue_vals):
-            col = style.color_map.get(val, current_palette[idx]) if style.color_map else current_palette[idx]
+            col = legend_colors.get(val)
             handles.append(plt.Line2D([0], [0], marker="o", linestyle="", color=col, markersize= legend.mark_size, label=str(val)))
             labels.append(str(val))
 
     # ----- LEGEND OUTPUT AND PLACEMENT ----- #
 
     if handles:
-        if legend.path:
+        # legend.path defaults to "legend", so this wrote a file on every call
+        # with a hue column, even when output.save was False
+        if legend.path and output.save:
             leg_fig, leg_ax = plt.subplots(figsize=(2, 2))
             leg_ax.axis("off")
             leg_ax.legend(handles=handles, labels=labels, loc="center", ncol=legend.ncol, frameon=legend.frameon, title=legend.title)
