@@ -12,6 +12,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
 
+from be_scan.plot._shared_ import (
+    apply_filters, load_dataframe, normalize_to_controls, resolve_hue,
+    save_and_show, split_highlight, style_axes,
+)
+
 def sgrna_enrichment(
     df_filepath, # DF Filename or DF #
     comparisons, # A List of Y-Axis Values #
@@ -21,10 +26,24 @@ def sgrna_enrichment(
 
     savefig=True, show=True, out_name='scatterplot', out_type='png', out_dir='', # Output Params #
 
-    subplots_kws={}, 
+    subplots_kws={},
     rugplot_kws={'height':0.25, 'color':'black', 'linewidth':2, 'alpha':0.05},
     kdeplot_kws={'color':'black', 'linewidth':1, 'alpha':0.5},
-    highlight_rugplot_kws={'height':0.25, 'color':'red', 'linewidth':3, 'alpha':0.6}
+    highlight_rugplot_kws={'height':0.25, 'color':'red', 'linewidth':3, 'alpha':0.6},
+
+    # Added in 3.0.0 for parity with the other be_scan.plot functions. #
+    # Appended so existing calls are unaffected, and every default leaves #
+    # behavior exactly as it was. #
+    #
+    # Note: out_name above defaults to 'scatterplot' rather than
+    # 'sgrna_enrichment'. That is a copy-paste artifact, but correcting it
+    # would silently change the output filename for existing callers, so it
+    # is left alone deliberately. Pass out_name explicitly.
+    xlab=None, ylab=None, title=None, dpi=300,
+    neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # Negative Ctrl Parameters #
+    filter_val=False, val_cols=[], val_min=0.0, # Filter Out Values #
+    filter_params=False, params_cols=[], params_conditions=[['Missense', 'Silent', 'Mixed', 'Nonsense']], # Filter Out Categories #
+    include_hue=False, hue_col='', pal='pastel', # Color Parameters #
     ):
 
     """[Summary]
@@ -78,13 +97,19 @@ def sgrna_enrichment(
     ------------
     """
     # LOAD DATAFRAME #
-    if isinstance(df_filepath, pd.DataFrame):
-        df_data = df_filepath.copy()
-    elif isinstance(df_filepath, (str, Path)):
-        df_filepath = Path(df_filepath)
-        df_data = pd.read_csv(df_filepath)
-    else:
-        raise ValueError("df_filepath must be a pandas DataFrame or a path string/Path.")
+    df_data = load_dataframe(df_filepath)
+
+    # Normalize Data to Intergenic Ctrls #
+    df_data, _ = normalize_to_controls(
+        df_data, comparisons, neg_ctrl, neg_ctrl_col, neg_ctrl_conditions)
+
+    # Filter Data Before Plotting #
+    df_data = apply_filters(
+        df_data, filter_val, val_cols, val_min,
+        filter_params, params_cols, params_conditions)
+
+    # Add Hue #
+    hue_params = resolve_hue(df_data, include_hue, hue_col, pal)
 
     # Set Up Subplots #
     fig, ax = plt.subplots(
@@ -101,26 +126,25 @@ def sgrna_enrichment(
     if density:
         for i, val in enumerate(comparisons):
             sns.kdeplot(
-                data=df_data, x=val, ax=ax[i], 
-                **kdeplot_kws)
+                data=df_data, x=val, ax=ax[i],
+                **hue_params, **kdeplot_kws)
     # Add Rugplot #
     for i, val in enumerate(comparisons):
         sns.rugplot(
-            data=df_data, x=val, ax=ax[i], 
+            data=df_data, x=val, ax=ax[i],
             **rugplot_kws)
-        ax[i].set_title(f"sgRNA Enrichment for {val}")
         # Highlight Particular Guides #
         if highlight:
-            highlight_df = df_data[df_data[highlight_col].isin(highlight_vals)]
+            highlight_df, _ = split_highlight(
+                df_data, highlight, highlight_col, highlight_vals)
             sns.rugplot(
-                data=highlight_df, x=val, ax=ax[i], 
+                data=highlight_df, x=val, ax=ax[i],
                 **highlight_rugplot_kws)
+        style_axes(ax[i], xlab=xlab, ylab=ylab,
+                   title=f"sgRNA Enrichment for {val}" if title is None else title,
+                   hide_spines=())
 
-    plt.tight_layout()
     # Save File #
-    outpath = Path(out_dir)
-    if savefig:
-        out = f'{out_name}.{out_type}'
-        plt.savefig(outpath / out, format=out_type, dpi=300)
-    if show: plt.show()
-    plt.close()
+    save_and_show(fig, savefig=savefig, show=show, out_dir=out_dir,
+                  out_name=out_name, out_type=out_type, dpi=dpi)
+    return fig, ax

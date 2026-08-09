@@ -18,6 +18,12 @@ from plotly.subplots import make_subplots
 import matplotlib.colors as mcolors
 
 from be_scan.plot._annotating_ import *
+from be_scan.plot._shared_ import (
+    annotate_points, apply_filters, apply_xwindow, control_stdev,
+    draw_control_lines, draw_domains, hue_color_map, load_dataframe,
+    normalize_to_controls, resolve_hue, save_and_show,
+    save_and_show_interactive, select_annotated, split_highlight, style_axes,
+)
 
 
 def _display(df):
@@ -66,6 +72,13 @@ def scatterplot(
     scatterplot_kws={'alpha': 0.85, 'linewidth': 0.8, 's': 30},
     axhline_kws={'color':'k', 'ls':'--', 'lw':1},
     label_text_kws={'ha':'right', 'va':'bottom', 'fontsize':6},
+
+    # Added in 3.0.0 for parity with the other be_scan.plot functions. #
+    # Appended so existing calls are unaffected, and every default leaves #
+    # behavior exactly as it was. #
+    title=None, dpi=300, n_sd=2, annot_offset=0.2,
+    highlight=False, highlight_col='', highlight_vals=[], # Highlight a Subset #
+    highlight_kws={'s':60, 'linewidth':1, 'edgecolor':'black', 'color':'red', 'zorder':10},
     ):
 
     """[Summary]
@@ -177,50 +190,25 @@ def scatterplot(
     """
 
     # LOAD DATAFRAME #
-    if isinstance(df_filepath, pd.DataFrame):
-        df_data = df_filepath.copy()
-    elif isinstance(df_filepath, (str, Path)):
-        df_filepath = Path(df_filepath)
-        df_data = pd.read_csv(df_filepath)
-    else:
-        raise ValueError("df_filepath must be a pandas DataFrame or a path string/Path.")
+    df_data = load_dataframe(df_filepath)
 
     # Normalize Data to Intergenic Ctrls #
-    if neg_ctrl:
-        assert isinstance(neg_ctrl_col, str) and neg_ctrl_col in df_data.columns.tolist(), "check param: params_cols"
-        assert isinstance(neg_ctrl_conditions, list), "check param: params_conditions"
-        # Calculate Negative Ctrl Stats #
-        _, list_ctrlstats, avg_dict = calc_neg_ctrls(df_data, comparisons, neg_ctrl_col, neg_ctrl_conditions)
-        # Normalize Each Comparison #
-        df_data = norm_to_intergenic_ctrls(df_data, comparisons, avg_dict)
+    df_data, list_ctrlstats = normalize_to_controls(
+        df_data, comparisons, neg_ctrl, neg_ctrl_col, neg_ctrl_conditions)
 
     # Filter Data Before Plotting #
-    if xwindow is not None and len(xwindow) == 2:
-        df_data = df_data[(df_data[x_column] >= xwindow[0]) & (df_data[x_column] <= xwindow[1])]
-    elif xwindow is not None and len(xwindow) != 2:
-        warnings.warn(f"Warning: xwindow should be a list of 2 values", UserWarning)
+    df_data = apply_xwindow(df_data, x_column, xwindow)
+
+    # Filter by Filter Params #
+    # applied before the hue mapping is built, so the legend only lists
+    # categories that survive the filters
+    df_data = apply_filters(
+        df_data, filter_val, val_cols, val_min,
+        filter_params, params_cols, params_conditions)
 
     # Add Hue #
     baseline_params = {'data':df_data,  'x':x_column}
-    if include_hue:
-        assert isinstance(hue_col, str) and hue_col in df_data.columns, "check param: hue_col"
-        unique_types = df_data[hue_col].dropna().unique()
-        baseline_params.update({'hue': hue_col, 'hue_order': unique_types, 'palette': sns.color_palette(pal, len(unique_types))})
-
-    # Filter by Filter Params #
-    if filter_val:
-        assert isinstance(val_min, float), "check param: val_min"
-        assert isinstance(val_cols, list) and len(val_cols) > 0, "check param: val_cols"
-        for col in val_cols:
-            print(f'Filter data by {col} to be greater than {str(val_min)}')
-            df_data = df_data[df_data[col] > val_min]
-    if filter_params:
-        assert isinstance(params_cols, list), "check param: params_cols"
-        assert isinstance(params_conditions, list), "check param: params_conditions"
-        for col, conds in zip(params_cols, params_conditions):
-            print(f'Filter data by {col} to contain:')
-            print(conds)
-            df_data = df_data.loc[df_data[col].isin(conds)]
+    baseline_params.update(resolve_hue(df_data, include_hue, hue_col, pal))
 
     # Autoannotate the Hits #
     if annot:
@@ -242,54 +230,40 @@ def scatterplot(
         # Plot for Every Comparison #
         sns.scatterplot(ax=ax, y=comp, **baseline_params, **scatterplot_kws)
 
-        # Overlay +/- 2 sd as Black Dashed Lines #
-        if neg_ctrl and list_ctrlstats != None:
-            tup_comp_stdev = [tup for tup in list_ctrlstats if tup[0] == comp][0][2]
-            ax.axhline(y=2*tup_comp_stdev, **axhline_kws)
-            ax.axhline(y=-2*tup_comp_stdev, **axhline_kws)
+        # Overlay a Highlighted Subset #
+        hits, _ = split_highlight(df_data, highlight, highlight_col, highlight_vals)
+        if hits is not None and not hits.empty:
+            ax.scatter(hits[x_column], hits[comp], **highlight_kws)
+
+        # Overlay +/- n sd as Black Dashed Lines #
+        draw_control_lines(ax, control_stdev(list_ctrlstats, comp),
+                           n_sd=n_sd, **axhline_kws)
 
         # Annotate Hits #
         if annot:
-            if annot_cutoff:
-                # Annotate All Above the Cutoff #
-                df_cutoff = df_data[df_data[comp].abs() > annot_cutoff]
-                for _, row in df_cutoff.iterrows():
-                    if row[annot_label] != "nan":
-                        ax.text(row[x_column], row[comp], row[annot_label], **label_text_kws)
-            elif annot_abs:
-                # Annotate the Top n Scoring #
-                sorted_df = df_data.assign(yabs=df_data[comp].abs()).sort_values(by='yabs', ascending=False)
-                toprows_df = sorted_df.head(annot_abs)
-                for _, row in toprows_df.iterrows():
-                    t = ax.text(row[x_column], row[comp]-0.2, row[annot_label], **label_text_kws)
-                _display(toprows_df)
-            elif annot_top:
-                # Annotate the Top or Bottom n #
-                sign = np.sign(annot_top)
-                ascen = True if sign==-1 else False
-                sorted_df = df_data.assign(yabs=df_data[comp]).sort_values(by='yabs', ascending=ascen)
-                toprows_df = sorted_df.head(sign*annot_top)
-                for _, row in toprows_df.iterrows():
-                    t = ax.text(row[x_column], row[comp]-0.2, row[annot_label], **label_text_kws)
-                _display(toprows_df)
-            else: warnings.warn("Please include a cutoff or top value")
+            # select_annotated applies the same cutoff / top-n / abs-top-n
+            # rules used by every other be_scan.plot function
+            rows = select_annotated(df_data, comp, annot_top, annot_cutoff, annot_abs)
+            if rows.empty and annot_top is None and annot_cutoff is None and annot_abs is None:
+                warnings.warn("Please include a cutoff or top value")
+            offset = 0.0 if annot_cutoff is not None else annot_offset
+            annotate_points(ax, rows, x_column, comp, annot_label,
+                            offset=offset, **label_text_kws)
+            if annot_cutoff is None and not rows.empty:
+                _display(rows)
 
         # Set Title and Axes #
         ax.legend(loc='center left', bbox_to_anchor=(1.1, 0.5))
-        ax.set_title(comp) ; ax.set_xlabel(xlab) ; ax.set_ylabel(ylab)
-        ax.set_xlim(**xlim_kws) ; ax.set_ylim(**ylim_kws)
-        ax.spines['top'].set_visible(False) ; ax.spines['bottom'].set_visible(False) ; ax.spines['right'].set_visible(False)
-        for d in domains:
-            ax.axvspan(d['start'], d['end'], alpha=domains_alpha, facecolor=domains_color)
+        style_axes(ax, xlab=xlab, ylab=ylab,
+                   title=comp if title is None else title,
+                   xlim_kws=xlim_kws, ylim_kws=ylim_kws,
+                   hide_spines=('top', 'bottom', 'right'))
+        draw_domains(ax, domains, domains_alpha, domains_color)
 
-    plt.tight_layout()
     # Save File #
-    outpath = Path(out_dir)
-    if savefig:
-        out = f'{out_name}.{out_type}'
-        plt.savefig(outpath / out, format=out_type, dpi=300)
-    if show: plt.show()
-    plt.close()
+    save_and_show(fig, savefig=savefig, show=show, out_dir=out_dir,
+                  out_name=out_name, out_type=out_type, dpi=dpi)
+    return fig, axes
 
 def interactive_scatter(
     df_filepath, # DF Filename or DF #
@@ -308,6 +282,11 @@ def interactive_scatter(
     # Style Params #
     xlim=None, ylim=None,
     plotly_go_kws={'opacity':0.85, 'line':dict(width=0.8)},
+
+    # Added in 3.0.0 for parity with the other interactive plots. #
+    filter_val=False, val_cols=[], val_min=0.0, # Filter Out Values #
+    filter_params=False, params_cols=[], params_conditions=[['Missense', 'Silent', 'Mixed', 'Nonsense']], # Filter Out Categories #
+    highlight=False, highlight_col='', highlight_vals=[], # Highlight a Subset #
     ):
 
     """[Summary]
@@ -371,35 +350,20 @@ def interactive_scatter(
     ------------
     """
     # LOAD DATAFRAME #
-    if isinstance(df_filepath, pd.DataFrame):
-        df_data = df_filepath.copy()
-    elif isinstance(df_filepath, (str, Path)):
-        df_filepath = Path(df_filepath)
-        df_data = pd.read_csv(df_filepath)
-    else:
-        raise ValueError("df_filepath must be a pandas DataFrame or a path string/Path.")
+    df_data = load_dataframe(df_filepath)
 
     # Normalize Data to Intergenic Ctrls #
-    if neg_ctrl:
-        assert isinstance(neg_ctrl_col, str) and neg_ctrl_col in df_data.columns.tolist(), "check param: params_cols"
-        assert isinstance(neg_ctrl_conditions, list), "check param: params_conditions"
-        # Calculate Negative Ctrl Stats #
-        _, list_ctrlstats, avg_dict = calc_neg_ctrls(df_data, comparisons, neg_ctrl_col, neg_ctrl_conditions)
-        # Normalize Each Comparison #
-        df_data = norm_to_intergenic_ctrls(df_data, comparisons, avg_dict)
+    df_data, list_ctrlstats = normalize_to_controls(
+        df_data, comparisons, neg_ctrl, neg_ctrl_col, neg_ctrl_conditions)
 
     # Filter Data Before Plotting #
-    if xwindow is not None and len(xwindow) == 2:
-        df_data = df_data[(df_data[x_column] >= xwindow[0]) & (df_data[x_column] <= xwindow[1])]
-    elif xwindow is not None and len(xwindow) != 2:
-        warnings.warn(f"Warning: xwindow should be a list of 2 values", UserWarning)
+    df_data = apply_xwindow(df_data, x_column, xwindow)
+    df_data = apply_filters(
+        df_data, filter_val, val_cols, val_min,
+        filter_params, params_cols, params_conditions)
 
     # Add Hue #
-    if include_hue:
-        assert isinstance(hue_col, str) and hue_col in df_data.columns.tolist(), "check param: hue_col"
-        unique_types = df_data[hue_col].dropna().unique()
-        pal_list = sns.color_palette(pal, n_colors=len(unique_types))
-        palette_dict = dict(zip(unique_types, [mcolors.to_hex(c) for c in pal_list]))
+    palette_dict = hue_color_map(df_data, include_hue, hue_col, pal)
 
     fig = make_subplots(
         rows=len(comparisons), cols=1,
@@ -422,8 +386,8 @@ def interactive_scatter(
             row=idx+1, col=1 )
 
         # Overlay +/- 2 sd as Black Dashed Lines #
-        if neg_ctrl and list_ctrlstats != None:
-            tup_comp_stdev = next(tup[2] for tup in list_ctrlstats if tup[0] == comp)
+        tup_comp_stdev = control_stdev(list_ctrlstats, comp)
+        if tup_comp_stdev is not None:
             fig.add_shape(
                 dict(type="line", x0=df_data[x_column].min(), x1=df_data[x_column].max(),
                      y0=2*tup_comp_stdev, y1=2*tup_comp_stdev,
@@ -460,7 +424,6 @@ def interactive_scatter(
         )
 
     # Save File #
-    outpath = Path(out_dir)
-    if savefig:
-        fig.write_html(str(outpath / f"{out_name}.html"))
-    if show: fig.show()
+    save_and_show_interactive(fig, savefig=savefig, show=show,
+                              out_dir=out_dir, out_name=out_name)
+    return fig

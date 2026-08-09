@@ -13,6 +13,11 @@ import pandas as pd
 from pathlib import Path
 import plotly.graph_objects as go
 
+from be_scan.plot._shared_ import (
+    apply_filters, load_dataframe, normalize_to_controls, save_and_show,
+    save_and_show_interactive,
+)
+
 def corr_heatmap(
     df_filepath, # DF Filename or DF #
     comparisons, # A List of Y-Axis Values #
@@ -25,6 +30,14 @@ def corr_heatmap(
     heatmap_kws={'center':0, 'linewidth':0.5, 'cmap':'coolwarm',
                  'square':True, 'cbar_kws':{"shrink": 0.5}, 'annot':True},
     subplots_kws = {},
+
+    # Added in 3.0.0 for parity with the other be_scan.plot functions. #
+    # Appended so existing calls are unaffected, and every default leaves #
+    # behavior exactly as it was. #
+    dpi=300,
+    neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # Negative Ctrl Parameters #
+    filter_val=False, val_cols=[], val_min=0.0, # Filter Out Values #
+    filter_params=False, params_cols=[], params_conditions=[['Missense', 'Silent', 'Mixed', 'Nonsense']], # Filter Out Categories #
     ):
 
     """[Summary]
@@ -72,13 +85,18 @@ def corr_heatmap(
     ------------
     """
     # LOAD DATAFRAME #
-    if isinstance(df_filepath, pd.DataFrame):
-        df_data = df_filepath.copy()
-    elif isinstance(df_filepath, (str, Path)):
-        df_filepath = Path(df_filepath)
-        df_data = pd.read_csv(df_filepath)
-    else:
-        raise ValueError("df_filepath must be a pandas DataFrame or a path string/Path.")
+    df_data = load_dataframe(df_filepath)
+
+    # Normalize Data to Intergenic Ctrls #
+    # A heatmap of raw values and a scatterplot of normalized ones disagreed
+    # about the same columns; both now offer the same normalization.
+    df_data, _ = normalize_to_controls(
+        df_data, comparisons, neg_ctrl, neg_ctrl_col, neg_ctrl_conditions)
+
+    # Filter Data Before Plotting #
+    df_data = apply_filters(
+        df_data, filter_val, val_cols, val_min,
+        filter_params, params_cols, params_conditions)
 
     sns.set_style('ticks')
 
@@ -87,24 +105,20 @@ def corr_heatmap(
     df_corr = df_comp.corr(method=corr_type)
 
     # Setup Subplots #
-    _, ax = plt.subplots(**subplots_kws)
-    ax = sns.heatmap(df_corr, **heatmap_kws)
+    fig, ax = plt.subplots(**subplots_kws)
+    ax = sns.heatmap(df_corr, ax=ax, **heatmap_kws)
 
     # Adjustments and Labels #
     for _, spine in ax.spines.items():
         spine.set_visible(True)
-    plt.title(title) ; plt.ylabel(xlab) ; plt.xlabel(ylab)
-    plt.xticks(rotation=45, horizontalalignment='right')
-    plt.yticks(rotation=0, horizontalalignment='right')
-    plt.tight_layout()
+    ax.set_title(title) ; ax.set_ylabel(xlab) ; ax.set_xlabel(ylab)
+    plt.setp(ax.get_xticklabels(), rotation=45, horizontalalignment='right')
+    plt.setp(ax.get_yticklabels(), rotation=0, horizontalalignment='right')
 
     # Save File #
-    outpath = Path(out_dir)
-    if savefig:
-        out = f'{out_name}.{out_type}'
-        plt.savefig(outpath / out, format=out_type, dpi=300)
-    if show: plt.show()
-    plt.close()
+    save_and_show(fig, savefig=savefig, show=show, out_dir=out_dir,
+                  out_name=out_name, out_type=out_type, dpi=dpi)
+    return fig, ax
 
 def interactive_corr_heatmap(
     df_filepath, # DF Filename or DF #
@@ -114,6 +128,11 @@ def interactive_corr_heatmap(
     figsize=(500,500),
     xlab='', ylab='', title='Spearman Correlation Heatmap', # Labels #
     savefig=True, show=True, out_dir='', out_name='correlation_heatmap', # Output Parameters #
+
+    # Added in 3.0.0 for parity with the other interactive plots. #
+    neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # Negative Ctrl Parameters #
+    filter_val=False, val_cols=[], val_min=0.0, # Filter Out Values #
+    filter_params=False, params_cols=[], params_conditions=[['Missense', 'Silent', 'Mixed', 'Nonsense']], # Filter Out Categories #
     ):
 
     """[Summary]
@@ -151,13 +170,16 @@ def interactive_corr_heatmap(
     ------------
     """
     # LOAD DATAFRAME #
-    if isinstance(df_filepath, pd.DataFrame):
-        df_data = df_filepath.copy()
-    elif isinstance(df_filepath, (str, Path)):
-        df_filepath = Path(df_filepath)
-        df_data = pd.read_csv(df_filepath)
-    else:
-        raise ValueError("df_filepath must be a pandas DataFrame or a path string/Path.")
+    df_data = load_dataframe(df_filepath)
+
+    # Normalize Data to Intergenic Ctrls #
+    df_data, _ = normalize_to_controls(
+        df_data, comparisons, neg_ctrl, neg_ctrl_col, neg_ctrl_conditions)
+
+    # Filter Data Before Plotting #
+    df_data = apply_filters(
+        df_data, filter_val, val_cols, val_min,
+        filter_params, params_cols, params_conditions)
 
     sns.set_style('ticks')
 
@@ -182,7 +204,6 @@ def interactive_corr_heatmap(
     )
 
     # Save File #
-    outpath = Path(out_dir)
-    if savefig:
-        fig.write_html(outpath / f"{out_name}.html")
-    if show: fig.show()
+    save_and_show_interactive(fig, savefig=savefig, show=show,
+                              out_dir=out_dir, out_name=out_name)
+    return fig

@@ -14,6 +14,11 @@ from pathlib import Path
 import scipy.stats as stats
 import plotly.express as px
 
+from be_scan.plot._shared_ import (
+    apply_filters, hue_color_map, load_dataframe, normalize_to_controls,
+    save_and_show, save_and_show_interactive, split_highlight, style_axes,
+)
+
 def corr_jointplot(
     df_filepath, # DF Filename or DF #
     condition1, condition2, # Conditions to be Plotted #
@@ -25,6 +30,14 @@ def corr_jointplot(
 
     # Style Params #
     jointplot_kws={'alpha':0.8, 'linewidth':1, 'edgecolor':'black', 's':25},
+
+    # Added in 3.0.0 for parity with the other be_scan.plot functions. #
+    # Appended so existing calls are unaffected, and every default leaves #
+    # behavior exactly as it was. #
+    xlab=None, ylab=None, title=None, dpi=300,
+    neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # Negative Ctrl Parameters #
+    highlight=False, highlight_col='', highlight_vals=[], # Highlight a Subset #
+    highlight_kws={'s':40, 'linewidth':1, 'edgecolor':'black', 'color':'red', 'zorder':10},
     ):
 
     """[Summary]
@@ -88,28 +101,17 @@ def corr_jointplot(
     ------------
     """
     # LOAD DATAFRAME #
-    if isinstance(df_filepath, pd.DataFrame):
-        df_data = df_filepath.copy()
-    elif isinstance(df_filepath, (str, Path)):
-        df_filepath = Path(df_filepath)
-        df_data = pd.read_csv(df_filepath)
-    else:
-        raise ValueError("df_filepath must be a pandas DataFrame or a path string/Path.")
+    df_data = load_dataframe(df_filepath)
+
+    # Normalize Data to Intergenic Ctrls #
+    df_data, _ = normalize_to_controls(
+        df_data, [condition1, condition2], neg_ctrl, neg_ctrl_col,
+        neg_ctrl_conditions)
 
     # Filter by Filter Params #
-    if filter_val:
-        assert isinstance(val_min, float), "check param: val_min"
-        assert isinstance(val_cols, list) and len(val_cols) > 0, "check param: val_cols"
-        for col in val_cols:
-            print(f'Filter data by {col} to be greater than {str(val_min)}')
-            df_data = df_data[df_data[col] > val_min]
-    if filter_params:
-        assert isinstance(params_cols, list), "check param: params_cols"
-        assert isinstance(params_conditions, list), "check param: params_conditions"
-        for col, conds in zip(params_cols, params_conditions):
-            print(f'Filter data by {col} to contain:')
-            print(conds)
-            df_data = df_data.loc[df_data[col].isin(conds)]
+    df_data = apply_filters(
+        df_data, filter_val, val_cols, val_min,
+        filter_params, params_cols, params_conditions)
 
     # Set up Plot Params #
     baseline_params = {'data':df_data, 'x':condition1, 'y':condition2}
@@ -119,23 +121,31 @@ def corr_jointplot(
         sns.set_palette(pal, len(unique_types_sorted))
 
     # Plot #
-    sns.jointplot(**baseline_params, **jointplot_kws)
-    ax = plt.gca()
-    ax.legend(loc='center left', bbox_to_anchor=(1.25, 0.5))
+    grid = sns.jointplot(**baseline_params, **jointplot_kws)
+    ax = grid.ax_joint
+    if include_hue:
+        ax.legend(loc='center left', bbox_to_anchor=(1.25, 0.5))
+
+    # Overlay a Highlighted Subset #
+    hits, _ = split_highlight(df_data, highlight, highlight_col, highlight_vals)
+    if hits is not None and not hits.empty:
+        ax.scatter(hits[condition1], hits[condition2], **highlight_kws)
+
+    # Axis Labels #
+    style_axes(ax, xlab=xlab, ylab=ylab, hide_spines=())
+    if title is not None:
+        grid.figure.suptitle(title)
 
     # Calculate R2 Stats #
     m, b, r_value, p_value, std_err = stats.linregress(df_data[condition1], df_data[condition2])
     print("R: {0} (p-value {1})".format(r_value, p_value))
     print("R2: {0}".format(r_value**2))
 
-    plt.tight_layout()
     # Save File #
-    outpath = Path(out_dir)
-    if savefig:
-        out = f'{condition1}{condition2}_{out_name}.{out_type}'
-        plt.savefig(outpath / out, format=out_type, dpi=300)
-    if show: plt.show()
-    plt.close()
+    save_and_show(grid.figure, savefig=savefig, show=show, out_dir=out_dir,
+                  out_name=f'{condition1}{condition2}_{out_name}',
+                  out_type=out_type, dpi=dpi)
+    return grid.figure, ax
 
 def interactive_corr_jointplot(
     df_filepath, # DF Filename or DF #
@@ -145,6 +155,12 @@ def interactive_corr_jointplot(
     figsize=(800,800),
     include_hue=False, hue_col='CtoT_muttype', pal=px.colors.qualitative.Pastel, # Color Parameters #
     savefig=True, show=True, out_dir='', out_name='correlation_jointplot', # Output Parameters #
+
+    # Added in 3.0.0 for parity with the other interactive plots. #
+    title=None,
+    filter_val=False, val_cols=[], val_min=0.0, # Filter Out Values #
+    filter_params=False, params_cols=[], params_conditions=[['Missense', 'Silent', 'Mixed', 'Nonsense']], # Filter Out Categories #
+    neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # Negative Ctrl Parameters #
     ):
 
     """[Summary]
@@ -185,13 +201,17 @@ def interactive_corr_jointplot(
     ------------
     """
     # LOAD DATAFRAME #
-    if isinstance(df_filepath, pd.DataFrame):
-        df_data = df_filepath.copy()
-    elif isinstance(df_filepath, (str, Path)):
-        df_filepath = Path(df_filepath)
-        df_data = pd.read_csv(df_filepath)
-    else:
-        raise ValueError("df_filepath must be a pandas DataFrame or a path string/Path.")
+    df_data = load_dataframe(df_filepath)
+
+    # Normalize Data to Intergenic Ctrls #
+    df_data, _ = normalize_to_controls(
+        df_data, [condition1, condition2], neg_ctrl, neg_ctrl_col,
+        neg_ctrl_conditions)
+
+    # Filter by Filter Params #
+    df_data = apply_filters(
+        df_data, filter_val, val_cols, val_min,
+        filter_params, params_cols, params_conditions)
 
     hex_pal = ["#{:02x}{:02x}{:02x}".format(*tuple(map(int, c[4:-1].split(",")))) for c in pal]
     # Scatter plot with histograms
@@ -215,14 +235,13 @@ def interactive_corr_jointplot(
 
     # Update Layout #
     fig.update_layout(
-        title=f"{condition1} vs {condition2}",
+        title=f"{condition1} vs {condition2}" if title is None else title,
         xaxis_title=condition1, yaxis_title=condition2,
         legend_title=hue_col if include_hue else None,
         font=dict(size=10), width=figsize[0], height=figsize[1],
     )
 
     # Save File #
-    outpath = Path(out_dir)
-    if savefig:
-        fig.write_html(outpath / f"{condition1}{condition2}_{out_name}.html")
-    if show: fig.show()
+    save_and_show_interactive(fig, savefig=savefig, show=show, out_dir=out_dir,
+                              out_name=f"{condition1}{condition2}_{out_name}")
+    return fig

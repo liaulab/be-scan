@@ -16,6 +16,11 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 
 from be_scan.plot._annotating_ import *
+from be_scan.plot._shared_ import (
+    annotate_points, apply_filters, control_stdev, draw_control_lines,
+    load_dataframe, normalize_to_controls, resolve_hue, save_and_show,
+    save_and_show_interactive, select_annotated, split_highlight, style_axes,
+)
 
 def boxplot(
     df_filepath, # DF Filename or DF #
@@ -28,10 +33,23 @@ def boxplot(
     savefig=True, show=True, out_name='boxes', out_type='png', out_dir='', # Output Parameters #
 
     # Style Params #
-    subplots_kws={}, 
+    subplots_kws={},
     boxplot_kws = {'saturation':1, 'fliersize':4, 'width':0.4,
                    'flierprops':{'marker':'o', 'mec':'black', 'lw':1, 'alpha':0.8}},
     axhline_kws = {'color':'k', 'ls':'--', 'lw':1},
+
+    # Added in 3.0.0 for parity with the other be_scan.plot functions. #
+    # Appended so existing positional and keyword calls are unaffected, and #
+    # every default leaves behavior exactly as it was. #
+    title=None, dpi=300, n_sd=2,
+    include_hue=False, hue_col='', pal='pastel', # Color Parameters #
+    filter_val=False, val_cols=[], val_min=0.0, # Filter Out Values #
+    filter_params=False, params_cols=[], params_conditions=[['Missense', 'Silent', 'Mixed', 'Nonsense']], # Filter Out Categories #
+    annot=False, annot_label='', annot_top=None, annot_cutoff=None, annot_abs=None, # Annotate Outliers #
+    highlight=False, highlight_col='', highlight_vals=[], # Highlight a Subset #
+    xlim_kws=None, ylim_kws=None,
+    label_text_kws={'ha':'right', 'va':'bottom', 'fontsize':6},
+    stripplot_kws={'size':3, 'linewidth':0.5, 'edgecolor':'black', 'color':'red'},
     ):
 
     """[Summary]
@@ -89,26 +107,29 @@ def boxplot(
 
     Returns
     ------------
+    fig, axes : the matplotlib figure and its list of axes
     """
     # LOAD DATAFRAME #
-    if isinstance(df_filepath, pd.DataFrame):
-        df_data = df_filepath.copy()
-    elif isinstance(df_filepath, (str, Path)):
-        df_filepath = Path(df_filepath)
-        df_data = pd.read_csv(df_filepath)
-    else:
-        raise ValueError("df_filepath must be a pandas DataFrame or a path string/Path.")
+    df_data = load_dataframe(df_filepath)
 
     # Normalize Data to Intergenic Ctrls #
-    if neg_ctrl:
-        assert isinstance(neg_ctrl_col, str) and neg_ctrl_col in df_data.columns.tolist(), "check param: params_cols"
-        assert isinstance(neg_ctrl_conditions, list), "check param: params_conditions"
-        # Calculate Negative Ctrl Stats #
-        _, list_ctrlstats, avg_dict = calc_neg_ctrls(df_data, comparisons, neg_ctrl_col, neg_ctrl_conditions)
-        # Normalize Each Comparison #
-        df_data = norm_to_intergenic_ctrls(df_data, comparisons, avg_dict)
+    df_data, list_ctrlstats = normalize_to_controls(
+        df_data, comparisons, neg_ctrl, neg_ctrl_col, neg_ctrl_conditions)
+
+    # Filter Data Before Plotting #
+    df_data = apply_filters(
+        df_data, filter_val, val_cols, val_min,
+        filter_params, params_cols, params_conditions)
 
     df_data = df_data.loc[df_data[plot_column].isin(plot_conditions)].copy()
+
+    # Add Hue #
+    hue_params = resolve_hue(df_data, include_hue, hue_col, pal)
+
+    # Autoannotate the Hits #
+    if annot:
+        assert isinstance(annot_label, str), "check param: annot_label"
+        assert annot_label in df_data.columns.tolist(), "check param: annot_label"
 
     # Setup Subplots #
     fig, axes = plt.subplots(
@@ -118,33 +139,42 @@ def boxplot(
 
     for ax, comp in zip(axes, comparisons):
         # Plot for Every Comparison #
-        sns.boxplot(data=df_data, ax=ax, x=plot_column, y=comp, **boxplot_kws)
+        sns.boxplot(data=df_data, ax=ax, x=plot_column, y=comp,
+                    **hue_params, **boxplot_kws)
         plt.setp(ax.artists, edgecolor='black')
         plt.setp(ax.lines, color='black')
 
-        # Overlay +/- 2 sd as Black Dashed Lines #
-        if neg_ctrl and list_ctrlstats != None:
-            tup_comp_stdev = [tup for tup in list_ctrlstats if tup[0] == comp][0][2]
-            ax.axhline(y=2*tup_comp_stdev, **axhline_kws)
-            ax.axhline(y=-2*tup_comp_stdev, **axhline_kws)
+        # Overlay a Highlighted Subset #
+        hits, _ = split_highlight(df_data, highlight, highlight_col, highlight_vals)
+        if hits is not None and not hits.empty:
+            sns.stripplot(data=hits, ax=ax, x=plot_column, y=comp, **stripplot_kws)
+
+        # Overlay +/- n sd as Black Dashed Lines #
+        draw_control_lines(ax, control_stdev(list_ctrlstats, comp),
+                           n_sd=n_sd, **axhline_kws)
+
+        # Annotate Hits #
+        if annot:
+            rows = select_annotated(df_data, comp, annot_top, annot_cutoff, annot_abs)
+            annotate_points(ax, rows, plot_column, comp, annot_label,
+                            **label_text_kws)
 
         # Set Title and Axes #
-        ax.set_ylim(np.floor(df_data[comp].min()), np.ceil(df_data[comp].max()))
-        ax.set_title(comp)
-        ax.set_ylabel(ylab) ; ax.set_xlabel(xlab)
+        # ylim_kws overrides the data-derived range when supplied
+        if ylim_kws is None:
+            ax.set_ylim(np.floor(df_data[comp].min()), np.ceil(df_data[comp].max()))
+        style_axes(ax, xlab=xlab, ylab=ylab,
+                   title=comp if title is None else title,
+                   xlim_kws=xlim_kws, ylim_kws=ylim_kws, hide_spines=())
 
         for label in ax.get_xticklabels():
             label.set_rotation(45)
             label.set_horizontalalignment('right')
 
-    plt.tight_layout()
     # Save File #
-    outpath = Path(out_dir)
-    if savefig:
-        out = f'{out_name}.{out_type}'
-        plt.savefig(outpath / out, format=out_type, dpi=300)
-    if show: plt.show()
-    plt.close()
+    save_and_show(fig, savefig=savefig, show=show, out_dir=out_dir,
+                  out_name=out_name, out_type=out_type, dpi=dpi)
+    return fig, axes
 
 def interactive_boxplot(
     df_filepath, # DF Filename or DF #
@@ -156,6 +186,12 @@ def interactive_boxplot(
     xlab='', ylab='Log2 Fold Change', # Scatterplot Labels #
     neg_ctrl=False, neg_ctrl_col='', neg_ctrl_conditions=[], # Negative Ctrl Parameters #
     savefig=True, show=True, out_name='boxes', out_type='png', out_dir='', # Output Parameters #
+
+    # Added in 3.0.0 for parity with the other interactive plots. #
+    title='Box Plots - Comparsions',
+    include_hue=False, hue_col='', pal='pastel', # Color Parameters #
+    filter_val=False, val_cols=[], val_min=0.0, # Filter Out Values #
+    filter_params=False, params_cols=[], params_conditions=[['Missense', 'Silent', 'Mixed', 'Nonsense']], # Filter Out Categories #
     ):
 
     """[Summary]
@@ -201,22 +237,16 @@ def interactive_boxplot(
     ------------
     """
     # LOAD DATAFRAME #
-    if isinstance(df_filepath, pd.DataFrame):
-        df_data = df_filepath.copy()
-    elif isinstance(df_filepath, (str, Path)):
-        df_filepath = Path(df_filepath)
-        df_data = pd.read_csv(df_filepath)
-    else:
-        raise ValueError("df_filepath must be a pandas DataFrame or a path string/Path.")
+    df_data = load_dataframe(df_filepath)
 
     # Normalize Data to Intergenic Ctrls #
-    if neg_ctrl:
-        assert isinstance(neg_ctrl_col, str) and neg_ctrl_col in df_data.columns.tolist(), "check param: params_cols"
-        assert isinstance(neg_ctrl_conditions, list), "check param: params_conditions"
-        # Calculate Negative Ctrl Stats #
-        _, list_ctrlstats, avg_dict = calc_neg_ctrls(df_data, comparisons, neg_ctrl_col, neg_ctrl_conditions)
-        # Normalize Each Comparison #
-        df_data = norm_to_intergenic_ctrls(df_data, comparisons, avg_dict)
+    df_data, list_ctrlstats = normalize_to_controls(
+        df_data, comparisons, neg_ctrl, neg_ctrl_col, neg_ctrl_conditions)
+
+    # Filter Data Before Plotting #
+    df_data = apply_filters(
+        df_data, filter_val, val_cols, val_min,
+        filter_params, params_cols, params_conditions)
 
     df_data = df_data.loc[df_data[plot_column].isin(plot_conditions)].copy()
 
@@ -227,15 +257,16 @@ def interactive_boxplot(
         )
 
     for i, comp in enumerate(comparisons):
-        box_fig = px.box(df_data, x=plot_column, y=comp)
+        box_fig = px.box(df_data, x=plot_column, y=comp,
+                         color=hue_col if include_hue else None)
         for trace in box_fig.data:
             fig.add_trace(trace, row=i+1, col=1)
 
         # Overlay neg ctrl avg +/- 2 SD as black dashed lines
-        if neg_ctrl and list_ctrlstats is not None:
-            tup_comp_stdev = [tup for tup in list_ctrlstats if tup[0] == comp][0][2]
-            fig.add_hline(y=2*tup_comp_stdev, line=dict(dash="dash", color="black"), row=i+1, col=1)
-            fig.add_hline(y=-2*tup_comp_stdev, line=dict(dash="dash", color="black"), row=i+1, col=1)
+        stdev = control_stdev(list_ctrlstats, comp)
+        if stdev is not None:
+            fig.add_hline(y=2*stdev, line=dict(dash="dash", color="black"), row=i+1, col=1)
+            fig.add_hline(y=-2*stdev, line=dict(dash="dash", color="black"), row=i+1, col=1)
 
         # Adjust Y Limits #
         fig.update_yaxes(
@@ -245,14 +276,13 @@ def interactive_boxplot(
 
     # Update Layout #
     fig.update_layout(
-        title="Box Plots - Comparsions",
+        title=title,
         xaxis_title=xlab, yaxis_title=ylab,
         width=figsize[0], height=figsize[1] * len(comparisons),  # Adjust height dynamically
-        showlegend=False,
+        showlegend=include_hue,
     )
 
     # Save File #
-    outpath = Path(out_dir)
-    if savefig:
-        fig.write_html(outpath / f"{out_name}.html")
-    if show: fig.show()
+    save_and_show_interactive(fig, savefig=savefig, show=show,
+                              out_dir=out_dir, out_name=out_name)
+    return fig
