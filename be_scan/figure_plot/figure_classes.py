@@ -342,6 +342,77 @@ DOMAIN = DomainOpts()
 LEGEND = LegendOpts()
 OUTPUT = OutputOpts()
 
+def load_frame(df):
+    """
+    Accept a DataFrame or a path to a .csv, and return a copy.
+
+    Only two figure_plot functions did this; the rest required a DataFrame and
+    several mutated the caller's frame in place.
+    """
+    if isinstance(df, (str, Path)):
+        return pd.read_csv(df)
+    return df.copy()
+
+
+def apply_axis_limits(ax, axis):
+    """
+    Apply whichever of xlim/ylim/xticks/yticks are set.
+
+    Several functions called ax.set(ylim=..., yticks=...) unconditionally.
+    Matplotlib's set_ticks(None) raises TypeError, so those functions crashed
+    on the default AxisLabelOpts, where yticks is None.
+    """
+    if axis.xlim is not None:
+        ax.set_xlim(*axis.xlim)
+    if axis.ylim is not None:
+        ax.set_ylim(*axis.ylim)
+    if axis.xticks is not None:
+        ax.set_xticks(axis.xticks)
+    if axis.yticks is not None:
+        ax.set_yticks(axis.yticks)
+
+
+def figure_path(output, suffix='', ext=None):
+    """
+    Where a figure should be written, with its parent directory created.
+
+    suffix distinguishes the several files a single function may emit, such as
+    a plot and its separate legend.
+    """
+    ext = output.out_type if ext is None else ext
+    path = Path(f"{str(output.path)}{suffix}.{ext}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def save_figure(fig, output, suffix='', **savefig_kws):
+    """
+    Write a figure out, but only when output.save is set.
+
+    boxplot_figure, jitterbox_kdeplot_figure and kmeans_clustered_heatmap all
+    saved unconditionally, so output.save did nothing for them and simply
+    drawing a figure wrote files to disk.
+    """
+    if not output.save:
+        return None
+    path = figure_path(output, suffix)
+    kws = {'dpi': output.dpi, 'format': output.out_type,
+           'transparent': output.transparent}
+    kws.update(savefig_kws)
+    fig.savefig(path, **kws)
+    return path
+
+
+def finish_figure(fig, output, suffix='', **savefig_kws):
+    """Save if asked, show if asked, and close otherwise. Returns the figure."""
+    save_figure(fig, output, suffix=suffix, **savefig_kws)
+    if output.show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
 def _load_figure_font(size=6, filename='Arial.ttf'):
     """
     Font used for every figure_plot label.

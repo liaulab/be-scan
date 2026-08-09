@@ -13,9 +13,7 @@ def boxplot_figure(
     ):
 
     # LOAD DATA OR COPY DF #
-    if isinstance(df, (str, Path)):
-        df_data = pd.read_csv(df)
-    else: df_data = df.copy()
+    df_data = load_frame(df)
 
     fig, ax = plt.subplots(figsize=output.figsize,
                            **output.subplots_kws)
@@ -38,7 +36,7 @@ def boxplot_figure(
            "medianprops": style.medianprops},
     )
 
-    ax.set(ylim=axis.ylim, yticks=axis.yticks)
+    apply_axis_limits(ax, axis)
     ax.set_xlabel(axis.xlabel, fontproperties=arial_font6)
     ax.set_ylabel(axis.ylabel, fontproperties=arial_font6)
     ax.set_title(axis.title, fontproperties=arial_font6)
@@ -48,11 +46,7 @@ def boxplot_figure(
     for label in ax.get_xticklabels() + ax.get_yticklabels():
         label.set_fontproperties(arial_font6)
 
-    out_path = Path(f"{str(output.path)}.{output.out_type}")
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(out_path, dpi=output.dpi,
-                format=output.out_type, transparent=output.transparent,
-                bbox_inches="tight")
-    if output.show: plt.show()
+    # this saved unconditionally, so output.save had no effect
+    finish_figure(fig, output, bbox_inches="tight")
 
     return fig, ax

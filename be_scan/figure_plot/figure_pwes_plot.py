@@ -34,14 +34,7 @@ def pwes_histogram(
     plt.ylabel("Count", fontproperties=arial_font6)
     plt.title("Number of Guides in Clusters", fontproperties=arial_font6)
 
-    out_path = Path(f"{str(output.path)}-cluster_histogram.{output.out_type}")
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(
-        out_path, dpi=output.dpi,
-        format=output.out_type, transparent=output.transparent,
-        )
-    if output.show: plt.show()
-    plt.close()
+    finish_figure(plt.gcf(), output, suffix="-cluster_histogram")
 
 def pwes_boxplots(
     df_clus,
@@ -85,13 +78,7 @@ def pwes_boxplots(
     plt.xlabel('Cluster Number', fontproperties=arial_font6)
     plt.title('Clusters Boxplot', fontproperties=arial_font6)
 
-    out_path = Path(f"{str(output.path)}-cluster_swarm.{output.out_type}")
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(out_path, dpi=output.dpi,
-                format=output.out_type, transparent=output.transparent,
-                bbox_inches="tight")
-    if output.show: plt.show()
-    plt.close()
+    finish_figure(plt.gcf(), output, suffix="-cluster_swarm", bbox_inches="tight")
 
     # SWARMPLOT BOXPLOT #
 
@@ -127,13 +114,7 @@ def pwes_boxplots(
     plt.xlabel('Cluster Number', fontproperties=arial_font6)
     plt.title('Clusters Boxplot', fontproperties=arial_font6)
 
-    out_path = Path(f"{str(output.path)}-cluster_swarm_boxplot.{output.out_type}")
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(out_path, dpi=output.dpi,
-                format=output.out_type, transparent=output.transparent,
-                bbox_inches="tight")
-    if output.show: plt.show()
-    plt.close()
+    finish_figure(plt.gcf(), output, suffix="-cluster_swarm_boxplot", bbox_inches="tight")
 
     # STRIPPLOT #
 
@@ -160,13 +141,7 @@ def pwes_boxplots(
     plt.xlabel('Cluster Number', fontproperties=arial_font6)
     plt.title('Clusters Boxplot', fontproperties=arial_font6)
 
-    out_path = Path(f"{str(output.path)}-cluster_strip.{output.out_type}")
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(out_path, dpi=output.dpi,
-                format=output.out_type, transparent=output.transparent,
-                bbox_inches="tight")
-    if output.show: plt.show()
-    plt.close()
+    finish_figure(plt.gcf(), output, suffix="-cluster_strip", bbox_inches="tight")
 
     # STRIPPLOT BOXPLOT #
 
@@ -203,13 +178,7 @@ def pwes_boxplots(
     plt.xlabel('Cluster Number', fontproperties=arial_font6)
     plt.title('Clusters Boxplot', fontproperties=arial_font6)
 
-    out_path = Path(f"{str(output.path)}-cluster_strip_boxplot.{output.out_type}")
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(out_path, dpi=output.dpi,
-                format=output.out_type, transparent=output.transparent,
-                bbox_inches="tight")
-    if output.show: plt.show()
-    plt.close()
+    finish_figure(plt.gcf(), output, suffix="-cluster_strip_boxplot", bbox_inches="tight")
 
 def pwes_scatterplots(
     df_clus,

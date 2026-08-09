@@ -12,6 +12,9 @@ def jitterbox_kdeplot_figure(
     output: OutputOpts = OUTPUT,
     ):
 
+    data = load_frame(data)
+    figures = {}
+
     if jitterbox:
         fig, ax = plt.subplots(figsize=output.figsize, **output.subplots_kws)
 
@@ -55,17 +58,13 @@ def jitterbox_kdeplot_figure(
         ax.set_title(axis.title, fontproperties=arial_font6)
         plt.xticks(fontproperties=arial_font6)
         plt.yticks(fontproperties=arial_font6)
-        ax.set(ylim=axis.ylim, yticks=axis.yticks)
+        apply_axis_limits(ax, axis)
 
         plt.legend([],[], frameon=False)
 
-        out_path = Path(f"{str(output.path)}_Boxplot.{output.out_type}")
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(out_path, dpi=output.dpi,
-                    format=output.out_type, transparent=output.transparent,
-                    bbox_inches="tight")
-        if output.show: plt.show()
-        plt.close()
+        # this saved unconditionally, so output.save had no effect
+        finish_figure(fig, output, suffix="_Boxplot", bbox_inches="tight")
+        figures["jitterbox"] = (fig, ax)
 
     if kde:
         # Plot KDEs of Q575R
@@ -74,7 +73,6 @@ def jitterbox_kdeplot_figure(
         quartiles =sorted(data[xcol].unique())[::-1]
         colors = style.colors[::-1]
         for q, c in zip(quartiles, colors):
-            print(q, c)
             subset = data[data[xcol] == q]
             sns.kdeplot(
                 y=subset[ycol], label=f'Q{q}',
@@ -90,14 +88,11 @@ def jitterbox_kdeplot_figure(
         ax.set_title(axis.title, fontproperties=arial_font6)
         plt.xticks(fontproperties=arial_font6)
         plt.yticks(fontproperties=arial_font6)
-        ax.set(ylim=axis.ylim, yticks=axis.yticks)
+        apply_axis_limits(ax, axis)
 
         legend = ax.legend(prop=arial_font6, frameon=False)
 
-        out_path = Path(f"{str(output.path)}_Density.{output.out_type}")
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(out_path, dpi=output.dpi,
-                    format=output.out_type, transparent=output.transparent,
-                    bbox_inches="tight")
-        if output.show: plt.show()
-        plt.close()
+        finish_figure(fig, output, suffix="_Density", bbox_inches="tight")
+        figures["kde"] = (fig, ax)
+
+    return figures
