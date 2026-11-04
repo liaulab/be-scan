@@ -35,6 +35,7 @@ interactive_scatterplot_figure(df, ["score"], "pos", output=OUT)  # figures/scre
 | `jitterbox_kdeplot_figure` | `interactive_jitterbox_kdeplot_figure` |
 | `lollipop_figure` | `interactive_lollipop_figure` |
 | `lollipop_split_figure` | `interactive_lollipop_split_figure` |
+| `domain_plot_figure` | `interactive_domain_plot_figure` |
 | `kmeans_clustered_heatmap` | `interactive_kmeans_clustered_heatmap` |
 | `loess_figure` | `interactive_loess_figure` |
 | `pwes_histogram` | `interactive_pwes_histogram` |
@@ -70,6 +71,30 @@ from be_scan.figure_plot import figure_interactive_style as ivs
 ivs.INCLUDE_PLOTLYJS = "cdn"     # ≈40 KB per file, requires a connection
 ```
 
+## Domain maps
+
+`domain_plot_figure` draws a protein's domains as a bar where every residue
+has the same width. The axes fill the figure, so at the default 4 in width the
+map lines up under a scatterplot or lollipop of the same width.
+
+```python
+gene_domains = [
+    {"description": "IDR1", "start": 1,   "end": 175, "color": "#fb8072"},
+    {"description": "QLQ",  "start": 176, "end": 207, "color": "#80b1d3"},
+    # ...
+]
+domain_plot_figure(gene_domains, gene_len=1590, label_angle=45,
+                   output=replace(DOMAINPLOTOUTPUT, save=True, path="figures/smarca4"))
+```
+
+A domain is filled with its `color` only when that is a hex code, otherwise
+with `DomainPlotStyleOpts.default_color` (`#b7b7b7`). Boxes have a 0.5 pt black
+outline and rounded corners over a 0.5 pt black baseline. Labels are 6 pt
+Arial, sit under their domain, and are pushed sideways just enough that none
+overlap; `label_angle` rotates them. `DOMAINPLOTOUTPUT` is the scatterplot
+width at a tenth of its height, and the file is saved with a tight bounding
+box so the labels hanging below are kept.
+
 ## Option objects
 
 | dataclass | controls |
@@ -78,6 +103,7 @@ ivs.INCLUDE_PLOTLYJS = "cdn"     # ≈40 KB per file, requires a connection
 | `ScatterStyleOpts` | palette, hue and marker columns, per-layer keywords, transparency threshold |
 | `BoxStyleOpts`, `JitterStyleOpts`, `LollipopStyleOpts`, `LoessStyleOpts`, `ClusteredHeatmapStyleOpts`, `PWESHeatmapStyleOpts` | per-plot styling |
 | `DomainOpts` | shaded protein domains; accepts a list of spans or a mapping of gene to spans |
+| `DomainPlotStyleOpts` | domain map fill, outline, baseline, box height, corner rounding, label spacing |
 | `LegendOpts` | placement, columns, and an optional separate legend file |
 | `NegCtrlOpts` | negative-control normalisation and ± SD guide lines |
 | `OutputOpts` | figure size, dpi, format, transparency, whether to save and show |

@@ -27,8 +27,13 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from be_scan.figure_plot.figure_classes import *
+from be_scan.figure_plot.figure_domain_plot import (
+    DOMAINPLOTOUTPUT, DOMAINPLOTSTYLE, DomainPlotStyleOpts, domain_fill,
+    spread_labels,
+)
 from be_scan.figure_plot.figure_interactive_style import (
-    add_domains, add_hline, apply_axis, base_layout, figure_size,
+    BASE_FONT, FONT_FAMILY, add_domains, add_hline, apply_axis, base_layout,
+    figure_size,
     finish_interactive, hover_text, line_from_kws, marker_from_kws,
     marker_size, opacity_from_kws, resolve_colors, to_css,
 )
@@ -787,3 +792,94 @@ def interactive_pwes_heatmap_colorbar(
     fig.update_xaxes(showticklabels=orientation.startswith('h'))
     fig.update_yaxes(showticklabels=orientation.startswith('v'))
     return finish_interactive(fig, output, suffix='-colorbar')
+
+
+# --------------------------------------------------------------------------- #
+# domain map
+# --------------------------------------------------------------------------- #
+
+
+def interactive_domain_plot_figure(
+    gene_domains,
+    gene_len,
+    *,
+    label_angle: float = 0,
+    style: DomainPlotStyleOpts = DOMAINPLOTSTYLE,
+    output: OutputOpts = DOMAINPLOTOUTPUT,
+    scale: float = 2.0,
+    ):
+    """
+    Interactive twin of domain_plot_figure.
+
+    Each domain is a filled trace, so hovering shows its name and residue
+    range. Corners are square: plotly shapes have no rounding.
+    """
+    if gene_len is None or gene_len <= 0:
+        raise ValueError("gene_len must be a positive number of residues")
+
+    width, height = figure_size(output, scale)
+    font = BASE_FONT * scale
+    bottom = 0.5 - style.bar_height / 2
+    top = bottom + style.bar_height
+    fig = go.Figure()
+
+    # BASELINE #
+    base = style.baseline_kws
+    fig.add_trace(go.Scatter(
+        x=[0, gene_len], y=[0.5, 0.5], mode='lines', hoverinfo='skip',
+        showlegend=False, line=dict(color=to_css(base.get('color')),
+                                    width=base.get('linewidth', 0.5) * scale)))
+
+    # DOMAINS #
+    edge = style.rect_kws
+    for dom in gene_domains:
+        start, end = max(dom['start'] - 1, 0), min(dom['end'], gene_len)
+        label = dom.get('description') or ''
+        fig.add_trace(go.Scatter(
+            x=[start, end, end, start, start], y=[bottom, bottom, top, top, bottom],
+            mode='lines', fill='toself', hoveron='fills', showlegend=False,
+            fillcolor=domain_fill(dom, style.default_color),
+            line=dict(color=to_css(edge.get('edgecolor')),
+                      width=edge.get('linewidth', 0.5) * scale),
+            name=label, text=f"{label}<br>{dom['start']}-{dom['end']}",
+            hoverinfo='text'))
+
+    # LABELS #
+    # plotly cannot measure text, so widths are estimated from character count
+    labelled = [d for d in gene_domains if d.get('description')]
+    rad = np.deg2rad(label_angle)
+    sin, cos = abs(np.sin(rad)), abs(np.cos(rad))
+    px_per_unit = width / gene_len
+    char_w = 0.55 * font
+    text_w = [len(d['description']) * char_w for d in labelled]
+    if sin > 1e-6:
+        need = [min(font / sin, w / cos) if cos > 1e-6 else font / sin for w in text_w]
+        xanchor = 'right' if np.sin(rad) > 0 else 'left'
+    else:
+        need, xanchor = text_w, 'center'
+    anchors = [(max(d['start'] - 1, 0) + min(d['end'], gene_len)) / 2 for d in labelled]
+    gap = style.label_gap * scale / px_per_unit
+    centres = spread_labels(anchors, [n / px_per_unit for n in need], gap=gap)
+    for d, x in zip(labelled, centres):
+        fig.add_annotation(
+            x=x, y=bottom, xref='x', yref='y', text=d['description'],
+            showarrow=False, textangle=-label_angle, xanchor=xanchor,
+            yanchor='top', yshift=-style.label_pad * scale,
+            font=dict(family=FONT_FAMILY, size=font, color='black'))
+
+    # room for the labels below, and for any that spread past either end
+    longest = max(text_w, default=0)
+    label_depth = longest * sin + font * cos + style.label_pad * scale + 4
+    overhang = max([abs(x - gene_len / 2) * px_per_unit - width / 2 + w / 2
+                    for x, w in zip(centres, need)] + [0])
+
+    layout = base_layout(output, scale)
+    layout.update(
+        width=width + 2 * overhang + 10, height=height + label_depth,
+        margin=dict(l=overhang + 5, r=overhang + 5, t=0, b=label_depth),
+        hovermode='closest')
+    fig.update_layout(**layout)
+    hidden = dict(visible=False, showgrid=False, zeroline=False, fixedrange=True)
+    fig.update_xaxes(range=[0, gene_len], **hidden)
+    fig.update_yaxes(range=[0, 1], **hidden)
+    return finish_interactive(fig, output)

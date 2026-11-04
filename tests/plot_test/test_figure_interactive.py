@@ -31,6 +31,7 @@ PAIRS = {
     "jitterbox_kdeplot_figure": "interactive_jitterbox_kdeplot_figure",
     "lollipop_figure": "interactive_lollipop_figure",
     "lollipop_split_figure": "interactive_lollipop_split_figure",
+    "domain_plot_figure": "interactive_domain_plot_figure",
     "kmeans_clustered_heatmap": "interactive_kmeans_clustered_heatmap",
     "loess_figure": "interactive_loess_figure",
     "pwes_histogram": "interactive_pwes_histogram",
@@ -129,6 +130,9 @@ def call_pair(name, df, output, **kw):
         return fn(df, "cat", "score", palette=BPAL, output=output, **kw)
     if name == "interactive_jitterbox_kdeplot_figure":
         return fn(df, "q", "score", "cat", BPAL, output=output, **kw)
+    if name == "interactive_domain_plot_figure":
+        return fn([{"description": "A", "start": 1, "end": 50}], 200,
+                  output=output, **kw)
     if name == "interactive_pwes_histogram":
         return fn(df, CPAL, output=output, **kw)
     if name == "interactive_pwes_boxplots":
@@ -142,6 +146,7 @@ def call_pair(name, df, output, **kw):
 
 
 RUNNABLE = [
+    "interactive_domain_plot_figure",
     "interactive_scatterplot_figure",
     "interactive_correlation_scatterplot_figure",
     "interactive_boxplot_figure",

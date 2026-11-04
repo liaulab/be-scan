@@ -6,6 +6,9 @@ from be_scan.figure_plot.figure_correlation_scatterplot import correlation_scatt
 from be_scan.figure_plot.figure_boxplot import boxplot_figure
 from be_scan.figure_plot.figure_jitterplot import jitterbox_kdeplot_figure
 from be_scan.figure_plot.figure_lollipop import lollipop_figure, lollipop_split_figure
+from be_scan.figure_plot.figure_domain_plot import (
+    domain_plot_figure, DomainPlotStyleOpts, DOMAINPLOTSTYLE, DOMAINPLOTOUTPUT,
+)
 
 from be_scan.figure_plot.figure_clustered_heatmap_main import kmeans_clustered_heatmap
 from be_scan.figure_plot.figure_clustered_heatmap_helpers import kmeans_elbow, kmeans_pca_scatterplot, hex_to_rgb
@@ -28,6 +31,7 @@ from be_scan.figure_plot.figure_interactive import (
     interactive_jitterbox_kdeplot_figure,
     interactive_lollipop_figure,
     interactive_lollipop_split_figure,
+    interactive_domain_plot_figure,
     interactive_kmeans_clustered_heatmap,
     interactive_loess_figure,
     interactive_pwes_histogram,
@@ -47,16 +51,17 @@ __all__ = [
     "AxisLabelOpts", "NegCtrlOpts", "ScatterStyleOpts", "BoxStyleOpts",
     "JitterStyleOpts", "LollipopStyleOpts", "LoessStyleOpts",
     "ClusteredHeatmapStyleOpts", "PWESHeatmapStyleOpts", "DomainOpts",
-    "LegendOpts", "OutputOpts",
+    "LegendOpts", "OutputOpts", "DomainPlotStyleOpts",
     "AXIS", "NEGCONTROL", "SCATTERSTYLE", "BOXPLOTSTYLE", "JITTERPLOTSTYLE",
     "LOLLIPOPSTYLE", "LOESSSTYLE", "CLUSTEREDHEATMAPSTYLE", "PWESHEATMAPSTYLE",
-    "DOMAIN", "LEGEND", "OUTPUT",
+    "DOMAIN", "LEGEND", "OUTPUT", "DOMAINPLOTSTYLE", "DOMAINPLOTOUTPUT",
     # shared helpers
     "resolve_colors", "resolve_domains", "load_frame", "figure_path",
     "save_figure", "finish_figure", "apply_axis_limits",
     # static figures
     "scatterplot_figure", "correlation_scatterplot_figure", "boxplot_figure",
     "jitterbox_kdeplot_figure", "lollipop_figure", "lollipop_split_figure",
+    "domain_plot_figure",
     "kmeans_clustered_heatmap", "kmeans_elbow", "kmeans_pca_scatterplot",
     "hex_to_rgb", "loess_smoothing", "interp_methods", "loess_figure",
     "pwes_clustering", "pwes_histogram", "pwes_boxplots", "pwes_scatterplots",
@@ -66,6 +71,7 @@ __all__ = [
     "interactive_correlation_scatterplot_figure",
     "interactive_boxplot_figure", "interactive_jitterbox_kdeplot_figure",
     "interactive_lollipop_figure", "interactive_lollipop_split_figure",
+    "interactive_domain_plot_figure",
     "interactive_kmeans_clustered_heatmap", "interactive_loess_figure",
     "interactive_pwes_histogram", "interactive_pwes_boxplots",
     "interactive_pwes_scatterplots", "interactive_pwes_heatmap",

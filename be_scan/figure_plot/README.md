@@ -35,6 +35,7 @@ interactive_scatterplot_figure(df, ["score"], "pos", output=OUT)  # figures/scre
 | `jitterbox_kdeplot_figure` | `interactive_jitterbox_kdeplot_figure` |
 | `lollipop_figure` | `interactive_lollipop_figure` |
 | `lollipop_split_figure` | `interactive_lollipop_split_figure` |
+| `domain_plot_figure` | `interactive_domain_plot_figure` |
 | `kmeans_clustered_heatmap` | `interactive_kmeans_clustered_heatmap` |
 | `loess_figure` | `interactive_loess_figure` |
 | `pwes_histogram` | `interactive_pwes_histogram` |
