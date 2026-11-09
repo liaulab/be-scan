@@ -167,6 +167,62 @@ def marker_from_kws(kws, scale=2.0, color=None):
     return marker
 
 
+# matplotlib marker codes -> plotly symbol names. ScatterStyleOpts.marker_map
+# is written in matplotlib codes for the static figure; the interactive twin
+# translates them here so both draw the same shapes.
+MPL_TO_PLOTLY_SYMBOL = {
+    'o': 'circle', '.': 'circle', ',': 'square',
+    's': 'square', 'D': 'diamond', 'd': 'diamond-tall',
+    '^': 'triangle-up', 'v': 'triangle-down',
+    '<': 'triangle-left', '>': 'triangle-right',
+    '1': 'y-down', '2': 'y-up', '3': 'y-left', '4': 'y-right',
+    'x': 'x-thin', 'X': 'x', '+': 'cross-thin', 'P': 'cross',
+    '*': 'star', 'p': 'pentagon', 'h': 'hexagon', 'H': 'hexagon2',
+    '8': 'octagon', '|': 'line-ns', '_': 'line-ew',
+}
+
+# seaborn's default marker cycle when style= is given without markers=,
+# expressed as plotly names, so an empty marker_map still matches the static
+# figure's shapes
+DEFAULT_SYMBOL_CYCLE = ['circle', 'x', 'diamond', 'cross', 'square',
+                        'star-triangle-up', 'star-square', 'triangle-up']
+
+
+def to_plotly_symbol(mark):
+    """
+    Translate a matplotlib marker code to a plotly symbol name.
+
+    Single-character matplotlib codes are mapped through MPL_TO_PLOTLY_SYMBOL.
+    Longer strings are taken to already be plotly names (e.g. 'diamond-open')
+    and passed through for plotly to validate.
+    """
+    if mark in MPL_TO_PLOTLY_SYMBOL:
+        return MPL_TO_PLOTLY_SYMBOL[mark]
+    if isinstance(mark, str) and len(mark) > 1:
+        return mark
+    raise ValueError(
+        f"Marker {mark!r} has no plotly equivalent; use one of "
+        f"{sorted(MPL_TO_PLOTLY_SYMBOL)} or a plotly symbol name")
+
+
+def resolve_symbols(values, marker_map):
+    """
+    Map each category value to a plotly symbol.
+
+    With a marker_map every value must be covered, as seaborn requires for the
+    static figure. Without one, values are sorted and assigned seaborn's
+    default cycle.
+    """
+    values = sorted(set(values))
+    if marker_map:
+        missing = [v for v in values if v not in marker_map]
+        if missing:
+            raise ValueError(f"marker_map is missing value(s): {missing}")
+        return {v: to_plotly_symbol(marker_map[v]) for v in values}
+    return {v: DEFAULT_SYMBOL_CYCLE[i % len(DEFAULT_SYMBOL_CYCLE)]
+            for i, v in enumerate(values)}
+
+
 def to_css(color, default='black'):
     """
     Render a matplotlib colour as something plotly accepts.

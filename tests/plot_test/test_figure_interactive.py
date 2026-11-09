@@ -325,3 +325,85 @@ def test_no_twin_mutates_the_caller_frame(name, df, tmp_path):
     out = OutputOpts(save=False, show=False, path=str(tmp_path / "fig"))
     call_pair(name, df, out)
     pd.testing.assert_frame_equal(df, before)
+
+
+# --------------------------------------------------------------------------- #
+# marker shapes
+# --------------------------------------------------------------------------- #
+
+
+def _marker_frame():
+    rng = np.random.default_rng(0)
+    return pd.DataFrame({
+        "pos": np.arange(40),
+        "score": rng.normal(0, 3, 40),
+        "editor": ["ABE", "CBE"] * 20,
+        "mut_type": ["Missense"] * 10 + ["Silent"] * 30,
+    })
+
+
+def _data_traces(fig):
+    """Traces that carry points, excluding the empty legend-key traces."""
+    return [t for t in fig.data if t.x is not None and len(t.x) and t.x[0] is not None]
+
+
+@pytest.mark.parametrize("hue_col", [None, "mut_type"])
+def test_scatter_marker_map_sets_plotly_symbols(hue_col):
+    """
+    marker_map is written in matplotlib codes for the static figure. The
+    interactive twin used to ignore it and draw every point as a circle.
+    """
+    df = _marker_frame()
+    style = ScatterStyleOpts(hue_col=hue_col, marker_col="editor",
+                             marker_map={"ABE": "o", "CBE": "D"})
+    fig = fp.interactive_scatterplot_figure(
+        df, ["score"], "pos", style=style,
+        output=OutputOpts(save=False, show=False))
+
+    seen = {"ABE": 0, "CBE": 0}
+    for trace in _data_traces(fig):
+        editors = set(df.loc[df["pos"].isin(trace.x), "editor"])
+        assert len(editors) == 1, "a trace mixes marker categories"
+        editor = editors.pop()
+        expected = {"ABE": "circle", "CBE": "diamond"}[editor]
+        assert trace.marker.symbol == expected
+        seen[editor] += len(trace.x)
+    assert seen == {"ABE": 20, "CBE": 20}
+
+
+def test_scatter_marker_legend_has_one_entry_per_shape_and_colour():
+    df = _marker_frame()
+    style = ScatterStyleOpts(hue_col="mut_type", marker_col="editor",
+                             marker_map={"ABE": "o", "CBE": "D"})
+    fig = fp.interactive_scatterplot_figure(
+        df, ["score"], "pos", style=style,
+        output=OutputOpts(save=False, show=False))
+    legend = [(t.name, t.marker.symbol) for t in fig.data if t.showlegend]
+    assert legend == [("ABE", "circle"), ("CBE", "diamond"),
+                      ("Missense", "circle"), ("Silent", "circle")]
+
+
+def test_scatter_marker_map_missing_a_value_raises():
+    style = ScatterStyleOpts(marker_col="editor", marker_map={"ABE": "o"})
+    with pytest.raises(ValueError, match="CBE"):
+        fp.interactive_scatterplot_figure(
+            _marker_frame(), ["score"], "pos", style=style,
+            output=OutputOpts(save=False, show=False))
+
+
+def test_scatter_missing_marker_column_raises():
+    style = ScatterStyleOpts(marker_col="nope", marker_map={"ABE": "o"})
+    with pytest.raises(ValueError, match="nope"):
+        fp.interactive_scatterplot_figure(
+            _marker_frame(), ["score"], "pos", style=style,
+            output=OutputOpts(save=False, show=False))
+
+
+def test_matplotlib_marker_codes_translate_to_plotly_symbols():
+    assert ivs.to_plotly_symbol("o") == "circle"
+    assert ivs.to_plotly_symbol("D") == "diamond"
+    assert ivs.to_plotly_symbol("s") == "square"
+    assert ivs.to_plotly_symbol("^") == "triangle-up"
+    assert ivs.to_plotly_symbol("diamond-open") == "diamond-open"
+    with pytest.raises(ValueError):
+        ivs.to_plotly_symbol("Q")

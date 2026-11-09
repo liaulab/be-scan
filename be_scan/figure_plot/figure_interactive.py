@@ -35,7 +35,7 @@ from be_scan.figure_plot.figure_interactive_style import (
     BASE_FONT, FONT_FAMILY, add_domains, add_hline, apply_axis, base_layout,
     figure_size,
     finish_interactive, hover_text, line_from_kws, marker_from_kws,
-    marker_size, opacity_from_kws, resolve_colors, to_css,
+    marker_size, opacity_from_kws, resolve_colors, resolve_symbols, to_css,
 )
 from be_scan.plot._annotating_ import calc_neg_ctrls, norm_to_intergenic_ctrls
 
@@ -63,6 +63,7 @@ def interactive_scatterplot_figure(
     df_data = load_frame(df_data)
 
     needed = set(y_col_list + [x_col])
+    needed.update(c for c in (style.hue_col, style.marker_col) if c)
     missing = needed.difference(df_data.columns)
     if missing:
         raise ValueError(f"Missing column(s): {sorted(missing)}")
@@ -85,6 +86,20 @@ def interactive_scatterplot_figure(
     if style.hue_col:
         colors = resolve_colors(df_data[style.hue_col].dropna().unique(), style)
 
+    # marker_map is in matplotlib codes ('o', 'D', ...) for the static figure;
+    # translate to plotly symbols so both renderings draw the same shapes
+    symbols = {}
+    if style.marker_col:
+        symbols = resolve_symbols(df_data[style.marker_col].dropna().unique(),
+                                  style.marker_map)
+
+    def split(frame, col):
+        """(value, sub-frame) per category of col, or one (None, frame)."""
+        if not col:
+            return [(None, frame)]
+        return [(v, frame[frame[col] == v])
+                for v in sorted(frame[col].dropna().unique())]
+
     for i, ycol in enumerate(y_col_list, start=1):
         add_domains(fig, domain, df_data, row=i, col=1)
 
@@ -97,27 +112,42 @@ def interactive_scatterplot_figure(
         for layer_df, layer_kws, layer_name in layers:
             if layer_df.empty:
                 continue
-            groups = ([(v, layer_df[layer_df[style.hue_col] == v])
-                       for v in sorted(layer_df[style.hue_col].dropna().unique())]
-                      if style.hue_col else [(layer_name, layer_df)])
-            for value, sub in groups:
-                if sub.empty:
-                    continue
-                marker = marker_from_kws(
-                    layer_kws, scale,
-                    color=to_css(colors.get(value)) if style.hue_col else 'black')
-                text = hover_text(sub, hover_cols or [style.hue_col, style.marker_col])
-                fig.add_trace(go.Scattergl(
-                    x=sub[x_col], y=sub[ycol], mode='markers',
-                    name=str(value), legendgroup=str(value),
-                    showlegend=(i == 1 and layer_name == 'above threshold'
-                                or (i == 1 and not style.hue_col and layer_name == 'above threshold')),
-                    marker=marker, opacity=opacity_from_kws(layer_kws),
-                    hovertext=text,
-                    hovertemplate=f'{x_col}: %{{x}}<br>{ycol}: %{{y:.3f}}'
-                                  + ('<br>%{hovertext}' if text is not None else '')
-                                  + '<extra></extra>',
-                ), row=i, col=1)
+            # one trace per hue x marker combination, since a plotly trace
+            # carries a single colour and a single symbol
+            for hue_val, hue_df in split(layer_df, style.hue_col):
+                for mark_val, sub in split(hue_df, style.marker_col):
+                    if sub.empty:
+                        continue
+                    marker = marker_from_kws(
+                        layer_kws, scale,
+                        color=to_css(colors.get(hue_val)) if style.hue_col else 'black')
+                    if style.marker_col:
+                        marker['symbol'] = symbols[mark_val]
+
+                    if style.hue_col:
+                        value = hue_val
+                    elif style.marker_col:
+                        value = mark_val
+                    else:
+                        value = layer_name
+                    name = ' / '.join(str(v) for v in (hue_val, mark_val)
+                                      if v is not None) or layer_name
+                    # with a marker column the legend is built separately
+                    # below, one entry per colour and one per shape
+                    showlegend = (not style.marker_col and i == 1
+                                  and layer_name == 'above threshold')
+
+                    text = hover_text(sub, hover_cols or [style.hue_col, style.marker_col])
+                    fig.add_trace(go.Scattergl(
+                        x=sub[x_col], y=sub[ycol], mode='markers',
+                        name=name, legendgroup=str(value),
+                        showlegend=showlegend,
+                        marker=marker, opacity=opacity_from_kws(layer_kws),
+                        hovertext=text,
+                        hovertemplate=f'{x_col}: %{{x}}<br>{ycol}: %{{y:.3f}}'
+                                      + ('<br>%{hovertext}' if text is not None else '')
+                                      + '<extra></extra>',
+                    ), row=i, col=1)
 
         if neg_ctrl.lines:
             add_hline(fig, 2 * neg_ctrl.sd, neg_ctrl.ctrl_line_kws, scale, row=i, col=1)
@@ -127,9 +157,28 @@ def interactive_scatterplot_figure(
         if axis.ylabel is None:
             fig.update_yaxes(title_text=ycol, row=i, col=1)
 
+    # LEGEND WITH A MARKER COLUMN, MATCHING THE STATIC LEGEND #
+    # shapes first in black, then colours as circles. Empty traces carry the
+    # legend entries; each shares a legendgroup with the data it describes so
+    # clicking it toggles those points (colours when hue_col is set, shapes
+    # otherwise, since a trace can belong to only one group)
+    if style.marker_col:
+        key_size = marker_size(style.opaque_kws.get('s'), scale)
+        for mark_val, symbol in symbols.items():
+            fig.add_trace(go.Scattergl(
+                x=[None], y=[None], mode='markers', name=str(mark_val),
+                legendgroup=(f'marker:{mark_val}' if style.hue_col else str(mark_val)),
+                marker=dict(symbol=symbol, color='black', size=key_size),
+                showlegend=True, hoverinfo='skip'), row=1, col=1)
+        for hue_val, color in colors.items():
+            fig.add_trace(go.Scattergl(
+                x=[None], y=[None], mode='markers', name=str(hue_val),
+                legendgroup=str(hue_val),
+                marker=dict(symbol='circle', color=to_css(color), size=key_size),
+                showlegend=True, hoverinfo='skip'), row=1, col=1)
+
     fig.update_layout(**base_layout(output, scale, n_rows=n),
-                      showlegend=bool(style.hue_col) and legend.loc is not None
-                      or bool(style.hue_col))
+                      showlegend=bool(style.hue_col or style.marker_col))
     return finish_interactive(fig, output)
 
 
